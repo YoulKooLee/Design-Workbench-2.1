@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>产品设计工作台</title>
+<style>
+  :root{
+    /* v4 设计 token：亮色医疗科技风（主蓝 #2563eb + 浅灰底 #f0f4f8 + 白卡 + 16px 圆角 + 轻投影） */
+    --bg:#f0f4f8; --panel:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --line:#e2e8f0; --line-subtle:rgba(15,23,42,0.04);
+    --accent:#2563eb; --accent-hover:#1d4ed8; --accent-soft:#eff6ff; --accent-border:#bfdbfe;
+    --green:#16a34a; --green-soft:#f0fdf4; --green-border:#bbf7d0;
+    --amber:#d97706; --amber-soft:#fffbeb;
+    --red:#dc2626; --red-soft:#fef2f2;
+    --radius:16px; --radius-sm:10px; --radius-pill:9999px;
+    --shadow:0 1px 3px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.05);
+    --shadow-hover:0 4px 8px rgba(15,23,42,.08),0 12px 28px rgba(37,99,235,.10);
+    --focus:0 0 0 3px rgba(37,99,235,.12);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+  header.topbar{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(255,255,255,0.82);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#18181b,#3f3f46);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+  .title h1{font-size:17px;margin:0;font-weight:650}
+  .title p{margin:0;color:var(--muted);font-size:12px}
+  .topbar .spacer{flex:1}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 16px;border-radius:var(--radius-pill);cursor:pointer;font-size:13px;transition:.15s;white-space:nowrap;font-weight:500}
+  .btn:hover{border-color:#d4d4d8;background:var(--accent-soft)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+  .btn.ghost{background:transparent;border-color:transparent;font-weight:500}
+  .btn.ghost:hover{background:var(--accent-soft)}
+  .btn.sm{padding:5px 12px;font-size:12px}
+  .btn.danger{color:var(--red);border-color:#fecaca}
+  .btn.danger:hover{background:var(--red-soft);border-color:var(--red)}
+  .btn:focus-visible{outline:none;box-shadow:var(--focus)}
+  .btn:disabled{opacity:.55;cursor:not-allowed;background:#f4f4f5;border-color:var(--line);color:var(--muted)}
+  .btn.danger:disabled{color:var(--muted);background:#f4f4f5;border-color:var(--line)}
+  nav.tabs{display:flex;gap:4px;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  nav.tabs .tab{padding:12px 16px;cursor:pointer;color:var(--muted);font-weight:550;border-bottom:2px solid transparent;font-size:14px}
+  nav.tabs .tab:hover{color:var(--ink)}
+  nav.tabs .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  main{padding:24px 28px;max-width:1280px;margin:0 auto}
+  .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .toolbar .spacer{flex:1}
+  .search{position:relative}
+  .search input{border:1px solid var(--line);border-radius:var(--radius-sm);padding:9px 12px 9px 34px;font-size:13px;width:240px;outline:none;background:#fff;transition:.15s}
+  .search input:focus{border-color:#a1a1aa;box-shadow:var(--focus)}
+  .search svg{position:absolute;left:10px;top:9px;width:15px;height:15px;fill:var(--muted)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;color:var(--muted);font-weight:600;background:#fafbfd;white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#fbfcfe}
+  tr.selrow{cursor:pointer}
+  tr.sel td{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+  .selmark{color:var(--accent);font-weight:700;width:24px;text-align:center}
+  .path{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted);word-break:break-all}
+  .desc{color:var(--ink);font-size:13px;max-width:420px}
+  .muted{color:var(--muted)}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;margin-right:6px}
+  .badge.tpl{background:var(--accent-soft);color:#27272a}
+  .badge.git{background:var(--green-soft);color:var(--green)}
+  .badge.nogit{background:#eef1f5;color:var(--muted)}
+  .badge.root{background:#fef3c7;color:#92400e}
+  .badge.demo{background:#e0e7ff;color:#3730a3;margin-left:6px;margin-right:0}
+  .badge.owner{background:var(--green-soft);color:var(--green)}
+  .badge.owner-none{background:#eef1f5;color:var(--muted)}
+  .owner-btn{white-space:nowrap}
+  tr.demo-row{background:#fbfbfe}
+  tr.demo-row td{color:var(--muted)}
+  tr.demo-row td b{color:var(--ink)}
+  .ops{display:flex;gap:8px;flex-wrap:wrap}
+  .ops.proj-ops{flex-wrap:nowrap;white-space:nowrap}
+  td.actions-cell{white-space:nowrap}
+  .dropzone{border:2px dashed var(--line);border-radius:var(--radius);padding:24px;text-align:center;color:var(--muted);cursor:pointer;transition:.15s;background:#fcfcfd;margin-bottom:16px}
+  .dropzone:hover,.dropzone.drag{border-color:var(--ink);background:var(--accent-soft);color:var(--ink)}
+  .dropzone b{color:var(--ink)}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+  .toast-wrap{position:fixed;top:18px;right:18px;z-index:100;display:flex;flex-direction:column;gap:8px}
+  .toast{background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;box-shadow:var(--shadow);animation:slidein .2s ease;max-width:360px}
+  .toast.ok{background:#18181b}.toast.err{background:#7f1d1d}.toast.info{background:#27272a}
+  @keyframes slidein{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .modal-mask{position:fixed;inset:0;background:rgba(24,24,27,.45);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(2px)}
+  .modal-mask.show{display:flex}
+  .modal{background:#fff;border-radius:18px;padding:26px;width:460px;max-width:92vw;box-shadow:0 24px 70px rgba(0,0,0,0.28);display:flex;flex-direction:column;max-height:88vh}
+  .modal.wide{width:760px;max-width:96vw}
+  .modal h3{margin:0 0 14px;font-size:16px;flex-shrink:0}
+  .modal .modal-body{flex:1;min-height:0;overflow-y:auto;margin:0 -6px 0 0;padding-right:6px}
+  .modal .modal-ops{flex-shrink:0;margin-top:16px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;outline:none;font-family:inherit;transition:.15s}
+  .field input:focus,.field textarea:focus{border-color:#a1a1aa;box-shadow:var(--focus)}
+  .field textarea{min-height:360px;font-family:ui-monospace,Menlo,monospace;line-height:1.5;resize:vertical}
+  .modal-ops{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+  .owner-pick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+  .owner-opt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;cursor:pointer;transition:.15s}
+  .owner-opt:hover{border-color:var(--accent)}
+  .owner-opt input{accent-color:var(--accent)}
+  .collab-cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .ccard{flex:1;min-width:130px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;text-align:center}
+  .cc-num{font-size:24px;font-weight:700;color:var(--ink)}
+  .cc-num .cc-slash{font-size:15px;font-weight:400;color:var(--muted);margin:0 3px}
+  .cc-label{font-size:12px;color:var(--muted);margin-top:2px}
+  .lib-grid{display:flex;flex-wrap:wrap;gap:8px}
+  .lib-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 12px;font-size:13px;background:#fafafa}
+  .owner-select{border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 10px;font-size:13px;outline:none;background:#fff;max-width:170px}
+  .owner-select:focus{border-color:var(--accent);box-shadow:var(--focus)}
+  .badge.st-editing{background:var(--green-soft);color:var(--green)}
+  .badge.st-active{background:var(--accent-soft);color:var(--accent)}
+  .badge.st-stopped{background:#eef1f5;color:var(--muted)}
+  .badge.st-idle{background:#fef3c7;color:#92400e}
+  /* 组件库卡片布局 */
+  .clib-layout{display:flex;gap:16px;align-items:flex-start}
+  .clib-side{flex:0 0 160px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px;position:sticky;top:12px}
+  .clib-side-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:8px}
+  .clib-cat{display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;border-radius:var(--radius-sm);font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:2px}
+  .clib-cat:hover{background:#f4f4f5;color:var(--ink)}
+  .clib-cat.active{background:var(--accent-soft);color:var(--ink);font-weight:600}
+  .clib-cat .cnt{float:right;font-size:11px;color:var(--muted)}
+  .clib-main{flex:1;min-width:0}
+  .clib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .clib-card{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;transition:.15s;display:flex;flex-direction:column}
+  .clib-card:hover{box-shadow:var(--shadow);border-color:#d4d4d8}
+  .clib-thumb{position:relative;aspect-ratio:16/10;width:100%;background:#fafafa;border-bottom:1px solid var(--line);overflow:hidden}
+  .clib-thumb .thumb-wrap{position:absolute;inset:12px;border-radius:10px;background:#fff;border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,0.05);overflow:hidden;pointer-events:none;--thumb-scale:0.25;--thumb-ox:0px;--thumb-oy:0px}
+  .clib-thumb .thumb-wrap iframe{display:block;position:absolute;top:0;left:0;width:1280px;height:800px;border:0;transform:translate(var(--thumb-ox),var(--thumb-oy)) scale(var(--thumb-scale));transform-origin:top left;background:#fff;opacity:0;transition:opacity .25s ease}
+  .clib-thumb .thumb-wrap.is-ready iframe{opacity:1}
+  .clib-card:hover .thumb-wrap iframe{filter:none}
+  .clib-thumb iframe{filter:saturate(.32) contrast(.94) brightness(1.04)}
+  .clib-thumb .thumb-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:#d4d4d8;background:linear-gradient(135deg,#fafafa,#f4f4f5);z-index:0}
+  .clib-body{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:6px}
+  .clib-name{font-size:14px;font-weight:600;color:var(--ink)}
+  .clib-key{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);font-weight:400;margin-left:4px}
+  .clib-desc{font-size:12px;color:var(--muted);line-height:1.5}
+  .clib-path{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#a1a1aa;word-break:break-all}
+  .clib-ops{display:flex;gap:8px;margin-top:auto;padding-top:8px}
+  .clib-ops .btn{flex:1;justify-content:center}
+  .clib-badge{position:absolute;top:8px;right:8px;z-index:2;background:var(--accent);color:#fff;font-size:10px;line-height:1;padding:4px 7px;border-radius:999px}
+  .clib-card.custom .clib-name{color:var(--accent)}
+  .clib-empty{grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)}
+  /* 对话记录 */
+  .room-msg{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f4f4f5}
+  .room-msg:last-child{border-bottom:none}
+  .room-msg .rm-avatar{flex:0 0 34px;height:34px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:var(--accent)}
+  .room-reply{border-top:1px solid var(--line);padding:12px 0 4px;display:flex;flex-direction:column;gap:8px}
+  .room-reply textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:13px;font-family:inherit;resize:vertical;min-height:52px}
+  .room-reply textarea:focus{outline:none;border-color:var(--accent)}
+  .room-reply-ops{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .room-msg .rm-body{flex:1;min-width:0}
+  .room-msg .rm-head{display:flex;gap:8px;align-items:baseline;margin-bottom:4px}
+  .room-msg .rm-from{font-size:13px;font-weight:600;color:var(--ink)}
+  .room-msg .rm-intent{font-size:11px;color:#a1a1aa;border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+  .room-msg .rm-ts{font-size:11px;color:#a1a1aa}
+  .room-msg .rm-content{font-size:13px;color:var(--ink);white-space:pre-wrap;word-break:break-word;line-height:1.6}
+  .kv{font-size:13px;margin:4px 0}
+  .kv span{color:var(--muted)}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  .legend{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  pre.preview{background:#f7f9fc;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12px;max-height:200px;overflow:auto;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace}
+  .confirm-body{font-size:14px;line-height:1.6;margin:6px 0 18px}
+  .confirm-body b{color:var(--red)}
+  /* 错误采集浮窗 */
+  #err-collector{position:fixed;right:24px;bottom:24px;z-index:100;font-size:13px}
+  #err-bubble{width:48px;height:48px;border-radius:50%;background:#d4d4d8;color:#52525b;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:.15s;border:none;font-weight:700;font-size:16px}
+  #err-bubble:hover{transform:translateY(-2px)}
+  #err-bubble.has{background:var(--red);color:#fff}
+  #err-count{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff}
+  #err-panel{position:absolute;right:0;bottom:64px;width:520px;max-height:420px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);display:none;flex-direction:column;overflow:hidden}
+  #err-panel.open{display:flex}
+  #err-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:#fafbfd}
+  #err-head h3{margin:0;font-size:14px}
+  #err-head .actions{display:flex;gap:8px}
+  #err-list{overflow:auto;padding:12px;flex:1}
+  .err-item{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;background:#fff}
+  .err-item .meta{display:flex;gap:8px;align-items:center;margin-bottom:6px;font-size:12px;color:var(--muted)}
+  .err-item .meta .tag{padding:2px 6px;border-radius:4px;background:var(--red-soft);color:var(--red);font-weight:600}
+  .err-item .msg{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--ink);white-space:pre-wrap;word-break:break-word;max-height:120px;overflow:auto;background:#f9fafb;padding:8px;border-radius:6px}
+  .err-empty{padding:20px;text-align:center;color:var(--muted)}
+  #err-foot{padding:10px 16px;border-top:1px solid var(--line);background:#fafbfd;color:var(--muted);font-size:12px}
+
+  /* ===== v4 新增：KPI 区 ===== */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  @media(max-width:1040px){ .kpi-row{grid-template-columns:repeat(2,1fr)} }
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);transition:.2s}
+  .kpi:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+  .kpi-head{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:8px}
+  .kpi-head .ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .ico-blue{background:var(--accent-soft);color:var(--accent)}
+  .ico-green{background:var(--green-soft);color:var(--green)}
+  .ico-amber{background:var(--amber-soft);color:var(--amber)}
+  .ico-slate{background:#f1f5f9;color:var(--muted)}
+  .kpi-value{font-size:22px;font-weight:700}
+  .kpi-value small{font-size:13px;font-weight:500;color:var(--muted)}
+  .kpi-sub{font-size:12px;color:var(--muted);margin-top:3px}
+  .kpi-actions{display:flex;gap:8px;margin-top:12px}
+  .kpi-status{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+  .kpi-status .dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1}
+  .st-run{color:var(--green)} .st-run .dot{background:var(--green);animation:pulse 2s infinite}
+  .st-stop{color:var(--muted)} .st-stop .dot{background:#cbd5e1}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}70%{box-shadow:0 0 0 6px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+  /* 端口池可滚动列表 */
+  .port-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:96px;overflow-y:auto}
+  .port-item{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#f8fafc;border:1px solid var(--line);border-radius:8px;font-size:12px}
+  .port-item .pnum{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;color:var(--accent)}
+  .port-item .pname{color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .port-empty{padding:8px 10px;border:1px dashed var(--line);border-radius:8px;font-size:12px;color:var(--muted);text-align:center}
+  /* ===== v4 新增：区块标题 ===== */
+  .sec-head{display:flex;align-items:center;gap:12px;margin:4px 0 14px;flex-wrap:wrap}
+  .sec-head h2{font-size:16px;font-weight:700;margin:0}
+  .sec-head .count{font-size:12px;color:var(--muted);background:#f1f5f9;padding:2px 10px;border-radius:999px}
+  .sec-head .spacer{flex:1}
+  .sec-head .search input{width:220px}
+  /* ===== v4 新增：项目卡片 ===== */
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+  .proj{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);transition:.2s}
+  .proj:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:var(--accent-border)}
+  .proj.is-demo{background:#fbfcfe}
+  .proj-top{display:flex;align-items:flex-start;gap:12px}
+  .avatar{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+  .av-blue{background:linear-gradient(135deg,#2563eb,#60a5fa)}
+  .av-teal{background:linear-gradient(135deg,#0d9488,#2dd4bf)}
+  .av-slate{background:linear-gradient(135deg,#94a3b8,#cbd5e1)}
+  .proj-title{font-size:15px;font-weight:700;word-break:break-all}
+  .proj-path{font-size:12px;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:2px;word-break:break-all}
+  .badge-run,.badge-stop{display:inline-flex;align-items:center;gap:5px;margin-left:auto;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+  .badge-run{background:var(--green-soft);color:var(--green);border:1px solid var(--green-border)}
+  .badge-run .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+  .badge-stop{background:#f1f5f9;color:var(--muted);border:1px solid var(--line)}
+  .badge-stop .dot{width:6px;height:6px;border-radius:50%;background:#cbd5e1}
+  .badge-editing{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border)}
+  .badge-editing .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+  .proj-meta{display:flex;gap:14px;margin:12px 0 14px;font-size:12px;color:var(--muted);flex-wrap:wrap;align-items:center}
+  .proj-meta b{color:var(--ink);font-weight:600}
+  .proj-meta .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .proj-actions{display:flex;gap:8px;border-top:1px solid #f1f5f9;padding-top:12px;flex-wrap:wrap}
+  .select-sm{padding:3px 8px;border:1px solid var(--line);border-radius:8px;font-size:12px;outline:none;background:#fff;font-family:inherit;max-width:140px}
+  .select-sm:focus{border-color:var(--accent);box-shadow:var(--focus)}
+  .follow{font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .follow.on{color:var(--green)} .follow.off{color:var(--muted)}
+  /* ===== v4 新增：通信看板智能体 chip 带 ===== */
+  .agent-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+  .agent-chip{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:12px;box-shadow:var(--shadow)}
+  .agent-chip .av{width:26px;height:26px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+  .agent-chip .io{color:var(--muted)}
+  .agent-chip .io b{color:var(--accent);font-size:13px}
+  /* ===== v4 新增：弹窗细化 ===== */
+  .modal-head{display:flex;align-items:center;margin-bottom:12px}
+  .modal-head h3{font-size:16px;font-weight:700;margin:0}
+  .modal-x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:none;background:#f1f5f9;color:var(--muted);cursor:pointer;font-size:14px}
+  .modal-x:hover{background:var(--red-soft);color:var(--red)}
+  .field label .req{color:var(--red)}
+  .field .hint{font-size:11px;color:var(--muted);margin-top:4px}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .alert{display:flex;gap:10px;padding:12px 14px;border-radius:10px;font-size:12px;margin-bottom:14px;line-height:1.5}
+  .alert-warn{background:var(--amber-soft);color:#92400e;border:1px solid #fde68a}
+  .alert-danger{background:var(--red-soft);color:#991b1b;border:1px solid #fecaca}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">产</div>
+  <div class="title">
+    <h1>产品设计工作台</h1>
+    <p>项目管理 · Skill 库 · 知识库 · 工作规则 · 触发路由</p>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn ghost sm" id="restartMakeBtn" title="Make 管理端(53817) 是全局单例、所有项目共用。异常退出后残留记录会导致所有项目的开发栈卡在「等待 Make 就绪」，点此强制重启">⟳ 重启 Make</button>
+  <button class="btn ghost sm" id="refreshBtn">↻ 刷新</button>
+</header>
+
+<nav class="tabs" id="tabs">
+  <div class="tab active" data-tab="projects">项目管理</div>
+  <div class="tab" data-tab="skills">Skill 库</div>
+  <div class="tab" data-tab="knowledge">知识库</div>
+  <div class="tab" data-tab="rules">工作规则</div>
+  <div class="tab" data-tab="routes">触发路由</div>
+  <div class="tab" data-tab="components">组件库</div>
+  <div class="tab" data-tab="collab">通信看板</div>
+</nav>
+
+<main id="view"></main>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<!-- 通用弹窗 -->
+<div class="modal-mask" id="modalMask">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+const view = $('#view');
+let currentTab = 'projects';
+
+// ===== 全局错误采集 =====
+window.__ERRORS__ = [];
+function captureError(type, message, detail=''){
+  const err = {
+    time: new Date().toLocaleString('zh-CN'),
+    type,
+    message: String(message),
+    detail: String(detail).slice(0, 2000),
+    url: location.href,
+    ua: navigator.userAgent
+  };
+  window.__ERRORS__.unshift(err);
+  if(window.__ERRORS__.length > 50) window.__ERRORS__.length = 50;
+  renderErrorCollector();
+  // 同时控制台也输出，方便按 F12 查看
+  console.error('[ErrorCollector]', type, message, detail);
+}
+window.onerror = function(msg, url, line, col, err){
+  captureError('JS Error', msg, `${url}:${line}:${col}\n${err && err.stack ? err.stack : ''}`);
+  return false;
+};
+window.addEventListener('unhandledrejection', e => {
+  captureError('Promise Rejection', e.reason && e.reason.message ? e.reason.message : e.reason,
+    e.reason && e.reason.stack ? e.reason.stack : '');
+});
+
+// 创建浮窗 DOM
+function initErrorCollector(){
+  if($('#err-collector')) return;
+  const wrap = document.createElement('div');
+  wrap.id = 'err-collector';
+  wrap.innerHTML = `
+    <button id="err-bubble" title="点击查看采集到的错误">!</button>
+    <span id="err-count" style="display:none">0</span>
+    <div id="err-panel">
+      <div id="err-head">
+        <h3>错误采集（共 <span id="err-total">0</span> 条）</h3>
+        <div class="actions">
+          <button class="btn sm primary" id="err-copy">复制全部</button>
+          <button class="btn sm" id="err-clear">清空</button>
+          <button class="btn sm" id="err-close">关闭</button>
+        </div>
+      </div>
+      <div id="err-list"><div class="err-empty">暂无错误</div></div>
+      <div id="err-foot">点击「复制全部」可直接把错误信息发给 AI 排查</div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  $('#err-bubble').onclick = () => $('#err-panel').classList.toggle('open');
+  $('#err-close').onclick = () => $('#err-panel').classList.remove('open');
+  $('#err-clear').onclick = () => { window.__ERRORS__ = []; renderErrorCollector(); };
+  $('#err-copy').onclick = copyErrors;
+}
+function renderErrorCollector(){
+  initErrorCollector();
+  const total = window.__ERRORS__.length;
+  const bubble = $('#err-bubble');
+  const count = $('#err-count');
+  $('#err-total').textContent = total;
+  if(total > 0){
+    bubble.classList.add('has');
+    bubble.textContent = '!';
+    count.style.display = 'flex';
+    count.textContent = total > 99 ? '99+' : total;
+  } else {
+    bubble.classList.remove('has');
+    bubble.textContent = '!';
+    count.style.display = 'none';
+  }
+  const list = $('#err-list');
+  if(total === 0){
+    list.innerHTML = '<div class="err-empty">暂无错误</div>';
+    return;
+  }
+  list.innerHTML = window.__ERRORS__.map((e,i) => `
+    <div class="err-item">
+      <div class="meta"><span class="tag">${escapeHtml(e.type)}</span><span>${e.time}</span></div>
+      <div class="msg">${escapeHtml(e.message)}${e.detail ? '\n---\n'+escapeHtml(e.detail) : ''}</div>
+    </div>
+  `).join('');
+}
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function copyErrors(){
+  if(window.__ERRORS__.length === 0){ toast('暂无错误可复制','info'); return; }
+  const text = window.__ERRORS__.map(e =>
+    `[${e.type}] ${e.time}\nURL: ${e.url}\nUA: ${e.ua}\nMessage: ${e.message}\nDetail: ${e.detail || '(无)'}`
+  ).join('\n\n---\n\n');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(() => toast('错误信息已复制到剪贴板','ok'), () => fallbackCopy(text));
+  } else { fallbackCopy(text); }
+}
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast('错误信息已复制到剪贴板','ok'); }
+  catch{ toast('复制失败，请按 F12 在控制台查看','err'); }
+  document.body.removeChild(ta);
+}
+initErrorCollector();
+
+function toast(msg, type='info'){
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  $('#toasts').appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 2600);
+}
+async function api(path, opts={}){
+  try{
+    const r = await fetch(path, opts);
+    const data = await r.json().catch(() => ({}));
+    if(!r.ok || (data && data.ok === false)){
+      captureError('API Error', `${opts.method||'GET'} ${path} → HTTP ${r.status}`, JSON.stringify(data, null, 2).slice(0,1500));
+    }
+    return data;
+  }catch(e){
+    captureError('Network Error', `${opts.method||'GET'} ${path}`, e.message + (e.stack ? '\n'+e.stack : ''));
+    throw e;
+  }
+}
+function openModal(html, wide=false){
+  $('#modalBox').innerHTML = html;
+  $('#modalBox').classList.toggle('wide', wide);
+  $('#modalMask').classList.add('show');
+}
+function closeModal(){ $('#modalMask').classList.remove('show'); }
+// 弹窗外围点击不关闭（防误关：所有弹窗只能通过内部「取消/确定」按钮关闭）
+
+// 通用二次确认弹窗
+function confirmModal(title, bodyHtml, onConfirm, confirmText='确认删除', danger=true){
+  openModal(`<h3>${title}</h3>
+    <div class="confirm-body">${bodyHtml}</div>
+    <div class="modal-ops">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn ${danger?'danger':'primary'}" id="confirmBtn">${confirmText}</button>
+    </div>`);
+  $('#confirmBtn').onclick = async ()=>{
+    $('#confirmBtn').disabled = true;
+    try {
+      const keepOpen = await onConfirm();
+      if(keepOpen === false){ $('#confirmBtn').disabled = false; return; }
+      closeModal();
+    } catch(e){
+      $('#confirmBtn').disabled = false;
+    }
+  };
+}
+
+// 通用 Markdown 编辑弹窗
+function editorModal(title, content, onSave, saveText='保存'){
+  openModal(`<h3>${title}</h3>
+    <div class="field"><textarea id="editorArea">${content.replace(/</g,'&lt;')}</textarea></div>
+    <div class="modal-ops">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn primary" id="editorSave">${saveText}</button>
+    </div>`, true);
+  $('#editorSave').onclick = async ()=>{
+    const text = $('#editorArea').value;
+    $('#editorSave').disabled = true; $('#editorSave').textContent = '保存中…';
+    await onSave(text);
+  };
+}
+
+// ===== 文件拖入处理 =====
+function handleFile(file, cb){
+  const reader = new FileReader();
+  reader.onload = () => cb(file.name, reader.result);
+  reader.readAsText(file);
+}
+function setupDropzone(zoneId, onFile){
+  const zone = document.getElementById(zoneId);
+  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', ()=> zone.classList.remove('drag'));
+  zone.addEventListener('drop', e=>{ e.preventDefault(); zone.classList.remove('drag'); const f=e.dataTransfer.files[0]; if(f) handleFile(f, onFile); });
+  zone.addEventListener('click', ()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='.md,text/markdown'; inp.onchange=()=>{ if(inp.files[0]) handleFile(inp.files[0], onFile); }; inp.click(); });
+}
+
+function clientParse(text){
+  const m = text.match(/^---\s*\n([\s\S]*?)\n---/);
+  if(!m) return {name:'', description:''};
+  const lines = m[1].split('\n'); let name='', desc='';
+  for(let i=0;i<lines.length;i++){ const l=lines[i];
+    if(l.startsWith('name:')) name=l.slice(5).trim().replace(/^["']|["']$/g,'');
+    else if(l.startsWith('description:')){ let v=l.slice(12).trim(); if(v==='>'||v==='|'){const p=[];i++;while(i<lines.length){p.push(lines[i].trim());i++;}desc=p.join(' ');break;} else desc=v.replace(/^["']|["']$/g,''); }
+  }
+  return {name, description:desc};
+}
+function clientTriggers(desc){
+  if(!desc) return '';
+  const m = desc.match(/(触发场景|适用场景)[：:]\s*([\s\S]*)/);
+  return m ? m[2].trim().slice(0,200) : '';
+}
+
+// ===== 标签页切换 =====
+$('#tabs').addEventListener('click', e=>{
+  const tab = e.target.closest('.tab'); if(!tab) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  currentTab = tab.dataset.tab;
+  render();
+});
+$('#refreshBtn').addEventListener('click', render);
+
+// 重启 Make 管理端（全局单例 53817）：Make 异常退出后残留记录会让所有项目的开发栈
+// 卡在「等待 Make 就绪」等满 60 秒失败，这里提供手动兜底。
+$('#restartMakeBtn').addEventListener('click', async () => {
+  const btn = $('#restartMakeBtn');
+  if (btn.disabled) return;
+  const label = '⟳ 重启 Make';
+  btn.disabled = true;
+  btn.textContent = '重启中…';
+  try {
+    const r = await api('/api/make/restart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    });
+    const detail = (r && r.steps || []).join('；');
+    if (r && r.ok) {
+      toast((r.msg || 'Make 已重启') + (detail ? '（' + detail + '）' : ''), 'ok');
+    } else {
+      toast('重启 Make 未成功：' + ((r && r.msg) || '未知错误'), 'err');
+      captureError('Make Restart', '重启 Make 未成功', detail || (r && r.msg) || '无详情');
+    }
+  } catch (e) {
+    toast('重启 Make 失败：' + e.message, 'err');
+    captureError('Make Restart Error', '重启 Make 请求异常', e.message + (e.stack ? '\n' + e.stack : ''));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+    render();
+  }
+});
+
+// ===== 智能体上下文数据（供项目列表状态列使用） =====
+const KNOWN_AGENTS = ['codebuddy', 'workbuddy', 'doubao', 'deepseek', 'qwen'];
+const AGENT_LABEL = { codebuddy: 'CodeBuddy', workbuddy: 'WorkBuddy', doubao: '豆包', deepseek: 'DeepSeek', qwen: '千问' };
+const ctxStatusMap = { starting: '启动中', editing: '编辑中', active: '运行中', stopped: '已停止' };
+let ctxData = null; let lastCtxSig = ''; let viewLoaded = false;
+function agentLabel(a){ return AGENT_LABEL[a] || a; }
+// 项目编辑状态：返回 { editingAgent, statusLabel, statusCls }
+// editingAgent = 正在编辑该项目的智能体（无则 null）；statusLabel = 编辑中·xx / 运行中 / 已停止 / 未启动
+function getProjectEditState(relative){
+  if(!ctxData) return { editingAgent: null, statusLabel: '加载中…', statusCls: 'idle' };
+  const agents = ctxData.agents || {};
+  const projs = ctxData.projects || [];
+  let editingAgent = null;
+  for(const a of KNOWN_AGENTS){
+    if(agents[a] && agents[a].editing === relative){ editingAgent = a; break; }
+  }
+  const p = projs.find(x => x.relative === relative);
+  if(editingAgent) return { editingAgent, statusLabel: '编辑中 · ' + agentLabel(editingAgent), statusCls: 'editing' };
+  const st = p ? p.status : '';
+  if(st === 'active') return { editingAgent: null, statusLabel: '运行中', statusCls: 'active' };
+  if(st === 'starting') return { editingAgent: null, statusLabel: '启动中', statusCls: 'active' };
+  if(st === 'stopped') return { editingAgent: null, statusLabel: '已停止', statusCls: 'stopped' };
+  return { editingAgent: null, statusLabel: '未启动', statusCls: 'idle' };
+}
+async function loadCtx(){
+  try{
+    const r = await api('/api/context/current');
+    if(r.ok){
+      ctxData = r;
+      // 后台刷新时，只在弹窗关闭时重绘，避免打断用户操作
+      const mask = $('#modalMask');
+      if(mask && !mask.classList.contains('show')){
+        const sig = JSON.stringify([(r.projects||[]).map(p=>[p.name,p.status,p.editor]), r.current&&r.current.status]);
+        if(sig !== lastCtxSig){ lastCtxSig = sig; render(); }
+      }
+    }
+  }catch(e){ /* 后端未就绪时静默 */ }
+}
+loadCtx();
+setInterval(loadCtx, 5000);
+
+// ===== 各视图 =====
+async function render(){
+  if(!viewLoaded) view.innerHTML = '<div class="empty"><span class="spinner"></span>加载中…</div>';
+  try{
+    if(currentTab==='projects') await renderProjects();
+    else if(currentTab==='skills') await renderSkills();
+    else if(currentTab==='knowledge') await renderKnowledge();
+    else if(currentTab==='rules') await renderRules();
+    else if(currentTab==='routes') await renderRoutes();
+    else if(currentTab==='components') await renderComponents();
+    else if(currentTab==='collab') await renderCollab();
+    viewLoaded = true;
+  }catch(err){
+    view.innerHTML = '<div class="empty">加载失败：'+err.message+'</div>';
+  }
+}
+
+// 项目管理（v4：KPI 区 + 项目卡片）
+// 「关注」为本地标记（第一版）：存 localStorage，待后端提供配置接口后迁移
+const FOLLOW_KEY = 'axhub.follow.projects';
+function readFollows(){
+  try{ return JSON.parse(localStorage.getItem(FOLLOW_KEY) || '{}'); }catch{ return {}; }
+}
+function isFollowed(relative){ return !!readFollows()[relative]; }
+function toggleFollow(relative){
+  const m = readFollows();
+  if(m[relative]) delete m[relative]; else m[relative] = 1;
+  try{ localStorage.setItem(FOLLOW_KEY, JSON.stringify(m)); }catch{}
+  return !!m[relative];
+}
+async function renderProjects(){
+  const projRes = await api('/api/projects');
+  const projects = (projRes && projRes.projects) || [];
+  // Make 管理端状态：依据 /api/projects 连通性推断（后端未提供独立状态接口）
+  const makeOk = !!(projRes && projRes.ok !== false && Array.isArray(projRes.projects));
+  let collab = {};
+  try{ collab = await api('/api/collab/overview'); }catch(e){ collab = {}; }
+  const inboxTotal = (collab && collab.messagesTotal && collab.messagesTotal.inbox) || 0;
+  const ownCount = projects.filter(p=>!p.isDemo).length;
+  const demoCount = projects.length - ownCount;
+  // 运行中项目（来自 /api/context/current 的活体检测结果）
+  const ctxReady = ctxData !== null;
+  const ctxProjects = (ctxData && ctxData.projects) || [];
+  const running = ctxProjects.filter(x => x.status === 'active' || x.status === 'starting' || x.status === 'editing');
+
+  // ===== KPI 区（4 张）=====
+  let html = `<div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-amber">🔔</span>待办提醒</div>
+      <div class="kpi-value">${inboxTotal} <small>条收件消息</small></div>
+      <div class="kpi-sub">协作消息总量（未读数需后端接口）</div>
+      <div class="kpi-actions"><button class="btn sm" id="gotoCollabBtn">去通信看板</button></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-green">⚙</span>Make 管理端</div>
+      <div class="kpi-status ${makeOk?'st-run':'st-stop'}"><span class="dot"></span>${makeOk?'运行中':'未运行'}</div>
+      <div class="kpi-sub mono">127.0.0.1 : 53817</div>
+      <div class="kpi-actions"><button class="btn sm" id="kpiRestartMake" title="状态依据 /api/projects 连通性推断；仅提供重启，停止需后端接口">⟳ 重启</button></div>
+    </div>
+    <div class="kpi" title="后端未提供 ACP 状态接口，暂无法展示真实状态（需 server.mjs 配合）">
+      <div class="kpi-head"><span class="ico ico-blue">⇄</span>ACP 共享服务</div>
+      <div class="kpi-status st-stop"><span class="dot"></span>未接入</div>
+      <div class="kpi-sub mono">127.0.0.1 : 32124</div>
+      <div class="kpi-actions"><button class="btn sm" disabled title="需后端提供 ACP 启停/状态接口">—</button></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-slate">⛁</span>Vite 端口池</div>
+      <div class="kpi-value">${ctxReady ? running.length : '—'} <small>${ctxReady ? '个运行中' : '加载中…'}</small></div>
+      <div class="kpi-sub">端口池 51720-51729 · strictPort</div>
+      ${!ctxReady ? '<div class="port-empty">正在读取上下文…</div>' : (running.length ? `<div class="port-list">${running.map(x=>`<div class="port-item"><span class="pnum">${escapeHtml(String(x.port || '—'))}</span><span class="pname">${escapeHtml(x.relative || '')}</span></div>`).join('')}</div>` : '<div class="port-empty">当前无运行中的开发栈</div>')}
+      <div class="kpi-actions"><button class="btn sm" id="kpiPortsDetail"${ctxReady?'':' disabled'}>明细</button></div>
+    </div>
+  </div>`;
+
+  // ===== 区块标题（计数 + 搜索 + 新增 + 回收站）=====
+  html += `<div class="sec-head">
+    <h2>项目</h2><span class="count">共 ${ownCount} 个项目${demoCount?` + ${demoCount} 个演示项目`:''}</span>
+    <div class="spacer"></div>
+    <div class="search"><input id="projSearch" placeholder="搜索项目名称 / 路径…"></div>
+    <button class="btn primary" id="newProjBtn">＋ 新增项目</button>
+    <button class="btn" id="trashBtn" title="查看 05-回收站 中已删除的项目并还原">回收站</button>
+  </div>`;
+
+  if(projects.length===0) html += '<div class="empty">未检测到 Axhub Make 项目</div>';
+  html += '<div class="proj-grid">';
+  for(const p of projects){
+    const rel = encodeURIComponent(p.relative);
+    // 演示项目为只读：仅保留「启动开发栈」，其余操作置灰
+    const lockTip = '演示项目为只读，仅支持启动开发栈';
+    const dis = p.isDemo ? ` disabled title="${lockTip}"` : '';
+    // 头像：取项目名首字符（中文取首字，英文取首字母大写）
+    const initial = String(p.name || '?').trim().charAt(0).toUpperCase();
+    const avCls = p.isDemo ? 'av-slate' : ((p.relative || '').length % 2 ? 'av-teal' : 'av-blue');
+    // 智能体关联：下拉选择（未关联 = 取消关联；选中 = 关联）
+    const owner = p.owner || '';
+    const ownerOpts = ['', ...KNOWN_AGENTS].map(a => {
+      const sel = a === owner ? ' selected' : '';
+      const label = a ? agentLabel(a) + ' (' + a + ')' : '未关联';
+      return `<option value="${a}"${sel}>${label}</option>`;
+    }).join('');
+    // 运行/编辑状态
+    const st = getProjectEditState(p.relative);
+    const badgeCls = st.statusCls === 'editing' ? 'badge-editing' : (st.statusCls === 'active' ? 'badge-run' : 'badge-stop');
+    const follow = isFollowed(p.relative);
+    html += `<div class="proj${p.isDemo?' is-demo':''}" data-search="${escapeHtml((p.name+' '+p.path).toLowerCase())}">
+      <div class="proj-top">
+        <div class="avatar ${avCls}">${escapeHtml(initial)}</div>
+        <div style="min-width:0">
+          <div class="proj-title">${escapeHtml(p.name)}${p.isDemo?' <span class="badge demo">演示</span>':''}</div>
+          <div class="proj-path">${escapeHtml(p.relative || p.path)}</div>
+        </div>
+        <span class="${badgeCls}"><span class="dot"></span>${escapeHtml(st.statusLabel)}</span>
+      </div>
+      <div class="proj-meta">
+        <span>负责智能体
+          <select class="select-sm owner-select" data-rel="${p.relative.replace(/"/g,'&quot;')}" data-name="${p.name}" data-isDemo="${p.isDemo?'1':'0'}" title="项目负责人（owner_agent，写入 project-memory.md）：由谁负责本项目；与运行状态相互独立。选「未关联」= 取消关联">${ownerOpts}</select>
+        </span>
+        <span class="follow ${follow?'on':'off'}" data-act="follow" data-rel="${p.relative.replace(/"/g,'&quot;')}" title="关注为本地标记（存浏览器 localStorage），待后端配置接口就绪后迁移" style="cursor:pointer">${follow?'● 已关注':'○ 未关注'}</span>
+        <span>Vite <b class="mono">${escapeHtml(String((ctxProjects.find(x=>x.relative===p.relative)||{}).port || '—'))}</b></span>
+      </div>
+      <div class="proj-actions">
+        <button class="btn sm primary" data-act="open" data-rel="${rel}">▶ 启动开发栈</button>
+        <button class="btn sm" data-act="copy" data-rel="${rel}" data-name="${p.name}"${dis}>复制</button>
+        <button class="btn sm" data-act="history" data-rel="${rel}"${dis}>历史版本</button>
+        <button class="btn sm danger" data-act="delete" data-rel="${rel}" data-name="${p.name}"${dis}>删除</button>
+      </div>
+    </div>`;
+  }
+  html += '</div>';
+  view.innerHTML = html;
+
+  $('#newProjBtn').onclick = showNewProject;
+  $('#trashBtn').onclick = showTrash;
+  $('#gotoCollabBtn').onclick = ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab==='collab'));
+    currentTab = 'collab'; render();
+  };
+  $('#kpiRestartMake').onclick = async ()=>{
+    const b = $('#kpiRestartMake'); if(b.disabled) return;
+    b.disabled = true; b.textContent = '重启中…';
+    try{
+      const r = await api('/api/make/restart', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' });
+      toast((r && r.msg) || (r && r.ok ? 'Make 已重启' : '重启未成功'), r && r.ok ? 'ok' : 'err');
+    }catch(e){ toast('重启 Make 失败：'+e.message, 'err'); }
+    b.disabled = false; b.textContent = '⟳ 重启'; render();
+  };
+  $('#kpiPortsDetail').onclick = showPortsModal;
+  // 搜索：本地过滤卡片（不重新请求后端）
+  const searchInput = $('#projSearch');
+  if(searchInput){
+    searchInput.oninput = ()=>{
+      const kw = searchInput.value.trim().toLowerCase();
+      view.querySelectorAll('.proj').forEach(el=>{
+        el.style.display = !kw || (el.dataset.search || '').includes(kw) ? '' : 'none';
+      });
+    };
+  }
+  // 智能体关联下拉：选中即保存（含"未关联"=取消关联）
+  view.querySelectorAll('.owner-select').forEach(sel=>{
+    sel.onchange = async ()=>{
+      if(sel.dataset.isDemo === '1'){ toast('演示项目只读，不能关联智能体','err'); render(); return; }
+      const rel = sel.dataset.rel;
+      const ownerVal = sel.value;
+      const r = await api('/api/projects/owner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:rel,owner:ownerVal})});
+      toast(r.msg, r.ok?'ok':'err');
+      loadCtx();
+      render();
+    };
+  });
+  view.querySelectorAll('[data-act]').forEach(b=>{
+    b.onclick = async ()=>{
+      const rel = decodeURIComponent(b.dataset.rel);
+      const act = b.dataset.act;
+      if(act==='follow'){ toggleFollow(b.dataset.rel); render(); return; }
+      if(act==='open'){
+        if(b.disabled) return;
+        b.disabled=true; b.textContent='启动中…';
+        const r = await api('/api/projects/open',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:rel})});
+        if(!r.ok){ toast(r.msg,'err'); b.disabled=false; b.textContent='启动开发栈'; return; }
+        const isFirst = !r.hasNodeModules;
+        b.textContent = isFirst
+          ? '首次启动，正在安装依赖（可能需数分钟），请勿重复点击…'
+          : '正在启动开发栈，请勿重复点击…';
+        // 轮询启动日志，直到完成/失败再恢复按钮；同时 20s 安全超时避免按钮永久禁用
+        let iv = setInterval(async ()=>{
+          try{
+            const s = await api('/api/projects/launch-log?relative='+encodeURIComponent(rel));
+            if(s.status==='done'){
+              clearInterval(iv); clearTimeout(to);
+              // PS1 里的 Start-Process 在 spawn 子进程里无效，改为服务端 explorer.exe 打开
+              if(s.openUrl){
+                api('/api/browser/open', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url: s.openUrl }) });
+              }
+              toast('开发栈已启动，已在浏览器打开','ok');
+              b.disabled=false; b.textContent='启动开发栈';
+              // AI 联动：启动完成，重新拉取上下文刷新徽标（发起启动时已由后端更新状态）
+              loadCtx();
+            }
+            else if(s.status==='failed'){
+              clearInterval(iv); clearTimeout(to);
+              const tail = (s.lines || []).slice(-15).join('\n').slice(-1500);
+              captureError('Launch Failed', `项目「${rel}」启动失败`, `日志尾部：\n${tail}`);
+              toast('启动失败，错误已采集到右下角浮窗，可点击复制','err');
+              b.disabled=false; b.textContent='启动开发栈';
+            }
+            // running / pending：继续等待
+          }catch(e){
+            clearInterval(iv); clearTimeout(to);
+            captureError('Launch Polling Error', `项目「${rel}」启动轮询异常`, e.message + (e.stack ? '\n'+e.stack : ''));
+            toast('启动状态获取失败，请刷新页面重试','err');
+            b.disabled=false; b.textContent='启动开发栈';
+          }
+        }, 3000);
+        const to = setTimeout(()=>{
+          clearInterval(iv);
+          b.disabled=false; b.textContent='启动开发栈';
+          toast(isFirst
+            ? '首次安装依赖可能较慢，已恢复按钮，请耐心等待或查看 07-日志'
+            : '启动时间超过 20 秒，已恢复按钮；后台仍在继续，可查看 07-日志', 'info');
+        }, 20000);
+      } else if(act==='copy'){
+        const nn = prompt('请输入复制后的新项目名称：', b.dataset.name+'-copy');
+        if(!nn) return;
+        const r = await api('/api/projects/copy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:rel,newName:nn})});
+        toast(r.msg, r.ok?'ok':'err'); if(r.ok) render();
+      } else if(act==='history'){
+        showHistory(rel);
+      } else if(act==='delete'){
+        confirmDeleteProject(b.dataset.name, rel);
+      }
+    };
+  });
+}
+
+// ===== 组件库页签（卡片 + 分类筛选 + 预览 + 复制提示词） =====
+async function renderComponents(){
+  const r = await api('/api/components');
+  if(!r || !r.ok) throw new Error((r && r.msg) || '组件库读取失败');
+  // 取第一个 ready 且带 catalog 的端作为展示源（admin）
+  const end = (r.ends || []).find(e => e.catalog && e.pageCount > 0) || (r.ends || [])[0];
+  const pages = (end && end.catalogPages) || {};
+  const pageEntries = Object.entries(pages);
+  // 分类：全部 + entryPageTypes + 兜底"其他"
+  const cats = [];
+  if(end && Array.isArray(end.entryPageTypes)) cats.push(...end.entryPageTypes);
+  // 每个 page 归类：按 key 前缀匹配分类（login-cover → login；component-table-extended → component-table-extended）
+  function classify(key){
+    for(const c of cats){
+      if(key === c || key.startsWith(c + '-') || key.startsWith(c + '_')) return c;
+    }
+    return 'other';
+  }
+  const catSet = ['all', ...cats, 'other'];
+  // 自定义组件分类并入筛选
+  const customItems = r.custom || [];
+  for(const ci of customItems){ if(ci.category && !catSet.includes(ci.category)) catSet.push(ci.category); }
+  const catCount = {};
+  for(const c of catSet) catCount[c] = 0;
+  // 预计自定义组件分类数（供分类按钮渲染）
+  for(const ci of customItems){ catCount['all']++; catCount[ci.category || 'other'] = (catCount[ci.category || 'other'] || 0) + 1; }
+  const pageCat = {};
+  for(const [key] of pageEntries){
+    const c = classify(key);
+    pageCat[key] = c;
+    catCount['all']++;
+    catCount[c] = (catCount[c] || 0) + 1;
+  }
+  // 分类中文名
+  const catLabel = { all: '全部', login: '登录', dashboard: '数据概览', list: '列表', form: '表单', detail: '详情', result: '结果', exception: '异常', user: '用户', 'component-basic': '组件·基础', 'component-form': '组件·表单', 'component-table-extended': '组件·表格扩展', 'component-chart': '组件·图表', other: '其他' };
+  let activeCat = 'all';
+  let html = `<div class="toolbar" style="justify-content:flex-end">
+    <button class="btn sm primary" id="addComponentBtn" title="录入自定义组件（如 React 组件库扩展）">+ 新增组件</button>
+  </div>
+  <div class="clib-layout">
+    <aside class="clib-side">
+      <div class="clib-side-title">页面分类</div>`;
+  for(const c of catSet){
+    if(c !== 'all' && !catCount[c]) continue;
+    html += `<button class="clib-cat${c===activeCat?' active':''}" data-cat="${c}">${catLabel[c] || c} <span class="cnt">${catCount[c] || 0}</span></button>`;
+  }
+  html += `</aside>
+    <div class="clib-main">
+      <div class="clib-grid" id="clibGrid">`;
+  for(const [key, pg] of pageEntries){
+    const cat = pageCat[key];
+    const rel = encodeURIComponent(key);
+    const previewUrl = `/clib/${end.id}/${encodeURIComponent(pg.html || '')}?galleryPreview=1`;
+    // 复制提示词：一段可粘贴到对话中的引用文本
+    const copyText = [
+      `【组件引用】${escapeHtml((end && end.label) || end.id)} · ${pg.label || key}（${key}）`,
+      `文件：03-组件库/frame/${end.id}/${pg.html || ''}` + (pg.js ? `（js/${pg.js}）` : '') + (pg.css ? `（css/${pg.css}）` : ''),
+      `说明：${pg.notes || ''}`,
+      `请在实现/评审时参考该组件。`,
+    ].join('\n');
+    html += `<div class="clib-card" data-cat="${cat}" data-key="${rel}">
+      <div class="clib-thumb"><div class="thumb-fallback">${escapeHtml((pg.label || key)[0].toUpperCase())}</div><div class="thumb-wrap" data-fit="cover"><iframe loading="lazy" src="${previewUrl}" title="${escapeHtml(pg.label || key)}"></iframe></div></div>
+      <div class="clib-body">
+        <div class="clib-name">${escapeHtml(pg.label || key)}<span class="clib-key">${escapeHtml(key)}</span></div>
+        <div class="clib-desc">${escapeHtml(pg.notes || '暂无说明')}</div>
+        <div class="clib-path">${escapeHtml(pg.html || '')}${pg.js ? ' + js/' + escapeHtml(pg.js) : ''}${pg.css ? ' + css/' + escapeHtml(pg.css) : ''}</div>
+        <div class="clib-ops">
+          <button class="btn sm" data-act="preview" data-url="${previewUrl}" data-name="${escapeHtml(pg.label || key)}">预览</button>
+          <button class="btn sm" data-act="copy" data-copy="${encodeURIComponent(copyText)}">复制提示词</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  // 自定义组件卡片（面板「新增组件」录入）
+  for(const ci of customItems){
+    const ccat = ci.category || 'other';
+    const copyText = ci.prompt || `【组件引用】${escapeHtml(ci.label || ci.id)}${ci.notes ? '\n说明：' + ci.notes : ''}`;
+    const hasPrev = !!(ci.previewUrl);
+    const prevUrl = hasPrev ? ci.previewUrl : '';
+    html += `<div class="clib-card custom" data-cat="${ccat}" data-key="custom:${escapeHtml(ci.id)}">
+      <div class="clib-thumb" style="background:linear-gradient(135deg,#eef4ff,#f7f7f8)">
+        <div class="thumb-fallback" style="font-size:26px">${escapeHtml((ci.label || ci.id).trim()[0] || '?')}</div>
+        ${hasPrev ? `<div class="thumb-wrap" data-fit="cover"><iframe loading="lazy" src="${escapeHtml(prevUrl)}" title="${escapeHtml(ci.label || ci.id)}"></iframe></div>` : ''}
+        <span class="clib-badge">自定义</span>
+      </div>
+      <div class="clib-body">
+        <div class="clib-name">${escapeHtml(ci.label || ci.id)}<span class="clib-key">${escapeHtml(ci.id)}</span></div>
+        <div class="clib-desc">${escapeHtml(ci.notes || '暂无说明')}${ci.framework && ci.framework !== 'other' ? ' · 框架：' + escapeHtml(ci.framework) : ''}</div>
+        <div class="clib-path">${escapeHtml(ci.source || '自定义组件')}</div>
+        <div class="clib-ops">
+          ${hasPrev ? `<button class="btn sm" data-act="preview" data-url="${escapeHtml(prevUrl)}" data-name="${escapeHtml(ci.label || ci.id)}">预览</button>` : '<button class="btn sm" disabled title="未填预览 URL">预览</button>'}
+          <button class="btn sm" data-act="copy" data-copy="${encodeURIComponent(copyText)}">复制提示词</button>
+          <button class="btn sm danger" data-act="delcustom" data-id="${escapeHtml(ci.id)}" data-name="${escapeHtml(ci.label || ci.id)}">删除</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  html += `</div></div></div>`;
+  view.innerHTML = html;
+
+  // 缩略图 fit：照搬 gallery.html 机制 —— iframe 固定 1280x800 视口，按容器 cover 缩放（顶对齐）
+  function fitThumb(wrap){
+    const w = wrap.clientWidth, h = wrap.clientHeight;
+    if(!w || !h) return;
+    const viewW = 1280, viewH = 800;
+    const scale = Math.max(w / viewW, h / viewH);
+    const ox = (w - viewW * scale) / 2;
+    wrap.style.setProperty('--thumb-scale', String(scale));
+    wrap.style.setProperty('--thumb-ox', ox + 'px');
+    wrap.style.setProperty('--thumb-oy', '0px');
+  }
+  function fitAll(){
+    view.querySelectorAll('.thumb-wrap').forEach(w => { fitThumb(w); });
+  }
+  fitAll();
+  // iframe onload 后标记就绪（淡入）并重算 fit
+  view.querySelectorAll('.thumb-wrap iframe').forEach(ifr=>{
+    ifr.onload = ()=>{ ifr.parentElement.classList.add('is-ready'); fitThumb(ifr.parentElement); };
+  });
+  let fitTimer = null;
+  window.addEventListener('resize', ()=>{ clearTimeout(fitTimer); fitTimer = setTimeout(fitAll, 200); });
+
+  // 分类筛选
+  view.querySelectorAll('.clib-cat').forEach(btn=>{
+    btn.onclick = ()=>{
+      view.querySelectorAll('.clib-cat').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      view.querySelectorAll('.clib-card').forEach(card=>{
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+      });
+    };
+  });
+  // 预览：新窗口打开组件页面
+  view.querySelectorAll('[data-act="preview"]').forEach(b=>{
+    b.onclick = ()=> window.open(b.dataset.url, '_blank', 'noopener');
+  });
+  // 复制提示词
+  view.querySelectorAll('[data-act="copy"]').forEach(b=>{
+    b.onclick = async ()=>{
+      const text = decodeURIComponent(b.dataset.copy);
+      try{
+        await navigator.clipboard.writeText(text);
+        toast('组件引用提示词已复制','ok');
+      }catch(e){
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); ta.remove();
+        toast('组件引用提示词已复制','ok');
+      }
+    };
+  });
+  // 删除自定义组件
+  view.querySelectorAll('[data-act="delcustom"]').forEach(b=>{
+    b.onclick = ()=>{
+      confirmModal('删除自定义组件', `确定删除组件「${b.dataset.name}」？<br>删除后组件库面板不再展示（不影响已复制提示词）。`, async ()=>{
+        const r = await api('/api/components', { method: 'DELETE', body: JSON.stringify({ id: b.dataset.id }) });
+        toast(r.msg, r.ok ? 'ok' : 'err');
+        if(r.ok) renderComponents();
+        return r.ok;
+      }, '删除', true);
+    };
+  });
+  // 新增组件弹窗
+  const addBtn = view.querySelector('#addComponentBtn');
+  if(addBtn){
+    addBtn.onclick = ()=>{
+      const catOptions = catSet.filter(c => c !== 'all' && c !== 'other').map(c => `<option value="${escapeHtml(c)}">`).join('');
+      openModal(`<h3>新增组件</h3>
+        <div class="field"><label>ID（唯一标识，字母/数字/连字符）*</label><input id="cId" placeholder="form-table" value=""></div>
+        <div class="field"><label>名称 *</label><input id="cLabel" placeholder="Form 表格"></div>
+        <div class="field"><label>分类</label><input id="cCat" list="catOptions" placeholder="component-table-extended"><datalist id="catOptions">${catOptions}</datalist></div>
+        <div class="field"><label>框架</label>
+          <select id="cFramework">
+            <option value="arco">Arco（Vue3 HTML 母版）</option>
+            <option value="react" selected>React + Tailwind（真组件库）</option>
+            <option value="other">其他</option>
+          </select></div>
+        <div class="field"><label>说明</label><input id="cNotes" placeholder="组件用途简述"></div>
+        <div class="field"><label>提示词（复制引用用）*</label><textarea id="cPrompt" rows="4" placeholder="描述组件用途 / 用法，供对话引用"></textarea></div>
+        <div class="field"><label>预览 URL（可选）</label><input id="cPreview" placeholder="/clib/admin/login-cover.html?galleryPreview=1"></div>
+        <div class="hint">文件放哪：此表单只登记组件条目（存 03-组件库/custom-components.json），无需手动放文件。组件 HTML 文件放 03-组件库/frame/ 下即可被预览；预览 URL 可填面板已有组件地址（如 /clib/admin/&lt;页面&gt;.html）或任意 http(s) 链接，留空则卡片显示首字母占位图。</div>
+        <div class="modal-ops">
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn primary" id="cSave">保存</button>
+        </div>`, true);
+      $('#cSave').onclick = async ()=>{
+        const item = {
+          id: $('#cId').value.trim(),
+          label: $('#cLabel').value.trim(),
+          category: $('#cCat').value.trim() || 'other',
+          framework: $('#cFramework').value,
+          notes: $('#cNotes').value.trim(),
+          prompt: $('#cPrompt').value.trim(),
+          previewUrl: $('#cPreview').value.trim(),
+          source: 'custom'
+        };
+        if(!item.id || !item.label || !item.prompt){ toast('ID / 名称 / 提示词 为必填', 'err'); return; }
+        const r = await api('/api/components', { method: 'POST', body: JSON.stringify({ item }) });
+        toast(r.msg, r.ok ? 'ok' : 'err');
+        if(r.ok){ closeModal(); renderComponents(); }
+      };
+    };
+  }
+}
+
+// ===== 通信看板页签 =====
+async function renderCollab(){
+  const r = await api('/api/collab/overview');
+  if(!r || !r.ok) throw new Error((r && r.msg) || '通信看板读取失败');
+  let html = `<div class="toolbar"></div>`;
+  // v4 统计区：4 张主卡 + 1 条智能体收发明细 chip 带（房间列表保持原样）
+  const rooms = r.rooms || [];
+  const withArtifacts = rooms.filter(x => x.hasArtifacts).length;
+  const AGENT_AV = {
+    doubao: 'linear-gradient(135deg,#2563eb,#60a5fa)',
+    codebuddy: 'linear-gradient(135deg,#0d9488,#2dd4bf)',
+    workbuddy: 'linear-gradient(135deg,#d97706,#fbbf24)',
+    deepseek: 'linear-gradient(135deg,#0284c7,#38bdf8)',
+    qwen: 'linear-gradient(135deg,#7c3aed,#a78bfa)'
+  };
+  let agentChips = '';
+  if(r.agents && r.agents.length){
+    for(const a of r.agents){
+      const inbox = (r.messages && r.messages.inbox && r.messages.inbox[a]) || 0;
+      const outbox = (r.messages && r.messages.outbox && r.messages.outbox[a]) || 0;
+      const av = AGENT_AV[a] || 'linear-gradient(135deg,#94a3b8,#cbd5e1)';
+      const label = escapeHtml(agentLabel(a));
+      agentChips += `<div class="agent-chip" title="${label}（${escapeHtml(a)}）收件/发件消息数">
+        <span class="av" style="background:${av}">${escapeHtml(String(agentLabel(a)).charAt(0))}</span><b>${label}</b><span class="io">收 <b>${inbox}</b> · 发 <b>${outbox}</b></span></div>`;
+    }
+  }
+  html += `<div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-blue">▦</span>协作房间</div>
+      <div class="kpi-value">${r.roomsTotal || 0} <small>个</small></div>
+      <div class="kpi-sub">其中 ${withArtifacts} 个房间有产物</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-green">⚇</span>智能体</div>
+      <div class="kpi-value">${r.agents ? r.agents.length : 0} <small>个在线</small></div>
+      <div class="kpi-sub">${(r.agents || []).map(a=>escapeHtml(agentLabel(a))).join(' / ')}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-blue">✉</span>收件消息</div>
+      <div class="kpi-value">${r.messagesTotal ? r.messagesTotal.inbox : 0} <small>条</small></div>
+      <div class="kpi-sub">未读数需后端接口</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-amber">↗</span>发件消息</div>
+      <div class="kpi-value">${r.messagesTotal ? r.messagesTotal.outbox : 0} <small>条</small></div>
+      <div class="kpi-sub">inbox / outbox 按智能体分目录统计</div>
+    </div>
+  </div>
+  <div class="agent-strip">${agentChips}</div>`;
+  // 房间表
+  html += '<div class="card"><table><thead><tr><th>房间</th><th>消息数</th><th>任务说明</th><th>产物</th><th>操作</th></tr></thead><tbody>';
+  if(!r.rooms || !r.rooms.length) html += '<tr><td colspan="5" class="empty">暂无协作房间</td></tr>';
+  for(const rm of r.rooms){
+    html += `<tr>
+      <td><b>${escapeHtml(rm.name)}</b></td>
+      <td>${rm.messages || 0}</td>
+      <td class="desc">${escapeHtml((rm.task || '').slice(0, 120))}</td>
+      <td>${rm.hasArtifacts ? '<span class="badge owner">有产物</span>' : '<span class="muted">—</span>'}</td>
+      <td><button class="btn sm" data-act="room" data-name="${encodeURIComponent(rm.name)}">查看对话</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  view.innerHTML = html;
+
+  // 查看对话
+  view.querySelectorAll('[data-act="room"]').forEach(b=>{
+    b.onclick = ()=> showRoomDialog(decodeURIComponent(b.dataset.name));
+  });
+}
+
+// 房间对话弹窗：读取 messages.jsonl 完整记录并渲染时间线（内容区限高滚动，关闭按钮固定在底部）
+// 底部带「仲裁回复」区：发送 confirm 类型回复给参与该对话的智能体
+async function showRoomDialog(name){
+  openModal(`<h3>房间对话 · ${escapeHtml(name)}</h3>
+    <div class="modal-body" id="roomBody"><span class="spinner"></span>读取中…</div>
+    <div class="room-reply">
+      <textarea id="roomReply" rows="2" placeholder="仲裁确认 / 回复给参与智能体（confirm 类型）…"></textarea>
+      <div class="room-reply-ops">
+        <span class="muted" style="font-size:11px">回复将追加到房间记录，并作为 confirm 消息通知参与智能体</span>
+        <button class="btn primary sm" id="roomReplySend">发送确认</button>
+      </div>
+    </div>
+    <div class="modal-ops"><button class="btn" onclick="closeModal()">关闭</button></div>`, true);
+  const r = await api('/api/collab/room?name=' + encodeURIComponent(name));
+  const box = $('#roomBody');
+  if(!r || !r.ok){ box.innerHTML = '<div class="empty">读取失败</div>'; return; }
+  if(!r.messages || !r.messages.length){
+    box.innerHTML = '<div class="empty">该房间暂无对话记录</div>';
+  } else {
+    let body = r.messages.map(m => {
+      const from = escapeHtml(agentLabel(m.from) || m.from || '未知');
+      const ts = m.ts ? escapeHtml(m.ts.replace('T', ' ').replace('Z', '')) : '';
+      const intent = m.intent ? `<span class="rm-intent">${escapeHtml(m.intent)}</span>` : '';
+      const content = escapeHtml(m.content || '');
+      return `<div class="room-msg">
+        <div class="rm-avatar">${from[0] || '?'}</div>
+        <div class="rm-body">
+          <div class="rm-head"><span class="rm-from">${from}</span>${intent}<span class="rm-ts">${ts}</span></div>
+          <div class="rm-content">${content}</div>
+        </div>
+      </div>`;
+    }).join('');
+    box.innerHTML = `<div class="hint" style="margin-bottom:10px">共 ${r.messages.length} 条记录</div>${body}`;
+  }
+  // 仲裁回复（confirm）
+  const sendBtn = $('#roomReplySend');
+  sendBtn.onclick = async ()=>{
+    const content = $('#roomReply').value.trim();
+    if(!content){ toast('回复内容不能为空', 'err'); return; }
+    sendBtn.disabled = true;
+    const rr = await api('/api/collab/reply', { method: 'POST', body: JSON.stringify({ name, content }) });
+    toast(rr.msg, rr.ok ? 'ok' : 'err');
+    if(rr.ok){ showRoomDialog(name); } else { sendBtn.disabled = false; }
+  };
+}
+
+// 新增项目（v4 设计稿形态；后端 POST /api/projects 目前仅支持 name，故不落模板/负责人等无后端支撑的字段）
+function showNewProject(){
+  openModal(`<div class="modal-head"><h3>新增项目</h3><button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-warn">📁 项目将创建于 <span class="path">01-项目/</span> 目录，复制 <span class="path">_project-template</span> 模板并生成项目身份文件，自动继承 Skill 库 / 知识库 / 工作规则（依赖通过兄弟项目复用，无需联网安装）。</div>
+      <div class="field"><label>项目名称 <span class="req">*</span></label><input id="npName" placeholder="如 my-dashboard"/><div class="hint">名称即目录名：不能含 * ? &lt; &gt; | : \\ / 等非法字符；目录已存在时会创建失败</div></div>
+    </div>
+    <div class="modal-ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" id="npCreate">创建</button></div>`);
+  $('#npCreate').onclick = async ()=>{
+    const name = $('#npName').value.trim();
+    if(!name){ toast('请输入项目名称','err'); return; }
+    const r = await api('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})});
+    toast(r.msg, r.ok?'ok':'err');
+    if(r.ok){ closeModal(); render(); }
+  };
+}
+
+// 删除确认（v4 设计稿形态：输入项目名才能确认；后端实际为移入 05-回收站，可还原）
+function confirmDeleteProject(name, rel){
+  openModal(`<div class="modal-head"><h3 style="color:var(--red)">删除项目</h3><button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-danger">⚠️ 此操作将把 <b>${escapeHtml(name)}</b> 移入 <span class="path">05-回收站</span>，可在「回收站」中还原。删除前会自动停掉该项目的开发栈进程以释放目录占用。</div>
+      <div class="field"><label>输入项目名确认</label><input id="delConfirmInput" placeholder="${escapeHtml(name)}"><div class="hint">仅当输入与项目名完全一致时才能提交</div></div>
+    </div>
+    <div class="modal-ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn danger" id="delConfirmBtn" disabled>确认删除</button></div>`);
+  const input = $('#delConfirmInput');
+  const btn = $('#delConfirmBtn');
+  input.oninput = ()=>{ btn.disabled = input.value.trim() !== name; };
+  btn.onclick = async ()=>{
+    btn.disabled = true;
+    const r = await api('/api/projects',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:rel})});
+    toast(r.msg, r.ok?'ok':'err');
+    if(r.ok){ closeModal(); render(); } else { btn.disabled = false; }
+  };
+}
+
+// Vite 端口池明细（数据来自 /api/context/current；端口字段后端未上报时显示 —）
+function showPortsModal(){
+  const ctxProjects = (ctxData && ctxData.projects) || [];
+  const running = ctxProjects.filter(x => x.status === 'active' || x.status === 'starting' || x.status === 'editing');
+  const rows = running.length
+    ? running.map(x => {
+        const cls = x.status === 'editing' ? 'editing' : (x.status === 'active' ? 'active' : 'stopped');
+        return `<tr><td class="mono" style="font-weight:700;color:var(--accent)">${escapeHtml(String(x.port || '—'))}</td><td>${escapeHtml(x.relative || '')}</td><td><span class="badge st-${cls}">${escapeHtml(ctxStatusMap[x.status] || x.status || '')}</span></td></tr>`;
+      }).join('')
+    : '<tr><td colspan="3" class="empty">当前无运行中的开发栈</td></tr>';
+  openModal(`<div class="modal-head"><h3>Vite 端口池明细</h3><button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <table><thead><tr><th>端口</th><th>项目</th><th>状态</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="hint" style="font-size:11px;color:var(--muted);padding:10px 2px 6px">端口池 51720-51729 · strictPort 模式 · 端口数值需后端上报，当前后端未返回端口字段时显示 —</div>
+    </div>
+    <div class="modal-ops"><button class="btn" onclick="closeModal()">关闭</button></div>`, true);
+}
+
+let histSelHash = null;
+let histSelIsRoot = false;
+
+// 回收站（C1）：列出已删除项目 + 还原
+async function showTrash(){
+  openModal(`<h3>回收站</h3><div id="trashBody"><span class="spinner"></span>读取中…</div>
+    <div class="modal-ops"><button class="btn" onclick="closeModal()">关闭</button></div>`);
+  let r;
+  try { r = await api('/api/trash'); }
+  catch(e){ $('#trashBody').innerHTML = `<div class="empty">读取回收站失败：${escapeHtml(e.message)}</div>`; return; }
+  if(!r.ok){ $('#trashBody').innerHTML = `<div class="empty">${escapeHtml(r.msg||'读取失败')}</div>`; return; }
+  const items = r.items || [];
+  if(items.length === 0){
+    $('#trashBody').innerHTML = `<div class="empty">回收站为空。</div>
+      <div class="hint" style="margin-top:6px">删除项目会移入 <span class="path">05-回收站</span>（非彻底删除），可在此还原。</div>`;
+    return;
+  }
+  let rows = '';
+  for(const it of items){
+    const delTxt = it.deletedAt ? new Date(it.deletedAt).toLocaleString('zh-CN', { hour12:false }) : '';
+    rows += `<tr>
+      <td><b>${escapeHtml(it.name)}</b></td>
+      <td class="muted">${delTxt}</td>
+      <td><button class="btn sm primary" data-restore="${escapeHtml(it.id)}">还原</button></td>
+    </tr>`;
+  }
+  $('#trashBody').innerHTML = `<div class="hint" style="margin:4px 0 10px">已删除项目（<span class="path">05-回收站</span>），点击「还原」移回 <span class="path">01-项目</span>；若 01-项目 已有同名目录将拒绝还原。</div>
+    <div class="card"><table><thead><tr><th>项目</th><th>删除时间</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  $('#trashBody').querySelectorAll('[data-restore]').forEach(btn=>{
+    btn.onclick = async ()=>{
+      btn.disabled = true;
+      const id = btn.dataset.restore;
+      const r2 = await api('/api/trash/restore',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+      toast(r2.msg, r2.ok?'ok':'err');
+      if(r2.ok){ showTrash(); render(); }
+      else btn.disabled = false;
+    };
+  });
+}
+
+function updateHistButtons(){
+  const delBtn = $('#delBtn');
+  if(!delBtn) return;
+  if(histSelIsRoot){
+    delBtn.disabled = true;
+    delBtn.title = '初始提交无法单独删除，可选中后续提交后再删除';
+  } else {
+    delBtn.disabled = false;
+    delBtn.title = '';
+  }
+}
+async function showHistory(rel){
+  const decRel = decodeURIComponent(rel);
+  openModal(`<h3>历史版本 · ${decRel}</h3><div id="histBody"><span class="spinner"></span>读取中…</div>`);
+  const r = await api('/api/projects/history?relative='+encodeURIComponent(rel));
+  let body = '';
+  if(!r.isGit){
+    body = `<div class="empty">该项目尚未启用 Git 版本管理。</div>
+      <div class="modal-ops"><button class="btn primary" id="gitInitBtn">初始化 Git 并创建首次提交</button></div>`;
+  } else if(!r.commits || r.commits.length===0){
+    body = `<div class="empty">暂无提交记录。</div>
+      <div class="hint" style="margin:6px 0 12px">可先提交一次以建立版本历史。</div>
+      <div class="modal-ops"><button class="btn primary" id="commitBtn">提交当前版本</button></div>`;
+  } else {
+    body = `<div class="hint" style="margin:4px 0 10px">点击任意一条记录选中，再执行下方「提交 / 删除 / 回滚」操作。</div>
+      <div class="card"><table><thead><tr><th>提交</th><th>日期</th><th>说明</th><th></th></tr></thead><tbody id="histRows">`;
+    for(const c of r.commits){
+      const rootBadge = c.isRoot ? '<span class="badge root" title="这是项目的初始提交，无法单独删除">初始提交</span>' : '';
+      body += `<tr class="selrow" data-hash="${c.hash}" data-root="${c.isRoot?'1':''}"><td><span class="path">${c.hash}</span> ${rootBadge}</td><td>${c.date}</td><td>${c.msg}</td><td class="selmark"></td></tr>`;
+    }
+    body += `</tbody></table></div>
+      <div class="modal-ops" style="margin-top:14px;gap:10px">
+        <button class="btn primary" id="commitBtn">提交</button>
+        <button class="btn" id="delBtn">删除选中版本</button>
+        <button class="btn danger" id="rollbackBtn">回滚到选中版本</button>
+      </div>`;
+  }
+  $('#histBody').innerHTML = body;
+
+  const gi = $('#gitInitBtn');
+  if(gi) gi.onclick = async ()=>{
+    gi.disabled=true; gi.textContent='初始化中…';
+    const rr = await api('/api/projects/git-init',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:decRel})});
+    toast(rr.msg, rr.ok?'ok':'err');
+    if(rr.ok){ gi.remove(); showHistory(rel); }
+  };
+
+  const commitBtn = $('#commitBtn');
+  if(commitBtn) commitBtn.onclick = async ()=>{
+    const msg = prompt('提交说明（留空则使用默认：更新于 YYYY-MM-DD）：', '更新于 '+new Date().toISOString().slice(0,10));
+    if(msg===null) return;
+    commitBtn.disabled=true; commitBtn.textContent='提交中…';
+    const rr = await api('/api/projects/git-commit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:decRel,message:msg})});
+    toast(rr.msg, rr.ok?'ok':'err');
+    if(rr.ok) showHistory(rel);
+  };
+
+  // 选中行（默认选中最新的非根提交；若只有一个根提交则选它，但删除按钮会被禁用）
+  histSelHash = null;
+  histSelIsRoot = false;
+  const rows = document.querySelectorAll('#histRows tr.selrow');
+  rows.forEach(tr=>{
+    tr.onclick = ()=>{
+      rows.forEach(x=>{ x.classList.remove('sel'); x.querySelector('.selmark').textContent=''; });
+      tr.classList.add('sel');
+      tr.querySelector('.selmark').textContent='✓';
+      histSelHash = tr.dataset.hash;
+      histSelIsRoot = tr.dataset.root === '1';
+      updateHistButtons();
+    };
+  });
+  // 默认选中第一个提交
+  if(rows.length > 0){
+    const first = rows[0];
+    first.classList.add('sel');
+    first.querySelector('.selmark').textContent='✓';
+    histSelHash = first.dataset.hash;
+    histSelIsRoot = first.dataset.root === '1';
+  }
+  updateHistButtons();
+
+  const delBtn = $('#delBtn');
+  if(delBtn) delBtn.onclick = async ()=>{
+    if(!histSelHash){ toast('请先选择一条历史版本','err'); return; }
+    if(histSelIsRoot){ toast('初始提交无法单独删除，请选择后续提交','err'); return; }
+    confirmModal('删除版本', `确定要从历史中删除提交 <b>${histSelHash}</b> 吗？<br>该提交之后的版本会接上；若涉及冲突将自动中止。`, async ()=>{
+      const rr = await api('/api/projects/git-delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:decRel,hash:histSelHash})});
+      toast(rr.msg, rr.ok?'ok':'err');
+      if(rr.ok){ showHistory(rel); return true; }
+      return false;
+    }, '确认删除');
+  };
+
+  const rbBtn = $('#rollbackBtn');
+  if(rbBtn) rbBtn.onclick = async ()=>{
+    if(!histSelHash){ toast('请先选择一条历史版本','err'); return; }
+    confirmModal('回滚到历史版本', `确定要将项目文件还原到 <b>${histSelHash}</b> 吗？<br>该版本<b>之后</b>的所有提交将被丢弃（可通过 Git reflog 在 30 天内恢复）。`, async ()=>{
+      const rr = await api('/api/projects/git-rollback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:decRel,hash:histSelHash})});
+      toast(rr.msg, rr.ok?'ok':'err');
+      if(rr.ok){ showHistory(rel); return true; }
+      return false;
+    }, '确认回滚', true);
+  };
+}
+
+// Skill 库
+async function renderSkills(){
+  const { skills } = await api('/api/skills');
+  let html = `<div class="dropzone" id="skillDrop">把 <b>SKILL.md</b> 拖入此处，或点击选择文件 —— 自动解析名称 / 功能说明 / 适用场景</div>`;
+  html += `<div class="toolbar"><div class="legend">模板中央库 · 共 ${skills.length} 个 Skill</div></div>`;
+  html += '<div class="card"><table><thead><tr><th>Skill 名称</th><th>文件路径</th><th>功能说明</th><th>适用场景</th><th>操作</th></tr></thead><tbody>';
+  if(skills.length===0) html += '<tr><td colspan="5" class="empty">暂无 Skill</td></tr>';
+  for(const s of skills){
+    html += `<tr>
+      <td><b>${s.name}</b></td>
+      <td><div class="path">${s.path}</div></td>
+      <td class="desc">${s.description || '<span class="muted">—</span>'}</td>
+      <td class="desc">${s.triggers || '<span class="muted">—</span>'}</td>
+      <td><div class="ops">
+        <button class="btn sm" data-edit="${s.dir}">编辑</button>
+        <button class="btn sm danger" data-del="${s.dir}">删除</button>
+      </div></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  view.innerHTML = html;
+  setupDropzone('skillDrop', (filename, content)=> previewSkill(filename, content));
+  view.querySelectorAll('[data-edit]').forEach(b=> b.onclick = ()=> editSkill(b.dataset.edit));
+  view.querySelectorAll('[data-del]').forEach(b=> b.onclick = ()=>{
+    confirmModal('删除 Skill', `确定要删除 Skill <b>${b.dataset.del}</b> 吗？<br>删除后无法撤销。`, async ()=>{
+      const r = await api('/api/skills',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({dir:b.dataset.del})});
+      toast(r.msg, r.ok?'ok':'err'); if(r.ok) render();
+    });
+  });
+}
+
+async function editSkill(dir){
+  const r = await api('/api/skills/content?dir='+encodeURIComponent(dir));
+  if(!r.ok){ toast(r.msg||'读取失败','err'); return; }
+  editorModal(`编辑 Skill · ${dir}`, r.content, async (text)=>{
+    const r2 = await api('/api/skills',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({dir,content:text})});
+    toast(r2.msg, r2.ok?'ok':'err');
+    if(r2.ok){ closeModal(); render(); }
+    else{ $('#editorSave').disabled=false; $('#editorSave').textContent='保存'; }
+  });
+}
+
+function previewSkill(filename, content){
+  const { name, description } = clientParse(content);
+  const triggers = clientTriggers(description);
+  if(!name){ toast('未能从文件中解析出 name 字段','err'); return; }
+  openModal(`<h3>确认新增 Skill</h3>
+    <div class="kv"><span>名称：</span><b>${name}</b></div>
+    <div class="kv"><span>功能说明：</span>${description.slice(0,160) || '—'}</div>
+    <div class="kv"><span>适用场景：</span>${triggers.slice(0,160) || '—'}</div>
+    <div class="field" style="margin-top:10px"><label>文件预览（SKILL.md）</label><pre class="preview">${content.slice(0,800).replace(/</g,'&lt;')}</pre></div>
+    <div class="modal-ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" id="skillConfirm">确认新增</button></div>`);
+  $('#skillConfirm').onclick = async ()=>{
+    const r = await api('/api/skills',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename,content})});
+    toast(r.msg, r.ok?'ok':'err'); if(r.ok){ closeModal(); render(); }
+  };
+}
+
+// 知识库
+async function renderKnowledge(){
+  const { items } = await api('/api/knowledge');
+  let html = `<div class="dropzone" id="kbDrop">把 <b>知识库 .md 文档</b> 拖入此处，或点击选择文件</div>`;
+  html += `<div class="toolbar"><div class="legend">模板中央库 · 共 ${items.length} 篇知识文档</div></div>`;
+  html += '<div class="card"><table><thead><tr><th>名称</th><th>文件路径</th><th>适用场景</th><th>操作</th></tr></thead><tbody>';
+  if(items.length===0) html += '<tr><td colspan="4" class="empty">暂无知识文档</td></tr>';
+  for(const it of items){
+    html += `<tr>
+      <td><b>${it.name}</b></td>
+      <td><div class="path">${it.path}</div></td>
+      <td class="desc">${it.scenario || '—'}</td>
+      <td><div class="ops">
+        <button class="btn sm" data-edit="${encodeURIComponent(it.path)}">编辑</button>
+        <button class="btn sm danger" data-rel="${encodeURIComponent(it.path)}">删除</button>
+      </div></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  view.innerHTML = html;
+  setupDropzone('kbDrop', async (filename, content)=>{
+    const r = await api('/api/knowledge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename,content})});
+    toast(r.msg, r.ok?'ok':'err'); if(r.ok) render();
+  });
+  view.querySelectorAll('[data-edit]').forEach(b=> b.onclick = ()=> editKnowledge(decodeURIComponent(b.dataset.edit)));
+  view.querySelectorAll('[data-rel]').forEach(b=> b.onclick = ()=>{
+    const rel = decodeURIComponent(b.dataset.rel);
+    confirmModal('删除知识库文档', `确定要删除 <b>${rel}</b> 吗？<br>删除后无法撤销。`, async ()=>{
+      const r = await api('/api/knowledge',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({rel})});
+      toast(r.msg, r.ok?'ok':'err'); if(r.ok) render();
+    });
+  });
+}
+
+async function editKnowledge(rel){
+  const r = await api('/api/knowledge/content?path='+encodeURIComponent(rel));
+  if(!r.ok){ toast(r.msg||'读取失败','err'); return; }
+  editorModal(`编辑知识库 · ${rel}`, r.content, async (text)=>{
+    const r2 = await api('/api/knowledge',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:rel,content:text})});
+    toast(r2.msg, r2.ok?'ok':'err');
+    if(r2.ok){ closeModal(); render(); }
+    else{ $('#editorSave').disabled=false; $('#editorSave').textContent='保存'; }
+  });
+}
+
+// 工作规则
+async function renderRules(){
+  const { items } = await api('/api/rules');
+  let html = `<div class="dropzone" id="ruleDrop">把 <b>工作规则 .md 文档</b> 拖入此处，或点击选择文件</div>`;
+  html += `<div class="toolbar"><div class="legend">模板中央库 · 共 ${items.length} 条工作规则</div></div>`;
+  html += '<div class="card"><table><thead><tr><th>名称</th><th>文件路径</th><th>适用场景</th><th>操作</th></tr></thead><tbody>';
+  if(items.length===0) html += '<tr><td colspan="4" class="empty">暂无规则</td></tr>';
+  for(const it of items){
+    html += `<tr>
+      <td><b>${it.name}</b></td>
+      <td><div class="path">${it.path}</div></td>
+      <td class="desc">${it.scenario || '—'}</td>
+      <td><div class="ops">
+        <button class="btn sm" data-edit="${encodeURIComponent(it.name)}">编辑</button>
+        <button class="btn sm danger" data-name="${encodeURIComponent(it.name)}">删除</button>
+      </div></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  view.innerHTML = html;
+  setupDropzone('ruleDrop', async (filename, content)=>{
+    const r = await api('/api/rules',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename,content})});
+    toast(r.msg, r.ok?'ok':'err'); if(r.ok) render();
+  });
+  view.querySelectorAll('[data-edit]').forEach(b=> b.onclick = ()=> editRule(decodeURIComponent(b.dataset.edit)));
+  view.querySelectorAll('[data-name]').forEach(b=> b.onclick = ()=>{
+    const name = decodeURIComponent(b.dataset.name);
+    confirmModal('删除工作规则', `确定要删除 <b>${name}</b> 吗？<br>删除后无法撤销。`, async ()=>{
+      const r = await api('/api/rules',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})});
+      toast(r.msg, r.ok?'ok':'err'); if(r.ok) render();
+    });
+  });
+}
+
+async function editRule(name){
+  const r = await api('/api/rules/content?name='+encodeURIComponent(name));
+  if(!r.ok){ toast(r.msg||'读取失败','err'); return; }
+  editorModal(`编辑工作规则 · ${name}`, r.content, async (text)=>{
+    const r2 = await api('/api/rules',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,content:text})});
+    toast(r2.msg, r2.ok?'ok':'err');
+    if(r2.ok){ closeModal(); render(); }
+    else{ $('#editorSave').disabled=false; $('#editorSave').textContent='保存'; }
+  });
+}
+
+// 触发路由
+async function renderRoutes(){
+  const { skills } = await api('/api/skills');
+  const routed = skills.filter(s=>s.triggers);
+  let html = `<div class="toolbar">
+    <div class="search"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg><input id="rtSearch" placeholder="搜索 Skill 或触发关键词…"/></div>
+    <div class="legend">共 ${routed.length} 个 Skill 配置了触发场景</div>
+  </div>`;
+  html += '<div class="card"><table><thead><tr><th>Skill 名称</th><th>触发场景 / 适用场景</th><th>操作</th></tr></thead><tbody id="rtBody">';
+  if(routed.length===0) html += '<tr><td colspan="3" class="empty">暂无触发场景配置</td></tr>';
+  for(const s of routed){
+    html += `<tr>
+      <td><b>${s.name}</b></td>
+      <td class="desc">${s.triggers}</td>
+      <td><button class="btn sm" data-edit="${s.dir}">编辑</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  view.innerHTML = html;
+  view.querySelectorAll('[data-edit]').forEach(b=> b.onclick = ()=> editSkill(b.dataset.edit));
+  const search = $('#rtSearch');
+  search.addEventListener('input', ()=>{
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('#rtBody tr').forEach(tr=>{
+      const txt = tr.textContent.toLowerCase();
+      tr.style.display = (!q || txt.includes(q)) ? '' : 'none';
+    });
+  });
+}
+
+loadCtx().then(render);
+</script>
+</body>
+</html>

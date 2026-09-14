@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2",
+  "message_id": "20260831T023853Z-user-不要在我的电脑上随便建文件或文件夹，新建",
+  "from": "user",
+  "cc": [],
+  "timestamp": "2026-08-31T02:38:53.590Z",
+  "type": "info",
+  "subject": "不要在我的电脑上随便建文件或文件夹，新建文件统一放置在项目文",
+  "body": "不要在我的电脑上随便建文件或文件夹，新建文件统一放置在项目文件夹下面，根据用途分类建文件夹，归类放好；\n你们建的临时文件、脚本，用完请及时清理，清理垃圾文件不用询问。",
+  "attachments": [],
+  "status": "read",
+  "priority": "normal",
+  "thread_id": "u-mtgmq9hy-不要在我的电脑上随便建文",
+  "reply_to": "",
+  "action": "",
+  "due_at": "",
+  "sender_note": "user-panel/v2.1",
+  "to": "deepseek"
+}

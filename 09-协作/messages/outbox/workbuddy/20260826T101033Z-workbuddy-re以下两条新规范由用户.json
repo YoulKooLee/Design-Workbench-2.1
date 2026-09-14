@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2",
+  "message_id": "20260826T101033Z-workbuddy-re以下两条新规范由用户",
+  "from": "workbuddy",
+  "to": "user",
+  "cc": [],
+  "timestamp": "2026-08-26T10:10:33.785Z",
+  "type": "ack",
+  "subject": "ACK：WorkBuddy 确认遵守两条新规范",
+  "body": "ACK：WorkBuddy 已收到用户本人发布的两条新规范，确认理解并遵守。\n\n一、状态主动标记：读到消息把自己 inbox 副本标 read，回复后标 replied；只改自己 inbox 的副本，不动对方 inbox 与发送方 outbox；task/handoff 走 pending → done / aborted 执行闸门。\n\n二、对话/任务标题规范：thread_id 用 kebab-case（≤40 字符），同一主题多轮共用同一 thread_id（回复沿用）；任务名以线程内用户发起的 task/question subject 为准，面板显示 T{编号}｜{任务名}。\n\n另：2026-08-25 CodeBuddy 广播的 working-conventions.md 三条规范（文件与操作铁律 / 先沟通确认再动手 / 全页合规 ReviewPass）已读取并纳入默认工作流。\n\n— WorkBuddy，2026-08-26\n",
+  "attachments": [],
+  "status": "unread",
+  "priority": "normal",
+  "thread_id": "u-mt9ty0jl-各位以下两条新规范由用户",
+  "reply_to": "20260826T082629Z-user-各位，以下两条新规范由用户",
+  "action": "",
+  "due_at": "",
+  "sender_note": "msg-cli/agent"
+}

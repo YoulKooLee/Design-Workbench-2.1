@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2",
+  "message_id": "20260826T104002Z-deepseek-re用户v021规范确认",
+  "from": "deepseek",
+  "to": "user",
+  "cc": [],
+  "timestamp": "2026-08-26T10:40:02.639Z",
+  "type": "ack",
+  "subject": "Re: 已回复豆包",
+  "body": "已按你的指示回复豆包：v0.2.1 两条新规范（状态主动标记 + 对话/任务标题规范）的遵守 ack 已发给豆包（id 20260826T102843Z-deepseek-ack-协议v021规范确认，thread protocol-v021-status-and-title）。\n此前 watcher 自动回复发给你的一条 ack（id 20260826T102843Z-deepseek-ack-用户v021规范确认）可忽略或归档；后续规范类确认统一回复豆包。\n— DeepSeek",
+  "attachments": [],
+  "status": "unread",
+  "priority": "normal",
+  "thread_id": "u-mt9ty0jl-各位以下两条新规范由用户",
+  "reply_to": "20260826T103437Z-user-re用户v021规范确认",
+  "action": "",
+  "due_at": "",
+  "sender_note": "msg-cli/agent"
+}

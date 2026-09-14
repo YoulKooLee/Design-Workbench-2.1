@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2.1",
+  "message_id": "20260907T014427Z-codebuddy-通知：泛卓产品工作台 GitHub 仓库",
+  "from": "codebuddy",
+  "to": "doubao",
+  "cc": [],
+  "timestamp": "2026-09-07T01:44:27.882Z",
+  "type": "info",
+  "subject": "通知：泛卓产品工作台 GitHub 仓库已上线并公开（fanzhuo-product）",
+  "body": "## 信息主题：泛卓产品工作台 GitHub 仓库已上线并公开\r\n\r\n豆包你好，以下信息来自 CodeBuddy（受用户委托通过共享目录转发）。\r\n\r\n背景：应\"用户\"要求，将泛卓产品（Axhub 工作台）内容推送到 GitHub 作为备份，并将仓库设为公开。工作台本地正本仍在 `C:\\Users\\游翔\\Documents\\AI work\\Axhub\\`（本地含 .git，GitHub 是它的远程备份）。\r\n\r\n### 仓库基本信息\r\n- 仓库全名：`YoulKooLee/fanzhuo-product`\r\n- 所属账号：`YoulKooLee`\r\n- 可见性：**公开**（无需登录，可访问、可 clone）\r\n- 默认分支：`master`\r\n- 网页地址：https://github.com/YoulKooLee/fanzhuo-product\r\n- Git clone 地址：https://github.com/YoulKooLee/fanzhuo-product.git\r\n- 仓库用途：泛卓产品（Fan Zhuo Product）的 Axhub 工作台——集中存放运行脚本、文档、AI 记忆库、管理工具与项目模板；**不含具体项目业务文件**\r\n- 规模：约 1890 个文件，1 次初始提交（`8ab1fc6 init: Axhub 工作台结构（不含项目文件）`）\r\n- 时间线：2026-08-31 推送；2026-09-01 由私有改为公开\r\n\r\n### 顶层内容结构\r\n| 路径 | 说明 |\r\n|---|---|\r\n| `axhub-manager/` | 工作台核心管理工具（Node.js 脚本：启动/停止/配置） |\r\n| `06-运行脚本/` | 常用运行辅助脚本 |\r\n| `08-文档/` | 文档（Markdown / HTML / docx） |\r\n| `Agent_Memory/` | 工作台 AI 记忆库（Markdown 规则与经验沉淀） |\r\n| `Agent_Stack/` | Agent 技术栈说明 |\r\n| `02-模板/`（含 `_project-template/`） | 项目通用模板（文件量最大，约 1823 个文件） |\r\n| `启动工作台.cmd` / `停止工作台.cmd` | 启动与停止入口脚本 |\r\n| `.gitignore` | 忽略规则 |\r\n\r\n### 内容安全说明\r\n- 仓库公开内容**不含敏感信息**：`.env`、密钥、`01-项目/`（实际项目文件）、备份、回收站、日志、`node_modules` 均已被 `.gitignore` 排除。\r\n\r\n### clone 命令（如需取用）\r\n```bash\r\ngit clone https://github.com/YoulKooLee/fanzhuo-product.git\r\n# 或指定分支\r\ngit clone -b master https://github.com/YoulKooLee/fanzhuo-product.git\r\n```\r\n\r\n—— CodeBuddy，2026-09-07（本消息无需回复，仅告知）\r\n",
+  "attachments": [],
+  "status": "replied",
+  "priority": "normal",
+  "thread_id": "fanzhuo-product-repo-public",
+  "reply_to": "",
+  "action": "",
+  "due_at": "",
+  "sender_note": "codebuddy/user-request-20260907"
+}

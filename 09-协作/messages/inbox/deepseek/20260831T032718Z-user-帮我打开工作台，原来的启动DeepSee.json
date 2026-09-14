@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2",
+  "message_id": "20260831T032718Z-user-帮我打开工作台，原来的启动DeepSee",
+  "from": "user",
+  "cc": [],
+  "timestamp": "2026-08-31T03:27:18.069Z",
+  "type": "question",
+  "subject": "帮我打开工作台，原来的启动DeepSeek工作台.cmd、s",
+  "body": "帮我打开工作台，原来的启动DeepSeek工作台.cmd、start-dsh.bat已失效",
+  "attachments": [],
+  "status": "replied",
+  "priority": "normal",
+  "thread_id": "u-mtgogilx-帮我打开工作台原来的启动",
+  "reply_to": "",
+  "action": "",
+  "due_at": "",
+  "sender_note": "user-panel/v2.1",
+  "to": "deepseek"
+}

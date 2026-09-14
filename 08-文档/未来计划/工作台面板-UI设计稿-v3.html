@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工作台面板 · UI 设计稿 v4（全页签 + 弹窗）</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-dark:#1d4ed8; --primary-light:#eff6ff; --primary-border:#bfdbfe;
+    --bg:#f0f4f8; --card:#ffffff; --text:#1e293b; --muted:#64748b; --faint:#94a3b8;
+    --border:#e2e8f0; --success:#16a34a; --success-bg:#f0fdf4; --success-border:#bbf7d0;
+    --danger:#dc2626; --danger-bg:#fef2f2; --warning:#d97706; --warning-bg:#fffbeb;
+    --radius:16px; --radius-sm:10px;
+    --shadow:0 1px 3px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.05);
+    --shadow-hover:0 4px 8px rgba(15,23,42,.08),0 12px 28px rgba(37,99,235,.10);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter','PingFang SC','Microsoft YaHei',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55}
+  /* ===== 顶栏 ===== */
+  .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:20px;height:60px;padding:0 24px;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+  .brand-logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .brand small{font-weight:400;color:var(--muted);font-size:12px;margin-left:2px}
+  .pills{display:flex;gap:8px;margin-left:auto}
+  .pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid var(--border);background:#fff;color:var(--muted)}
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:#cbd5e1}
+  .pill.on{color:var(--success);border-color:var(--success-border);background:var(--success-bg)}
+  .pill.on .dot{background:var(--success);animation:pulse 2s infinite}
+  .pill.off{color:var(--faint)}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}70%{box-shadow:0 0 0 6px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:#fff;color:var(--text);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+  .btn:hover{border-color:var(--primary);color:var(--primary);box-shadow:0 2px 8px rgba(37,99,235,.12)}
+  .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn-primary:hover{background:var(--primary-dark);color:#fff}
+  .btn-danger-ghost{color:var(--danger)}
+  .btn-danger-ghost:hover{border-color:var(--danger);color:var(--danger);box-shadow:0 2px 8px rgba(220,38,38,.12)}
+  .btn-sm{padding:4px 10px;font-size:12px;border-radius:8px}
+  /* ===== 页签 ===== */
+  .tabs{display:flex;gap:4px;padding:10px 24px 0;background:transparent}
+  .tab{padding:9px 18px;border-radius:12px 12px 0 0;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;border:1px solid transparent;border-bottom:none;position:relative;top:1px}
+  .tab:hover{color:var(--primary);background:rgba(255,255,255,.6)}
+  .tab.active{background:var(--card);color:var(--primary);border-color:var(--border);font-weight:600}
+  .page{background:var(--card);border-top:1px solid var(--border);min-height:calc(100vh - 110px);padding:24px}
+  .tabpane{display:none}
+  .tabpane.active{display:block}
+  .wrap{max-width:1200px;margin:0 auto}
+  /* ===== KPI ===== */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);transition:all .2s}
+  .kpi:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+  .kpi-head{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:8px}
+  .kpi-head .ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .ico-blue{background:var(--primary-light);color:var(--primary)}
+  .ico-green{background:var(--success-bg);color:var(--success)}
+  .ico-amber{background:var(--warning-bg);color:var(--warning)}
+  .ico-slate{background:#f1f5f9;color:var(--muted)}
+  .kpi-value{font-size:22px;font-weight:700}
+  .kpi-value small{font-size:13px;font-weight:500;color:var(--muted)}
+  .kpi-sub{font-size:12px;color:var(--faint);margin-top:3px}
+  .kpi-actions{display:flex;gap:8px;margin-top:12px}
+  .kpi-status{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+  .kpi-status .dot{width:8px;height:8px;border-radius:50%}
+  .st-run{color:var(--success)} .st-run .dot{background:var(--success);animation:pulse 2s infinite}
+  .st-stop{color:var(--faint)} .st-stop .dot{background:#cbd5e1}
+  /* 端口池列表 */
+  .port-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:96px;overflow-y:auto}
+  .port-item{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;font-size:12px}
+  .port-item .pnum{font-family:'JetBrains Mono',Consolas,monospace;font-weight:700;color:var(--primary)}
+  .port-item .pname{color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .port-empty{padding:8px 10px;border:1px dashed var(--border);border-radius:8px;font-size:12px;color:var(--faint);text-align:center}
+  /* ===== 区块标题 ===== */
+  .sec-head{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+  .sec-head h2{font-size:16px;font-weight:700}
+  .sec-head .count{font-size:12px;color:var(--muted);background:#f1f5f9;padding:2px 10px;border-radius:999px}
+  .sec-head .spacer{flex:1}
+  .search{padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;width:220px;outline:none}
+  .search:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  /* ===== 项目卡片 ===== */
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+  .proj{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);transition:all .2s}
+  .proj:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:var(--primary-border)}
+  .proj-top{display:flex;align-items:flex-start;gap:12px}
+  .avatar{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+  .av-blue{background:linear-gradient(135deg,#2563eb,#60a5fa)}
+  .av-teal{background:linear-gradient(135deg,#0d9488,#2dd4bf)}
+  .proj-title{font-size:15px;font-weight:700}
+  .proj-path{font-size:12px;color:var(--faint);font-family:'JetBrains Mono',Consolas,monospace;margin-top:2px}
+  .badge{margin-left:auto;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:5px;flex-shrink:0}
+  .badge .dot{width:6px;height:6px;border-radius:50%}
+  .badge-run{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border)}
+  .badge-run .dot{background:var(--success);animation:pulse 2s infinite}
+  .badge-stop{background:#f1f5f9;color:var(--muted);border:1px solid var(--border)}
+  .badge-stop .dot{background:#cbd5e1}
+  .proj-meta{display:flex;gap:14px;margin:12px 0 14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .proj-meta b{color:var(--text);font-weight:600}
+  .proj-meta .mono{font-family:'JetBrains Mono',Consolas,monospace}
+  .proj-actions{display:flex;gap:8px;border-top:1px solid #f1f5f9;padding-top:12px}
+  /* ===== 通用表格 ===== */
+  table.tbl{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .tbl th{background:#f8fafc;text-align:left;font-size:12px;font-weight:600;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--border)}
+  .tbl td{padding:13px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:middle}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl tbody tr:hover{background:var(--primary-light)}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px}
+  .tag-blue{background:var(--primary-light);color:var(--primary)}
+  .tag-green{background:var(--success-bg);color:var(--success)}
+  .tag-amber{background:var(--warning-bg);color:var(--warning)}
+  .tag-slate{background:#f1f5f9;color:var(--muted)}
+  .mono{font-family:'JetBrains Mono',Consolas,monospace;font-size:12px}
+  /* 开关 */
+  .switch{position:relative;width:36px;height:20px;background:#cbd5e1;border-radius:999px;cursor:pointer;transition:background .2s;display:inline-block;vertical-align:middle}
+  .switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .switch.on{background:var(--primary)}
+  .switch.on::after{left:18px}
+  .link{color:var(--primary);cursor:pointer;font-weight:500}
+  .link:hover{text-decoration:underline}
+  .ops{display:flex;gap:12px;font-size:12px}
+  .ops .danger{color:var(--danger)}
+  /* ===== 组件库 ===== */
+  .comp-layout{display:grid;grid-template-columns:190px 1fr;gap:20px}
+  .comp-side{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);align-self:start}
+  .comp-cat{padding:9px 14px;border-radius:10px;font-size:13px;color:var(--muted);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+  .comp-cat:hover{background:#f8fafc;color:var(--text)}
+  .comp-cat.active{background:var(--primary-light);color:var(--primary);font-weight:600}
+  .comp-cat .n{font-size:11px;background:#f1f5f9;border-radius:999px;padding:1px 8px}
+  .comp-cat.active .n{background:#dbeafe}
+  .comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .comp{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:all .2s}
+  .comp:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:var(--primary-border)}
+  .comp-thumb{height:110px;display:flex;align-items:center;justify-content:center;font-size:30px;color:rgba(255,255,255,.9)}
+  .t1{background:linear-gradient(135deg,#2563eb,#60a5fa)} .t2{background:linear-gradient(135deg,#0d9488,#2dd4bf)}
+  .t3{background:linear-gradient(135deg,#7c3aed,#a78bfa)} .t4{background:linear-gradient(135deg,#d97706,#fbbf24)}
+  .comp-body{padding:12px 14px}
+  .comp-name{font-size:13px;font-weight:700}
+  .comp-type{font-size:11px;color:var(--faint);font-family:'JetBrains Mono',Consolas,monospace;margin:2px 0 10px}
+  .comp-ops{display:flex;gap:8px}
+  /* ===== 通信看板 ===== */
+  .msg-layout{display:grid;grid-template-columns:1fr 380px;gap:20px}
+  .msg-item{display:flex;gap:12px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+  .msg-item:hover{border-color:var(--primary-border);box-shadow:var(--shadow)}
+  .msg-item.selected{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+  .msg-item.unread{border-left:3px solid var(--primary)}
+  .msg-ava{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px;flex-shrink:0}
+  .msg-main{flex:1;min-width:0}
+  .msg-head{display:flex;align-items:center;gap:8px;font-size:13px}
+  .msg-head b{font-weight:600}
+  .msg-subj{font-size:13px;font-weight:600;margin:3px 0}
+  .msg-prev{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msg-detail{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;align-self:start;position:sticky;top:80px}
+  .msg-detail h3{font-size:15px;margin-bottom:6px}
+  .msg-detail .kv{display:flex;font-size:12px;color:var(--muted);gap:6px;margin-bottom:4px}
+  .msg-detail .kv b{color:var(--text);min-width:52px;font-weight:600}
+  .msg-body{margin-top:12px;padding:14px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);white-space:pre-wrap;max-height:280px;overflow-y:auto}
+  .agent-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+  .agent-chip{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 14px;font-size:12px;box-shadow:var(--shadow)}
+  .agent-chip .av{width:26px;height:26px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+  .agent-chip .io{color:var(--muted)}
+  .agent-chip .io b{color:var(--primary);font-size:13px}
+  .select-sm{padding:3px 8px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff;font-family:inherit}
+  .select-sm:focus{border-color:var(--primary)}
+  .follow{font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .follow.on{color:var(--success)}
+  .follow.off{color:var(--faint)}
+  /* ===== 弹窗 ===== */
+  .mask{position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);z-index:100;display:none;align-items:center;justify-content:center}
+  .mask.show{display:flex}
+  .modal{background:#fff;border-radius:18px;width:520px;max-width:92vw;box-shadow:0 20px 60px rgba(15,23,42,.25);animation:pop .18s ease-out;overflow:hidden}
+  @keyframes pop{from{transform:scale(.94) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+  .modal-head{display:flex;align-items:center;padding:18px 24px 0}
+  .modal-head h3{font-size:16px;font-weight:700}
+  .modal-x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:none;background:#f1f5f9;color:var(--muted);cursor:pointer;font-size:14px}
+  .modal-x:hover{background:var(--danger-bg);color:var(--danger)}
+  .modal-body{padding:16px 24px 8px}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px 20px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
+  .field label .req{color:var(--danger)}
+  .field input,.field select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;outline:none;font-family:inherit}
+  .field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .field .hint{font-size:11px;color:var(--faint);margin-top:4px}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .alert{display:flex;gap:10px;padding:12px 14px;border-radius:10px;font-size:12px;margin-bottom:14px}
+  .alert-warn{background:var(--warning-bg);color:#92400e;border:1px solid #fde68a}
+  .alert-danger{background:var(--danger-bg);color:#991b1b;border:1px solid #fecaca}
+  /* 设计说明浮层 */
+  .notes{position:fixed;right:18px;bottom:18px;z-index:90;background:#0f172a;color:#e2e8f0;border-radius:14px;padding:14px 16px;font-size:12px;width:300px;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+  .notes b{color:#93c5fd}
+  .notes .nbtn{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+  .notes button{background:#1e293b;color:#93c5fd;border:1px solid #334155;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer}
+  .notes button:hover{background:#334155}
+</style>
+</head>
+<body>
+
+<!-- 顶栏 -->
+<header class="topbar">
+  <div class="brand"><div class="brand-logo">产</div>产品设计工作台<small>项目管理 · Skill 库 · 知识库 · 工作规则 · 触发路由</small></div>
+  <button class="btn" style="margin-left:auto">⟳ 刷新</button>
+</header>
+
+<!-- 页签 -->
+<nav class="tabs" id="tabs">
+  <div class="tab active" data-pane="p1">项目管理</div>
+  <div class="tab" data-pane="p2">Skill 库</div>
+  <div class="tab" data-pane="p3">知识库</div>
+  <div class="tab" data-pane="p4">工作规则</div>
+  <div class="tab" data-pane="p5">触发路由</div>
+  <div class="tab" data-pane="p6">组件库</div>
+  <div class="tab" data-pane="p7">通信看板 <span class="tag tag-blue" style="margin-left:2px">3</span></div>
+</nav>
+
+<div class="page"><div class="wrap">
+
+<!-- ========== 项目管理 ========== -->
+<section class="tabpane active" id="p1">
+  <!-- KPI：待办提醒（新） + Make（启停） + ACP（启停） + Vite 端口池（多端口） -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-amber">🔔</span>待办提醒</div>
+      <div class="kpi-value">3 <small>条未读消息</small></div>
+      <div class="kpi-actions"><button class="btn btn-sm">去通信看板</button></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-green">⚙</span>Make 管理端</div>
+      <div class="kpi-status st-run"><span class="dot"></span>运行中</div>
+      <div class="kpi-sub mono">127.0.0.1 : 53817</div>
+      <div class="kpi-actions">
+        <button class="btn btn-sm">⟳ 重启</button>
+        <button class="btn btn-sm btn-danger-ghost">■ 停止</button>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-blue">⇄</span>ACP 共享服务</div>
+      <div class="kpi-status st-run"><span class="dot"></span>在线</div>
+      <div class="kpi-sub mono">127.0.0.1 : 32124</div>
+      <div class="kpi-actions">
+        <button class="btn btn-sm btn-primary">▶ 启动</button>
+        <button class="btn btn-sm btn-danger-ghost">■ 停止</button>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-slate">⛁</span>Vite 端口池</div>
+      <div class="kpi-value">3 <small>个运行中</small></div>
+      <div class="kpi-sub">端口池 51720-51729 · strictPort</div>
+      <div class="kpi-actions"><button class="btn btn-sm" onclick="showModal('m-ports')">明细</button></div>
+    </div>
+  </div>
+
+  <!-- 项目卡片 -->
+  <div class="sec-head">
+    <h2>项目</h2><span class="count">共 2 个项目</span>
+    <div class="spacer"></div>
+    <input class="search" placeholder="搜索项目名称 / 路径…">
+    <button class="btn btn-primary" onclick="showModal('m-add')">＋ 新增项目</button>
+    <button class="btn">回收站</button>
+  </div>
+  <div class="proj-grid">
+    <div class="proj">
+      <div class="proj-top">
+        <div class="avatar av-blue">指</div>
+        <div>
+          <div class="proj-title">指标管理平台</div>
+          <div class="proj-path">01-项目/指标管理平台</div>
+        </div>
+        <span class="badge badge-stop"><span class="dot"></span>未启动</span>
+      </div>
+      <div class="proj-meta">
+        <span>负责智能体
+          <select class="select-sm">
+            <option selected>豆包</option><option>CodeBuddy</option><option>WorkBuddy</option><option>DeepSeek</option><option>千问</option>
+          </select>
+        </span>
+        <span class="follow on">● 已关注</span>
+        <span>Vite <b class="mono">—</b></span>
+        <span>更新 <b>09-13</b></span>
+      </div>
+      <div class="proj-actions">
+        <button class="btn btn-sm btn-primary">▶ 启动开发栈</button>
+        <button class="btn btn-sm">复制</button>
+        <button class="btn btn-sm">历史版本</button>
+        <button class="btn btn-sm btn-danger-ghost" onclick="showModal('m-del')">删除</button>
+      </div>
+    </div>
+    <div class="proj">
+      <div class="proj-top">
+        <div class="avatar av-teal">D</div>
+        <div>
+          <div class="proj-title">Dingcan_app（示例·运行态）</div>
+          <div class="proj-path">01-项目/Dingcan_app</div>
+        </div>
+        <span class="badge badge-run"><span class="dot"></span>运行中</span>
+      </div>
+      <div class="proj-meta">
+        <span>负责智能体
+          <select class="select-sm">
+            <option>豆包</option><option>CodeBuddy</option><option selected>WorkBuddy</option><option>DeepSeek</option><option>千问</option>
+          </select>
+        </span>
+        <span class="follow off">○ 未关注</span>
+        <span class="link" style="font-size:12px">设为关注</span>
+        <span>Vite <b class="mono">51720</b></span>
+        <span>已运行 <b>2.4h</b></span>
+      </div>
+      <div class="proj-actions">
+        <button class="btn btn-sm btn-danger-ghost">■ 停止开发栈</button>
+        <button class="btn btn-sm">打开预览</button>
+        <button class="btn btn-sm">历史版本</button>
+        <button class="btn btn-sm btn-danger-ghost" onclick="showModal('m-del')">删除</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Skill 库 ========== -->
+<section class="tabpane" id="p2">
+  <div class="sec-head">
+    <h2>Skill 库</h2><span class="count">8 个 Skill</span>
+    <div class="spacer"></div>
+    <input class="search" placeholder="搜索 Skill…">
+    <button class="btn btn-primary">＋ 导入 Skill</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>名称</th><th>说明</th><th>来源</th><th>更新</th><th>启用</th><th style="width:150px">操作</th></tr></thead>
+    <tbody>
+      <tr><td><b>annotation</b><div class="mono" style="color:var(--faint)">vibepm v17</div></td><td>SRS 驱动的代码注入式需求标注</td><td><span class="tag tag-blue">vibepm</span></td><td class="mono">09-14</td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link">文档</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td><b>srs-writer</b></td><td>结构化需求说明书（SRS）写作</td><td><span class="tag tag-blue">vibepm</span></td><td class="mono">09-14</td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link">文档</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td><b>theme-guide</b></td><td>Axhub 主题验收指南（亮色科技蓝等）</td><td><span class="tag tag-green">自建</span></td><td class="mono">09-10</td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link">文档</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td><b>pm-review</b></td><td>产品评审清单驱动</td><td><span class="tag tag-amber">vibepm·待迁入</span></td><td class="mono">—</td><td><span class="switch"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link">文档</span><span class="link danger">删除</span></div></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========== 知识库 ========== -->
+<section class="tabpane" id="p3">
+  <div class="sec-head">
+    <h2>知识库</h2><span class="count">5 篇文档</span>
+    <div class="spacer"></div>
+    <input class="search" placeholder="搜索文档…">
+    <button class="btn btn-primary">＋ 新增文档</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>文档</th><th>分类</th><th>大小</th><th>更新</th><th style="width:140px">操作</th></tr></thead>
+    <tbody>
+      <tr><td><b>乐牛腾云3.0-OpenApi-接口清单.md</b></td><td><span class="tag tag-blue">接口</span></td><td class="mono">24 KB</td><td class="mono">09-11</td><td><div class="ops"><span class="link">查看</span><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td><b>Axhub-踩坑规则库.md</b></td><td><span class="tag tag-green">规则</span></td><td class="mono">41 KB</td><td class="mono">09-13</td><td><div class="ops"><span class="link">查看</span><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td><b>视觉规范-亮色科技蓝.md</b></td><td><span class="tag tag-amber">设计</span></td><td class="mono">12 KB</td><td class="mono">09-08</td><td><div class="ops"><span class="link">查看</span><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========== 工作规则 ========== -->
+<section class="tabpane" id="p4">
+  <div class="sec-head">
+    <h2>工作规则</h2><span class="count">4 条规则</span>
+    <div class="spacer"></div>
+    <button class="btn btn-primary">＋ 新增规则</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th style="width:56px">#</th><th>规则</th><th>适用范围</th><th>强制级</th><th>启用</th><th style="width:120px">操作</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">R1</td><td><b>先询问再创建文件</b><div style="font-size:12px;color:var(--muted)">新建文件前必须确认落位目录</div></td><td><span class="tag tag-slate">全局</span></td><td><span class="tag tag-amber">强</span></td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td class="mono">R2</td><td><b>删文件必须回验</b><div style="font-size:12px;color:var(--muted)">Remove-Item 后 Test-Path，失败换 node 兜底</div></td><td><span class="tag tag-slate">全局</span></td><td><span class="tag tag-amber">强</span></td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td class="mono">R3</td><td><b>大屏配色先读 .style/ 规范</b></td><td><span class="tag tag-blue">大屏项目</span></td><td><span class="tag tag-amber">强</span></td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td class="mono">R4</td><td><b>ps1 保存必须带 UTF-8 BOM</b></td><td><span class="tag tag-slate">脚本</span></td><td><span class="tag tag-green">建议</span></td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========== 触发路由 ========== -->
+<section class="tabpane" id="p5">
+  <div class="sec-head">
+    <h2>触发路由</h2><span class="count">5 条路由</span>
+    <div class="spacer"></div>
+    <button class="btn btn-primary">＋ 新增路由</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>触发词</th><th>匹配模式</th><th>目标</th><th>优先级</th><th>启用</th><th style="width:120px">操作</th></tr></thead>
+    <tbody>
+      <tr><td><span class="mono">写PRD / 需求文档</span></td><td><span class="tag tag-blue">关键词</span></td><td><b>prd-writer</b></td><td class="mono">P0</td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td><span class="mono">原型转PRD</span></td><td><span class="tag tag-blue">关键词</span></td><td><b>prototype-to-prd</b></td><td class="mono">P0</td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td><span class="mono">标注 / annotation</span></td><td><span class="tag tag-green">正则</span></td><td><b>annotation</b></td><td class="mono">P1</td><td><span class="switch on"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+      <tr><td><span class="mono">大屏 / 数据可视化</span></td><td><span class="tag tag-blue">关键词</span></td><td><b>theme-guide</b> <span style="font-size:11px;color:var(--faint)">+ .style 规范</span></td><td class="mono">P1</td><td><span class="switch"></span></td><td><div class="ops"><span class="link">编辑</span><span class="link danger">删除</span></div></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========== 组件库（保持现状，不调整） ========== -->
+<section class="tabpane" id="p6">
+  <div style="padding:70px 0;text-align:center;color:var(--muted)">
+    <div style="font-size:42px;margin-bottom:14px">🧩</div>
+    <div style="font-size:15px;font-weight:600">组件库页签保持现有样式，本轮不调整</div>
+    <div style="font-size:12px;color:var(--faint);margin-top:6px">（2026-09-14 用户确认：按原来的样式展示）</div>
+  </div>
+</section>
+
+<!-- ========== 通信看板（仅优化统计卡片区，房间表格保持现状） ========== -->
+<section class="tabpane" id="p7">
+  <!-- 统计区 v4：9 张散卡 → 4 张主卡 + 1 条智能体收发明细带 -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-blue">▦</span>协作房间</div>
+      <div class="kpi-value">5 <small>个</small></div>
+      <div class="kpi-sub">进行中 4 · 已归档 1</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-green">⚇</span>智能体</div>
+      <div class="kpi-value">5 <small>个在线</small></div>
+      <div class="kpi-sub">豆包 / CodeBuddy / DeepSeek / 千问 / WorkBuddy</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-blue">✉</span>收件消息</div>
+      <div class="kpi-value">158 <small>条</small></div>
+      <div class="kpi-sub">今日 +6 · 未读 3</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-amber">↗</span>发件消息</div>
+      <div class="kpi-value">120 <small>条</small></div>
+      <div class="kpi-sub">今日 +2</div>
+    </div>
+  </div>
+  <!-- 智能体收发明细带：原 5 张大卡压缩为一行 chip -->
+  <div class="agent-strip">
+    <div class="agent-chip"><span class="av" style="background:linear-gradient(135deg,#0d9488,#2dd4bf)">C</span><b>CodeBuddy</b><span class="io">收 <b>33</b> · 发 <b>27</b></span></div>
+    <div class="agent-chip"><span class="av" style="background:linear-gradient(135deg,#2563eb,#60a5fa)">D</span><b>DeepSeek</b><span class="io">收 <b>30</b> · 发 <b>24</b></span></div>
+    <div class="agent-chip"><span class="av" style="background:linear-gradient(135deg,#2563eb,#60a5fa)">豆</span><b>豆包</b><span class="io">收 <b>55</b> · 发 <b>44</b></span></div>
+    <div class="agent-chip"><span class="av" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">千</span><b>千问</b><span class="io">收 <b>7</b> · 发 <b>3</b></span></div>
+    <div class="agent-chip"><span class="av" style="background:linear-gradient(135deg,#d97706,#fbbf24)">W</span><b>WorkBuddy</b><span class="io">收 <b>17</b> · 发 <b>13</b></span></div>
+  </div>
+
+  <!-- 房间表格：保持现状 -->
+  <div class="sec-head">
+    <h2>协作房间</h2><span class="count">5 个房间</span>
+    <div class="spacer"></div>
+    <input class="search" placeholder="搜索房间 / 任务说明…">
+  </div>
+  <table class="tbl">
+    <thead><tr><th>房间</th><th style="width:70px">消息数</th><th>任务说明</th><th style="width:80px">产物</th><th style="width:90px">操作</th></tr></thead>
+    <tbody>
+      <tr><td><b>CodeBuddy_工作台v2改版验收意见</b></td><td class="mono">10</td><td style="color:var(--muted);font-size:12px"># 工作台v2改版验收意见 · 创建：2026-09-13 · 参与者：豆包, CodeBuddy · 状态：active · 接棒人：豆包…</td><td><span class="tag tag-green">有产物</span></td><td><span class="link">查看对话</span></td></tr>
+      <tr><td><b>CodeBuddy_结构监测PRD评审</b></td><td class="mono">8</td><td style="color:var(--muted);font-size:12px"># 结构监测PRD评审 · 创建：2026-09-05 · 参与者：codebuddy, doubao · 状态：active…</td><td><span class="tag tag-green">有产物</span></td><td><span class="link">查看对话</span></td></tr>
+      <tr><td><b>千问_原型设计上下文治理方案评审</b></td><td class="mono">4</td><td style="color:var(--muted);font-size:12px"># 原型设计上下文治理方案评审 · 创建：2026-09-05 · 参与者：codebuddy, doubao, qwen…</td><td><span class="tag tag-green">有产物</span></td><td><span class="link">查看对话</span></td></tr>
+      <tr><td><b>豆包_智能体协作平台自查自纠与优化</b></td><td class="mono">3</td><td style="color:var(--muted);font-size:12px"># 智能体协作平台自查自纠与优化 · 创建：2026-09-05 · 参与者：qwen, codebuddy…</td><td><span class="tag tag-green">有产物</span></td><td><span class="link">查看对话</span></td></tr>
+      <tr><td><b>豆包_智能体协作测试-初始化配置与优化建议</b></td><td class="mono">17</td><td style="color:var(--muted);font-size:12px"># 智能体协作测试 · 创建：2026-09-05 · 参与者：codebuddy, workbuddy, deepseek, qwen…</td><td><span class="tag tag-green">有产物</span></td><td><span class="link">查看对话</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+</div></div>
+
+<!-- ========== 弹窗 1：新增项目 ========== -->
+<div class="mask" id="m-add">
+  <div class="modal">
+    <div class="modal-head"><h3>新增项目</h3><button class="modal-x" onclick="hideModal('m-add')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-warn">📁 项目将创建于 <span class="mono">01-项目/</span> 目录，依赖通过兄弟项目复用（无需联网安装）。</div>
+      <div class="field"><label>项目名称 <span class="req">*</span></label><input placeholder="例如：南山区健康大屏"><div class="hint">中文名即可，目录名将自动转换为 kebab-case</div></div>
+      <div class="field-row">
+        <div class="field"><label>基于模板</label><select><option>_project-template（默认）</option><option>空白项目</option></select></div>
+        <div class="field"><label>负责人</label><select><option>游翔</option><option>豆包</option><option>CodeBuddy</option></select></div>
+      </div>
+      <div class="field"><label>Vite 端口</label><input placeholder="留空自动分配（51720 起）"><div class="hint">strictPort 模式，冲突时启动会失败并提示</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="hideModal('m-add')">取消</button>
+      <button class="btn btn-primary">创建并启动</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 弹窗 2：删除确认 ========== -->
+<div class="mask" id="m-del">
+  <div class="modal" style="width:440px">
+    <div class="modal-head"><h3 style="color:var(--danger)">删除项目</h3><button class="modal-x" onclick="hideModal('m-del')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-danger">⚠️ 此操作将把 <b>指标管理平台</b> 移入回收站（05-回收站/.deleted-时间戳），30 天后彻底清理。</div>
+      <div class="field"><label>输入项目名确认</label><input placeholder="指标管理平台"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="hideModal('m-del')">取消</button>
+      <button class="btn" style="background:var(--danger);border-color:var(--danger);color:#fff">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 弹窗 3：Vite 端口池明细 ========== -->
+<div class="mask" id="m-ports">
+  <div class="modal" style="width:580px">
+    <div class="modal-head"><h3>Vite 端口池明细</h3><button class="modal-x" onclick="hideModal('m-ports')">✕</button></div>
+    <div class="modal-body" style="padding-bottom:4px">
+      <table class="tbl">
+        <thead><tr><th>端口</th><th>项目</th><th>状态</th><th>运行时长</th><th style="width:80px">操作</th></tr></thead>
+        <tbody>
+          <tr><td class="mono" style="font-weight:700;color:var(--primary)">51720</td><td>Dingcan_app</td><td><span class="tag tag-green">运行中</span></td><td class="mono">2.4h</td><td><span class="link danger" style="color:var(--danger);cursor:pointer">停止</span></td></tr>
+          <tr><td class="mono" style="font-weight:700;color:var(--primary)">51721</td><td>健康档案</td><td><span class="tag tag-green">运行中</span></td><td class="mono">1.1h</td><td><span style="color:var(--danger);cursor:pointer">停止</span></td></tr>
+          <tr><td class="mono" style="font-weight:700;color:var(--primary)">51722</td><td>数字孪生底座</td><td><span class="tag tag-amber">启动中</span></td><td class="mono">—</td><td style="color:var(--faint)">—</td></tr>
+        </tbody>
+      </table>
+      <div class="hint" style="font-size:11px;color:var(--faint);padding:10px 2px 6px">端口池 51720-51729 · strictPort 模式 · 空闲端口 7 个</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="hideModal('m-ports')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 设计说明 -->
+<div class="notes">
+  <b>设计稿 v4 · 本轮变化（09-14 批注）</b><br>
+  ① 顶栏服务胶囊删除（状态已并入 KPI 卡）<br>
+  ② 待办提醒卡删回收站/日志行<br>
+  ③ Vite 端口池：统计 + 「明细」弹窗<br>
+  ④ 项目卡：智能体下拉 + 关注状态<br>
+  ⑤ 组件库保持现状不调整<br>
+  ⑥ 通信看板：9 散卡 → 4 主卡 + 收发 chip 带
+  <div class="nbtn">
+    <button onclick="showModal('m-add')">预览：新增项目弹窗</button>
+    <button onclick="showModal('m-del')">预览：删除确认弹窗</button>
+    <button onclick="showModal('m-ports')">预览：端口明细弹窗</button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('#tabs .tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.pane).classList.add('active');
+    });
+  });
+  document.querySelectorAll('.comp-cat').forEach(c=>{
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.comp-cat').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+    });
+  });
+  document.querySelectorAll('.msg-item').forEach(m=>{
+    m.addEventListener('click',()=>{
+      document.querySelectorAll('.msg-item').forEach(x=>x.classList.remove('selected'));
+      m.classList.add('selected'); m.classList.remove('unread');
+    });
+  });
+  document.querySelectorAll('.switch').forEach(s=>s.addEventListener('click',()=>s.classList.toggle('on')));
+  function showModal(id){document.getElementById(id).classList.add('show')}
+  function hideModal(id){document.getElementById(id).classList.remove('show')}
+  // 支持 #p1~#p7 直达页签（便于截图验证）
+  const h=location.hash.replace('#','');
+  if(/^p[1-7]$/.test(h)){
+    document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.toggle('active',x.dataset.pane===h));
+    document.querySelectorAll('.tabpane').forEach(x=>x.classList.toggle('active',x.id===h));
+  }
+  document.querySelectorAll('.mask').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+</script>
+</body>
+</html>

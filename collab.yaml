@@ -1,0 +1,78 @@
+- generic [active] [ref=f2e1]:
+  - banner [ref=f2e2]:
+    - generic [ref=f2e3]: 产
+    - generic [ref=f2e4]:
+      - heading "产品设计工作台" [level=1] [ref=f2e5]
+      - paragraph [ref=f2e6]: 项目管理 · Skill 库 · 知识库 · 工作规则 · 触发路由
+    - button "⟳ 重启 Make" [ref=f2e7] [cursor=pointer]
+    - button "↻ 刷新" [ref=f2e8] [cursor=pointer]
+  - navigation [ref=f2e9]:
+    - generic [ref=f2e10] [cursor=pointer]: 项目管理
+    - generic [ref=f2e11] [cursor=pointer]: Skill 库
+    - generic [ref=f2e12] [cursor=pointer]: 知识库
+    - generic [ref=f2e13] [cursor=pointer]: 工作规则
+    - generic [ref=f2e14] [cursor=pointer]: 触发路由
+    - generic [ref=f2e15] [cursor=pointer]: 组件库
+    - generic [ref=f2e16] [cursor=pointer]: 通信看板
+  - main [ref=f2e17]:
+    - generic [ref=f2e138]:
+      - generic [ref=f2e139]:
+        - generic [ref=f2e140]:
+          - generic [ref=f2e141]: 🔔
+          - text: 待办提醒
+        - generic [ref=f2e142]: 163 条收件消息
+        - generic [ref=f2e143]: 协作消息总量（未读数需后端接口）
+        - button "去通信看板" [ref=f2e145] [cursor=pointer]
+      - generic [ref=f2e146]:
+        - generic [ref=f2e147]:
+          - generic [ref=f2e148]: ⚙
+          - text: Make 管理端
+        - generic [ref=f2e149]: 运行中
+        - generic [ref=f2e151]: "127.0.0.1 : 53817"
+        - button "⟳ 重启" [ref=f2e153] [cursor=pointer]
+      - generic "后端未提供 ACP 状态接口，暂无法展示真实状态（需 server.mjs 配合）" [ref=f2e154]:
+        - generic [ref=f2e155]:
+          - generic [ref=f2e156]: ⇄
+          - text: ACP 共享服务
+        - generic [ref=f2e157]: 未接入
+        - generic [ref=f2e159]: "127.0.0.1 : 32124"
+        - button "—" [disabled] [ref=f2e161]
+      - generic [ref=f2e162]:
+        - generic [ref=f2e163]:
+          - generic [ref=f2e164]: ⛁
+          - text: Vite 端口池
+        - generic [ref=f2e165]: 0 个运行中
+        - generic [ref=f2e166]: 端口池 51720-51729 · strictPort
+        - generic [ref=f2e167]: 当前无运行中的开发栈
+        - button "明细" [ref=f2e169] [cursor=pointer]
+    - generic [ref=f2e170]:
+      - heading "项目" [level=2] [ref=f2e171]
+      - generic [ref=f2e172]: 共 1 个项目
+      - textbox "搜索项目名称 / 路径…" [ref=f2e174]
+      - button "＋ 新增项目" [ref=f2e175] [cursor=pointer]
+      - button "回收站" [ref=f2e176] [cursor=pointer]
+    - generic [ref=f2e178]:
+      - generic [ref=f2e179]:
+        - generic [ref=f2e180]: 指
+        - generic [ref=f2e181]:
+          - generic [ref=f2e182]: 指标管理平台
+          - generic [ref=f2e183]: 01-项目/指标管理平台
+        - generic [ref=f2e184]: 已停止
+      - generic [ref=f2e186]:
+        - generic [ref=f2e187]:
+          - text: 负责智能体
+          - combobox "项目负责人（owner_agent，写入 project-memory.md）：由谁负责本项目；与运行状态相互独立。选「未关联」= 取消关联" [ref=f2e188]:
+            - option "未关联"
+            - option "CodeBuddy (codebuddy)"
+            - option "WorkBuddy (workbuddy)"
+            - option "豆包 (doubao)" [selected]
+            - option "DeepSeek (deepseek)"
+            - option "千问 (qwen)"
+        - generic "关注为本地标记（存浏览器 localStorage），待后端配置接口就绪后迁移" [ref=f2e189] [cursor=pointer]: ○ 未关注
+        - generic [ref=f2e190]: Vite —
+      - generic [ref=f2e191]:
+        - button "▶ 启动开发栈" [ref=f2e192] [cursor=pointer]
+        - button "复制" [ref=f2e193] [cursor=pointer]
+        - button "历史版本" [ref=f2e194] [cursor=pointer]
+        - button "删除" [ref=f2e195] [cursor=pointer]
+  - button "!" [ref=f2e21] [cursor=pointer]

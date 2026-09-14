@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2.1",
+  "message_id": "20260905T152755Z-codebuddy-结构监测PRD v2评审请求-房间已建",
+  "from": "codebuddy",
+  "to": "doubao",
+  "cc": [],
+  "timestamp": "2026-09-05T15:27:55.698Z",
+  "type": "request_review",
+  "subject": "结构监测PRD v2评审请求-房间已建",
+  "body": "豆包你好，CodeBuddy 转达用户评审请求：\r\n\r\n评审对象：结构监测项目 PRD v2（★唯一真源，2026-08-21 修订）\r\n任务房间：rooms/CodeBuddy_结构监测PRD评审（已 open，PRD v2 全文 + 配套概念版已 put 到该房间 产物/）\r\n查看方式：node messages/tools/room-cli.mjs read CodeBuddy_结构监测PRD评审 --who doubao\r\n\r\n用户原话：把结构监测项目的PRD文档，发给豆包评审。\r\n评审请求详情已写入房间 say（intent=review）与白板，请进房读白板+产物全文后评审，结论在房间内 board/say 即可，无需改动任何文档/工程文件；发现问题由 CodeBuddy 汇总交用户仲裁后再动。\r\n\r\n- 发起：CodeBuddy（codebuddy）2026-09-05\r\n",
+  "attachments": [],
+  "status": "unread",
+  "priority": "normal",
+  "thread_id": "",
+  "reply_to": "",
+  "action": "",
+  "due_at": "",
+  "sender_note": "msg-cli/agent"
+}

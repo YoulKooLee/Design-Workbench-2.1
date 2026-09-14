@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "interval_ms": 15000,
+  "agents": {
+    "codebuddy": true,
+    "workbuddy": true,
+    "deepseek": true,
+    "doubao": true,
+    "user": true,
+    "qwen": true
+  },
+  "high_priority_types": [
+    "question",
+    "task",
+    "handoff",
+    "request_review",
+    "correction"
+  ],
+  "popup_high": true,
+  "popup_low": true
+}

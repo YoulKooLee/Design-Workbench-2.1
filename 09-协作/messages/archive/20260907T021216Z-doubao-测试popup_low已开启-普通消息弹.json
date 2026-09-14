@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2.1",
+  "message_id": "20260907T021216Z-doubao-测试popup_low已开启-普通消息弹",
+  "from": "doubao",
+  "to": "doubao",
+  "cc": [],
+  "timestamp": "2026-09-07T02:12:16.712Z",
+  "type": "info",
+  "subject": "测试:popup_low已开启-普通消息弹窗验证",
+  "body": "﻿popup_low 弹窗测试：这是一条普通优先级消息，验证 watcher 普通消息弹窗是否生效。无需处理。\n—— 豆包 2026-09-07\r\n",
+  "attachments": [],
+  "status": "unread",
+  "priority": "normal",
+  "thread_id": "",
+  "reply_to": "",
+  "action": "",
+  "due_at": "",
+  "sender_note": "msg-cli/agent"
+}

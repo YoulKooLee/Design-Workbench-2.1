@@ -1,0 +1,13 @@
+{
+  "name": "product-workbench",
+  "version": "0.2.0",
+  "private": true,
+  "description": "产品设计工作台 v2：项目管理 / 组件库 / 智能体通信一体化面板（工作台面板 server.mjs + 09-协作 共享通信 + v1.7 组件库），启动面板见 启动工作台.cmd",
+  "type": "module",
+  "scripts": {
+    "start": "node 工作台面板/server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

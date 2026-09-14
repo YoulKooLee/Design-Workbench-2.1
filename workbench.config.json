@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "workbench": {
+    "name": "产品设计工作台 v2",
+    "panelPort": 7788,
+    "bindHost": "127.0.0.1",
+    "envClean": {
+      "stripVars": ["NODE_OPTIONS", "CODEBUDDY_AI_PROXY", "CODEBUDDY_AUTH_TOKEN"],
+      "note": "启动 Make/ACP/Vite 前必须清洗的环境变量（T6），由 env-doctor 与 launch-project 共同执行"
+    }
+  },
+  "axhubManager": {
+    "rootDir": "工作台面板",
+    "panelUrl": "http://localhost:7788",
+    "knownAgents": ["codebuddy", "workbuddy", "doubao", "deepseek", "qwen"],
+    "note": "工作台面板=旧版 axhub-manager 体系（用户拍板参照旧版并改名）；KNOWN_AGENTS 扩至 5 智能体"
+  },
+  "axhub": {
+    "makePort": 53817,
+    "acpPort": 32124,
+    "makeVersion": "latest",
+    "proxyRoutes": ["/api/", "/media/", "/proto/"],
+    "excludeFromProto": ["/api/", "/media/", "/wbapi/", "/proto/"]
+  },
+  "projects": {
+    "rootDir": "01-项目",
+    "scanOnlyDirs": true,
+    "excludeDirNames": ["_project-template", "模板", "node_modules", ".git", "_backups", "dist"],
+    "vitePortPool": { "start": 51720, "maxOffset": 100 },
+    "devServerInfoFile": ".axhub/make/.dev-server-info.json",
+    "agentPrefFile": ".axhub/make/wb-agent.json"
+  },
+  "template": {
+    "rootDir": "02-模板",
+    "projectTemplate": "_project-template",
+    "allowedList": ["package.json", ".axhub", "src", "docs", "AGENTS.md", "README.md", "vite.config.mjs", "index.html", "compaction-recovery.md", ".gitignore"]
+  },
+  "componentLibrary": {
+    "rootDir": "03-组件库",
+    "frameDir": "frame",
+    "uiLibsDir": "ui-libs",
+    "catalogFile": "frame/admin/_meta/pages.catalog.json",
+    "registryFile": "component-registry.json",
+    "galleryFile": "frame/gallery.html",
+    "validateOnBoot": true
+  },
+  "collaboration": {
+    "rootDir": "09-协作",
+    "panelUrl": "http://127.0.0.1:8899",
+    "sessionHandoffDoc": "docs/01-协作规范/session-handoff.md",
+    "handoffLocalFile": "handoff.md"
+  },
+  "memory": {
+    "rootDir": "10-智能体记忆",
+    "agentDirs": ["豆包", "CodeBuddy", "WorkBuddy", "DeepSeek", "千问"],
+    "bootstrapFile": "BOOTSTRAP.md",
+    "rulesDir": "rules",
+    "skillsDir": "skills"
+  },
+  "manager": {
+    "rootDir": "04-维护台账",
+    "patchesDir": "patches",
+    "toolsDir": "tools"
+  },
+  "logging": {
+    "dir": "07-日志",
+    "rotateSizeKB": 1024
+  },
+  "scripts": {
+    "launch": "06-运行脚本/launch-project.ps1",
+    "envDoctor": "06-运行脚本/env-doctor.ps1",
+    "smokeTest": "06-运行脚本/smoke-test.mjs",
+    "startPanel": "启动工作台.cmd",
+    "stopPanel": "停止工作台.cmd"
+  }
+}

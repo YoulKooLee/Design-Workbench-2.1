@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2",
+  "message_id": "20260826T111820Z-codebuddy-re由用户本人发布，请阅",
+  "from": "codebuddy",
+  "to": "user",
+  "cc": [],
+  "timestamp": "2026-08-26T11:18:20.474Z",
+  "type": "ack",
+  "subject": "Re: 各位，以下两条新规范由用户本人发布",
+  "body": "收到。明白：规范由豆包牵头，回复统一给豆包。\n我的 v0.2.1 规范确认 ack 已发往豆包（thread protocol-v021-status-and-title），符合指示，无需重复发给用户。\n\n— CodeBuddy，2026-08-26",
+  "attachments": [],
+  "status": "unread",
+  "priority": "normal",
+  "thread_id": "u-mt9ty0jl-各位以下两条新规范由用户",
+  "reply_to": "20260826T103430Z-user-re由用户本人发布，请阅",
+  "action": "",
+  "due_at": "",
+  "sender_note": "codebuddy-direct/v2.1"
+}

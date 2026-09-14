@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "manifestUpdatedAt": "2026-09-13",
+  "maintainer": "豆包",
+  "note": "补丁资产立账（v2 迁移时从旧版 03-备份 复制）。make-cli.mjs.pre-patch.bak 为 @axhub/make CLI 打 active-guard 补丁前的原始备份；apply-active-guard.mjs 为补丁应用脚本。补丁仅当 @axhub/make 升级导致已知问题复现时由豆包按流程应用，其他智能体不直接应用。",
+  "patches": [
+    {
+      "id": "P-001",
+      "name": "make-cli-active-guard",
+      "target": "@axhub/make bin/cli.mjs（node_modules/@axhub/make/bin/cli.mjs）",
+      "prePatchBackup": "make-cli.mjs.pre-patch.bak",
+      "applyScript": "apply-active-guard.mjs",
+      "backupSizeBytes": 12033830,
+      "backupSha256": "06358EE93F156BC4ED3B946AF1A9C3FAA10AC806DD888F0747F8CA5CE484BDE8",
+      "backupDate": "2026-08-26",
+      "status": "backed-up",
+      "trigger": "Make 启动/运行异常且与 active-guard 相关时，由豆包评估后应用",
+      "applyRule": "应用前必须校验 pre-patch 备份完整（大小/哈希），应用后跑 smoke-test + 起栈验证"
+    }
+  ]
+}

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Axhub 产品原型设计工作台</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>" />
+</head>
+<body>
+  <!-- 顶部：工作台栏 -->
+  <header class="topbar">
+    <div class="brand">🧩 原型设计工作台</div>
+
+    <label class="field project-field">
+      <span>项目</span>
+      <select id="projectSelect" title="切换活动项目"></select>
+    </label>
+
+    <div class="axhub-status" id="axhubStatus" title="Axhub Make 服务状态">
+      <span class="dot" id="axhubDot"></span>
+      <span id="axhubStatusText">检测中…</span>
+    </div>
+
+    <div class="topbar-actions">
+      <button id="btnAnnotate" class="btn" title="附注模式：选择原型元素添加附注，卡片列在左侧">🏷 附注</button>
+      <button id="btnAdminView" class="btn ghost" title="在主区域显示 Axhub 管理页">管理页</button>
+      <button id="btnTogglePanel" class="btn ghost" title="展开/收起左侧功能面板">功能面板</button>
+    </div>
+  </header>
+
+  <!-- 顶部：目录条（原型条目导航） -->
+  <nav class="entrybar" id="entrybar">
+    <button class="entrybar-label" id="entryLabel" title="打开项目面板">
+      <span class="label-icon">☰</span> 目录
+    </button>
+    <div class="entrybar-scroll" id="entryChips">
+      <span class="entry-chip placeholder">加载中…</span>
+    </div>
+  </nav>
+
+  <!-- 主体：左功能面板 + 右 iframe -->
+  <main class="workspace">
+    <aside class="side-panel" id="sidePanel">
+      <div class="panel-tabs">
+        <button class="panel-tab" data-panel="projects" data-label="项目" data-short="项目">项目</button>
+        <button class="panel-tab" data-panel="ai" data-label="AI 接入" data-short="AI">AI 接入</button>
+        <button class="panel-tab" data-panel="git" data-label="版本管理" data-short="版本">版本管理</button>
+        <button class="panel-tab" data-panel="skills" data-label="技能" data-short="技能">技能</button>
+        <button class="panel-tab" data-panel="rules" data-label="规则" data-short="规则">规则</button>
+        <button class="panel-tab" data-panel="notes" data-label="附注" data-short="附注">附注</button>
+      </div>
+
+      <div class="panel-body">        <!-- 项目面板 -->
+        <section class="panel active" id="panel-projects">
+          <div class="panel-head">
+            <h3>项目列表</h3>
+            <div class="row">
+              <button id="btnRegisterProject" class="btn">登记已有</button>
+              <button id="btnNewProject" class="btn primary">＋ 新建项目</button>
+            </div>
+          </div>
+          <div id="projectList" class="project-list"><p class="muted">加载中…</p></div>
+        </section>
+
+        <!-- AI 接入面板 -->
+        <section class="panel" id="panel-ai">
+          <h3>Agent 状态</h3>
+          <p class="muted" style="margin-bottom:8px">未安装的 Agent 可一键安装（npm 全局包）；安装后还需在 Agent 命令行内完成登录/凭据配置。</p>
+          <div id="agentStatus" class="kv-list"><p class="muted">加载中…</p></div>
+
+          <h3>默认 AI Agent</h3>
+          <div class="form">
+            <label>任务默认使用的 Agent
+              <select id="aiDefaultAgent"></select>
+            </label>
+            <button id="aiSaveAgent" class="btn primary">保存</button>
+          </div>
+
+          <h3>ACP 运行时</h3>
+          <div id="acpStatus" class="kv-list"><p class="muted">加载中…</p></div>
+
+          <h3>AI 生图 API</h3>
+          <div class="form">
+            <label>Base URL<input id="aiImgBaseUrl" type="text" placeholder="https://api.example.com/v1" /></label>
+            <label>API Key<input id="aiImgApiKey" type="password" placeholder="sk-…" /></label>
+            <label>模型<input id="aiImgModel" type="text" placeholder="gpt-image-1 / …" /></label>
+            <div class="row">
+              <button id="aiImgTest" class="btn">测试连接</button>
+              <button id="aiImgSave" class="btn primary">保存</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 版本管理面板 -->
+        <section class="panel" id="panel-git">
+          <div id="gitSummary" class="kv-list"><p class="muted">加载中…</p></div>
+
+          <h3>分支</h3>
+          <div class="form">
+            <label>切换到现有分支
+              <div class="row">
+                <select id="gitBranchSel"></select>
+                <button id="gitBranchSwitch" class="btn">切换</button>
+              </div>
+            </label>
+            <label>或新建并切换
+              <div class="row">
+                <input id="gitBranchNew" type="text" placeholder="新分支名称" />
+                <button id="gitBranchCreate" class="btn">创建</button>
+              </div>
+            </label>
+          </div>
+
+          <h3>提交变更</h3>
+          <div class="form">
+            <label>提交说明<input id="gitMessage" type="text" placeholder="本次变更做了什么" /></label>
+            <div class="row">
+              <select id="gitScope">
+                <option value="">全部变更</option>
+              </select>
+              <button id="gitCommit" class="btn primary">提交</button>
+            </div>
+          </div>
+
+          <h3>变更文件（按类型分组）</h3>
+          <div id="gitChanges" class="change-groups"><p class="muted">加载中…</p></div>
+
+          <h3>最近提交</h3>
+          <div id="gitLog" class="commit-log"><p class="muted">加载中…</p></div>
+
+          <div class="row git-actions">
+            <button id="gitInit" class="btn">初始化仓库</button>
+            <button id="gitPush" class="btn">推送到远程</button>
+            <button id="gitDiff" class="btn">未提交 Diff</button>
+            <button id="gitRefresh" class="btn">刷新</button>
+          </div>
+        </section>
+
+        <!-- 技能面板 -->
+        <section class="panel" id="panel-skills">
+          <div class="row">
+            <select id="skillsRoot">
+              <option value=".claude/skills">.claude/skills</option>
+              <option value=".agents/skills">.agents/skills</option>
+              <option value="skills-lock.json">skills-lock.json</option>
+            </select>
+            <button id="skillsRefresh" class="btn">刷新</button>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <input id="skillsNewName" type="text" placeholder="新文件名.md" style="flex:1;min-width:0" />
+            <button id="skillsNew" class="btn">新建</button>
+            <button id="skillsDelete" class="btn" title="删除当前打开的文件">删除</button>
+          </div>
+          <div id="skillsTree" class="file-tree"><p class="muted">加载中…</p></div>
+          <div class="editor-area">
+            <div class="editor-head">
+              <span id="skillsEditPath" class="edit-path">未选择文件</span>
+              <button id="skillsSave" class="btn primary" disabled>保存 (Ctrl+S)</button>
+            </div>
+            <textarea id="skillsEditor" spellcheck="false" placeholder="选择左侧文件进行编辑"></textarea>
+          </div>
+        </section>
+
+        <!-- 规则面板 -->
+        <section class="panel" id="panel-rules">
+          <div class="row">
+            <select id="rulesRoot">
+              <option value="rules">rules/</option>
+              <option value="AGENTS.md">AGENTS.md</option>
+              <option value="CLAUDE.md">CLAUDE.md</option>
+            </select>
+            <button id="rulesRefresh" class="btn">刷新</button>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <input id="rulesNewName" type="text" placeholder="新文件名.md" style="flex:1;min-width:0" />
+            <button id="rulesNew" class="btn">新建</button>
+            <button id="rulesDelete" class="btn" title="删除当前打开的文件">删除</button>
+          </div>
+          <div id="rulesTree" class="file-tree"><p class="muted">加载中…</p></div>
+          <div class="editor-area">
+            <div class="editor-head">
+              <span id="rulesEditPath" class="edit-path">未选择文件</span>
+              <button id="rulesSave" class="btn primary" disabled>保存 (Ctrl+S)</button>
+            </div>
+            <textarea id="rulesEditor" spellcheck="false" placeholder="选择左侧文件进行编辑"></textarea>
+          </div>
+        </section>
+
+        <!-- 附注面板 -->
+        <section class="panel" id="panel-notes">
+          <p class="muted" style="margin-bottom:10px" id="notesHint">预览原型时，该原型的附注会自动显示在这里（悬停卡片可联动高亮元素）；点顶栏「附注」进入编辑，点选原型元素即可添加。</p>
+          <div id="notesList" class="notes-list"><p class="muted">（暂无附注）</p></div>
+        </section>
+      </div>
+
+      <button id="panelHandle" class="panel-handle" title="半展开">❮</button>
+    </aside>
+
+    <div class="main-frame">
+      <iframe id="mainFrame" src="about:blank" title="Axhub Make"></iframe>
+      <div class="frame-hint" id="frameHint">
+        <p id="frameHintMain">Axhub Make 启动中… 首次启动需要下载依赖，可能需要几分钟。</p>
+        <p class="muted" id="frameHintSub">就绪后此处将显示 Axhub 管理页。</p>
+      </div>
+      <div class="annotate-toolbar" id="annotateToolbar" hidden>
+        <button id="btnAddNote" class="btn primary">＋ 添加附注</button>
+        <button id="btnExitAnnotate" class="btn" title="结束编辑，回到预览（附注仍显示）">完成</button>
+      </div>
+      <div class="note-popover" id="notePopover" hidden>
+        <div class="note-pop-head">新建附注 · <span id="notePopTarget" class="muted"></span></div>
+        <textarea id="noteText" placeholder="输入附注内容…（Ctrl+Enter 保存）"></textarea>
+        <div class="row">
+          <button id="noteSave" class="btn primary">保存</button>
+          <button id="noteCancel" class="btn">取消</button>
+        </div>
+      </div>
+    </div>
+    <svg id="connSvg"></svg>
+  </main>
+
+  <!-- 页面内确认/输入弹窗（替代原生 confirm/prompt，避免阻塞） -->
+  <div class="modal-mask" id="wbConfirmModal" hidden>
+    <div class="modal modal-sm">
+      <div class="modal-head"><span id="wbConfirmTitle">确认</span></div>
+      <div class="modal-body">
+        <p id="wbConfirmMsg" style="line-height:1.6;white-space:pre-wrap"></p>
+        <input id="wbConfirmInput" type="text" hidden />
+      </div>
+      <div class="row" style="padding:0 16px 14px;gap:8px">
+        <button id="wbConfirmOk" class="btn primary">确定</button>
+        <button id="wbConfirmCancel" class="btn">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diff 查看弹窗 -->
+  <div class="modal-mask" id="diffModal" hidden>
+    <div class="modal" style="width:860px">
+      <div class="modal-head">
+        <span>未提交变更 Diff</span>
+        <button id="diffClose" class="btn ghost" title="关闭">✕</button>
+      </div>
+      <div class="modal-body">
+        <pre id="diffPre" class="diff-pre"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 项目快捷版本管理弹窗 -->
+  <div class="modal-mask" id="gitQuickModal" hidden>
+    <div class="modal modal-sm">
+      <div class="modal-head">
+        <span id="gqTitle">版本管理</span>
+        <button id="gqClose" class="btn ghost" title="关闭">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="gqStatus" class="kv-list"><p class="muted">加载中…</p></div>
+        <section id="gqInit" hidden>
+          <p class="muted" style="margin:8px 0">该项目还没有 Git 仓库，初始化后会自动完成首次全量提交。</p>
+          <button id="gqInitBtn" class="btn primary">初始化仓库</button>
+        </section>
+        <section id="gqOps" hidden>
+          <h3>切换分支</h3>
+          <div class="form">
+            <label>现有分支
+              <div class="row">
+                <select id="gqBranchSel"></select>
+                <button id="gqSwitch" class="btn">切换</button>
+              </div>
+            </label>
+            <label>或新建并切换
+              <div class="row">
+                <input id="gqNewBranch" type="text" placeholder="新分支名称" />
+                <button id="gqCreateBranch" class="btn">创建</button>
+              </div>
+            </label>
+          </div>
+          <h3>提交当前变更</h3>
+          <div class="form">
+            <label>提交说明（默认时间戳，可修改）
+              <input id="gqMsg" type="text" />
+            </label>
+            <div class="row">
+              <button id="gqCommit" class="btn primary">提交变更</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新建/登记项目弹窗 -->
+  <div class="modal-mask" id="projectModal" hidden>
+    <div class="modal modal-sm">
+      <div class="modal-head">
+        <span id="projectModalTitle">新建项目</span>
+        <button id="projectModalClose" class="btn ghost" title="关闭">✕</button>
+      </div>
+      <div class="modal-body">
+        <section id="pmCreate">
+          <div class="form">
+            <label>项目名称<input id="npName" type="text" placeholder="例如：商城 App 原型" /></label>
+            <label>父目录（项目将创建在此目录下）
+              <div class="row">
+                <input id="npParent" type="text" placeholder="点击右侧按钮选择目录" readonly />
+                <button id="npPick" class="btn">选择</button>
+              </div>
+            </label>
+            <label>文件夹名
+              <div class="row">
+                <input id="npFolder" type="text" placeholder="填好项目名称后自动建议" />
+                <button id="npCreate" class="btn primary">创建</button>
+              </div>
+            </label>
+          </div>
+        </section>
+        <section id="pmRegister" hidden>
+          <div class="form">
+            <label>项目目录（需包含 .axhub/make/client.json 标记）
+              <div class="row">
+                <input id="reRoot" type="text" placeholder="点击右侧按钮选择目录" readonly />
+                <button id="rePick" class="btn">选择</button>
+              </div>
+            </label>
+            <div class="row">
+              <button id="reRegister" class="btn primary">登记</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- 目录选择器（页面内浏览，替代原生对话框） -->
+  <div class="modal-mask" id="folderModal" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <span id="folderModalTitle">选择目录</span>
+        <button id="folderClose" class="btn ghost" title="关闭">✕</button>
+      </div>
+      <div class="modal-path">
+        <button id="folderUp" class="btn" title="上一级">⬆ 上一级</button>
+        <span id="folderCrumb" class="crumb"></span>
+      </div>
+      <div class="folder-list" id="folderList"><p class="muted">加载中…</p></div>
+      <div class="modal-foot">
+        <input id="folderManual" type="text" placeholder="或直接粘贴完整路径，如 D:\projects" />
+        <button id="folderNew" class="btn">新建文件夹</button>
+        <button id="folderOk" class="btn primary">选择此目录</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

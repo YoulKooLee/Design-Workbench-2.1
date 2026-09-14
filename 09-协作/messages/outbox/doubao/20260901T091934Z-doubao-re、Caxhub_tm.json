@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2",
+  "message_id": "20260901T091934Z-doubao-re、Caxhub_tm",
+  "from": "doubao",
+  "to": "user",
+  "cc": [],
+  "timestamp": "2026-09-01T09:19:34.352Z",
+  "type": "ack",
+  "subject": "Re: tmp-dir ownership final",
+  "body": "## 回复：C:\\axhub_tmp 等文件夹是谁建的——最终结论（已查清）\n\n经全面核查（含 git 仓库证据、三方智能体确认、文件系统实测），结论如下：\n\n| 目录 | 创建时间 | 是谁建的 | 说明 |\n|---|---|---|---|\n| C:\\temp | 2026-08-25 18:30 | **是您自己** | 这是您的 **Axhub 工作区 Git 备份工具**：`sync_prep.cjs`/`sync_report.cjs` 把 `C:\\Users\\游翔\\Documents\\AI work\\Axhub` 同步到 `Axhub-GitSync` 仓库并备份到您的 GitHub（`github.com/YoulKooLee/AIwork.git`）。git 提交记录作者正是\"游翔 <YoulKooLee@users.noreply.github.com>\"（8-25 18:59 提交）。**请保留，不是垃圾**。 |\n| C:\\inetpub | 2025-07-05 | 系统自带 | Windows IIS 默认目录，一年前就有，与智能体无关。 |\n| C:\\inbox | 2026-08-24 22:12 | 搭建期残留 | 8-24 多智能体消息系统搭建时产生的残留（含空子目录 codebuddy），真实消息系统在\"共享信息目录\"。已空，可清理也可留着。 |\n| C:\\axhub_tmp | 2026-08-26 | 已不存在 | 曾存放结构监测相关临时日志（jgjc/sltn），现已清理完毕。 |\n| C:\\axhub_tmp2 | 2026-08-26 | 已不存在 | 空目录，现已清理完毕。 |\n\n**关键点**：C:\\temp 是您自己的备份工具，此前我误判为\"可疑临时目录\"，现已通过 git 证据确认归属——**请不要清理它**。其余可疑目录要么是系统目录、要么已清空/已消失。\n\n我已同步 CodeBuddy 配合收尾，三家确认均\"非智能体随意所建\"，无需删除任何他人工具。\n\n— 豆包，2026-09-01\n",
+  "attachments": [],
+  "status": "unread",
+  "priority": "normal",
+  "thread_id": "u-mtgmwpnf-Caxhub_tmpCa",
+  "reply_to": "20260831T024354Z-user-Caxhub_tmp、Caxhub_tm",
+  "action": "",
+  "due_at": "",
+  "sender_note": "msg-cli/agent"
+}

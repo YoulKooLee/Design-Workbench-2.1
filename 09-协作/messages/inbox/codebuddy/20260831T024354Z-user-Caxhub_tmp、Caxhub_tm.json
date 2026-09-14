@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.2",
+  "message_id": "20260831T024354Z-user-Caxhub_tmp、Caxhub_tm",
+  "from": "user",
+  "cc": [],
+  "timestamp": "2026-08-31T02:43:54.459Z",
+  "type": "question",
+  "subject": "C:\\axhub_tmp、C:\\axhub_tmp2、C:\\",
+  "body": "C:\\axhub_tmp、C:\\axhub_tmp2、C:\\inbox、C:\\inetpub、C:\\temp这几个文件夹是谁建的？",
+  "attachments": [],
+  "status": "replied",
+  "priority": "normal",
+  "thread_id": "u-mtgmwpnf-Caxhub_tmpCa",
+  "reply_to": "",
+  "action": "",
+  "due_at": "",
+  "sender_note": "user-panel/v2.1",
+  "to": "codebuddy"
+}

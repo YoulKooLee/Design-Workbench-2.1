@@ -1,0 +1,44 @@
+# ===== 依赖 =====
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# ===== 本机运行态（会随会话变化，不入库）=====
+**/.axhub/make/sessions/
+**/.axhub/make/.dev-server-info.json
+**/.axhub/make/.launch-status.json
+**/.axhub/make/*.log
+.vite-log.txt
+*.vite-log.txt
+
+# ===== 工具 / IDE 本地目录 =====
+.playwright-cli/
+.workbuddy/
+.codebuddy/
+.vscode/
+.idea/
+.cursor/
+
+# ===== 日志与临时产物 =====
+07-日志/
+*.log
+_tmp-*
+_tmp/
+_git-scan.mjs
+page-latest.yml
+*.tmp
+~$*
+
+# ===== 备份与打包残留 =====
+*.bak
+*.orig
+*.backup
+05-回收站/
+dist/
+.vite/
+
+# ===== 系统文件 =====
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
