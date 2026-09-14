@@ -27,6 +27,9 @@ _tmp/
 _git-scan.mjs
 page-latest.yml
 *.tmp
+*.tmp.*
+*.tmp.ps1
+**/launch-*.tmp.ps1
 ~$*
 
 # ===== 备份与打包残留 =====
