@@ -1,26 +1,25 @@
 @echo off
-rem ä¸€é”®å¯åŠ¨æ‰€æœ‰æ™ºèƒ½ä½“ç›‘å¬ï¼ˆAgentHub ç›‘å¬ä¸­æ¢ï¼‰
-rem âš  å¿…é¡»ã€ç”¨æˆ·åŒå‡»è¿è¡Œã€‘ï¼šç¯å¢ƒä¼šå›æ”¶æ™ºèƒ½ä½“è‡ªè¡Œå¯åŠ¨çš„è¿›ç¨‹ï¼Œåªæœ‰ç”¨æˆ·åŒå‡»çš„è¿›ç¨‹æ‰ç¨³å®šå¸¸é©»ã€‚
-rem ç”¨ VBSï¼ˆCurrentDirectory æ–¹æ¡ˆï¼‰éšè—çª—å£å¯åŠ¨ nodeï¼Œä¸"å¯åŠ¨é€šä¿¡é¢æ¿.bat"åŒä¸€æœºåˆ¶ã€‚
-chcp 65001 >nul
-title AgentHub æ™ºèƒ½ä½“ç›‘å¬ä¸­æ¢
+rem Ò»¼üÆô¶¯ËùÓĞÖÇÄÜÌå¼àÌı£¨AgentHub ¼àÌıÖĞÊà£©
+rem  ±ØĞëÓÃ»§Ë«»÷ÔËĞĞ£º»·¾³»á»ØÊÕÖÇÄÜÌå×ÔĞĞÆô¶¯µÄ½ø³Ì£¬Ö»ÓĞÓÃ»§Ë«»÷µÄ½ø³Ì²ÅÎÈ¶¨³£×¤¡£
+rem ÓÃ VBS£¨CurrentDirectory ·½°¸£©Òş²Ø´°¿ÚÆô¶¯ node£¬Óë"Æô¶¯Í¨ĞÅÃæ°å.bat"Í¬Ò»»úÖÆ¡£
+title AgentHub ÖÇÄÜÌå¼àÌıÖĞÊà
 setlocal
 set "DIR=%~dp0"
 set "NODE=C:\Program Files\nodejs\node.exe"
 
 echo ============================================
-echo   [AgentHub] ä¸€é”®å¯åŠ¨æ‰€æœ‰æ™ºèƒ½ä½“ç›‘å¬
+echo   [AgentHub] Ò»¼üÆô¶¯ËùÓĞÖÇÄÜÌå¼àÌı
 echo ============================================
 echo.
 if not exist "%NODE%" (
-    echo [é”™è¯¯] æœªæ‰¾åˆ°ç³»ç»Ÿ node: %NODE%
-    echo è¯·ç¡®è®¤å·²å®‰è£… Node.js åˆ° C:\Program Files\nodejs
+    echo [´íÎó] Î´ÕÒµ½ÏµÍ³ node: %NODE%
+    echo ÇëÈ·ÈÏÒÑ°²×° Node.js µ½ C:\Program Files\nodejs
     pause
     exit /b 1
 )
 
-rem 1. ç»Ÿä¸€é€šçŸ¥ç›‘å¬ hubï¼ˆæ ¸å¿ƒï¼šè½®è¯¢å…¨éƒ¨æ”¶ä»¶ç®±ï¼Œæ–°æ¶ˆæ¯å¼¹çª—é€šçŸ¥ï¼‰
-rem 2. DeepSeek è‡ªåŠ¨å¤„ç† watcherï¼ˆauto_ack/å›å¤/å‡çº§ï¼›è‹¥ dsh å¼•æ“æœªä¿®å¤ä¼šå¤±è´¥é€€å‡ºï¼Œä¸å½±å“ hubï¼‰
+rem 1. Í³Ò»Í¨Öª¼àÌı hub£¨ºËĞÄ£ºÂÖÑ¯È«²¿ÊÕ¼şÏä£¬ĞÂÏûÏ¢µ¯´°Í¨Öª£©
+rem 2. DeepSeek ×Ô¶¯´¦Àí watcher£¨auto_ack/»Ø¸´/Éı¼¶£»Èô dsh ÒıÇæÎ´ĞŞ¸´»áÊ§°ÜÍË³ö£¬²»Ó°Ïì hub£©
 set "VBS=%TEMP%\agenthub-launch.vbs"
 (
 echo Set ws = CreateObject^("WScript.Shell"^)
@@ -31,11 +30,11 @@ echo ws.Run """%NODE%"" inbox-watcher.mjs", 0, False
 cscript //nologo "%VBS%"
 del "%VBS%" >nul 2>&1
 
-echo  [OK] hub é€šçŸ¥ç›‘å¬å·²å¯åŠ¨ï¼ˆagent-hub-watcher.mjsï¼Œéšè—çª—å£ï¼‰
-echo  [OK] DeepSeek è‡ªåŠ¨å¤„ç†å·²å¯åŠ¨ï¼ˆinbox-watcher.mjsï¼Œéšè—çª—å£ï¼‰
+echo  [OK] hub Í¨Öª¼àÌıÒÑÆô¶¯£¨agent-hub-watcher.mjs£¬Òş²Ø´°¿Ú£©
+echo  [OK] DeepSeek ×Ô¶¯´¦ÀíÒÑÆô¶¯£¨inbox-watcher.mjs£¬Òş²Ø´°¿Ú£©
 echo.
-echo  æ—¥å¿—ï¼š%DIR%agent-hub-watcher.log
-echo  åœæ­¢ï¼šè¿è¡Œã€Œåœæ­¢æ‰€æœ‰æ™ºèƒ½ä½“ç›‘å¬.batã€
+echo  ÈÕÖ¾£º%DIR%agent-hub-watcher.log
+echo  Í£Ö¹£ºÔËĞĞ¡¸Í£Ö¹ËùÓĞÖÇÄÜÌå¼àÌı.bat¡¹
 echo.
 pause
 endlocal

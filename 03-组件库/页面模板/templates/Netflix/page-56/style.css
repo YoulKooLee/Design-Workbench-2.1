@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Browser rendering normalizations focused on hard typographical clarity */
+button, div {
+    -webkit-tap-highlight-color: transparent;
+}
+p, span, h1 {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

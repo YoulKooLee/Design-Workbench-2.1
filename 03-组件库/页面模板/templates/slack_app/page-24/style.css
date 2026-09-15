@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .ios-border {
+    border-color: #E5E5EA;
+  }
+}

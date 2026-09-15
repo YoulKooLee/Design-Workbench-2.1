@@ -1,0 +1,4 @@
+Title: 企业供应链管理仪表盘
+Platform: Figma Community
+Source: https://www.figma.com/community/file/1539514812839902866/enterprise-supply-chain-management-dashboard
+Imported for Axhub Make template library.

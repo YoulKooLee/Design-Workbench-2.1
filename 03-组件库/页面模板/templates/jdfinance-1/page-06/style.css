@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Minimalist pattern background for top section */
+  .bg-community-header {
+    background: 
+      radial-gradient(circle at top right, rgba(255, 230, 235, 0.6) 0%, transparent 50%),
+      radial-gradient(circle at top left, rgba(255, 248, 231, 0.5) 0%, transparent 40%),
+      linear-gradient(180deg, rgba(245, 246, 248, 0.4) 0%, #f5f6f8 150px);
+  }
+
+  /* Hide scrollbar for horizontal scroll area */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  /* Leaderboard Card Gradients */
+  .bg-rank-1 {
+    background: linear-gradient(180deg, #fff9e6 0%, #fefcf3 100%);
+  }
+  .bg-rank-2 {
+    background: linear-gradient(180deg, #eef7ff 0%, #f7fafd 100%);
+  }
+  .bg-rank-3 {
+    background: linear-gradient(180deg, #fff0ea 0%, #fef8f5 100%);
+  }
+
+  .text-title-ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

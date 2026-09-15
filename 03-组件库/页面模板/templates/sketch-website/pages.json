@@ -1,0 +1,29 @@
+{
+  "pages": [
+    { "name": "Switch to Sketch", "path": "01-switch-to-sketch" },
+    { "name": "Sketch vs Figma", "path": "02-sketch-vs-figma" },
+    { "name": "Best Platform", "path": "03-best-platform" },
+    { "name": "Developer Handoff", "path": "04-developer-handoff" },
+    { "name": "Prototyping Tools", "path": "05-prototyping-tools" },
+    { "name": "Blog", "path": "06-blog" },
+    { "name": "What's New", "path": "07-whats-new" },
+    { "name": "Design Collaborate", "path": "08-design-collaborate" },
+    { "name": "Workspace", "path": "09-workspace" },
+    { "name": "Collaborative Design", "path": "10-collaborative-design" },
+    { "name": "Community", "path": "11-community" },
+    { "name": "Pricing", "path": "12-pricing" },
+    { "name": "Documentation", "path": "13-documentation" },
+    { "name": "Apps", "path": "14-apps" },
+    { "name": "Labs", "path": "15-labs" },
+    { "name": "Education", "path": "16-education" },
+    { "name": "Careers", "path": "17-careers" },
+    { "name": "Sketch 101", "path": "18-sketch-101" },
+    { "name": "About Us", "path": "19-about-us" },
+    { "name": "Plugins", "path": "20-plugins" },
+    { "name": "Sketch2React", "path": "21-sketch2react" },
+    { "name": "Support", "path": "22-support" },
+    { "name": "Developer", "path": "23-developer" },
+    { "name": "Discover", "path": "24-discover" },
+    { "name": "Newsletter", "path": "25-newsletter" }
+  ]
+}

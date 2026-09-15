@@ -1,0 +1,4 @@
+Title: UGC Video AI Agent 工作流
+Platform: v0
+Source: current Make project / src/prototypes/ugc-video-ai-agent-workflow
+Imported for Axhub Make template library.

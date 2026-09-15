@@ -1,0 +1,9 @@
+.gpt-image-playground-prototype {
+  min-height: 100vh;
+  font-family: var(--font-ui-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.gpt-image-playground-prototype,
+.gpt-image-playground-prototype * {
+  box-sizing: border-box;
+}

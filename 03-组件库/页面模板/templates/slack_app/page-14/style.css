@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .ios-border {
+    border-color: #E5E5EA;
+  }
+}
+
+@keyframes iosDropOpacity {
+  0% { opacity: 1; }
+  100% { opacity: 0.25; }
+}
+
+.spinner-bar {
+  animation: iosDropOpacity 1.2s linear infinite;
+  opacity: 0.25;
+}

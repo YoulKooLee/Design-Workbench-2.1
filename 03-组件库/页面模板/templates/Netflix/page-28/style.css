@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Infinite Hide Scrollbar Utility */
+.custom-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.custom-hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}

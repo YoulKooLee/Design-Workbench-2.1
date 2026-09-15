@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Universal horizontal scrollbar elimination */
+.custom-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.custom-hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

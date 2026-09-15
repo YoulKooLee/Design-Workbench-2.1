@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Purge standard styling side-effects */
+button, div {
+    -webkit-tap-highlight-color: transparent;
+}

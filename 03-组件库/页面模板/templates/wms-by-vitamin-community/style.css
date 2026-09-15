@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@source "./src/**/*.{js,ts,jsx,tsx}";
+@import "tw-animate-css";
+@import "./src/styles/globals.css";
+
+/* Axhub runtime style bridge only. Keep shared visual styles in `src/styles/**`. */
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100vh;
+    height: 100%;
+    margin: 0;
+  }
+}

@@ -1,2 +1,0 @@
-﻿$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;
-& "C:\Users\游翔\Documents\AI work\产品设计工作台\06-运行脚本\launch-project.ps1" -RootDir "C:\Users\游翔\Documents\AI work\产品设计工作台" -ProjectName "01-项目\指标管理平台" -NodePath "C:\Users\游翔\.workbuddy\binaries\node\versions\22.22.2-3\node.exe" -MakePort "53817"

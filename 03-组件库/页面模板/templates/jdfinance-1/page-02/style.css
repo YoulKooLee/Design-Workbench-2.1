@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .bg-jd-header-pattern {
+    background: 
+      radial-gradient(ellipse at top right, rgba(255,190,200,0.4) 0%, transparent 60%),
+      linear-gradient(180deg, #fff0f2 0%, #f7f7f9 150px);
+  }
+  
+  .bg-member-bronze {
+    background: linear-gradient(90deg, #d89f78, #b86e45);
+  }
+
+  .text-gradient-member {
+    background: linear-gradient(90deg, #6c3f15, #85501e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .pie-chart {
+    background: conic-gradient(
+      #ff5a5f 0% 60%,
+      #ffe1e1 60% 80%,
+      #ffbaba 80% 100%
+    );
+  }
+}

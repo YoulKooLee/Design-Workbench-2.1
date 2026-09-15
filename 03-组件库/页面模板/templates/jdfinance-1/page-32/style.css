@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Timeline node red ring */
+  .timeline-node {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3px solid #f64c4c;
+    background-color: white;
+    position: relative;
+    z-index: 10;
+    box-shadow: inset 0 0 0 1px white;
+  }
+  
+  .timeline-node::after {
+     content: '';
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     width: 4px;
+     height: 4px;
+     background-color: #f64c4c;
+     border-radius: 50%;
+  }
+
+  /* Survey floating side badge text vertical alignment */
+  .survey-badge {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 2px;
+  }
+
+  /* Font scalar icon custom SVG CSS placeholder */
+  .font-scale-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+  }
+}

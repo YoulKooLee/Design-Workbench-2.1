@@ -1,0 +1,4 @@
+Title: ChatGPT Tinte 主题组件集
+Platform: v0
+Source: current Make project / src/prototypes/chat-gpt-theme-built-with-tinte
+Imported for Axhub Make template library.

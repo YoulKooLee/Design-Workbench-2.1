@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Core Font Aliasing & System Feedback Nullification */
+button, div {
+    -webkit-tap-highlight-color: transparent;
+}
+span, p, h1 {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

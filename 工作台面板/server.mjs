@@ -31,6 +31,8 @@ const CFG = (() => {
 })();
 const PORT = Number(process.env.AXHUB_MANAGER_PORT) || Number(CFG.workbench?.panelPort) || 7788;
 const BIND_HOST = CFG.workbench?.bindHost || '127.0.0.1';
+// Make-Template 页面模板目录（新增项目可选模板；可经 workbench.config.json 的 workbench.makeTemplatesDir 覆盖）
+const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench?.makeTemplatesDir || 'C:\\Users\\游翔\\Documents\\AI work\\产品设计工作台\\03-组件库\\页面模板';
 
 // ===== AI 联动上下文 =====
 // 工作台级多项目上下文（供 codebuddy / workbuddy 感知"当前编辑项目 + 全部运行中项目"）
@@ -378,7 +380,37 @@ function readProjectOwner(dir) {
 function writeProjectOwner(dir, owner) {
   try {
     const pm = path.join(dir, 'project-memory.md');
-    if (!fs.existsSync(pm)) return { ok: false, msg: '项目缺少 project-memory.md，无法关联智能体' };
+    if (!fs.existsSync(pm)) {
+      // admin 框架等资源包项目无 project-memory.md：自动创建最小协作档案，保证可关联智能体
+      const tpl = '# 项目记忆\n' +
+        '\n' +
+        '> 本项目专属记忆。**优先级最高**：与工作台通用规则（Agent\\_Stack）冲突时，以本文件为准。\n' +
+        '\n' +
+        '## 〇、协作信息（v2 新增）\n' +
+        '\n' +
+        '| 字段 | 值 | 说明 |\n' +
+        '|---|---|---|\n' +
+        '| owner_agent |  ' + owner + '| 负责智能体：doubao / codebuddy / workbuddy / deepseek / qwen |\n' +
+        '| collaboration | single | single=单智能体 / pipeline=流水线 / dispatch=路由分诊 |\n' +
+        '| room | （未关联） | 可选：共享目录 `rooms/<项目>-<任务>` |\n' +
+        '| handoff | `handoff.md` | 交接包：进度 / 推理注释 / 产物 / 已知坑（双写：共享目录 + 项目本地） |\n' +
+        '\n' +
+        '## 一、项目画像\n' +
+        '\n' +
+        '* **定位**：<待补充>\n' +
+        '\n' +
+        '## 二、项目经验\n' +
+        '\n' +
+        '> 本项目踩坑记录，一条一组。格式：`日期 | 场景 | 根因 | 修复 | 验证`。\n' +
+        '\n' +
+        '## 三、结项状态\n' +
+        '\n' +
+        '* **结项日期**：\n' +
+        '* **提炼到工作台层的方法论**：<规则 id 或「无」>\n' +
+        '* **归档位置**：<`Agent\\_Stack/05-archive/结项/<项目名>-<日期>/` 或「无」>\n';
+      fs.writeFileSync(pm, tpl, 'utf8');
+      return { ok: true, created: true };
+    }
     let txt = fs.readFileSync(pm, 'utf8');
     const re = /(\|\s*owner_agent\s*\|\s*)[A-Za-z0-9_-]*(\s*\|)/;
     if (!re.test(txt)) return { ok: false, msg: 'project-memory.md 缺少 owner_agent 行，请按协作规范补表头' };
@@ -462,6 +494,49 @@ function isProjectDir(dir) {
       const p = JSON.parse(fs.readFileSync(pkg, 'utf8'));
       if (p.name === '@axhub/make-client') return true;
     }
+    // admin 框架工程（vibepm-admin 模板，资源包本体）：Vue/React 工程特征
+    if (fs.existsSync(pkg) && fs.existsSync(path.join(dir, 'index.html')) &&
+        (fs.existsSync(path.join(dir, 'src', 'main.ts')) || fs.existsSync(path.join(dir, 'src', 'main.tsx')) || fs.existsSync(path.join(dir, 'src', 'main.js')))) {
+      return true;
+    }
+  } catch { /* ignore */ }
+  return false;
+}
+
+// 读取 admin 工程 Vite 端口（.env 的 VITE_PORT，默认 3006）
+function readAdminPort(dir) {
+  try {
+    const env = fs.readFileSync(path.join(dir, '.env'), 'utf8');
+    const m = env.match(/VITE_PORT\s*=\s*(\d+)/);
+    if (m) return m[1];
+  } catch { /* ignore */ }
+  return '3006';
+}
+
+// 端口是否已被监听（admin 启动复用守卫：已在运行则不再重复拉起 vite）
+function isPortOpen(port, timeout = 1200) {
+  return new Promise((resolve) => {
+    const sock = net.connect({ port: Number(port), host: '127.0.0.1' });
+    sock.setTimeout(timeout);
+    sock.once('connect', () => { sock.destroy(); resolve(true); });
+    sock.once('error', () => { sock.destroy(); resolve(false); });
+    sock.once('timeout', () => { sock.destroy(); resolve(false); });
+  });
+}
+
+// admin 框架项目判定：vibepm-admin 资源包（Vue 管理后台工程，非 make 原型工程）。
+// 优先读 .axhub/framework 标记（创建时写入）；兜底按工程特征（Vue 工程 + 无 src/prototypes + 包名 axuremart-ai-web）。
+function isAdminProject(dir) {
+  try {
+    const flag = path.join(dir, '.axhub', 'framework');
+    if (fs.existsSync(flag)) {
+      return fs.readFileSync(flag, 'utf8').trim() === 'admin';
+    }
+    const pkg = path.join(dir, 'package.json');
+    if (fs.existsSync(pkg) && fs.existsSync(path.join(dir, 'index.html')) && !fs.existsSync(path.join(dir, 'src', 'prototypes'))) {
+      const p = JSON.parse(fs.readFileSync(pkg, 'utf8'));
+      if (p.name === 'axuremart-ai-web') return true;
+    }
   } catch { /* ignore */ }
   return false;
 }
@@ -482,6 +557,8 @@ function collectProjects(dir, prefix, out, depth) {
         relative: rel,
         path: full,
         isTemplate: e.name === '_project-template',
+        // admin 框架项目：vibepm-admin 资源包本体（Vue 管理后台工程，非 make 原型工程）
+        isAdmin: isAdminProject(full),
         // 演示项目：目录内存在 .axhub/demo.flag 标记，工作台仅允许「启动开发栈」
         isDemo: fs.existsSync(path.join(full, '.axhub', 'demo.flag')),
         nested: prefix !== '',
@@ -513,6 +590,18 @@ function isDemoRelative(relative) {
   return fs.existsSync(path.join(dir, '.axhub', 'demo.flag'));
 }
 const DEMO_GUARD_MSG = '演示项目为只读，仅支持「启动开发栈」；如需修改请先复制模板新建项目';
+
+// 安全路径解析（防路径穿越 + 命令注入）：
+// relative 解析后必须仍在 AXHUB_ROOT 内，且不含 shell 危险字符（引号 / 反引号 / $ / 管道 / 重定向 / 花括号等）
+function safeResolve(relative) {
+  if (typeof relative !== 'string' || !relative) return null;
+  if (/["`$&|;<>(){}\[\]!*?]/.test(relative)) return null;
+  const norm = String(relative).replace(/[\\/]+/g, path.sep);
+  const dir = path.resolve(AXHUB_ROOT, norm);
+  if (dir !== AXHUB_ROOT && !dir.startsWith(AXHUB_ROOT + path.sep)) return null;
+  return dir;
+}
+const SAFE_RESOLVE_MSG = '非法的项目路径（仅允许工作台内路径，且不含特殊字符）';
 
 // ===== Git 操作 =====
 function gitLog(dir) {
@@ -748,7 +837,7 @@ const server = http.createServer(async (req, res) => {
 
   // 静态首页
   if (method === 'GET' && (p === '/' || p === '/index.html')) {
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
     res.end(fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8'));
     return;
   }
@@ -845,8 +934,9 @@ const server = http.createServer(async (req, res) => {
 
   if (p === '/api/projects/history' && method === 'GET') {
     const relative = url.searchParams.get('relative') || '';
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (isDemoRelative(relative)) return sendError(res, DEMO_GUARD_MSG);
-    const dir = path.join(AXHUB_ROOT, relative);
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
     const log = await gitLog(dir);
     return send(res, 200, log);
@@ -854,8 +944,9 @@ const server = http.createServer(async (req, res) => {
 
   if (p === '/api/projects/git-init' && method === 'POST') {
     const { relative } = await readBody(req);
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (isDemoRelative(relative)) return sendError(res, DEMO_GUARD_MSG);
-    const dir = path.join(AXHUB_ROOT, relative || '');
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
     const r = await gitInit(dir);
     return send(res, r.ok ? 200 : 500, r);
@@ -863,8 +954,9 @@ const server = http.createServer(async (req, res) => {
 
   if (p === '/api/projects/git-commit' && method === 'POST') {
     const { relative, message } = await readBody(req);
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (isDemoRelative(relative)) return sendError(res, DEMO_GUARD_MSG);
-    const dir = path.join(AXHUB_ROOT, relative || '');
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
     if (!fs.existsSync(path.join(dir, '.git'))) return sendError(res, '该项目尚未启用 Git');
     const msg = (message || '').trim() || `更新于 ${new Date().toISOString().slice(0, 10)}`;
@@ -882,8 +974,9 @@ const server = http.createServer(async (req, res) => {
 
   if (p === '/api/projects/git-rollback' && method === 'POST') {
     const { relative, hash } = await readBody(req);
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (isDemoRelative(relative)) return sendError(res, DEMO_GUARD_MSG);
-    const dir = path.join(AXHUB_ROOT, relative || '');
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
     if (!/^[0-9a-f]{4,40}$/.test(hash || '')) return sendError(res, '非法的版本哈希');
     const r = await gitExec(dir, `reset --hard ${hash}`);
@@ -893,8 +986,9 @@ const server = http.createServer(async (req, res) => {
 
   if (p === '/api/projects/git-delete' && method === 'POST') {
     const { relative, hash } = await readBody(req);
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (isDemoRelative(relative)) return sendError(res, DEMO_GUARD_MSG);
-    const dir = path.join(AXHUB_ROOT, relative || '');
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
     if (!/^[0-9a-f]{4,40}$/.test(hash || '')) return sendError(res, '非法的版本哈希');
     // 根提交无法单独删除
@@ -909,16 +1003,30 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (p === '/api/projects' && method === 'POST') {
-    const { name } = await readBody(req);
+    const { name, template, framework } = await readBody(req);
     const projName = safeName(name);
     if (!projName) return sendError(res, '项目名称不能为空，且不能含非法字符（* ? < > | : \\ /）');
+    // 框架选择：make（React 原型工程，默认）/ admin（Vue 管理后台工程）
+    const isAdmin = String(framework || 'make') === 'admin';
+    // 模板选择：默认 _project-template 骨架；make:<id> 则额外嵌入 Make-Template 页面模板
+    const tplRaw = String(template || '_project-template');
+    const isMakeTpl = tplRaw.startsWith('make:');
+    const makeTplId = isMakeTpl ? tplRaw.slice(5) : null;
     const projectsRoot = path.join(AXHUB_ROOT, '01-项目');
     fs.mkdirSync(projectsRoot, { recursive: true });
     const dst = path.join(projectsRoot, projName);
     if (fs.existsSync(dst)) return sendError(res, `目录已存在：${projName}`);
-    if (!fs.existsSync(TEMPLATE_DIR)) return sendError(res, '模板目录不存在');
+    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '03-组件库', 'vibepm-admin模板');
+    if (isAdmin && !fs.existsSync(ADMIN_TEMPLATE_DIR)) return sendError(res, 'admin 框架模板不可用（骨架缺少 admin/ 目录）');
+    if (!isAdmin && !fs.existsSync(TEMPLATE_DIR)) return sendError(res, '模板目录不存在');
+    if (isMakeTpl) {
+      const mtRoot = path.join(MAKE_TEMPLATES_DIR, 'templates', makeTplId);
+      if (!fs.existsSync(mtRoot)) return sendError(res, `Make 页面模板不存在：${makeTplId}`);
+    }
     try {
-      fs.cpSync(TEMPLATE_DIR, dst, {
+      // admin 框架：仅复制骨架的 admin/（Vue 管理后台工程），项目根即 admin 工程
+      const copyRoot = isAdmin ? ADMIN_TEMPLATE_DIR : TEMPLATE_DIR;
+      fs.cpSync(copyRoot, dst, {
         recursive: true,
         filter: (src) => {
           const lp = src.toLowerCase();
@@ -929,6 +1037,17 @@ const server = http.createServer(async (req, res) => {
           return path.basename(lp) !== '.git';
         },
       });
+      if (isAdmin) {
+        // admin 框架：不写 make client.json（非 make 工程），只登记上下文；写 framework 标记（资源包本体）
+        try {
+          fs.mkdirSync(path.join(dst, '.axhub'), { recursive: true });
+          fs.writeFileSync(path.join(dst, '.axhub', 'framework'), 'admin', 'utf8');
+        } catch { /* ignore */ }
+        const ctx0 = readWorkspaceCtx();
+        const ctxN = upsertProject(ctx0, `01-项目/${projName}`, 'active');
+        writeWorkspaceCtx(ctxN);
+        return send(res, 200, { ok: true, msg: `项目已创建：${projName}（admin 框架 · Vue 管理后台工程）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin' });
+      }
       // 生成唯一项目身份
       const clientFile = path.join(dst, '.axhub', 'make', 'client.json');
       const client = {
@@ -938,11 +1057,53 @@ const server = http.createServer(async (req, res) => {
       };
       fs.mkdirSync(path.dirname(clientFile), { recursive: true });
       fs.writeFileSync(clientFile, JSON.stringify(client, null, 2), 'utf8');
+      // framework 标记（make 原型工程）
+      try {
+        fs.mkdirSync(path.join(dst, '.axhub'), { recursive: true });
+        fs.writeFileSync(path.join(dst, '.axhub', 'framework'), 'make', 'utf8');
+      } catch { /* ignore */ }
       // AI 联动：新项目创建后纳入上下文（默认未启动，状态留给后续启动流程决定）
       const ctx0 = readWorkspaceCtx();
       const ctxN = upsertProject(ctx0, `01-项目/${projName}`, 'active');
       writeWorkspaceCtx(ctxN);
-      return send(res, 200, { ok: true, msg: `项目已创建：${projName}`, relative: `01-项目/${projName}`, path: dst });
+      // ===== Make 页面模板嵌入 =====
+      let tplMsg = '（_project-template 默认骨架）';
+      if (isMakeTpl) {
+        const mtRoot = path.join(MAKE_TEMPLATES_DIR, 'templates', makeTplId);
+        const protoSlug = safeName(makeTplId) || 'template-page';
+        const protoDir = path.join(dst, 'src', 'prototypes', protoSlug);
+        fs.mkdirSync(protoDir, { recursive: true });
+        // 复制模板页面文件到原型目录（排除工程配置类文件，仅保留原型可运行部分）
+        const SKIP_NAMES = new Set([
+          '.git', '.gitignore', 'package.json', 'pnpm-lock.yaml', 'yarn.lock', 'next.config.mjs',
+          'tailwind.config.js', 'postcss.config.mjs', 'components.json', 'tsconfig.json', 'AUTHOR.txt',
+          '.eslintrc', '.eslintrc.json', '.prettierrc', 'README.md',
+        ]);
+        fs.cpSync(mtRoot, protoDir, {
+          recursive: true,
+          filter: (src) => {
+            if (src === mtRoot) return true;
+            const lp = src.toLowerCase();
+            if (lp.includes('node_modules')) return false;
+            return !SKIP_NAMES.has(path.basename(lp));
+          },
+        });
+        // 合并模板依赖进项目 package.json（提示首次启动前安装）
+        let depsMsg = '';
+        try {
+          const mtPkg = JSON.parse(fs.readFileSync(path.join(mtRoot, 'package.json'), 'utf8'));
+          const pkgPath = path.join(dst, 'package.json');
+          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+          let added = 0;
+          pkg.dependencies = pkg.dependencies || {};
+          for (const [k, v] of Object.entries(mtPkg.dependencies || {})) {
+            if (!pkg.dependencies[k]) { pkg.dependencies[k] = v; added++; }
+          }
+          if (added) { fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2), 'utf8'); depsMsg = `，已合并 ${added} 个模板依赖到 package.json`; }
+        } catch { /* 模板无 package.json 或读取失败时忽略依赖合并 */ }
+        tplMsg = `，Make 页面模板「${makeTplId}」已嵌入 src/prototypes/${protoSlug}${depsMsg}（首次启动前需 pnpm install）`;
+      }
+      return send(res, 200, { ok: true, msg: `项目已创建：${projName}${tplMsg}`, relative: `01-项目/${projName}`, path: dst, template: isMakeTpl ? makeTplId : '_project-template' });
     } catch (e) {
       return sendError(res, '创建失败：' + e.message, 500);
     }
@@ -950,9 +1111,9 @@ const server = http.createServer(async (req, res) => {
 
   if (p === '/api/projects' && method === 'DELETE') {
     const { relative } = await readBody(req);
-    if (!relative) return sendError(res, '缺少项目路径');
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (isDemoRelative(relative)) return sendError(res, DEMO_GUARD_MSG);
-    const dir = path.join(AXHUB_ROOT, relative);
     if (!fs.existsSync(dir)) return sendError(res, '项目不存在');
     // 禁止删除模板、面板自身或分类目录
     const CATEGORY_NAMES = new Set(['01-项目','02-模板','03-组件库','04-维护台账','05-回收站','06-运行脚本','07-日志','08-文档','09-协作','10-智能体记忆','_backups','tmp']);
@@ -1022,9 +1183,73 @@ const server = http.createServer(async (req, res) => {
 
   if (p === '/api/projects/open' && method === 'POST') {
     const { relative } = await readBody(req);
-    if (!relative) return sendError(res, '缺少项目路径');
-    const dir = path.join(AXHUB_ROOT, String(relative).replace(/\//g, path.sep));
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
+    // admin 框架项目：Vue 管理后台工程（vibepm-admin 资源包），走 vite dev，不走 Make（launch-project.ps1 为 Make 专用）
+    if (isAdminProject(dir)) {
+      const logBase = safeName(relative).replace(/[\\/]+/g, '-') || 'project';
+      const logFile = path.join(AXHUB_ROOT, '07-日志', `launch-${logBase}.log`);
+      fs.mkdirSync(path.dirname(logFile), { recursive: true });
+      fs.appendFileSync(logFile, `\n启动 ${relative} [admin-vue] @ ${new Date().toISOString()}\n`, 'utf8');
+      const adminPort = readAdminPort(dir);
+      const openUrl = `http://localhost:${adminPort}/`;
+      // 已在运行：直接复用（不重复 spawn vite / install）；须写 done 标记，前端 launch-log 才能判定完成并打开浏览器
+      if (await isPortOpen(adminPort)) {
+        fs.appendFileSync(logFile, `Vue 开发栈已在运行（${openUrl}），复用现有实例\nAXHUB_LAUNCH_STATUS: done\nAXHUB_OPEN_URL: ${openUrl}\n`, 'utf8');
+        return send(res, 200, { ok: true, msg: 'Vue 开发栈已在运行', openUrl, hasNodeModules: true });
+      }
+      const launchVite = () => {
+        const viteEntry = path.join(dir, 'node_modules', 'vite', 'bin', 'vite.js');
+        if (!fs.existsSync(viteEntry)) {
+          fs.appendFileSync(logFile, 'AXHUB_LAUNCH_STATUS: failed\n缺少 vite（node_modules/vite 未装全），请重新安装依赖\n', 'utf8');
+          return false;
+        }
+        const child = spawn(process.execPath, [viteEntry], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: cleanEnvForSpawn() });
+        child.stdout.on('data', (d) => {
+          const s = d.toString('utf8');
+          fs.appendFileSync(logFile, s, 'utf8');
+          if (s.includes('Local:') || s.includes('ready in')) {
+            fs.appendFileSync(logFile, `AXHUB_LAUNCH_STATUS: done\nAXHUB_OPEN_URL: ${openUrl}\n`, 'utf8');
+          }
+        });
+        child.stderr.on('data', (d) => fs.appendFileSync(logFile, `STDERR: ${d}`, 'utf8'));
+        child.on('error', (e) => fs.appendFileSync(logFile, `VITE ERROR: ${e.message}\nAXHUB_LAUNCH_STATUS: failed\n`, 'utf8'));
+        child.unref();
+        fs.appendFileSync(logFile, `Vue 开发栈已发起（vite dev → ${openUrl}）\n`, 'utf8');
+        const stctx = readWorkspaceCtx();
+        markProjectRunning(stctx, relative);
+        return true;
+      };
+      if (!fs.existsSync(path.join(dir, 'node_modules'))) {
+        // 首次：后台 pnpm install，完成后自动拉起 vite；前端轮询 launch-log
+        // server 由 Start-Process 拉起时 PATH 不含 Roaming\npm，必须用 pnpm.cjs 绝对路径 + node 执行
+        const pnpmCjs = path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'pnpm', 'bin', 'pnpm.cjs');
+        if (!fs.existsSync(pnpmCjs)) {
+          fs.appendFileSync(logFile, '未找到 pnpm（' + pnpmCjs + '），无法安装依赖\nAXHUB_LAUNCH_STATUS: failed\n', 'utf8');
+          return sendError(res, '未找到 pnpm，无法安装 admin 工程依赖，请先安装 pnpm', 500);
+        }
+        fs.appendFileSync(logFile, '依赖缺失，后台开始 pnpm install（首次需数分钟）…\n', 'utf8');
+        try {
+          const inst = spawn(process.execPath, [pnpmCjs, 'install'], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: cleanEnvForSpawn() });
+          inst.stdout.on('data', (d) => fs.appendFileSync(logFile, d, 'utf8'));
+          inst.stderr.on('data', (d) => fs.appendFileSync(logFile, `STDERR: ${d}`, 'utf8'));
+          inst.on('error', (e) => fs.appendFileSync(logFile, `INSTALL ERROR: ${e.message}\n`, 'utf8'));
+          inst.on('close', (code) => {
+            fs.appendFileSync(logFile, `AXHUB_INSTALL_STATUS: done (exit ${code})\n`, 'utf8');
+            launchVite();
+          });
+          inst.unref();
+        } catch (e) {
+          fs.appendFileSync(logFile, `INSTALL SPAWN ERROR: ${e.message}\nAXHUB_LAUNCH_STATUS: failed\n`, 'utf8');
+        }
+        return send(res, 200, { ok: false, code: 'NEED_INSTALL', hasNodeModules: false, msg: 'admin 工程尚未安装依赖，已后台开始安装（pnpm install），完成后自动启动，请稍候查看日志', logFile });
+      }
+      // 依赖已装：直接启动 vite
+      const okV = launchVite();
+      if (!okV) return sendError(res, '启动 Vue 开发栈失败：缺少 vite，请重新安装依赖', 500);
+      return send(res, 200, { ok: true, msg: 'Vue 开发栈已启动', openUrl, hasNodeModules: true });
+    }
     const ps1 = path.join(AXHUB_ROOT, '06-运行脚本', 'launch-project.ps1');
     if (!fs.existsSync(ps1)) return sendError(res, '找不到 launch-project.ps1');
     try {
@@ -1145,6 +1370,75 @@ const server = http.createServer(async (req, res) => {
   }
 
   // 重启 Make 管理端（全局单例 53817）
+  // 退出工作台：等价于运行「停止工作台.cmd」（停 7788 / 53817 / 32124 / Vite / 8899 + 清理状态）
+  if (p === '/api/shutdown' && method === 'POST') {
+    const script = path.join(AXHUB_ROOT, '停止工作台.cmd');
+    if (!fs.existsSync(script)) return sendError(res, '未找到 停止工作台.cmd');
+    try {
+      // 0) 优雅关闭打开工作台页面的浏览器窗口（标题匹配，CloseMainWindow 只关匹配窗口，不误杀其他浏览器窗口）
+      //    ps1 必须带 UTF-8 BOM，否则 Windows PowerShell 5.1 按 ANSI 读中文标题会乱码导致匹配失败
+      const closePs = [
+        "$procs = Get-Process chrome,msedge,brave,firefox -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 }",
+        "foreach($p in $procs){ if($p.MainWindowTitle -match '产品设计工作台|Axhub'){ $null = $p.CloseMainWindow() } }"
+      ].join('\r\n');
+      const psFile = path.join(AXHUB_ROOT, '07-日志', '_close-workbench-browser.ps1');
+      fs.writeFileSync(psFile, '\uFEFF' + closePs, 'utf8');
+      try {
+        spawnSync('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', psFile], { timeout: 6000, windowsHide: true });
+      } catch { /* 关闭浏览器失败不阻塞退出 */ }
+      try { fs.unlinkSync(psFile); } catch { /* ignore */ }
+      // 1) 独立进程运行停止脚本（detached + unref），随后本服务自行退出
+      spawn('cmd', ['/c', 'start', '', script], { detached: true, stdio: 'ignore' }).unref();
+      setTimeout(() => { try { process.exit(0); } catch { /* ignore */ } }, 500);
+      return send(res, 200, { ok: true, msg: '正在停止工作台全部服务…' });
+    } catch (e) {
+      return sendError(res, '停止失败：' + e.message, 500);
+    }
+  }
+
+  // 启动所有智能体监听（等价于 09-协作/messages/tools/启动所有智能体监听.bat，直接 spawn node 避免 bat 编码问题）
+  if (p === '/api/listen/start' && method === 'POST') {
+    const toolsDir = path.join(AXHUB_ROOT, '09-协作', 'messages', 'tools');
+    const node = 'C:\\Program Files\\nodejs\\node.exe';
+    const started = [];
+    for (const m of ['agent-hub-watcher.mjs', 'inbox-watcher.mjs']) {
+      const script = path.join(toolsDir, m);
+      if (!fs.existsSync(script)) { sendError(res, `缺少脚本：${m}（${toolsDir}）`); return; }
+      try {
+        const child = spawn(node, [m], { cwd: toolsDir, detached: true, stdio: 'ignore', windowsHide: true });
+        child.unref();
+        started.push(m);
+      } catch (e) {
+        sendError(res, `启动 ${m} 失败：${e.message}`, 500); return;
+      }
+    }
+    return send(res, 200, { ok: true, msg: `已启动智能体监听（${started.join(' + ')}，隐藏窗口常驻），日志见 09-协作/messages/tools/agent-hub-watcher.log` });
+  }
+
+  // 查询智能体监听运行状态
+  if (p === '/api/listen/status' && method === 'GET') {
+    try {
+      const r = spawnSync('powershell', ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | ForEach-Object { $_.ProcessId.ToString() + '|' + ($_.CommandLine -replace '.*\\\\', '') }"], { encoding: 'utf8', windowsHide: true, timeout: 8000 });
+      const pids = String(r.stdout || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      const list = pids.map(s => { const [pid, name] = s.split('|'); return { pid: Number(pid), name: name || 'watcher' }; });
+      return send(res, 200, { ok: true, running: list.length > 0, list });
+    } catch (e) {
+      return sendError(res, '查询监听状态失败：' + e.message, 500);
+    }
+  }
+
+  // 关闭所有智能体监听
+  if (p === '/api/listen/stop' && method === 'POST') {
+    try {
+      spawnSync('powershell', ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"], { encoding: 'utf8', windowsHide: true, timeout: 10000 });
+      const st = spawnSync('powershell', ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | Select-Object -ExpandProperty ProcessId"], { encoding: 'utf8', windowsHide: true, timeout: 8000 });
+      const left = String(st.stdout || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      return send(res, 200, { ok: true, msg: left.length ? `仍有 ${left.length} 个监听进程未退出` : '已关闭全部智能体监听' });
+    } catch (e) {
+      return sendError(res, '关闭监听失败：' + e.message, 500);
+    }
+  }
+
   // 背景：Make 异常退出（关机/强杀）后会残留 .admin-server-info.json，新实例做单例校验时
   //       判定「无法安全识别已记录的实例」而直接退出，导致所有项目的「启动开发栈」都卡在第 7 步
   //       等满 60 秒失败，且反复点击无法自愈。启动流程已内置自愈（launch-project.ps1 第 3 步），
@@ -1289,8 +1583,8 @@ const server = http.createServer(async (req, res) => {
   if (p === '/api/context/current' && method === 'POST') {
     const body = await readBody(req);
     const { agent, relative } = body;
-    if (!relative) return sendError(res, '缺少 relative');
-    const dir = path.join(AXHUB_ROOT, String(relative).replace(/\//g, path.sep));
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
     const a = KNOWN_AGENTS.includes(agent) ? agent : KNOWN_AGENTS[0];
     const ctx = readWorkspaceCtx();
@@ -1368,8 +1662,8 @@ const server = http.createServer(async (req, res) => {
   // POST /api/projects/owner：设置/清除项目 owner_agent。{ relative, owner }，owner 传空串 = 取消关联。
   if (p === '/api/projects/owner' && method === 'POST') {
     const { relative, owner } = await readBody(req);
-    if (!relative) return sendError(res, '缺少 relative');
-    const dir = path.join(AXHUB_ROOT, String(relative).replace(/\//g, path.sep));
+    const dir = safeResolve(relative);
+    if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
     const o = String(owner || '').trim().toLowerCase();
     if (o && !KNOWN_AGENTS.includes(o)) return sendError(res, '未知智能体：' + o);
@@ -1378,6 +1672,47 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ===== 组件库概览 =====
+  // ===== 项目模板列表（新增项目可选：_project-template 默认 + Make-Template 页面模板） =====
+  if (p === '/api/templates' && method === 'GET') {
+    const list = [{
+      id: '_project-template',
+      title: '_project-template（默认）',
+      source: 'local',
+      desc: '原型工作台骨架：Skill 库 / 知识库 / 工作规则 / 项目答疑手册 + 示例原型',
+    }];
+    try {
+      const tj = JSON.parse(fs.readFileSync(path.join(MAKE_TEMPLATES_DIR, 'templates.json'), 'utf8'));
+      const arr = Array.isArray(tj) ? tj : (tj.templates || []);
+      for (const t of arr) {
+        if (!t || !t.id) continue;
+        const depN = (t.extraDependencies && typeof t.extraDependencies === 'object') ? Object.keys(t.extraDependencies).length : 0;
+        list.push({
+          id: 'make:' + t.id,
+          title: t.title || t.id,
+          source: 'make',
+          desc: t.description || '',
+          deps: depN,
+          // 封面/在线预览：covers/<id>.webp 本地静态映射 + templates.json 的在线预览地址
+          coverUrl: `/make-covers/${encodeURIComponent(t.id)}.webp`,
+          previewUrl: t.previewUrl || '',
+        });
+      }
+    } catch { /* Make-Template 目录不可用时仅返回默认模板 */ }
+    return send(res, 200, { ok: true, templates: list });
+  }
+
+  // Make-Template 页面模板封面静态映射：/make-covers/<id>.webp → Make-Template/covers/<id>.webp
+  if (method === 'GET' && p.startsWith('/make-covers/')) {
+    const name = p.slice('/make-covers/'.length);
+    if (!name || name.includes('..') || name.includes('/') || name.includes('\\')) return sendError(res, '非法路径', 400);
+    const fp = path.join(MAKE_TEMPLATES_DIR, 'covers', name);
+    if (!fs.existsSync(fp)) return sendError(res, '封面不存在', 404);
+    const ct = name.toLowerCase().endsWith('.png') ? 'image/png' : 'image/webp';
+    res.writeHead(200, { 'Content-Type': ct, 'Cache-Control': 'max-age=3600' });
+    res.end(fs.readFileSync(fp));
+    return;
+  }
+
   if (p === '/api/components' && method === 'GET') {
     const clRoot = path.join(AXHUB_ROOT, '03-组件库');
     const out = { ok: true, ends: [], uiLibs: [], registry: null, custom: [] };
@@ -1646,6 +1981,145 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true, skills });
   }
 
+  // 上传整个 Skill 文件夹（SKILL.md + 模板/资产）：{ dirName, files:[{path,content}] }
+  // ===== 组件库：上传模板（页面模板 / 组件模板，拖放文件夹 JSON 上传，保存到 03-组件库 按类别存放）=====
+  if (p === '/api/library/upload' && method === 'POST') {
+    const { category, name, files, prompt } = await readBody(req);
+    if (!['page', 'component'].includes(category)) return sendError(res, '类别须为 page（页面模板）或 component（组件模板）');
+    if (!name || !Array.isArray(files) || !files.length) return sendError(res, '缺少名称或文件列表');
+    const base = safeName(name) || 'new-template';
+    const clRoot = path.join(AXHUB_ROOT, '03-组件库');
+    const writeFiles = (targetDir) => {
+      fs.mkdirSync(targetDir, { recursive: true });
+      let n = 0;
+      for (const f of files) {
+        if (!f || typeof f.path !== 'string' || typeof f.content !== 'string') continue;
+        const relRaw = safeRelPath(f.path.replace(/\\/g, '/'), '');
+        if (!relRaw || relRaw.includes('..') || path.isAbsolute(relRaw)) continue;
+        // 剥离首段目录（文件夹名），因为 targetDir 已含模板名
+        const segs = relRaw.split('/');
+        const rel = segs.length > 1 ? segs.slice(1).join('/') : segs[0];
+        if (!rel) continue;
+        const fp = path.join(targetDir, rel);
+        if (!fp.startsWith(targetDir + path.sep) && fp !== targetDir) continue;
+        fs.mkdirSync(path.dirname(fp), { recursive: true });
+        fs.writeFileSync(fp, f.content, 'utf8');
+        n++;
+      }
+      return n;
+    };
+    try {
+      if (category === 'page') {
+        // 页面模板 → 03-组件库/页面模板/templates/<id>/ + templates.json 登记
+        const targetDir = path.join(clRoot, '页面模板', 'templates', base);
+        if (fs.existsSync(targetDir)) return sendError(res, `页面模板已存在：${base}`);
+        const n = writeFiles(targetDir);
+        if (!n) return sendError(res, '没有可写入的文件');
+        const tjPath = path.join(clRoot, '页面模板', 'templates.json');
+        let tj = [];
+        try { const raw = JSON.parse(fs.readFileSync(tjPath, 'utf8')); tj = Array.isArray(raw) ? raw : (Array.isArray(raw.templates) ? raw.templates : []); } catch { tj = []; }
+        tj.push({ id: base, title: name, name: base, description: prompt || `上传的页面模板 ${name}`, source: 'make', coverUrl: `/make-covers/${base}.webp` });
+        fs.writeFileSync(tjPath, JSON.stringify(tj, null, 2), 'utf8');
+        return send(res, 200, { ok: true, msg: `页面模板「${name}」已上传（${n} 个文件 → 03-组件库/页面模板/templates/${base}）` });
+      }
+      // 组件模板 → 03-组件库/组件模板/<id>/ + custom-components.json 登记（面板展示 + /library/ 预览）
+      const targetDir = path.join(clRoot, '组件模板', base);
+      if (fs.existsSync(targetDir)) return sendError(res, `组件模板已存在：${base}`);
+      const n = writeFiles(targetDir);
+      if (!n) return sendError(res, '没有可写入的文件');
+      const customPath = path.join(clRoot, 'custom-components.json');
+      let reg = { schemaVersion: 1, updatedAt: '', items: [] };
+      if (fs.existsSync(customPath)) {
+        try { reg = JSON.parse(fs.readFileSync(customPath, 'utf8')); } catch { reg = { schemaVersion: 1, updatedAt: '', items: [] }; }
+        if (!Array.isArray(reg.items)) reg.items = [];
+      }
+      const hasIndex = files.some(f => /index\.html?$/i.test((f.path || '').split('/').pop()));
+      reg.items.push({ id: base, label: name, category: 'component-template', framework: 'uploaded', notes: prompt || `上传的组件模板 ${name}`, prompt: prompt || `【组件引用】${name}（组件模板库上传）`, previewUrl: hasIndex ? `/library/${base}/index.html` : '', source: 'component-template' });
+      fs.writeFileSync(customPath, JSON.stringify(reg, null, 2), 'utf8');
+      return send(res, 200, { ok: true, msg: `组件模板「${name}」已上传（${n} 个文件 → 03-组件库/组件模板/${base}）` });
+    } catch (e) {
+      return sendError(res, '上传失败：' + e.message, 500);
+    }
+  }
+
+  // 组件模板静态预览：/library/<name>/<file> → 03-组件库/组件模板/<name>/<file>
+  if (method === 'GET' && p.startsWith('/library/')) {
+    const root = path.join(AXHUB_ROOT, '03-组件库', '组件模板');
+    const rel = decodeURIComponent(p.slice('/library/'.length)).replace(/\\/g, '/');
+    const segs = rel.split('/').filter(s => s && s !== '..');
+    if (!segs.length) return sendError(res, '路径无效', 400);
+    let fp = path.join(root, ...segs);
+    if (!fp.startsWith(root + path.sep)) return sendError(res, '路径越界', 403);
+    if (!fs.existsSync(fp) || fs.statSync(fp).isDirectory()) {
+      if (fs.existsSync(fp) && fs.statSync(fp).isDirectory()) {
+        const idx = path.join(fp, 'index.html');
+        if (fs.existsSync(idx)) fp = idx;
+        else return sendError(res, '目录下无 index.html', 404);
+      } else return sendError(res, '文件不存在', 404);
+    }
+    const ext = path.extname(fp).toLowerCase();
+    const ctMap = { '.html': 'text/html; charset=utf-8', '.htm': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.mjs': 'application/javascript; charset=utf-8', '.ts': 'application/javascript; charset=utf-8', '.tsx': 'application/javascript; charset=utf-8', '.jsx': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.gif': 'image/gif', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
+    const ct = ctMap[ext] || 'application/octet-stream';
+    res.writeHead(200, { 'Content-Type': ct });
+    res.end(fs.readFileSync(fp));
+    return;
+  }
+
+  // Frame 母版画廊静态预览：/frame/<rel> → 03-组件库/frame/<rel>（gallery.html 可直接在浏览器预览全部母版样板）
+  if (method === 'GET' && p.startsWith('/frame/')) {
+    const root = path.join(AXHUB_ROOT, '03-组件库', 'frame');
+    const rel = decodeURIComponent(p.slice('/frame/'.length)).replace(/\\/g, '/');
+    const segs = rel.split('/').filter(s => s && s !== '..');
+    if (!segs.length) return sendError(res, '路径无效', 400);
+    let fp = path.join(root, ...segs);
+    if (!fp.startsWith(root + path.sep)) return sendError(res, '路径越界', 403);
+    if (!fs.existsSync(fp) || fs.statSync(fp).isDirectory()) {
+      if (fs.existsSync(fp) && fs.statSync(fp).isDirectory()) {
+        const idx = path.join(fp, 'index.html');
+        if (fs.existsSync(idx)) fp = idx;
+        else return sendError(res, '目录下无 index.html', 404);
+      } else return sendError(res, '文件不存在', 404);
+    }
+    const ext2 = path.extname(fp).toLowerCase();
+    const ctMap2 = { '.html': 'text/html; charset=utf-8', '.htm': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.mjs': 'application/javascript; charset=utf-8', '.ts': 'application/javascript; charset=utf-8', '.tsx': 'application/javascript; charset=utf-8', '.jsx': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.gif': 'image/gif', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
+    res.writeHead(200, { 'Content-Type': ctMap2[ext2] || 'application/octet-stream' });
+    res.end(fs.readFileSync(fp));
+    return;
+  }
+
+  if (p === '/api/skills/folder' && method === 'POST') {
+    const { dirName, files } = await readBody(req);
+    if (!dirName || !Array.isArray(files) || !files.length) return sendError(res, '缺少文件夹名或文件列表');
+    const base = safeName(dirName) || 'new-skill';
+    const targetDir = path.join(SKILLS_DIR, base);
+    if (fs.existsSync(targetDir)) return sendError(res, `Skill 目录已存在：${base}`);
+    if (!files.some(f => /SKILL\.md$/i.test((f && f.path) || ''))) return sendError(res, '文件夹中未找到 SKILL.md');
+    try {
+      fs.mkdirSync(targetDir, { recursive: true });
+      let n = 0;
+      for (const f of files) {
+        if (!f || typeof f.path !== 'string' || typeof f.content !== 'string') continue;
+        const rel = safeRelPath(f.path.replace(/\\/g, '/'), '');
+        if (!rel || rel.includes('..') || path.isAbsolute(rel)) continue;
+        const fp = path.join(targetDir, rel);
+        if (!fp.startsWith(targetDir + path.sep) && fp !== targetDir) continue;
+        fs.mkdirSync(path.dirname(fp), { recursive: true });
+        fs.writeFileSync(fp, f.content, 'utf8');
+        n++;
+      }
+      if (!n) return sendError(res, '没有可写入的文件');
+      const md = files.find(f => /SKILL\.md$/i.test((f && f.path) || ''));
+      const { name, description } = parseFrontmatter(md ? md.content : '');
+      return send(res, 200, {
+        ok: true,
+        msg: `Skill「${name || base}」已新增（${n} 个文件）`,
+        skill: { dir: base, name: name || base, description: (description || '').slice(0, 300), path: `skills/${base}/SKILL.md` },
+      });
+    } catch (e) {
+      return sendError(res, '写入失败：' + e.message, 500);
+    }
+  }
+
   if (p === '/api/skills/content' && method === 'GET') {
     const dir = url.searchParams.get('dir') || '';
     if (!dir) return sendError(res, '缺少 dir');
@@ -1739,14 +2213,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (p === '/api/knowledge' && method === 'POST') {
-    const { filename, content } = await readBody(req);
+    const { filename, content, dir } = await readBody(req);
     if (!filename || !content) return sendError(res, '文件名与内容不能为空');
+    // dir：存放目录（可含子目录，如 knowledge/conventions/ 或 conventions/），缺省根目录
+    const rawDir = safeRelPath(String(dir || '').replace(/\\/g, '/'), 'knowledge').replace(/^knowledge\//, '');
     const base = safeName(filename.replace(/\.md$/i, '')) + '.md';
-    const target = path.join(KNOWLEDGE_DIR, base);
-    if (fs.existsSync(target)) return sendError(res, `文件已存在：${base}`);
+    const target = rawDir ? path.join(KNOWLEDGE_DIR, rawDir, base) : path.join(KNOWLEDGE_DIR, base);
+    if (!target.startsWith(KNOWLEDGE_DIR)) return sendError(res, '存放位置非法');
+    if (fs.existsSync(target)) return sendError(res, `文件已存在：${rawDir ? rawDir + '/' : ''}${base}`);
     try {
+      fs.mkdirSync(path.dirname(target), { recursive: true });
       fs.writeFileSync(target, content, 'utf8');
-      return send(res, 200, { ok: true, msg: `知识库文档已新增：${base}`, path: `knowledge/${base}` });
+      const rel = `knowledge/${rawDir ? rawDir + '/' : ''}${base}`;
+      return send(res, 200, { ok: true, msg: `知识库文档已新增：${rel}`, path: rel });
     } catch (e) { return sendError(res, '写入失败：' + e.message, 500); }
   }
 

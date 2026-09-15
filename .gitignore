@@ -45,3 +45,6 @@ Thumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 .DS_Store
+
+# ===== 补丁备份（大文件不入库）=====
+04-维护台账/patches/*.pre-patch.bak

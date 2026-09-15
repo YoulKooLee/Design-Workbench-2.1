@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Strict Input Shielding for OS components */
+button, div {
+    -webkit-tap-highlight-color: transparent;
+}

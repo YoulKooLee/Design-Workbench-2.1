@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Typography and rendering system patches (Reserved for extended onboarding animations if dynamically scaled) */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

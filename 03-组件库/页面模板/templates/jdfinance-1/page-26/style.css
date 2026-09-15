@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@layer components {
+  /* High fidelity abstract photo stand-ins */
+  .mock-photo-1 {
+    background: linear-gradient(135deg, #f2e1df 0%, #e8f0f8 100%);
+  }
+  .mock-photo-2 {
+    background: linear-gradient(135deg, #e3ebef 0%, #ecd3c1 100%);
+  }
+  .mock-photo-3 {
+    background: linear-gradient(135deg, #f0eeee 0%, #d5e5f5 100%);
+  }
+  
+  /* Doctor specific photo mock */
+  .mock-photo-doc {
+    background: linear-gradient(135deg, #f5f8fc 0%, #d6e2f0 100%);
+  }
+
+  /* Soft fade gradient for the action bar */
+  .action-bar-gradient {
+    background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 80%, rgba(255,255,255,0) 100%);
+  }
+}

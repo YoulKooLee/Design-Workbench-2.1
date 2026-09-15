@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Master background pattern */
+  .fund-hub-bg {
+    background: linear-gradient(170deg, #fff2f2 0%, #f5f6f9 400px);
+    background-color: #f5f6f9;
+  }
+
+  /* Fade masking effect for generic horizontal scrolling tabs */
+  .fade-mask-right {
+    position: relative;
+  }
+  .fade-mask-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* --- Complex CSS Icons --- */
+  
+  .icon-podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 2px;
+    width: 28px;
+    height: 28px;
+  }
+  .icon-podium .bar-2 { width: 8px; height: 16px; background-color: #fca5a5; border-radius: 2px 2px 0 0; }
+  .icon-podium .bar-1 { width: 10px; height: 22px; background-color: #f87171; border-radius: 2px 2px 0 0; position: relative; }
+  .icon-podium .bar-1::after { content: '1'; position: absolute; color: white; font-size: 8px; font-weight: bold; top: 2px; left: 50%; transform: translateX(-50%); }
+  .icon-podium .bar-3 { width: 8px; height: 12px; background-color: #fca5a5; border-radius: 2px 2px 0 0; }
+
+  .icon-shield {
+    width: 24px;
+    height: 26px;
+    background-color: #fb923c;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  .icon-planet {
+    width: 24px;
+    height: 24px;
+    background: #4f46e5;
+    border-radius: 50%;
+    position: relative;
+  }
+  .icon-planet::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 34px;
+    height: 12px;
+    border: 2px solid #a5b4fc;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+  }
+
+  .icon-piggy {
+    width: 26px;
+    height: 22px;
+    background: #fb7185;
+    border-radius: 12px;
+    position: relative;
+  }
+  .icon-piggy::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    background: #fb7185;
+    border-radius: 50%;
+  }
+  .icon-piggy::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 6px;
+    width: 8px;
+    height: 10px;
+    background: #fb7185;
+    border-radius: 4px;
+  }
+}

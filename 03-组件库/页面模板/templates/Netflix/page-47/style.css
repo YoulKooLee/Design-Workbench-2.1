@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Scope Shielding */
+button, div {
+    -webkit-tap-highlight-color: transparent;
+}

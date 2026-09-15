@@ -1,0 +1,4 @@
+Title: v0 IRL 纽约活动落地页
+Platform: v0
+Source: https://v0.app/templates/v0-irl-event-landing-custom-3d-lanyard-IegtBb6qiEV
+Imported for Axhub Make template library.

@@ -1,0 +1,231 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Soft pink to gray environment background */
+  .new-user-hero-bg {
+    background: linear-gradient(180deg, #fcebe9 0%, #f4f5f8 250px);
+    background-color: #f4f5f8;
+  }
+
+  /* Ribbon Fold Ribbon Effect for Card 1 */
+  .ribbon-flag {
+    position: absolute;
+    top: 16px;
+    left: -6px;
+    background: #f04a4b;
+    color: white;
+    font-size: 13px;
+    font-weight: 900;
+    font-family: sans-serif;
+    padding: 2px 8px 2px 10px;
+    border-radius: 2px 4px 4px 0;
+    z-index: 10;
+    box-shadow: 2px 2px 5px rgba(240, 74, 75, 0.3);
+  }
+  .ribbon-flag::after {
+    /* The fold curving back under the white card */
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    border-width: 5px 6px 0 0;
+    border-style: solid;
+    border-color: #a41c1c transparent transparent transparent;
+  }
+
+  /* 3D Data Divider Area */
+  .grid-data-divider {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    margin-top: 25px;
+  }
+  .grid-data-divider::before {
+    /* Faint horizontal ruled lines marking the data block */
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    background-image: linear-gradient(to right, #f4f4f5 50%, transparent 50%);
+    background-size: 8px 1px;
+  }
+  .grid-data-divider::after {
+    content: '';
+    position: absolute;
+    bottom: 25px;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    background-image: linear-gradient(to right, #f4f4f5 50%, transparent 50%);
+    background-size: 10px 1px;
+  }
+
+  /* CSS Geometric Hexagon Backgrounds */
+  .icon-hex {
+    width: 32px;
+    height: 32px;
+    background-color: #fdeaea;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    color: #f45b5c;
+  }
+  .icon-circle {
+    width: 32px;
+    height: 32px;
+    background-color: #fdeaea;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f45b5c;
+  }
+
+  /* Custom Step Progress Tracker */
+  .step-progress-track {
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    width: 70%;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 0;
+  }
+  .step-node-active {
+    width: 20px;
+    height: 20px;
+    background-color: #f04a4b;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+  }
+  .step-node-active::after {
+    /* Ring glowing */
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(240, 74, 75, 0.15);
+    z-index: -1;
+  }
+  .step-node-inactive {
+    width: 16px;
+    height: 16px;
+    background-color: #d1d5db;
+    border-radius: 50%;
+    position: relative;
+    z-index: 10;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px #d1d5db; /* fake border outside */
+  }
+
+  /* 
+    ========================================================
+    CSS POP-ART MASTERPIECE (Replacing Video Thumbnail)
+    ========================================================
+  */
+  .css-pop-art-video {
+    width: 100%;
+    height: 180px;
+    background-color: #0348c4;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #ccc; /* Ripped paper effect border simulation */
+  }
+  
+  /* Ripped paper top edge */
+  .css-pop-art-video::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    background-color: white;
+    mask-image: radial-gradient(circle at 10px 0, transparent 10px, black 11px);
+    mask-size: 20px 20px;
+    mask-repeat: repeat-x;
+    transform: translateY(-5px);
+    z-index: 5;
+  }
+
+  /* Halftone/Checker pattern in background */
+  .pop-art-bg-texture {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: 150%;
+    height: 150%;
+    background-image: radial-gradient(#053ea1 2px, transparent 2px);
+    background-size: 8px 8px;
+    transform: rotate(15deg);
+    opacity: 0.5;
+  }
+
+  /* Big Yellow Sunburst */
+  .pop-sunburst {
+    position: absolute;
+    bottom: -50px;
+    left: 10%;
+    width: 200px;
+    height: 200px;
+    background: repeating-conic-gradient(
+      #facc15 0deg 15deg,
+      #fef08a 15deg 30deg
+    );
+    border-radius: 50%;
+    z-index: 10;
+    transform: rotate(-10deg);
+  }
+
+  /* Abstract Graphic Shapes */
+  .pop-cloud {
+    position: absolute;
+    top: 25px;
+    left: 40px;
+    width: 40px;
+    height: 15px;
+    background: white;
+    border-radius: 20px;
+    z-index: 15;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.8);
+  }
+  .pop-cloud::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .pop-checker-box {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: white;
+    background-image: 
+      linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+      linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    z-index: 15;
+    border: 3px solid black;
+    transform: rotate(10deg);
+    box-shadow: 4px 4px 0 black;
+  }
+}

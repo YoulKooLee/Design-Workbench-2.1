@@ -429,5 +429,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log('[msg-panel v2.1] 面板已启动: http://127.0.0.1:' + PORT + '/');
+  console.log('[msg-panel v2.2] 面板已启动: http://127.0.0.1:' + PORT + '/');
 });

@@ -1,0 +1,4 @@
+Title: ESSENCE 高级餐饮品牌展示页
+Platform: v0
+Source: https://v0.app/templates/essence-elegant-showcase-template-for-brands-ncdfEYFL1p9
+Imported for Axhub Make template library.

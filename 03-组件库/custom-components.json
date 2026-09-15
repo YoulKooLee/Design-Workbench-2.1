@@ -1,16 +1,7 @@
 {
-  "schemaVersion": 1,
-  "updatedAt": "2026-09-13T15:30:11.856Z",
-  "items": [
-    {
-      "id": "form-table",
-      "label": "Form 表格（新增/编辑）",
-      "category": "component-form",
-      "framework": "react",
-      "notes": "表单容器 + 字段校验 + 提交操作（React + Tailwind 真组件库）",
-      "prompt": "【组件引用】Form 表格（form-table）\n框架：React + Tailwind\n说明：表单容器 + 字段校验 + 提交操作\n请在实现表单页面时参考该组件：FormField + Input + Select + FormRow + Button，import { FormField, Input, Select, FormRow, Button } from ../../components/axhub",
-      "previewUrl": "",
-      "source": "custom"
-    }
-  ]
+    "schemaVersion":  1,
+    "updatedAt":  "",
+    "items":  [
+
+              ]
 }

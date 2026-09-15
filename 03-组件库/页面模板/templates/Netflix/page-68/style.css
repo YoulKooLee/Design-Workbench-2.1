@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Eradicate touch highlights and optimize vector edges on procedural logos */
+button, div, span, svg, h1, h2 {
+    -webkit-tap-highlight-color: transparent;
+}
+span, p, h1, h2, h3 {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

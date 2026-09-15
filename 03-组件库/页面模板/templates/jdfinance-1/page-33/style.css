@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Timeline node red ring */
+  .timeline-node {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3px solid #f64c4c;
+    background-color: white;
+    position: relative;
+    z-index: 10;
+    box-shadow: inset 0 0 0 1px white;
+  }
+  
+  .timeline-node::after {
+     content: '';
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     width: 4px;
+     height: 4px;
+     background-color: #f64c4c;
+     border-radius: 50%;
+  }
+
+  /* Survey floating side badge text vertical alignment */
+  .survey-badge {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 2px;
+  }
+
+  /* Font scalar icon custom SVG CSS placeholder */
+  .font-scale-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  /* Semi-circle Donut Chart Implementation using nested rotations & overflow hidden */
+  .half-donut-container {
+    position: relative;
+    width: 100px;
+    height: 50px;
+    overflow: hidden;
+  }
+
+  .half-donut-base {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 14px solid #efefef;
+    box-sizing: border-box;
+  }
+
+  .half-donut-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 14px solid transparent;
+    border-bottom-color: #f6ad55;
+    border-left-color: #f6ad55;
+    box-sizing: border-box;
+    transform: rotate(-135deg); /* Base -45deg is empty, -135deg is 90deg fill etc */
+    /* To visually match 8.79%, it's roughly 16 degrees mapped to 180 degrees scale */
+    /* Actually it's easier to just use standard border-clip or multiple conic-gradients */
+  }
+
+  /* A much cleaner conic-gradient approach for modern CSS */
+  .donut-chart-modern {
+    width: 110px;
+    height: 55px; /* Half height */
+    position: relative;
+    overflow: hidden;
+    border-radius: 110px 110px 0 0;
+  }
+
+  .donut-chart-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%; /* Full circle height to allow conic */
+    border-radius: 50%;
+    /* 8.79% of 180 degrees map is about 0.0879 * 180 = 15.8 deg, meaning 270deg to 285deg mapped onto top half */
+    /* or mapping 0-50% conic space */
+    background: conic-gradient(from 270deg, #f7ac53 0%, #f7ac53 8.79%, #eaebf0 8.79%, #eaebf0 50%, transparent 50%);
+  }
+
+  .donut-chart-cutout {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 78px;
+    height: 39px;
+    background-color: #f8f9fb; /* Match parent background */
+    border-radius: 78px 78px 0 0;
+    z-index: 10;
+  }
+
+  /* Fund Manager Mock Avatar */
+  .manager-avatar {
+    background: radial-gradient(circle at center, #d8d8de 0%, #90929a 100%);
+  }
+}

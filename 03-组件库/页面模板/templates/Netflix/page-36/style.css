@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* Native High-FPS Scroll Override Logic */
+.custom-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.custom-hide-scrollbar {
+    -ms-overflow-style: none; /* IE + Edge Engine Support */
+    scrollbar-width: none; /* Gecko Engine Support */
+}
+
+/* Linear Depth Mask enforcing the Cinematic Volumetric Ambient Blurring boundaries */
+.mask-image-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
+}

@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Golden morning light gradient */
+  .gold-hero-bg {
+    background-image: radial-gradient(circle at 50% -20%, #ffefaa 0%, #ffdc85 40%, #faecc5 70%, #f6f5ec 100%);
+  }
+
+  /* Soft volumetric coin styling */
+  .golden-coin {
+    background: radial-gradient(circle at 30% 30%, #fff4cd 0%, #f7cd71 60%, #e29f34 100%);
+    box-shadow: 
+      inset 0 0 4px rgba(255, 255, 255, 0.8),
+      0 4px 10px rgba(220, 150, 50, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Inner ring of the coin */
+  .golden-coin-inner {
+    border: 1px solid rgba(230, 160, 50, 0.6);
+    background: linear-gradient(135deg, #fcedba 0%, #fad886 100%);
+  }
+
+  /* Tab pointer pointing down */
+  .tab-pointer-down::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #fc4a4f;
+    z-index: 10;
+  }
+
+  /* Faint Shield watermark behind zero */
+  .shield-watermark {
+    background-image: url('data:image/svg+xml;utf8,<svg width="140" height="160" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" stroke="url(%23grad1)" stroke-width="2" stroke-linejoin="round"/><defs><linearGradient id="grad1" x1="50" y1="0" x2="50" y2="120" gradientUnits="userSpaceOnUse"><stop stop-color="%23f7c46a"/><stop offset="1" stop-color="%23fae8cc" stop-opacity="0"/></linearGradient></defs></svg>');
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: 140px 160px;
+  }
+  
+  /* Doctor/Nurse abstract background for the promo card */
+  .abstract-nurse-bg {
+    background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%),
+                linear-gradient(135deg, #d8e5f2 0%, #ecdbe1 100%);
+  }
+}

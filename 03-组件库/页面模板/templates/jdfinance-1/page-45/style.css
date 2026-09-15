@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Soft organic wave background */
+  .fixed-term-hero-bg {
+    background-color: #f5f6f9;
+    background-image: 
+      radial-gradient(circle at top right, #fbeddd 0%, transparent 40%),
+      radial-gradient(ellipse at 40% 15%, #feeddb 0%, transparent 60%);
+  }
+
+  /* Slanted title with outline */
+  .mega-slant-title {
+    font-size: 34px;
+    font-weight: 900;
+    transform: skewX(-12deg);
+    color: #111;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0px #ffe1b3, -1px -1px 0px #fff;
+    position: relative;
+    z-index: 10;
+  }
+  .mega-slant-title::after {
+    content: '定期理财';
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    color: transparent;
+    -webkit-text-stroke: 1px #d97706;
+    z-index: -1;
+  }
+
+  /* --- 3D CSS Cylinders (Coin Stacks) --- */
+  
+  .css-cylinder-container {
+    position: absolute;
+    right: 20px;
+    top: 60px;
+    width: 140px;
+    height: 100px;
+    z-index: 5;
+  }
+
+  /* The Arrow */
+  .transfer-arrow {
+    position: absolute;
+    top: 25px;
+    left: 45%;
+    width: 35px;
+    height: 30px;
+    border-top: 4px solid #f68940;
+    border-right: 4px solid #f68940;
+    border-radius: 0 100% 0 0;
+    transform: rotate(20deg);
+    z-index: 15;
+  }
+  .transfer-arrow::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 10px solid #f68940;
+    transform: rotate(-60deg);
+  }
+
+  /* Orange Cylinder (Left) */
+  .cylinder-orange {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 55px;
+    height: 60px;
+    background: linear-gradient(to right, #f7b47e, #fca358 40%, #ea7a32);
+    border-radius: 6px;
+    box-shadow: 0 10px 15px rgba(234, 122, 50, 0.4);
+    z-index: 10;
+  }
+  .cylinder-orange::before {
+    /* Top Face */
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 55px;
+    height: 20px;
+    background: radial-gradient(circle at center, #fedebd, #fca358);
+    border-radius: 50%;
+    border: 1.5px solid #fed1a7;
+  }
+  .cylinder-orange::after {
+    /* Bottom Face Curve */
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 55px;
+    height: 20px;
+    background: transparent;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(234, 122, 50, 0.6);
+  }
+  /* Floating label */
+  .cylinder-tag-orange {
+    position: absolute;
+    top: -30px;
+    left: -10px;
+    background: white;
+    color: #e5823c;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #fedebd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transform: rotate(-5deg);
+  }
+
+  /* Red Cylinder (Right) */
+  .cylinder-red {
+    position: absolute;
+    bottom: 5px;
+    right: 0px;
+    width: 65px;
+    height: 75px;
+    background: linear-gradient(to right, #fc979c, #f45d65 40%, #e22b37);
+    border-radius: 6px;
+    box-shadow: 0 15px 25px rgba(226, 43, 55, 0.4);
+    z-index: 20;
+  }
+  .cylinder-red::before {
+    /* Top Face */
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 0;
+    width: 65px;
+    height: 24px;
+    background: radial-gradient(circle at center, #fedce0, #f45d65);
+    border-radius: 50%;
+    border: 1.5px solid #fdc2c9;
+  }
+  .cylinder-red::after {
+    /* Bottom Face Curve */
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 65px;
+    height: 24px;
+    background: transparent;
+    border-radius: 50%;
+    box-shadow: 0 6px 10px rgba(226, 43, 55, 0.5);
+  }
+  /* Floating label */
+  .cylinder-tag-red {
+    position: absolute;
+    top: -35px;
+    left: 0px;
+    background: white;
+    color: #e83a45;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid #fdc2c9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transform: rotate(5deg);
+  }
+
+  /* Glowing background node behind Red Cylinder */
+  .cylinder-red-glow {
+    position: absolute;
+    bottom: 0px;
+    right: -10px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(244,93,101,0.5) 0%, transparent 60%);
+    z-index: 5;
+  }
+}

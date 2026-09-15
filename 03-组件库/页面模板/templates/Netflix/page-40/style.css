@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Cross-Engine Smooth Render Support */
+.custom-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.custom-hide-scrollbar {
+    -ms-overflow-style: none; /* DOM-level IE purge */
+    scrollbar-width: none; /* DOM-level Firefox purge */
+}

@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Survey floating side badge text vertical alignment */
+  .survey-badge {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 2px;
+  }
+
+  /* Fade masking effect for right horizontal scrolling tabs */
+  .fade-mask-right {
+    position: relative;
+  }
+  .fade-mask-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Gradient background for the recommendation alert */
+  .recommendation-bg {
+    background: linear-gradient(to right, #fcf4f4 0%, #fefcfc 100%);
+  }
+
+  /* Medal Badge base styles */
+  .medal-badge {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .medal-badge::after {
+    content: '★';
+    font-size: 10px;
+    color: white;
+    position: relative;
+    top: -1px;
+    transform: scale(0.9);
+  }
+
+  .medal-gold {
+    background: radial-gradient(circle at top left, #ffe386, #f39c12);
+    border: 1.5px solid #fff5c5;
+  }
+  
+  .medal-silver {
+    background: radial-gradient(circle at top left, #e8edf3, #9ba4b5);
+    border: 1.5px solid #fcfdfe;
+  }
+
+  .medal-bronze {
+    background: radial-gradient(circle at top left, #f6cca0, #c87a38);
+    border: 1.5px solid #fadec3;
+  }
+
+  /* Ribbon wings below medal */
+  .medal-ribbon::before, .medal-ribbon::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    z-index: -1;
+  }
+  
+  .medal-ribbon::before {
+    left: 1px;
+    border-width: 6px 3px 0 3px;
+    border-color: #e5a56d transparent transparent transparent;
+    transform: rotate(20deg);
+  }
+  
+  .medal-ribbon::after {
+    right: 1px;
+    border-width: 6px 3px 0 3px;
+    border-color: #e5a56d transparent transparent transparent;
+    transform: rotate(-20deg);
+  }
+}

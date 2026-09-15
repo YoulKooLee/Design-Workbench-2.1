@@ -114,6 +114,20 @@ try {
   check('index.json version = catalog version', String(idx.version) === String(cat.version), `${idx.version} vs ${cat.version}`);
 } catch (e) { check('index.json version = catalog version', false, e.message); }
 
+// 4.6 安全守卫（WorkBuddy 审查修复：safeResolve 路径穿越+命令注入防线）
+console.log('\n[4.6/5] 安全守卫');
+try {
+  const srv = fs.readFileSync(path.join(ROOT, '工作台面板', 'server.mjs'), 'utf8');
+  const hasFn = srv.includes('function safeResolve(relative)');
+  // 必须拒绝的：裸 path.join(AXHUB_ROOT, relative) 拼接（relative 来自请求参数）
+  const bareJoin = /path\.join\(AXHUB_ROOT,\s*relative\)/.test(srv);
+  const callCount = (srv.match(/const dir = safeResolve\(relative\);/g) || []).length;
+  check('safeResolve 定义在位', hasFn);
+  check('无 relative 裸拼 path.join', !bareJoin, bareJoin ? '存在裸拼，未全部迁移' : '已全部走 safeResolve');
+  check(`safeResolve 覆盖 ${callCount} 处路由`, callCount >= 9, `${callCount} 处（git×5 + 删除 + open + context + owner）`);
+  check('safeResolve 拒绝危险字符', /\["`\$&|;<>\(\)\{\}\[\]!\*?\?\]/.test(srv) || srv.includes('SAFE_RESOLVE_MSG'));
+} catch (e) { check('安全守卫检查', false, e.message); }
+
 // 5. 共享通信目录（09-协作）
 console.log('\n[5/5] 共享通信目录');
 const colRoot = path.join(ROOT, CFG.collaboration.rootDir);

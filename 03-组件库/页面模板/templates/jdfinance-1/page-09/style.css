@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@layer components {
+  /* No special complex backgrounds needed, mostly solid colors */
+  .dog-avatar-gradient {
+    background: radial-gradient(circle at center, #fff1f2 0%, #fffbfc 60%, transparent 100%);
+  }
+
+  .text-xxs {
+    font-size: 10px;
+    line-height: 12px;
+  }
+}

@@ -1,0 +1,4 @@
+Title: Aura 静谧生活电商体验
+Platform: Google AI Studio
+Source: https://aistudio.google.com/apps/bundled/aura_quiet_living?showPreview=true&showAssistant=true
+Imported for Axhub Make template library.

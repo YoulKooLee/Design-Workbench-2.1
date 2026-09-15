@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@layer components {
+
+  /* 
+    ========================================================
+     PAGE 62 OVERALL BACKGROUND
+    ========================================================
+  */
+  .bg-canvas {
+    background-color: #f6f5f8;
+  }
+
+  /* 
+    ========================================================
+     SERVICE CARDS
+    ========================================================
+  */
+  .service-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 18px 16px;
+    margin-bottom: 12px;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .card-title-lg {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: 0.5px;
+  }
+
+  .card-title-md {
+    font-size: 15px;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: 0.5px;
+    margin-bottom: 22px;
+  }
+
+  /* 
+    ========================================================
+     BUTTONS
+    ========================================================
+  */
+  .btn-edit {
+    background: linear-gradient(135deg, #eda473, #e58a52);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 16px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .btn-edit:active {
+    opacity: 0.8;
+  }
+
+  /* 
+    ========================================================
+     DUAL-TONE LINEAR ICONS
+    ========================================================
+  */
+  .icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .icon-wrapper:active {
+    transform: scale(0.95);
+  }
+
+  .icon-box {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .icon-label {
+    font-size: 11px;
+    color: #444;
+    text-align: center;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  /* Thin dark stroke */
+  .stroke-main {
+    stroke: #222;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+
+  /* Tiny orange accent components */
+  .stroke-accent {
+    stroke: #ee8c5c;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+  .fill-accent {
+    fill: #ee8c5c;
+  }
+
+  /* 
+    ========================================================
+     MINI GREY ICONS (Top Row)
+    ========================================================
+  */
+  .mini-icon-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid #dcdcdc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fafafa;
+    color: #666;
+  }
+
+}

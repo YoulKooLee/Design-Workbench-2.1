@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@layer components {
+  .bg-recharge-header {
+    /* Soft lavender/blue fade down to standard finance gray */
+    background: linear-gradient(180deg, #e4ebfa 0%, #edf1fc 30%, #f5f6f8 100%);
+  }
+
+  .recharge-hero-pattern {
+    /* Geometric concentric curves for the tech aura */
+    background-image: radial-gradient(circle at 100% 0%, transparent 40%, rgba(180, 200, 255, 0.2) 41%, rgba(180, 200, 255, 0.2) 43%, transparent 44%),
+                      radial-gradient(circle at 100% 0%, transparent 45%, rgba(180, 200, 255, 0.15) 46%, rgba(180, 200, 255, 0.15) 49%, transparent 50%),
+                      radial-gradient(circle at 100% 0%, transparent 55%, rgba(180, 200, 255, 0.1) 56%, rgba(180, 200, 255, 0.1) 60%, transparent 61%);
+  }
+
+  /* 
+   * Custom jagged/ticket notch cutouts.
+   * Uses CSS masking with radial gradients to cut circles out of the left/right center borders.
+   */
+  .ticket-cutout {
+    position: relative;
+  }
+  .ticket-cutout::before,
+  .ticket-cutout::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff; /* Must match the background of the parent's parent to look like a cutout */
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.05);
+    z-index: 10;
+  }
+  
+  .ticket-cutout::before {
+    left: -5px; /* Half outside */
+  }
+  
+  .ticket-cutout::after {
+    right: -5px; /* Half outside */
+  }
+
+  /* Specific border application to complement the cutout */
+  .ticket-border {
+    border: 1px solid #ffd8cd;
+  }
+}
