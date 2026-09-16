@@ -115,4 +115,4 @@ node 06-运行脚本/smoke-test.mjs                    # 冒烟自测（组件�
 
 - Node.js ≥ 18（建议 x64）
 - 网络能访问 npm
-- 旧版 `C:\Users\游翔\Documents\AI work\Axhub` 双轨运行中，只读参考、继续使用
+- 旧版 Axhub 工作台（历史版本）双轨运行中，只读参考、继续使用

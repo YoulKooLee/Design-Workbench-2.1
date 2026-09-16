@@ -1,4 +1,4 @@
-// 产品设计工作台 —— 本地管理面板后端
+﻿// 产品设计工作台 —— 本地管理面板后端
 // 纯 Node 内置模块（http/fs/path/child_process），无第三方依赖。
 import http from 'node:http';
 import fs from 'node:fs';
@@ -515,6 +515,31 @@ function readAdminPort(dir) {
     if (m) return m[1];
   } catch { /* ignore */ }
   return '3006';
+}
+
+// admin 端口池：3006 起顺序探测空闲端口（默认池 3006-3105，避开已监听端口）
+async function allocAdminPort(start = 3006, maxTry = 100) {
+  for (let p = start; p < start + maxTry; p++) {
+    if (!(await isPortOpen(p))) return String(p);
+  }
+  return null;
+}
+
+// 端口占用者是否为「本项目」：netstat 找监听 PID → 查进程命令行是否含项目路径（防无关进程/他项目占用误判为"已在运行"）
+function isPortOwnedByProject(port, dir) {
+  try {
+    const cp = require('child_process');
+    const ns = cp.execSync('netstat -ano', { encoding: 'utf8', timeout: 5000 });
+    const norm = dir.replace(/\\/g, '/').toLowerCase();
+    for (const line of ns.split(/\r?\n/)) {
+      const m = line.match(/\s*TCP\s+127\.0\.0\.1:(\d+)\s+.*LISTENING\s+(\d+)/);
+      if (m && Number(m[1]) === Number(port)) {
+        const cmd = cp.execSync(`wmic process where "ProcessId=${m[2]}" get CommandLine`, { encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'pipe', 'ignore'] });
+        return cmd.toLowerCase().includes(norm);
+      }
+    }
+  } catch { /* 查不到时保守视为本项目，保持原复用行为 */ }
+  return true;
 }
 
 // 探测可用编辑器（供 Vue DevTools / vue-inspector「前往文件」使用；默认 code 未安装时 spawn 失败导致命令窗口闪退）
@@ -1064,7 +1089,7 @@ const server = http.createServer(async (req, res) => {
     const dst = path.join(projectsRoot, projName);
     if (fs.existsSync(dst)) return sendError(res, `目录已存在：${projName}`);
     const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '03-组件库', 'vibepm-admin模板');
-    if (isAdmin && !fs.existsSync(ADMIN_TEMPLATE_DIR)) return sendError(res, 'admin 框架模板不可用（骨架缺少 admin/ 目录）');
+    if (isAdmin && !fs.existsSync(ADMIN_TEMPLATE_DIR)) return sendError(res, 'admin 框架模板不可用：缺少 03-组件库\\vibepm-admin模板');
     if (!isAdmin && !fs.existsSync(TEMPLATE_DIR)) return sendError(res, '模板目录不存在');
     if (isMakeTpl) {
       const mtRoot = path.join(MAKE_TEMPLATES_DIR, 'templates', makeTplId);
@@ -1090,8 +1115,19 @@ const server = http.createServer(async (req, res) => {
           fs.mkdirSync(path.join(dst, '.axhub'), { recursive: true });
           fs.writeFileSync(path.join(dst, '.axhub', 'framework'), 'admin', 'utf8');
         } catch { /* ignore */ }
+        // admin 端口池：创建时分配唯一 VITE_PORT（3006 起避开已监听端口），写回项目 .env 并登记上下文，防多 admin 项目端口冲突
+        const adminPort = await allocAdminPort();
+        if (adminPort) {
+          const envFile = path.join(dst, '.env');
+          try {
+            let envTxt = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf8') : '';
+            if (/VITE_PORT\s*=/.test(envTxt)) envTxt = envTxt.replace(/VITE_PORT\s*=\s*\d+/, `VITE_PORT=${adminPort}`);
+            else envTxt += (envTxt.endsWith('\n') ? '' : '\n') + `VITE_PORT=${adminPort}\n`;
+            fs.writeFileSync(envFile, envTxt, 'utf8');
+          } catch { /* ignore */ }
+        }
         const ctx0 = readWorkspaceCtx();
-        const ctxN = upsertProject(ctx0, `01-项目/${projName}`, 'active');
+        const ctxN = upsertProject(ctx0, `01-项目/${projName}`, 'active', adminPort ? { vitePort: adminPort } : {});
         writeWorkspaceCtx(ctxN);
         return send(res, 200, { ok: true, msg: `项目已创建：${projName}（admin 框架 · Vue 管理后台工程）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin' });
       }
@@ -1242,9 +1278,14 @@ const server = http.createServer(async (req, res) => {
       const adminPort = readAdminPort(dir);
       const openUrl = `http://localhost:${adminPort}/`;
       // 已在运行：直接复用（不重复 spawn vite / install）；须写 done 标记，前端 launch-log 才能判定完成并打开浏览器
+      // 已在运行：复用前校验占用者确为本项目（防无关进程/他项目占用误判为"已在运行"）
       if (await isPortOpen(adminPort)) {
-        fs.appendFileSync(logFile, `Vue 开发栈已在运行（${openUrl}），复用现有实例\nAXHUB_LAUNCH_STATUS: done\nAXHUB_OPEN_URL: ${openUrl}\n`, 'utf8');
-        return send(res, 200, { ok: true, msg: 'Vue 开发栈已在运行', openUrl, hasNodeModules: true });
+        if (isPortOwnedByProject(adminPort, dir)) {
+          fs.appendFileSync(logFile, `Vue 开发栈已在运行（${openUrl}），复用现有实例\nAXHUB_LAUNCH_STATUS: done\nAXHUB_OPEN_URL: ${openUrl}\n`, 'utf8');
+          return send(res, 200, { ok: true, msg: 'Vue 开发栈已在运行', openUrl, hasNodeModules: true });
+        }
+        fs.appendFileSync(logFile, `端口 ${adminPort} 被其他进程占用（非本项目开发栈）\nAXHUB_LAUNCH_STATUS: failed\n`, 'utf8');
+        return send(res, 409, { ok: false, code: 'PORT_CONFLICT', msg: `端口 ${adminPort} 已被其他进程占用（非本项目开发栈），请释放该端口或检查项目 .env 的 VITE_PORT`, logFile });
       }
       const launchVite = () => {
         const viteEntry = path.join(dir, 'node_modules', 'vite', 'bin', 'vite.js');
@@ -1253,7 +1294,7 @@ const server = http.createServer(async (req, res) => {
           return false;
         }
         const viteEnv = Object.assign(cleanEnvForSpawn(), { LAUNCH_EDITOR: detectEditor() });
-        const child = spawn(process.execPath, [viteEntry], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: viteEnv });
+        const child = spawn(process.execPath, [viteEntry, '--host', '127.0.0.1'], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: viteEnv });
         child.stdout.on('data', (d) => {
           const s = d.toString('utf8');
           fs.appendFileSync(logFile, s, 'utf8');
