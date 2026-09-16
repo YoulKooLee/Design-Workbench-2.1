@@ -54,7 +54,64 @@
 - T15 组件调用对照重写/白名单拷贝，运行时禁止指向 03-组件库
 - T18 技能以 v1.7 为权威真源，工作台只放路由入口
 
-## 前置条件
+## 部署与上手（他人使用）
+
+### 1. 依赖程序清单
+
+| 依赖 | 是否必需 | 说明 / 获取方式 |
+|---|---|---|
+| Node.js ≥ 18（x64） | **必需** | 启动工作台面板与项目开发栈。启动器自动探测：优先 WorkBuddy 自带 node，回退系统 PATH。下载：https://nodejs.org |
+| pnpm | admin 项目必需 | 仅「标准产品框架」项目首次启动自动安装依赖时使用（`npm i -g pnpm`）。Make/React 原型项目不需要 |
+| 浏览器 | 必需 | Chrome / Edge 等，访问工作台面板 http://127.0.0.1:7788 |
+| Git | 可选 | 克隆 / 更新本仓库 |
+| 本地智能体 | 可选 | 豆包 / CodeBuddy / WorkBuddy / DeepSeek / 千问，接入工作台协作体系（见下） |
+
+> 工作台面板本身无第三方 npm 依赖（纯 Node 内置模块），克隆即可运行；仅项目级（admin 框架）需要 pnpm 安装依赖。
+
+### 2. 部署步骤
+
+```bash
+# 1) 获取代码
+git clone git@github.com:YoulKooLee/Design-Workbench-2.1.git   # 或解压 zip 到任意目录（路径含中文/空格均可）
+cd Design-Workbench-2.1
+
+# 2) 确认依赖
+node -v          # 需 ≥ 18
+# （如计划使用 admin 框架项目）npm i -g pnpm && pnpm -v
+
+# 3) 一键启动
+双击 启动工作台.cmd        # 或 npm start（等价于 node 工作台面板/server.mjs）
+# 浏览器自动打开 http://127.0.0.1:7788
+```
+
+首次启动后建议跑一遍自检：
+
+```bash
+powershell -File 06-运行脚本/env-doctor.ps1        # 环境体检
+node 06-运行脚本/smoke-test.mjs                    # 冒烟自测（组件库 JSON / 端口 / 配置）
+```
+
+> 启动器会**自动重建缺失的标准目录**（01-项目 ~ 10-智能体记忆 等），新环境无需手工建目录；`workbench.config.json` 为唯一配置真源（相对路径，可移植）。
+
+### 3. 让本地智能体快速掌握（新会话第一站）
+
+各智能体（豆包 / CodeBuddy / WorkBuddy / DeepSeek / 千问）接入工作台后，**新会话第一站读 `10-智能体记忆/BOOTSTRAP.md`**，其中包含角色定位、目录地图与协作协议。关键速查：
+
+- **角色与记忆**：`10-智能体记忆/`（中性主干 + 各智能体分区；BOOTSTRAP 自举；`rules/` 门禁、`skills/` 技能）
+- **协作协议**：`09-协作/`（rooms 房间消息总线 + messages/inbox 收件箱 + handoff 交接包）；**通信写操作必须用户确认（T12）**
+- **项目入口**：`01-项目/<项目名>/` —— 项目专属 `.agents/`（技能/知识/规则，从模板复制）、`.workbuddy/current.json`（编辑焦点）、`handoff.md`（交接包，接手先读，T13）
+- **规则/知识/技能真源**：`02-模板/_project-template/.agents/`（skills / knowledge / rules；项目级从模板复制，可独立增删；工作台面板对应三个页签）
+- **组件库**：`03-组件库/`（v1.7 母版 + 页面模板 + Design-components；**运行时禁止指向组件库目录，需对照重写/白名单拷贝，T15**）
+- **铁律**：详见本文件「铁律速查」与 `10-智能体记忆/rules/`（T1–T19）
+
+### 4. 常见问题
+
+- **启动报「未找到 Node.js」**：安装 Node ≥ 18 后重试，或安装 WorkBuddy（自带 node）
+- **端口被占用**（7788/53817/32124/8899）：`停止工作台.cmd` 一键清理后重启
+- **知识库/工作规则面板为空**：确认从 GitHub 克隆的最新版（`.agents/knowledge|rules` 已入库）；旧 zip 需重新拉取
+- **admin 项目首次启动慢**：首次会后台 `pnpm install`（日志：`07-日志/launch-01-项目<名称>.log`），完成后自动拉起 vite 并打开预览
+
+## 前置条件（本机现状）
 
 - Node.js ≥ 18（建议 x64）
 - 网络能访问 npm
