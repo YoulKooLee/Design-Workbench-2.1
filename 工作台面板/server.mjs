@@ -32,7 +32,7 @@ const CFG = (() => {
 const PORT = Number(process.env.AXHUB_MANAGER_PORT) || Number(CFG.workbench?.panelPort) || 7788;
 const BIND_HOST = CFG.workbench?.bindHost || '127.0.0.1';
 // Make-Template 页面模板目录（新增项目可选模板；可经 workbench.config.json 的 workbench.makeTemplatesDir 覆盖）
-const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench?.makeTemplatesDir || 'C:\\Users\\游翔\\Documents\\AI work\\产品设计工作台\\03-组件库\\页面模板';
+const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench?.makeTemplatesDir || path.join(AXHUB_ROOT, '03-组件库', '页面模板');
 
 // ===== AI 联动上下文 =====
 // 工作台级多项目上下文（供 codebuddy / workbuddy 感知"当前编辑项目 + 全部运行中项目"）
@@ -157,6 +157,10 @@ function isMakeAlive() {
 function writeWorkspaceCtx(ctx) {
   try {
     fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
+// 启动保障：标准目录缺失时自动重建（下载版/新环境无需手工建目录）
+for (const d of ['01-项目','02-模板','03-组件库','04-维护台账','05-回收站','06-运行脚本','07-日志','08-文档','09-协作','10-智能体记忆']) {
+  try { fs.mkdirSync(path.join(AXHUB_ROOT, d), { recursive: true }); } catch {}
+}
     fs.writeFileSync(WORKSPACE_CTX_FILE, JSON.stringify(ctx, null, 2), 'utf8');
     return true;
   } catch {
@@ -511,6 +515,17 @@ function readAdminPort(dir) {
     if (m) return m[1];
   } catch { /* ignore */ }
   return '3006';
+}
+
+// 探测可用编辑器（供 Vue DevTools / vue-inspector「前往文件」使用；默认 code 未安装时 spawn 失败导致命令窗口闪退）
+function detectEditor() {
+  const cands = [
+    path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Microsoft VS Code', 'Code.exe'),
+    path.join(process.env.ProgramFiles || '', 'Microsoft VS Code', 'Code.exe'),
+    path.join(process.env['ProgramFiles(x86)'] || '', 'Microsoft VS Code', 'Code.exe'),
+  ];
+  for (const c of cands) if (fs.existsSync(c)) return `"${c}"`;
+  return 'notepad'; // 兜底：记事本（系统自带，必可用）
 }
 
 // 端口是否已被监听（admin 启动复用守卫：已在运行则不再重复拉起 vite）
@@ -932,6 +947,38 @@ const server = http.createServer(async (req, res) => {
     return sendError(res, `还原失败：${info.message || 'rename failed'}（若目录被占用请先关闭相关程序）`);
   }
 
+  // 回收站：清空（彻底删除所有 .deleted-* 回收项，不可恢复；大目录含 node_modules 时删除耗时，后台异步执行不阻塞面板）
+  if (p === '/api/trash/clear' && method === 'POST') {
+    const trashBase = path.join(AXHUB_ROOT, '05-回收站');
+    if (!fs.existsSync(trashBase)) return send(res, 200, { ok: true, msg: '回收站已为空' });
+    const dirs = fs.readdirSync(trashBase, { withFileTypes: true })
+      .filter((d) => d.isDirectory() && d.name.startsWith('.deleted-'));
+    if (dirs.length === 0) return send(res, 200, { ok: true, msg: '回收站已为空' });
+    // 子进程异步删除（Windows 上目录被进程占用时 fs.rm 会 EPERM，force + 子进程隔离避免误伤服务自身）
+    const payload = dirs.map((d) => path.join(trashBase, d.name));
+    const clearLog = path.join(AXHUB_ROOT, '07-日志', 'trash-clear.log');
+    fs.appendFileSync(clearLog, `\n[${new Date().toISOString()}] 清空回收站：${dirs.length} 项\n`, 'utf8');
+    const child = spawn(process.execPath, ['-e', `
+      const fs = require('fs');
+      const list = JSON.parse(Buffer.from(process.argv[1], 'base64').toString('utf8'));
+      let fail = 0;
+      for (const p of list) {
+        try { fs.rmSync(p, { recursive: true, force: true }); }
+        catch (e) { fail++; console.log('__ERR__:' + p + ':' + e.message); }
+      }
+      process.exit(fail > 0 ? 1 : 0);
+    `, Buffer.from(JSON.stringify(payload)).toString('base64')], {
+      env: cleanEnvForSpawn(),
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    child.stdout.on('data', (d) => fs.appendFileSync(clearLog, d, 'utf8'));
+    child.stderr.on('data', (d) => fs.appendFileSync(clearLog, `STDERR: ${d}`, 'utf8'));
+    child.on('close', (code) => fs.appendFileSync(clearLog, `完成 exit=${code} @ ${new Date().toISOString()}\n`, 'utf8'));
+    child.unref();
+    return send(res, 200, { ok: true, msg: `已开始清空回收站（${dirs.length} 个回收项），大目录需数十秒，请稍后刷新查看` });
+  }
+
   if (p === '/api/projects/history' && method === 'GET') {
     const relative = url.searchParams.get('relative') || '';
     const dir = safeResolve(relative);
@@ -1205,7 +1252,8 @@ const server = http.createServer(async (req, res) => {
           fs.appendFileSync(logFile, 'AXHUB_LAUNCH_STATUS: failed\n缺少 vite（node_modules/vite 未装全），请重新安装依赖\n', 'utf8');
           return false;
         }
-        const child = spawn(process.execPath, [viteEntry], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: cleanEnvForSpawn() });
+        const viteEnv = Object.assign(cleanEnvForSpawn(), { LAUNCH_EDITOR: detectEditor() });
+        const child = spawn(process.execPath, [viteEntry], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: viteEnv });
         child.stdout.on('data', (d) => {
           const s = d.toString('utf8');
           fs.appendFileSync(logFile, s, 'utf8');
@@ -1375,18 +1423,6 @@ const server = http.createServer(async (req, res) => {
     const script = path.join(AXHUB_ROOT, '停止工作台.cmd');
     if (!fs.existsSync(script)) return sendError(res, '未找到 停止工作台.cmd');
     try {
-      // 0) 优雅关闭打开工作台页面的浏览器窗口（标题匹配，CloseMainWindow 只关匹配窗口，不误杀其他浏览器窗口）
-      //    ps1 必须带 UTF-8 BOM，否则 Windows PowerShell 5.1 按 ANSI 读中文标题会乱码导致匹配失败
-      const closePs = [
-        "$procs = Get-Process chrome,msedge,brave,firefox -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 }",
-        "foreach($p in $procs){ if($p.MainWindowTitle -match '产品设计工作台|Axhub'){ $null = $p.CloseMainWindow() } }"
-      ].join('\r\n');
-      const psFile = path.join(AXHUB_ROOT, '07-日志', '_close-workbench-browser.ps1');
-      fs.writeFileSync(psFile, '\uFEFF' + closePs, 'utf8');
-      try {
-        spawnSync('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', psFile], { timeout: 6000, windowsHide: true });
-      } catch { /* 关闭浏览器失败不阻塞退出 */ }
-      try { fs.unlinkSync(psFile); } catch { /* ignore */ }
       // 1) 独立进程运行停止脚本（detached + unref），随后本服务自行退出
       spawn('cmd', ['/c', 'start', '', script], { detached: true, stdio: 'ignore' }).unref();
       setTimeout(() => { try { process.exit(0); } catch { /* ignore */ } }, 500);

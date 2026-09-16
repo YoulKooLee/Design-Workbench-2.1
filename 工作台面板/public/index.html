@@ -574,8 +574,10 @@ $('#exitBtn').addEventListener('click', async () => {
   confirmModal('退出工作台', '将停止工作台全部服务（7788 面板 / 53817 Make / 32124 ACP / Vite 开发栈 / 8899 预览）并清理运行状态，等价于运行「停止工作台.cmd」。确定退出吗？', async () => {
     const r = await api('/api/shutdown', { method:'POST', silent:true });
     toast(r.msg, r.ok?'ok':'err');
-    // 双保险：服务端已优雅关闭工作台浏览器窗口；此处再尝试关闭本标签（对脚本可关闭的窗口生效）
+    // 只关闭工作台页签（由「工作台启动页」脚本打开的页签可被自动关闭；不影响浏览器其他窗口/页签）
     try { window.close(); } catch(e) { /* ignore */ }
+    // 兜底：浏览器安全限制下无法关闭的页签，空白化避免停留在失效页面
+    setTimeout(function(){ try { window.location.replace('about:blank'); } catch(e){ /* ignore */ } }, 500);
   }, '确认退出');
 });
 
@@ -1405,15 +1407,18 @@ function showPortsModal(){
 let histSelHash = null;
 let histSelIsRoot = false;
 
-// 回收站（C1）：列出已删除项目 + 还原
+// 回收站（C1）：列出已删除项目 + 还原 + 清空
 async function showTrash(){
-  openModal(`<h3>回收站</h3><div id="trashBody"><span class="spinner"></span>读取中…</div>
-    <div class="modal-ops"><button class="btn" onclick="closeModal()">关闭</button></div>`);
+  openModal(`<div class="modal-head"><h3>回收站</h3><button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div id="trashBody"><span class="spinner"></span>读取中…</div>
+    <div class="modal-ops"><button class="btn danger" id="trashClearBtn" disabled>清空回收站</button><button class="btn" onclick="closeModal()">关闭</button></div>`);
   let r;
   try { r = await api('/api/trash'); }
   catch(e){ $('#trashBody').innerHTML = `<div class="empty">读取回收站失败：${escapeHtml(e.message)}</div>`; return; }
   if(!r.ok){ $('#trashBody').innerHTML = `<div class="empty">${escapeHtml(r.msg||'读取失败')}</div>`; return; }
   const items = r.items || [];
+  const clearBtn = $('#trashClearBtn');
+  clearBtn.disabled = items.length === 0;
   if(items.length === 0){
     $('#trashBody').innerHTML = `<div class="empty">回收站为空。</div>
       <div class="hint" style="margin-top:6px">删除项目会移入 <span class="path">05-回收站</span>（非彻底删除），可在此还原。</div>`;
@@ -1428,8 +1433,16 @@ async function showTrash(){
       <td><button class="btn sm primary" data-restore="${escapeHtml(it.id)}">还原</button></td>
     </tr>`;
   }
-  $('#trashBody').innerHTML = `<div class="hint" style="margin:4px 0 10px">已删除项目（<span class="path">05-回收站</span>），点击「还原」移回 <span class="path">01-项目</span>；若 01-项目 已有同名目录将拒绝还原。</div>
+  $('#trashBody').innerHTML = `<div class="hint" style="margin:4px 0 10px">已删除项目（<span class="path">05-回收站</span>），点击「还原」移回 <span class="path">01-项目</span>；若 01-项目 已有同名目录将拒绝还原。「清空回收站」将彻底删除全部回收项，不可恢复。</div>
     <div class="card"><table><thead><tr><th>项目</th><th>删除时间</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  clearBtn.onclick = () => {
+    confirmModal('清空回收站', `将彻底删除回收站中全部 ${items.length} 个回收项（<span class="path">05-回收站</span>），<b>此操作不可恢复</b>。确定清空吗？`, async () => {
+      const rr = await api('/api/trash/clear', { method:'POST' });
+      toast(rr.msg, rr.ok?'ok':'err');
+      // 后端后台异步删除（大目录需数十秒），稍后自动刷新
+      if(rr.ok) setTimeout(showTrash, 5000);
+    }, '确认清空', true);
+  };
   $('#trashBody').querySelectorAll('[data-restore]').forEach(btn=>{
     btn.onclick = async ()=>{
       btn.disabled = true;
