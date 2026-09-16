@@ -1312,15 +1312,18 @@ const server = http.createServer(async (req, res) => {
       };
       if (!fs.existsSync(path.join(dir, 'node_modules'))) {
         // 首次：后台 pnpm install，完成后自动拉起 vite；前端轮询 launch-log
-        // server 由 Start-Process 拉起时 PATH 不含 Roaming\npm，必须用 pnpm.cjs 绝对路径 + node 执行
+        // 优先本地 pnpm（server 由 Start-Process 拉起时 PATH 不含 Roaming\npm，用 pnpm.cjs 绝对路径 + node 执行）；
+        // 未装 pnpm 时回退 npx -y pnpm@10（与 launch-project.ps1 一致，跨机零预装可用）
         const pnpmCjs = path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'pnpm', 'bin', 'pnpm.cjs');
-        if (!fs.existsSync(pnpmCjs)) {
-          fs.appendFileSync(logFile, '未找到 pnpm（' + pnpmCjs + '），无法安装依赖\nAXHUB_LAUNCH_STATUS: failed\n', 'utf8');
-          return sendError(res, '未找到 pnpm，无法安装 admin 工程依赖，请先安装 pnpm', 500);
-        }
-        fs.appendFileSync(logFile, '依赖缺失，后台开始 pnpm install（首次需数分钟）…\n', 'utf8');
+        const useLocalPnpm = fs.existsSync(pnpmCjs);
+        fs.appendFileSync(logFile, useLocalPnpm
+          ? `依赖缺失，后台开始 pnpm install（${pnpmCjs}）…\n`
+          : '依赖缺失，未找到本地 pnpm，回退 npx -y pnpm@10 install（自动下载，首次较慢）…\n', 'utf8');
         try {
-          const inst = spawn(process.execPath, [pnpmCjs, 'install'], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: cleanEnvForSpawn() });
+          const instArgs = useLocalPnpm
+            ? [process.execPath, [pnpmCjs, 'install']]
+            : ['cmd.exe', ['/c', 'npx -y pnpm@10 install']];
+          const inst = spawn(instArgs[0], instArgs[1], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: cleanEnvForSpawn() });
           inst.stdout.on('data', (d) => fs.appendFileSync(logFile, d, 'utf8'));
           inst.stderr.on('data', (d) => fs.appendFileSync(logFile, `STDERR: ${d}`, 'utf8'));
           inst.on('error', (e) => fs.appendFileSync(logFile, `INSTALL ERROR: ${e.message}\n`, 'utf8'));
