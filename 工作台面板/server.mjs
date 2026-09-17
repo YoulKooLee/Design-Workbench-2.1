@@ -1681,6 +1681,18 @@ const server = http.createServer(async (req, res) => {
   // 读取前先做活体检测，把已死的 editing/active 项目降级为 stopped（被动停止，保留展示）。
   if (p === '/api/context/current' && method === 'GET') {
     const ctx = await reconcileWorkspaceCtx();
+    // 为运行中项目补充 Vite 端口（从 .dev-server-info.json 心跳读取），供面板显示真实端口
+    for (const proj of ctx.projects) {
+      if (proj.status === 'active' || proj.status === 'editing' || proj.status === 'starting') {
+        try {
+          const infoPath = path.join(AXHUB_ROOT, String(proj.relative || '').replace(/\\/g, '/'), '.axhub', 'make', '.dev-server-info.json');
+          if (fs.existsSync(infoPath)) {
+            const info = JSON.parse(fs.readFileSync(infoPath, 'utf8'));
+            if (info.port) proj.port = info.port;
+          }
+        } catch { /* 心跳缺失/损坏时不阻断 */ }
+      }
+    }
     return send(res, 200, { ok: true, agents: ctx.agents, projects: ctx.projects });
   }
 
