@@ -1,0 +1,222 @@
+@import "tailwindcss";
+
+@layer components {
+
+  /* 
+    ========================================================
+     PAGE 68 BASE STYLING (The true view)
+    ========================================================
+  */
+  .bg-canvas {
+    background-color: #f7f8fa;
+  }
+
+  /* Shared structure for the white cards */
+  .jd-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    margin: 0 14px 12px 14px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  /* 
+    ========================================================
+     TAB HEADERS
+    ========================================================
+  */
+  .tab-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    padding-bottom: 12px;
+  }
+  
+  .tab-title-active {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+  }
+  
+  .tab-title-inactive {
+    font-size: 18px;
+    font-weight: 500;
+    color: #111;
+  }
+  
+  .tab-sub-active {
+    font-size: 11.5px;
+    color: #a0a0a0;
+    margin-top: 5px;
+  }
+
+  .tab-sub-inactive {
+    font-size: 11.5px;
+    color: #666;
+    margin-top: 5px;
+  }
+
+  .tab-underline {
+    position: absolute;
+    bottom: 0px; 
+    width: 90px;
+    height: 2.5px;
+    background-color: #eb7c33;
+    border-radius: 2px;
+  }
+
+  .tab-divider {
+    width: 1px;
+    height: 38px;
+    background-color: #f0f0f0;
+    margin: 0 2px;
+    margin-top: 5px;
+  }
+
+  .badge-red {
+    background-color: #f23c3c;
+    color: #fff;
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-left: 2px;
+    font-weight: 500;
+    position: relative;
+    top: -2px;
+  }
+
+  /* 
+    ========================================================
+     WARNING ALERT BOX
+    ========================================================
+  */
+  .alert-box {
+    background: linear-gradient(to right, #fcfcfc, #f7f8f9);
+    border: 1px solid #f2f2f2;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px; 
+    margin-bottom: 5px;
+  }
+
+  /* 
+    ========================================================
+     LIST ROW METRICS
+    ========================================================
+  */
+  .list-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 0;
+    border-bottom: 1px solid #f7f7f7;
+  }
+  .list-row:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+  }
+
+  .list-title {
+    font-size: 15px;
+    color: #111;
+    display: flex;
+    align-items: center;
+  }
+  
+  .list-value-box {
+    display: flex;
+    align-items: center;
+    text-align: right;
+  }
+
+  .chevron-right {
+    width: 14px;
+    height: 14px;
+    color: #ccc;
+    margin-left: 4px;
+  }
+  
+  .info-icon {
+    width: 14px;
+    height: 14px;
+    color: #d5d5d5;
+    margin-left: 6px;
+    cursor: pointer;
+  }
+
+  /* 
+    ========================================================
+     CUSTOM CHECKBOX
+    ========================================================
+  */
+  .custom-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #e4925e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+  
+  .custom-checkbox svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* 
+    ========================================================
+     BOTTOM FIXED CTA Area
+    ========================================================
+  */
+  .bottom-cta-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(8px);
+    padding: 12px 14px 25px 14px; 
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.03);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-submit {
+    width: 100%;
+    height: 48px;
+    background-color: #df945b;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 500;
+    border-radius: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+
+  .btn-submit:active {
+    opacity: 0.9;
+  }
+
+  .security-tag {
+    display: flex;
+    align-items: center;
+    color: #999;
+    font-size: 11.5px;
+    margin-top: 14px;
+    line-height: 1;
+    letter-spacing: 0.5px;
+  }
+}

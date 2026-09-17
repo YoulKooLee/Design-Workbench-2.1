@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* High Performance Render Engine Overrides */
+.custom-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.custom-hide-scrollbar {
+    -ms-overflow-style: none; /* IE/Edge Logic */
+    scrollbar-width: none; /* Gecko Logic */
+}
+
+/* Linear Gradient Fade Utility */
+.mask-image-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}

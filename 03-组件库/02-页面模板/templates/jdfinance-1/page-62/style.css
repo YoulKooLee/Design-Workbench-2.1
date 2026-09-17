@@ -1,0 +1,281 @@
+@import "tailwindcss";
+
+@layer components {
+
+  /* 
+    ========================================================
+     PAGE 67 BACKGROUND MASK & MOCK UNDERLAY
+    ========================================================
+  */
+  .bg-underlay {
+    background-color: #fafbfc;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .dark-mask {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: 40;
+  }
+
+  /* 
+    ========================================================
+     BOTTOM SHEET MODAL
+    ========================================================
+  */
+  .bottom-sheet {
+    background-color: #ffffff;
+    border-radius: 16px 16px 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding-bottom: 0px;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .close-icon-btn {
+    color: #c0c0c0;
+    cursor: pointer;
+  }
+  .close-icon-btn:-active {
+    opacity: 0.6;
+  }
+
+  /* 
+    ========================================================
+     HORIZONTAL SCROLL TERM SELECTOR
+    ========================================================
+  */
+  .term-scroll-container {
+    overflow-x: auto;
+    display: flex;
+    padding-top: 15px; /* Leave space for top floating tags */
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .term-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .term-box {
+    position: relative;
+    width: 104px;
+    height: 56px;
+    background-color: #fbfbfb;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: 12px;
+    color: #ccc;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .term-box.active {
+    background-color: #fff6ee;
+    border-color: #db7e35;
+    color: #db7e35;
+    font-weight: 700;
+  }
+  
+  /* Bottom right triangle */
+  .term-box.active::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5px;
+    right: -0.5px;
+    width: 22px;
+    height: 22px;
+    background-color: #db7e35;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    border-bottom-right-radius: 4px;
+  }
+  
+  .term-check-icon {
+    position: absolute;
+    bottom: 1.5px;
+    right: 1px;
+    z-index: 10;
+    width: 11px;
+    height: 11px;
+    color: white;
+  }
+
+  .term-tag {
+    position: absolute;
+    top: -9px;
+    right: -6px;
+    background: linear-gradient(135deg, #f6a666, #e76f28);
+    color: white;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 8px 8px 8px 0;
+    transform: scale(0.95);
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  /* 
+    ========================================================
+     LOAN SUMMARY STRIP
+    ========================================================
+  */
+  .summary-strip {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 25px;
+  }
+  .summary-bar-indicator {
+    width: 3.5px;
+    height: 15px;
+    background-color: #dd7122;
+    border-radius: 2px;
+    margin-right: 8px;
+  }
+  .summary-main-text {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111;
+  }
+  .summary-strike-text {
+    font-size: 13px;
+    color: #a0a0a0;
+    text-decoration: line-through;
+    margin-left: 8px;
+    font-family: Arial, sans-serif;
+  }
+
+  /* 
+    ========================================================
+     TAB BACKGROUND HEADER
+    ========================================================
+  */
+  .order-tab-container {
+    padding-left: 20px;
+    display: flex;
+    background: linear-gradient(to right, #fff4ed 0%, #ffffff 80%);
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+  }
+  .order-tab {
+    font-size: 15px;
+    font-weight: 800;
+    color: #db7e35;
+    margin-right: 25px;
+  }
+  .order-tab-faint {
+    font-size: 15px;
+    font-weight: 800;
+    color: #db7e35;
+    opacity: 0.5;
+  }
+
+  /* 
+    ========================================================
+     TIMELINE REPAYMENT LIST
+    ========================================================
+  */
+  .scroll-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    height: 50vh; /* Approximate height matching screenshot proportion */
+  }
+
+  .timeline-container {
+     position: relative;
+     padding-left: 20px;
+  }
+  
+  .timeline-item {
+     display: flex;
+     position: relative;
+     padding-bottom: 30px;
+  }
+  
+  /* Vertical track line */
+  .timeline-item::before {
+     content: '';
+     position: absolute;
+     left: 82.5px;
+     top: 18px;
+     bottom: -10px;
+     width: 1px;
+     background-color: #efefef;
+     z-index: 0;
+  }
+  
+  /* Hide the line on the last item to prevent overflow */
+  .timeline-item:last-child::before {
+     display: none;
+  }
+
+  /* Dot */
+  .timeline-dot {
+     position: absolute;
+     left: 81px;
+     top: 11px;
+     width: 4px;
+     height: 4px;
+     background-color: #db7e35;
+     border-radius: 50%;
+     z-index: 10;
+  }
+
+  .timeline-left {
+     width: 60px;
+     display: flex;
+     flex-direction: column;
+     align-items: flex-start;
+     font-size: 15px;
+     color: #222;
+     font-weight: 400;
+  }
+  
+  .timeline-date {
+     font-size: 12.5px;
+     color: #999;
+     margin-top: 6px;
+     font-family: Arial, sans-serif;
+  }
+
+  .timeline-right {
+     padding-left: 36px;
+     display: flex;
+     flex-direction: column;
+  }
+  
+  .timeline-amount {
+     font-size: 19px;
+     color: #222;
+     font-family: Arial, sans-serif;
+     line-height: 1;
+     margin-bottom: 6px;
+  }
+  
+  .timeline-subtext {
+     font-size: 13px;
+     color: #a0a0a0;
+     font-weight: 400;
+     letter-spacing: 0.2px;
+  }
+
+}

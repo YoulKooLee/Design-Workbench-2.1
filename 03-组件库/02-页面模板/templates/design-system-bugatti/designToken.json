@@ -1,0 +1,47 @@
+{
+  "palette": [
+    "#000000",
+    "#0d0d0d",
+    "#ffffff",
+    "#c3d9f3",
+    "#cccccc",
+    "#e6e6e6",
+    "#999999",
+    "#666666",
+    "#262626",
+    "#3a3a3a",
+    "#141414",
+    "#1f1f1f"
+  ],
+  "typography": {
+    "display": "Bugatti Display",
+    "body": "Bugatti Text Regular",
+    "mono": "Bugatti Monospace",
+    "hints": [
+      "Bugatti Display",
+      "Bugatti Text Regular",
+      "Bugatti Monospace",
+      "ui-monospace",
+      "Inter",
+      "Roboto"
+    ]
+  },
+  "radius": {
+    "control": "0px",
+    "card": "0px",
+    "preview": "0px",
+    "pill": "9999px",
+    "source": "design-md"
+  },
+  "spacing": {
+    "xxs": "4px",
+    "xs": "8px",
+    "sm": "12px",
+    "md": "16px",
+    "lg": "24px",
+    "xl": "40px",
+    "xxl": "64px",
+    "section": "120px",
+    "source": "design-md"
+  }
+}

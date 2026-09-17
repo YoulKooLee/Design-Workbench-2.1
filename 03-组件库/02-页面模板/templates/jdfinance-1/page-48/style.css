@@ -1,0 +1,286 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Environment Background */
+  .platinum-hero-bg {
+    background-color: #f7ebe2; /* Base warm beige */
+    background-image: 
+      radial-gradient(circle at top, #fff 0%, transparent 40%),
+      linear-gradient(to bottom, #fdf8eb, #faecd4);
+  }
+
+  /* 
+    ========================================================
+     CSS FLOATING ORBS & HAND (Replacing image bubbles)
+    ========================================================
+  */
+  
+  /* The Bubble Wrapper */
+  .floating-coin-bubble {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(230,240,255,0.4) 40%, rgba(200,210,250,0.8) 100%);
+    box-shadow: inset -5px -5px 10px rgba(100,150,255,0.2), 0 10px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* The Gold Coin inserted in the bubble */
+  .css-gold-coin {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #ffe082, #ffb300);
+    border-radius: 50%;
+    border: 2px solid #fff8e1;
+    box-shadow: inset 2px 2px 0px rgba(255, 255, 255, 0.6), 0 3px 5px rgba(255, 179, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transform: translateY(-4px); /* Lift coin slightly above number */
+    z-index: 2;
+  }
+  .css-gold-coin::after {
+    content: '¥';
+    color: #df8808;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  /* Animation rules for the bubbles floating */
+  @keyframes float-up-down {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+  }
+  .animate-float-slow {
+    animation: float-up-down 3s ease-in-out infinite;
+  }
+  .animate-float-slower {
+    animation: float-up-down 4s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+  .animate-float-fast {
+    animation: float-up-down 2.5s ease-in-out infinite;
+    animation-delay: 0.5s;
+  }
+
+  /* Synthetic Hand Pointer */
+  .css-hand-pointer {
+    position: absolute;
+    bottom: -20px;
+    right: -25px;
+    width: 35px;
+    height: 40px;
+    background: #ffd9c4;
+    border: 1px solid #eba481;
+    border-radius: 20px 20px 8px 8px;
+    transform: rotate(-25deg);
+    z-index: 10;
+    box-shadow: -2px 5px 8px rgba(0,0,0,0.1);
+  }
+  /* Index Finger */
+  .css-hand-pointer::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 4px;
+    width: 12px;
+    height: 25px;
+    background: #ffd9c4;
+    border: 1px solid #eba481;
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+  }
+  /* Thumb */
+  .css-hand-pointer::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: -12px;
+    width: 15px;
+    height: 20px;
+    background: #ffd9c4;
+    border: 1px solid #eba481;
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    transform: rotate(-15deg);
+  }
+
+  /* 
+    ========================================================
+     CARD 2: CONCEPT DIAGRAM & CONNECTORS
+    ========================================================
+  */
+  
+  .dashed-diagram-header {
+    position: relative;
+    background: #fffafa;
+    border: 1.5px dashed #f6b5b5;
+    border-radius: 8px;
+    display: inline-block;
+    padding: 6px 20px;
+    color: #d15656;
+    font-weight: 900;
+    font-size: 15px;
+    letter-spacing: 2px;
+    z-index: 10;
+  }
+  
+  /* Connector Lines flowing out from the center header */
+  .diagram-connector {
+    position: absolute;
+    top: 30px; /* from center of the parent form */
+    border-top: 1.5px dashed #f7cece;
+    width: 60px;
+    height: 25px;
+    z-index: 1;
+  }
+  .diagram-connector-left {
+    left: 20%;
+    border-left: 1.5px dashed #f7cece;
+    border-top-left-radius: 8px;
+  }
+  .diagram-connector-left::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: -4px;
+    border-width: 5px 3px 0 3px;
+    border-style: solid;
+    border-color: #f7cece transparent transparent transparent;
+  }
+  .diagram-connector-right {
+    right: 20%;
+    border-right: 1.5px dashed #f7cece;
+    border-top-right-radius: 8px;
+  }
+  .diagram-connector-right::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: -4px;
+    border-width: 5px 3px 0 3px;
+    border-style: solid;
+    border-color: #f7cece transparent transparent transparent;
+  }
+
+  /* Big Circular Icons */
+  .circle-icon-red {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #ffebeb;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 0 4px #ffc1c1;
+    position: relative;
+    z-index: 5;
+  }
+  /* The "白条" Document inside */
+  .css-doc-icon {
+    width: 32px;
+    height: 40px;
+    background: #f04a4b;
+    border-radius: 2px 10px 2px 2px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .css-doc-icon::before {
+    /* Folded corner */
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-bottom: 12px solid #ce2424;
+    border-right: 12px solid white;
+  }
+
+  .circle-icon-orange {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #fffae8;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 0 4px #ffe4b3;
+    position: relative;
+    z-index: 5;
+  }
+  /* The "小金库" Character inside */
+  .css-wallet-icon {
+    width: 44px;
+    height: 35px;
+    background: #fca156;
+    border-radius: 10px 10px 20px 20px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .css-wallet-icon::before {
+    /* Top flaps */
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 6px;
+    width: 12px;
+    height: 10px;
+    background: #fca156;
+    border-radius: 50%;
+  }
+  .css-wallet-icon::after {
+    /* Top flaps */
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 6px;
+    width: 12px;
+    height: 10px;
+    background: #fca156;
+    border-radius: 50%;
+  }
+  /* The laughing face inside wallet */
+  .wallet-smile {
+    width: 25px;
+    height: 15px;
+    border-bottom: 4px solid white;
+    border-radius: 0 0 15px 15px;
+    position: relative;
+    transform: translateY(-2px);
+  }
+  .wallet-smile::before {
+    content:'';
+    position: absolute;
+    top:-5px;
+    left: 2px;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+  .wallet-smile::after {
+    content:'';
+    position: absolute;
+    top:-5px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+
+}

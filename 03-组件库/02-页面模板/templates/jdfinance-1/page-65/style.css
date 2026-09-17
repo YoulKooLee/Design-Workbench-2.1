@@ -1,0 +1,295 @@
+@import "tailwindcss";
+
+@layer components {
+
+  /* 
+    ========================================================
+     PAGE 70 BASE STYLING (The Ice UI)
+    ========================================================
+  */
+  .bg-ice-page {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(to bottom, #dbefff 0%, #f4f6fa 25%, #f4f5f7 100%);
+  }
+
+  .text-brand-black {
+    color: #111;
+  }
+
+  /* 
+    ========================================================
+     V PROGRESS LINE
+    ========================================================
+  */
+  .v-track-container {
+    padding: 15px 0 25px 0;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+  
+  .v-line {
+    position: absolute;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #8ab5e3, transparent);
+    top: 50%;
+  }
+
+  .v-node {
+    width: 33.33%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .v-node-text-active {
+    font-size: 20px;
+    font-weight: 800;
+    font-style: italic;
+    color: #3886e8;
+    background-color: #dbefff; /* matches bg to "cut" the line */
+    padding: 0 10px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .v-node-text-inactive {
+    font-size: 16px;
+    font-weight: 600;
+    font-style: italic;
+    color: #4298bb; /* lighter teal-ish color */
+    opacity: 0.8;
+    background-color: #dbefff;
+    padding: 0 10px;
+    font-family: Arial, sans-serif;
+  }
+
+  .v-node-sub {
+    font-size: 12px;
+    color: #90abcf;
+    position: absolute;
+    bottom: -18px;
+  }
+
+  /* 
+    ========================================================
+     VIP CARD CAROUSEL
+    ========================================================
+  */
+  .vip-carousel {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 16px;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    z-index: 10;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .vip-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .vip-card-wrapper {
+    flex-shrink: 0;
+    width: 88vw;
+    scroll-snap-align: center;
+    margin-right: 12px;
+    position: relative;
+  }
+  
+  .vip-card-wrapper-side {
+    flex-shrink: 0;
+    width: 88vw;
+    scroll-snap-align: center;
+    margin-right: 12px;
+    opacity: 0.6;
+    transform: scale(0.95);
+    transform-origin: center right;
+  }
+
+  .vip-card {
+    background: linear-gradient(135deg, #f2faff 0%, #e0f2fe 100%);
+    border: 1.5px solid #ffffff;
+    border-radius: 12px;
+    height: 180px;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(80, 140, 210, 0.15);
+    overflow: hidden;
+    padding: 20px 16px;
+  }
+
+  .vip-lock-tag {
+    background-color: rgba(60, 110, 180, 0.1);
+    color: #7a9ac3;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 0 0 6px 0;
+    position: absolute;
+    top: 0; left: 0;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+  }
+
+  .vip-cursive {
+    font-family: "Brush Script MT", cursive, sans-serif;
+    color: #295193;
+    font-size: 18px;
+    opacity: 0.8;
+  }
+
+  /* Mock Hexagon for 3D Duck Replacement */
+  .css-hex-outer {
+    width: 100px;
+    height: 110px;
+    background: linear-gradient(to bottom, #aed6f8, #60abff);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 25px;
+    bottom: 25px;
+    box-shadow: inset 0 2px 10px rgba(255,255,255,0.8);
+  }
+  .css-hex-inner {
+    width: 86px;
+    height: 96px;
+    background: linear-gradient(to bottom, #dbefff, #abcaf0);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 -4px 10px rgba(0,0,0,0.05);
+  }
+
+  .css-duck-mock {
+    font-size: 32px;
+  }
+
+  /* 
+    ========================================================
+     PROMO BANNER
+    ========================================================
+  */
+  .promo-duck-banner {
+    background: linear-gradient(135deg, #fef4e2 0%, #fcd6c6 100%);
+    border-radius: 12px;
+    margin: 0 16px 12px 16px;
+    padding: 16px;
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+  }
+  .promo-red-btn {
+    background: linear-gradient(to right, #fb564b, #f53123);
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 14px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 8px;
+    box-shadow: 0 4px 8px rgba(245, 49, 35, 0.2);
+  }
+
+  /* 
+    ========================================================
+     COUPON SECTION (月月领)
+    ========================================================
+  */
+  .white-section-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    margin: 0 16px 16px 16px;
+    padding: 16px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .coupon-card {
+    background: linear-gradient(to bottom, #ffeeea 0%, #ffffff 50%);
+    border-radius: 8px;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #fcf2ef;
+  }
+  
+  .coupon-ticket {
+    background-color: #fff;
+    border: 1.5px solid #ff4e4e;
+    border-radius: 6px;
+    width: 100%;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  /* Pseudo circles for ticket punch hole effect */
+  .coupon-ticket::before, .coupon-ticket::after {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    background-color: #ffeeea; /* Match the red gradient behind */
+    border-radius: 50%;
+    top: 55%;
+    border-right: 1.5px solid #ff4e4e;
+  }
+  .coupon-ticket::before { left: -4px; border-left: none; }
+  .coupon-ticket::after { right: -4px; border-left: 1.5px solid #ff4e4e; border-right: none; }
+
+  .coupon-ticket-top {
+    padding: 10px 4px;
+    border-bottom: 1.5px dashed #ffbaba;
+    text-align: center;
+    color: #ff3a3a;
+  }
+  .coupon-ticket-bottom {
+    padding: 4px;
+    text-align: center;
+    font-size: 10px;
+    color: #ff3a3a;
+  }
+
+  .btn-lock {
+    background-color: #f2f3f5;
+    color: #999;
+    font-size: 12px;
+    padding: 4px 18px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* 
+    ========================================================
+     PRIVILEGE SECTION (金融特权)
+    ========================================================
+  */
+  .privilege-box-left {
+    background: linear-gradient(135deg, #feeedb 0%, #ffdfce 100%);
+    border-radius: 8px;
+    height: 100px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .privilege-box-right {
+    background: linear-gradient(135deg, #fde3e6 0%, #ffd4da 100%);
+    border-radius: 8px;
+    height: 100px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+}

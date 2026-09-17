@@ -1,5 +1,7 @@
 # Agent 工作流程 · Axhub Make Client + VibePM v1.6
 
+> ⚠️ **维护提醒**：本文件是 `AGENTS.md` 的模板版本（含 `{{...}}` 占位符）。**改动 `AGENTS.md` 时必须同步本文件**（除占位符段落外两文件正文保持一致），否则新项目生成的 AGENTS.md 与模板脱节。
+
 {{PROJECT_INFO_SECTION}}
 
 本工程是 **Axhub Make Client**——承载可运行 React 原型、主题和项目资料的本地工程，同时内置 **VibePM v1.6** 技能体系，覆盖「需求 → 设计 → 原型 → 开发 → 验收」全链路。
@@ -18,6 +20,8 @@
 ## ⚠️ 上下文预算（最高铁律）
 
 本文件约 41KB（≈1.4 万 token）；技能正文全量约 400KB（≈11 万 token）、知识库约 210KB（≈7 万 token）。**严禁**遍历 / 批量 Read `.agents/skills/`、`.agents/knowledge/`、`.agents/rules/` 目录——一次误读即击穿上下文窗口。技能匹配只用会话启动时**已预加载**的 SKILL.md description；命中后仅加载那一个技能，其正文由加载机制自动带入。
+
+**每次操作前自检**：凡即将执行 Read / Glob / 目录扫描且目标可能命中上述三个目录（含通配符、递归），先停下估算一次调用是否可能带进 >2 万 token——会则改为精确路径 Read 单个文件，不得整目录读。
 
 ## 🧭 核心工作流
 
@@ -111,11 +115,7 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 
 **仅作素材时都不触发**：用户只是提供图片作为参考图、需求图或风格上下文时，`screenshot-to-prototype` 与 `ui-design-image` 均不应触发。
 
-### 技能索引（压缩版）
-
-> 匹配靠运行时预加载的 SKILL.md description，下表仅快速定位；命中后只加载那一个技能（正文由加载机制带入），严禁遍历 SKILL.md。
-
-技能文件清单见 `.agents/skills/` 目录；触发条件一律以预加载 description 为准，本文件不再逐项罗列。易混技能的冲突裁决见上表「同类技能裁决速查」，需求文档三体系走下一章专章路由。
+> 技能文件清单见 `.agents/skills/` 目录（52 个）；触发条件一律以预加载 description 为准，本文件不再逐项罗列。易混技能的冲突裁决见上表「同类技能裁决速查」，需求文档三体系走下一章专章路由。
 ---
 
 ## 需求文档技能路由（req-doc / prd-writer / prototype-to-prd）
@@ -485,7 +485,7 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 │   ├── project-init.md        # 初始化步骤
 │   ├── docs-structure.md      # 文档目录结构
 │   └── PACKAGING.md           # 打包说明
-├── rules/                     # Agent 工作规则（原型开发、主题、Review 等）
+├── rules/                     # 产品/原型业务规范（与 .agents/rules/ 的协作工程规范分工，详见 rules/README.md）
 ├── vite-plugins/              # 原型工程 Vite 插件集（Make 协作/预览/HMR/IIFE）— 工程基建，勿改
 ├── scripts/                   # 工程脚本（主题捕获、入口扫描、metadata 同步等）— 工程基建，勿改
 ├── .agents/                   # Agent 编排配置
@@ -496,7 +496,7 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 │   ├── knowledge/             # 分阶段知识库（需求/设计/开发/测试 + UI 库参考）
 │   ├── hooks.json             # 钩子配置
 │   └── settings.json          # Agent 设置
-├── .claude/skills/            # Claude Code 专属技能副本（与 .agents/skills 同名者内容一致）
+├── .claude/skills/            # Claude Code 技能镜像（唯一真源 = .agents/skills/；新增技能须同步两处）
 ├── .axhub/make/               # 本地运行数据和项目 metadata
 ├── .style/                    # 预设主题样式库（9 套）
 └── .workbuddy/                # WorkBuddy 工作区数据（项目记忆，运行时生成）

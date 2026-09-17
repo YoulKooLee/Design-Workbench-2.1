@@ -1,0 +1,273 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "sourceName": "getdesign.md",
+    "originalDetailUrl": "https://getdesign.md/mastercard/design-md",
+    "fallbackRawUrl": "https://raw.githubusercontent.com/VoltAgent/awesome-design-md/main/design-md/mastercard/DESIGN.md",
+    "mirrorSource": "github:VoltAgent/awesome-design-md",
+    "websiteUrl": "https://mastercard.com/"
+  },
+  "identity": {
+    "id": "P0-84",
+    "slug": "mastercard",
+    "brand": "Mastercard",
+    "titleZh": "Mastercard 主题",
+    "titleEn": "Mastercard",
+    "descriptionZh": "Mastercard 的 Design.md 主题展示，围绕金融科技、暖色调、编辑/机构、数据仪表盘组织页面。",
+    "descriptionEn": "Global payments network. Warm cream canvas, orbital pill shapes, editorial warmth."
+  },
+  "tags": {
+    "sourceTags": [],
+    "generatedTags": [
+      "fintech",
+      "request-flow",
+      "warm",
+      "editorial"
+    ],
+    "designTags": [],
+    "distributionTags": [
+      "金融科技",
+      "暖色调",
+      "编辑/机构",
+      "数据仪表盘",
+      "数据分析",
+      "B2B 产品"
+    ]
+  },
+  "assets": {
+    "designMd": {
+      "path": "DESIGN.md",
+      "sourcePath": "DESIGN.md"
+    },
+    "tailwind": {
+      "path": "tw.css",
+      "sourcePath": "tw.css"
+    },
+    "tokens": {
+      "path": "assets/tokens.json",
+      "method": "derived_from_design_md_and_metadata",
+      "sourcePath": "designToken.json"
+    },
+    "cover": null,
+    "previewHtml": {
+      "type": "local-preview",
+      "path": "assets/official-homepage.webp",
+      "publicPath": "assets/official-homepage.webp",
+      "importPath": "./assets/official-homepage.webp?url",
+      "sourcePath": "assets/official-homepage.webp"
+    }
+  },
+  "tokens": {
+    "palette": [
+      "#EB001B",
+      "#000000",
+      "#ffffff",
+      "#a0a0a0",
+      "#fbbf24",
+      "#8a8a8a",
+      "#0a0a0a",
+      "#e0e0e0"
+    ],
+    "typography": {
+      "display": "Geist",
+      "body": "Inter",
+      "mono": "ui-monospace",
+      "hints": [
+        "Geist",
+        "Inter",
+        "ui-monospace"
+      ]
+    },
+    "radius": {
+      "control": "7px",
+      "card": "7px",
+      "preview": "7px",
+      "pill": "9999px",
+      "source": "design-md"
+    },
+    "spacing": {
+      "xxs": "36px",
+      "xs": "44px",
+      "sm": "0.72px",
+      "md": "14px",
+      "lg": "6px",
+      "xl": "24px",
+      "xxl": "16px",
+      "xxxl": "0.32px",
+      "section": "1px",
+      "section-lg": "30px",
+      "hero": "13px",
+      "band": "0.13px",
+      "space-13": "48px",
+      "space-14": "999px",
+      "space-15": "8px",
+      "space-16": "20px",
+      "source": "design-md"
+    }
+  },
+  "previewImages": [
+    {
+      "type": "local-preview",
+      "path": "assets/official-homepage.webp"
+    }
+  ],
+  "display": {
+    "brand": "Mastercard 主题",
+    "brandAlias": "Mastercard",
+    "description": "Mastercard 的 Design.md 主题展示，围绕金融科技、暖色调、编辑/机构、数据仪表盘组织页面。",
+    "descriptionEn": "Global payments network. Warm cream canvas, orbital pill shapes, editorial warmth.",
+    "variant": "dashboard",
+    "distributionTags": [
+      "金融科技",
+      "暖色调",
+      "编辑/机构",
+      "数据仪表盘",
+      "数据分析",
+      "B2B 产品"
+    ],
+    "fontStylesheets": [
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    ],
+    "palette": [
+      {
+        "color": "#EB001B",
+        "labelZh": "主色",
+        "labelEn": "Primary",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#000000",
+        "labelZh": "主色悬停",
+        "labelEn": "Primary Hover",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#ffffff",
+        "labelZh": "辅助色",
+        "labelEn": "Secondary",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#a0a0a0",
+        "labelZh": "强调色",
+        "labelEn": "Accent",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#fbbf24",
+        "labelZh": "背景色",
+        "labelEn": "Background",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#8a8a8a",
+        "labelZh": "表面色",
+        "labelEn": "Surface",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#0a0a0a",
+        "labelZh": "文本色",
+        "labelEn": "Text",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#e0e0e0",
+        "labelZh": "边框色",
+        "labelEn": "Border",
+        "textColor": "#171717"
+      }
+    ],
+    "shadows": [],
+    "borders": [
+      {
+        "label": "边框 1 - Border 1",
+        "value": "rgba(255,255,255,0.4)",
+        "cssValue": "rgba(255,255,255,0.4)",
+        "description": "Border: 1px solid `rgba(255,255,255,0.4)`"
+      },
+      {
+        "label": "边框 2 - Border 2",
+        "value": "#141413",
+        "cssValue": "#141413",
+        "description": "Dark warm-black footer (`#141413`) with four-column link layout and large conversational headline"
+      },
+      {
+        "label": "边框 3 - Border 3",
+        "value": "rgba(0, 0, 0, 0.04)",
+        "cssValue": "rgba(0, 0, 0, 0.04)",
+        "description": "Shadow: very soft (`rgba(0, 0, 0, 0.04) 0px 4px 24px 0px`) — just enough to lift it off the cream canvas"
+      }
+    ],
+    "typography": [
+      "Geist",
+      "Inter",
+      "ui-monospace"
+    ],
+    "previewImages": [
+      {
+        "type": "local-preview",
+        "path": "assets/official-homepage.webp"
+      }
+    ],
+    "panels": [
+      {
+        "eyebrow": "数据",
+        "title": "指标与状态清晰",
+        "body": "适合分析看板、金融科技、监控和运营页面。"
+      },
+      {
+        "eyebrow": "Token",
+        "title": "颜色与字体可复用",
+        "body": "页面从本地 metadata 与 Design.md 提取 palette、typography 和标签，用于快速预览主题质感。"
+      },
+      {
+        "eyebrow": "组件",
+        "title": "面向真实界面片段",
+        "body": "按钮、输入、卡片和间距样例保持克制，便于比较不同主题的系统性差异。"
+      }
+    ],
+    "usageGuidance": {
+      "do": [
+        "使用 Canvas Cream 作为默认页面背景，不要改成纯白画布。",
+        "正文保持 450 字重，CTA 使用完整 pill 或圆形头像卫星按钮。",
+        "Signal Orange 只用于同意、隐私和合规确认类动作。"
+      ],
+      "dont": [
+        "不要把图片容器做成 8-16px 的普通圆角；使用完整 pill、40px 或圆形。",
+        "不要给营销 CTA 使用 Signal Orange，避免削弱它的合规语义。",
+        "不要省略 eyebrow 前的小圆点，也不要在 14px eyebrow 之外使用大写标题。"
+      ]
+    },
+    "radius": {
+      "control": "7px",
+      "card": "7px",
+      "preview": "7px",
+      "pill": "9999px",
+      "source": "design-md"
+    },
+    "spacing": {
+      "xxs": "36px",
+      "xs": "44px",
+      "sm": "0.72px",
+      "md": "14px",
+      "lg": "6px",
+      "xl": "24px",
+      "xxl": "16px",
+      "xxxl": "0.32px",
+      "section": "1px",
+      "section-lg": "30px",
+      "hero": "13px",
+      "band": "0.13px",
+      "space-13": "48px",
+      "space-14": "999px",
+      "space-15": "8px",
+      "space-16": "20px",
+      "source": "design-md"
+    }
+  },
+  "status": {
+    "displayPage": "todo",
+    "collectionErrors": []
+  }
+}

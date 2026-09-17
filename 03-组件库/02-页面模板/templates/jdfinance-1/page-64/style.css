@@ -1,0 +1,364 @@
+@import "tailwindcss";
+
+@layer components {
+
+  /* 
+    ========================================================
+     PAGE 69 BACKGROUND & BASE
+    ========================================================
+  */
+  .bg-canvas {
+    background-color: #f6f7f9;
+  }
+
+  .hero-golden-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 520px;
+    background: linear-gradient(175deg, #c36b1d 0%, #db843b 30%, #f4ede6 80%, #f6f7f9 100%);
+    z-index: 0;
+    overflow: hidden;
+  }
+  
+  /* Sweeping background arcs and lighting flares */
+  .hero-golden-bg::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: -140px;
+    width: 700px; height: 500px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    box-shadow: inset 0 0 60px rgba(255,255,255,0.05);
+    transform: rotate(-15deg);
+  }
+  
+  .hero-golden-bg::after {
+    content: '';
+    position: absolute;
+    top: 140px; right: -80px;
+    width: 350px; height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(255,255,255,0.2) 0%, transparent 60%);
+  }
+
+  /* 
+    ========================================================
+     SERVICE BADGE BAR
+    ========================================================
+  */
+  .service-badge-strip {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px;
+    margin-bottom: 25px;
+    margin-top: -5px;
+    position: relative;
+    z-index: 10;
+  }
+  .service-badge-item {
+    display: flex;
+    align-items: center;
+    color: rgba(255,255,255,0.9);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+  .service-badge-icon {
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 4px;
+  }
+
+  /* 
+    ========================================================
+     MAIN ASSET CARD
+    ========================================================
+  */
+  .main-asset-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    margin: 0 16px;
+    box-shadow: 0 14px 30px rgba(210, 115, 45, 0.1), 0 4px 8px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+  }
+
+  /* Internal subtle top glow imitating light hitting the top edge */
+  .main-asset-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, #fff3e9, transparent);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .asset-tag-orange {
+    background-color: #fff2e9;
+    border: 1px solid #ffdec8;
+    color: #e47d33;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 12px 12px 12px 0;
+    margin-left: 6px;
+    display: flex;
+    align-items: center;
+  }
+
+  .huge-amount {
+    font-family: Arial, sans-serif;
+    font-size: 64px;
+    font-weight: 500;
+    color: #000;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 25px;
+  }
+
+  .promo-temp-strip {
+    background-color: #fef7ee;
+    color: #d1783e;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+
+  .btn-huge-borrow {
+    width: calc(100% - 60px);
+    height: 54px;
+    background: linear-gradient(135deg, #f29c5e, #df8246);
+    color: #fff;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    border-radius: 27px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 6px 15px rgba(223, 130, 70, 0.3);
+    cursor: pointer;
+  }
+  .btn-huge-borrow:active {
+    transform: scale(0.98);
+    opacity: 0.95;
+  }
+
+  .warning-scroller {
+    background-color: #fdfdfd;
+    border-top: 1px solid #f6f6f6;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    color: #b0b0b0;
+    font-size: 13.5px;
+  }
+
+  /* 
+    ========================================================
+     CARD 2: OPPORTUNITY PROMO
+    ========================================================
+  */
+  .promo-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    margin: 12px 16px;
+    padding: 6px; 
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    z-index: 10;
+  }
+  
+  .promo-inner-border {
+    border: 1px solid #fceddf;
+    border-radius: 8px;
+    padding: 24px 16px 20px 16px;
+    position: relative;
+    background: linear-gradient(160deg, #fffefe 0%, #fffbf8 100%);
+  }
+
+  /* Decorative corner graphics imitating the coupon cutouts */
+  .promo-inner-border::before, .promo-inner-border::after {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    border: 1px solid #f6dbcb;
+    border-radius: 50%;
+  }
+  .promo-inner-border::before { top: -3px; left: -3px; background: #fff; }
+  .promo-inner-border::after { bottom: -3px; right: -3px; background: #fff; }
+
+  .promo-top-left-tag {
+    position: absolute;
+    top: 0; left: 0;
+    background-color: #fbefe1;
+    color: #ce753d;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 8px 0 8px 0;
+    font-weight: bold;
+  }
+
+  .btn-claim-orange {
+    background: linear-gradient(135deg, #f29c5e, #df8246);
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 18px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(223, 130, 70, 0.25);
+  }
+
+  /* 
+    ========================================================
+     RECOMMENDATION HEADER & CARDS
+    ========================================================
+  */
+  .rec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    margin-top: 5px;
+    z-index: 10;
+    position: relative;
+  }
+
+  .rec-tab {
+    background-color: #fcece0;
+    color: #db7227;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 6px 18px;
+    border-radius: 16px;
+    display: inline-flex;
+  }
+  .rec-tab-inactive {
+    background-color: transparent;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 18px;
+    display: inline-flex;
+    margin-left: -5px;
+  }
+
+  .service-avatar-btn {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 4px 12px 4px 4px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+  }
+
+  /* Bottom Product Peek Card */
+  .peek-card {
+    background: linear-gradient(to right, #fcf4eb 0%, #fff 40%);
+    border-radius: 12px 12px 0 0;
+    margin: 0 16px;
+    height: 100px;
+    position: relative;
+    z-index: 10;
+    padding: 16px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.02);
+    /* Fade out the bottom as it's cut off by the fixed tab bar */
+  }
+
+  /* 
+    ========================================================
+     FIXED BOTTOM TAB BAR
+    ========================================================
+  */
+  .tab-bar-fixed {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background-color: #ffffff;
+    display: flex;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+    z-index: 50;
+    padding-bottom: env(safe-area-inset-bottom, 10px); 
+  }
+  
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    cursor: pointer;
+  }
+  .tab-item.active {
+    color: #111;
+  }
+
+  /* Custom Tab Icons replacing SVGs where pure geometric blocks are closer */
+  .icon-borrow {
+    width: 24px; height: 24px;
+    background-color: #111;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 14px;
+    font-style: italic;
+    font-family: Arial, sans-serif;
+  }
+  .icon-repay {
+    width: 22px; height: 22px;
+    border: 2px solid #333;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  .icon-repay::after {
+    content: '';
+    position: absolute;
+    width: 10px; height: 2px;
+    background-color: #333;
+    left: 4px;
+  }
+  .icon-repay::before {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    border-left: 2px solid #333;
+    border-bottom: 2px solid #333;
+    transform: rotate(45deg);
+    left: 4px;
+  }
+  
+  .icon-my {
+    width: 24px; height: 24px;
+    border: 2px solid #333;
+    border-radius: 50%;
+    position: relative;
+  }
+  .icon-my::before {
+    content: '';
+    position: absolute;
+    width: 12px; height: 6px;
+    border-bottom: 2px solid #333;
+    border-radius: 0 0 12px 12px;
+    bottom: 5px; left: 4px;
+  }
+}

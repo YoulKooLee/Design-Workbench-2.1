@@ -1,0 +1,267 @@
+/**
+ * @name 个人中心 - 我的 (Personal Dashboard)
+ */
+import React from 'react';
+import './style.css';
+
+export default function JDPersonalDashboard() {
+  return (
+    <div className="w-full min-h-screen bg-[#f8f8fb] profile-hero-bg flex flex-col font-sans select-none overflow-x-hidden relative pb-[40px]">
+      
+      {/* 
+        ========================================================================
+         TOP NAVIGATION BAR 
+        ========================================================================
+      */}
+      <div className="w-full pt-[52px] pb-[10px] px-4 flex items-center justify-between sticky top-0 z-50 bg-[#f8f8fb]/80 backdrop-blur-md shadow-[0_1px_4px_rgba(0,0,0,0.01)] text-black">
+         <div className="w-8 flex items-center cursor-pointer">
+            <svg className="w-[24px] h-[24px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+         </div>
+         <div className="flex items-center">
+             <span className="text-[17px] font-bold tracking-wide">我的</span>
+         </div>
+         <div className="w-8 flex items-center justify-end cursor-pointer">
+             <div className="flex space-x-[4px]">
+                 <div className="w-[5px] h-[5px] bg-black rounded-full"></div>
+                 <div className="w-[5px] h-[5px] bg-black rounded-full"></div>
+                 <div className="w-[5px] h-[5px] bg-black rounded-full"></div>
+             </div>
+         </div>
+      </div>
+
+      {/* 
+        ========================================================================
+         POLICIES & PREMIUM SUMMARY CARD
+        ========================================================================
+      */}
+      <div className="mx-4 mt-2 bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex pt-4 pb-[18px] mb-4 relative z-10">
+          {/* Left Block */}
+          <div className="flex-1 flex flex-col pl-5 cursor-pointer">
+              <span className="text-[11px] text-[#999] mb-1 font-medium tracking-wide">保单总计 (含失效)</span>
+              <div className="flex items-baseline">
+                  <span className="text-[30px] font-bold text-black font-sans leading-none tracking-tight">0</span>
+                  <span className="text-[14px] font-medium text-black ml-[2px]">份</span>
+              </div>
+          </div>
+          
+          {/* Divider */}
+          <div className="w-[1px] h-[28px] bg-gray-100 self-center"></div>
+
+          {/* Right Block */}
+          <div className="flex-1 flex flex-col pl-6 cursor-pointer">
+              <span className="text-[11px] text-[#999] mb-1 font-medium tracking-wide">预计来年保费</span>
+              <div className="flex items-baseline text-[#fb4a4f]">
+                  <span className="text-[30px] font-bold font-sans leading-none tracking-tight">58</span>
+                  <span className="text-[14px] font-medium ml-[2px]">元</span>
+              </div>
+          </div>
+      </div>
+
+      {/* 
+        ========================================================================
+         MAIN INSURANCE CATEGORY HUB
+        ========================================================================
+      */}
+      <div className="mx-4 bg-white rounded-2xl shadow-[0_2px_15px_rgba(0,0,0,0.02)] px-4 pt-5 pb-4 mb-4 flex flex-col relative overflow-hidden">
+          
+          {/* Categories Tab Row */}
+          <div className="w-full flex mb-[18px]">
+              {/* Active Tab */}
+              <div className="flex-1 flex flex-col items-center cursor-pointer relative tab-safety-indicator group">
+                  <span className="text-[15px] font-bold text-black tracking-wide mb-[2px]">人身保障</span>
+                  <span className="text-[12px] text-[#999] tracking-wide group-hover:text-black transition">未保障</span>
+              </div>
+              {/* Inactive Tab */}
+              <div className="flex-1 flex flex-col items-center cursor-pointer group hover:opacity-80 transition">
+                  <span className="text-[15px] font-bold text-black tracking-wide mb-[2px]">家财车宠</span>
+                  <span className="text-[12px] text-[#999] tracking-wide group-hover:text-black transition">未保障</span>
+              </div>
+              {/* Inactive Tab */}
+              <div className="flex-1 flex flex-col items-center cursor-pointer group hover:opacity-80 transition">
+                  <span className="text-[15px] font-bold text-black tracking-wide mb-[2px]">储蓄 <span className="opacity-30 mx-0.5">|</span> 教育</span>
+                  <span className="text-[12px] text-[#999] tracking-wide group-hover:text-black transition">未保障</span>
+              </div>
+          </div>
+
+          {/* Dynamic Suggestion Promo Card */}
+          <div className="w-full abstract-medical-bg rounded-xl pt-4 pb-5 px-4 relative overflow-hidden group cursor-pointer drop-shadow-sm border border-blue-50/50">
+              
+              {/* Abstract Elderly Medical Vector Stand-in */}
+              <div className="absolute right-[-10px] bottom-0 w-[45%] h-full opacity-40 mix-blend-multiply flex items-end">
+                  <svg viewBox="0 0 100 100" fill="none" className="w-full h-[90%] transform scale-110">
+                      <circle cx="60" cy="30" r="20" fill="#cfdcee"/>
+                      <circle cx="30" cy="40" r="15" fill="#dfe7f2"/>
+                      <path d="M20 100 C20 70, 80 70, 80 100 Z" fill="#cfdcee"/>
+                  </svg>
+              </div>
+
+              {/* Tag */}
+              <div className="bg-[#e7f0fa] text-[#4d7ca6] text-[10px] px-2 py-[2px] rounded-bl-[8px] rounded-tr-[8px] rounded-br-[2px] rounded-tl-[2px] w-max font-medium tracking-widest mb-3 shadow-sm border border-blue-100/50">
+                  建议投保：百万医疗
+              </div>
+
+              {/* Title */}
+              <div className="text-[17px] font-bold text-black tracking-wide leading-snug mb-3">
+                  300万住院报销金<span className="text-[#fb4a4f]">免费体验30天</span>
+              </div>
+
+              {/* Checklist */}
+              <div className="flex flex-col space-y-[3px]">
+                  <div className="flex items-center">
+                     <div className="w-[12px] h-[12px] bg-[#fbd4d3] rounded-full flex items-center justify-center mr-1 mt-px">
+                         <svg className="w-[8px] h-[8px] text-[#fb4a4f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                         </svg>
+                     </div>
+                     <span className="text-[12px] text-[#888] tracking-widest">30天内随时取消不扣费</span>
+                  </div>
+                  <div className="flex items-center">
+                     <div className="w-[12px] h-[12px] bg-[#fbd4d3] rounded-full flex items-center justify-center mr-1 mt-px">
+                         <svg className="w-[8px] h-[8px] text-[#fb4a4f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                         </svg>
+                     </div>
+                     <span className="text-[12px] text-[#888] tracking-widest">带病可投，住院1元起赔</span>
+                  </div>
+              </div>
+
+              {/* Subscribe CTA Overlap */}
+              <div className="w-[90px] h-[34px] bg-[#fb4a4f] text-white rounded-full flex justify-center items-center text-[12px] font-bold absolute right-4 bottom-4 shadow-[0_2px_8px_rgba(250,50,50,0.3)] group-active:scale-95 transition-transform tracking-widest">
+                  免费体验
+              </div>
+
+          </div>
+      </div>
+
+      {/* 
+        ========================================================================
+         SERVICE INTERACTION CARDS
+        ========================================================================
+      */}
+      {/* Service 1: My Claims */}
+      <div className="mx-4 bg-white rounded-2xl shadow-[0_2px_15px_rgba(0,0,0,0.02)] pt-[20px] pb-[18px] px-5 flex items-center justify-between mb-4 cursor-pointer active:bg-gray-50 transition">
+          <div className="flex flex-col flex-1 relative">
+              <div className="flex items-center mb-[5px] relative z-10 w-full mt-[-2px]">
+                  <span className="text-[17px] font-bold text-black tracking-wide leading-none mr-2">我的理赔</span>
+                  {/* Inline Tag */}
+                  <div className="bg-[#fcedeb] text-[#e8494f] px-[5px] py-[3px] rounded-tl-lg rounded-tr-md rounded-br-lg rounded-bl-sm flex items-center shadow-sm">
+                      <svg className="w-[10px] h-[10px] mr-0.5 fill-current" viewBox="0 0 20 20">
+                          <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                      </svg>
+                      <span className="text-[11px] font-bold leading-none transform scale-95 uppercase tracking-widest">安心赔</span>
+                  </div>
+              </div>
+              <span className="text-[12px] text-[#999] tracking-widest">专业指导，全程协赔，在线答疑</span>
+          </div>
+          <div className="flex items-center text-gray-400 pl-4">
+              <span className="text-[13px] tracking-widest">在线申请</span>
+              <svg className="w-[13px] h-[13px] ml-[2px] mt-px" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+          </div>
+      </div>
+
+      {/* Service 2: Smart AI Assistant (JD Mascot) */}
+      <div className="mx-4 bg-white rounded-2xl shadow-[0_2px_15px_rgba(0,0,0,0.02)] py-4 px-5 flex items-center mb-4 cursor-pointer active:bg-gray-50 transition drop-shadow-sm">
+          {/* Mascot AI Head */}
+          <div className="w-[48px] h-[48px] bg-[#f8f9fb] rounded-full border border-gray-100 flex flex-col items-center justify-center mr-[14px] shadow-sm flex-shrink-0 relative">
+              <div className="w-[20px] h-[16px] bg-black rounded-[4px] relative flex justify-around items-center px-[3px]">
+                   <div className="w-[4px] h-[4px] bg-[#ffd54f] rounded-full animate-pulse"></div>
+                   <div className="w-[4px] h-[4px] bg-[#ffd54f] rounded-full animate-pulse"></div>
+              </div>
+              <div className="absolute top-1 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                  <div className="w-[2px] h-[4px] bg-gray-500 rounded-full transform -rotate-45"></div>
+                  <div className="w-[2px] h-[4px] bg-gray-500 rounded-full transform rotate-45"></div>
+              </div>
+          </div>
+
+          <div className="flex flex-col flex-1 pr-2 mt-[-2px]">
+              <span className="text-[16px] font-bold text-black tracking-wide mb-[5px] leading-tight">保险问题，问小京灵</span>
+              <span className="text-[12px] text-[#999] tracking-tight transform scale-[0.95] origin-left whitespace-nowrap">
+                  专业咨询 <span className="opacity-30 mx-[2px]">|</span> 产品解读 <span className="opacity-30 mx-[2px]">|</span> 保单查询
+              </span>
+          </div>
+
+          <div className="bg-[#feeced] text-[#f74f4b] text-[13px] font-bold px-[14px] py-[6px] rounded-full flex-shrink-0 ml-1 shadow-sm tracking-widest active:scale-95 transition">
+              我要咨询
+          </div>
+      </div>
+
+      {/* 
+        ========================================================================
+         TOOLS SECTION
+        ========================================================================
+      */}
+      <div className="mx-4 bg-white rounded-2xl shadow-[0_2px_15px_rgba(0,0,0,0.02)] pt-5 pb-6 px-5 mb-8">
+          <span className="text-[17px] font-bold text-black tracking-wide block mb-6">我的工具</span>
+          
+          <div className="w-full flex items-center">
+              {/* Tool 1 */}
+              <div className="flex-1 flex flex-col items-center cursor-pointer opacity-80 hover:opacity-100 active:scale-95 transition">
+                  <svg className="w-[30px] h-[30px] text-black mb-[10px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span className="text-[13px] text-[#111] tracking-wide font-medium">保障配置</span>
+              </div>
+              
+              {/* Tool 2 */}
+              <div className="flex-1 flex flex-col items-center cursor-pointer opacity-80 hover:opacity-100 active:scale-95 transition">
+                  <svg className="w-[30px] h-[30px] text-black mb-[10px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      <circle cx="12" cy="14" r="3" />
+                  </svg>
+                  <span className="text-[13px] text-[#111] tracking-wide font-medium">储蓄方案</span>
+              </div>
+              
+              {/* Tool 3 */}
+              <div className="flex-1 flex flex-col items-center cursor-pointer opacity-80 hover:opacity-100 active:scale-95 transition">
+                  {/* Custom Minimalist Car Vector */}
+                  <svg className="w-[30px] h-[30px] text-black mb-[10px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 17h8m-8 0a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-4h10m-1-4l-1-4H8 5 5L4 13m15 0v4a1 1 0 01-1 1H6a1 1 0 01-1-1v-4a1 1 0 011-1h14a1 1 0 011 1z" />
+                  </svg>
+                  <span className="text-[13px] text-[#111] tracking-wide font-medium">车险速算</span>
+              </div>
+
+              <div className="flex-1 hidden"></div> {/* Spacer for alignment if 4 items were present */}
+          </div>
+      </div>
+
+      {/* 
+        ========================================================================
+         FOOTER SIGNATURE (Legal & Branding)
+        ========================================================================
+      */}
+      <div className="w-full flex flex-col items-center mt-6 pb-10 px-6 opacity-80">
+          <div className="flex items-center mb-[10px]">
+              <span className="text-[#fb4a4f] text-[18px] font-black italic tracking-tighter mr-1 font-serif drop-shadow-sm">JDA</span>
+              <span className="text-[#fb4a4f] text-[15px] font-bold tracking-widest mr-[6px]">京东保</span>
+              <div className="w-[3px] h-[3px] bg-gray-300 rounded-full mr-[6px]"></div>
+              <span className="text-[11px] text-gray-400 font-medium tracking-widest">京东集团旗下保险经纪平台</span>
+          </div>
+
+          <div className="text-[10px] text-gray-300 tracking-widest mb-1.5 transform scale-95 shrink-0 whitespace-nowrap">
+              本平台由京东保险经纪（天津）有限公司管理并运营
+          </div>
+          <div className="text-[10px] text-gray-300 tracking-widest flex items-center transform scale-95 shrink-0">
+              信息披露 <span className="mx-1.5 opacity-50">|</span> 津ICP备17001571号-1
+          </div>
+
+          <div className="w-full flex justify-center items-center mt-[40px] opacity-40 mix-blend-multiply flex-col gap-1.5">
+             <div className="flex text-gray-500 font-bold items-center space-x-1.5">
+               {/* Tiny grey mascot */}
+               <svg className="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="currentColor">
+                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+               </svg>
+               <span className="text-[14px] tracking-widest">京东金融</span>
+             </div>
+             <div className="flex items-center text-gray-400 text-[10px] space-x-1 font-medium tracking-[0.2em] relative before:content-[''] before:w-[20px] before:border-b before:border-gray-200 before:absolute before:left-[-25px] before:top-1/2 after:content-[''] after:w-[20px] after:border-b after:border-gray-200 after:absolute after:right-[-25px] after:top-1/2">
+                <span>简单</span><span>·</span><span>快捷</span><span>·</span><span>安全</span>
+             </div>
+          </div>
+      </div>
+      
+    </div>
+  );
+}

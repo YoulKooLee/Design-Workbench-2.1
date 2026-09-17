@@ -6,6 +6,7 @@ import net from 'node:net';
 import path from 'node:path';
 import { exec, spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { cleanEnvForSpawn, send, sendError, readBody, safeName, parseFrontmatter, extractTriggers } from './lib/utils.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(__dirname, 'public');
@@ -56,20 +57,7 @@ const MAKE_ADMIN_ORIGIN = `http://localhost:${MAKE_ADMIN_PORT}`;
 // 导致子进程（PowerShell / Make / Vite）的 fs.unlink/rm 被 shim 劫持，报 SAFE_DELETE_BULK_CONFIRM_REQUIRED，
 // 表现为 Make 写 projects.json 报 MAKE_STATE_DIR_NOT_WRITABLE。
 // 这里生成一份"干净 env"：剔除 NODE_OPTIONS、CODEBUDDY_*、以及 PATH 里的 CodeBuddy CN 目录。
-function cleanEnvForSpawn() {
-  const env = { ...process.env };
-  delete env.NODE_OPTIONS;
-  for (const k of Object.keys(env)) {
-    if (/^CODEBUDDY/i.test(k)) delete env[k];
-  }
-  if (env.PATH) {
-    env.PATH = env.PATH
-      .split(';')
-      .filter((p) => p && !/CodeBuddy/i.test(p) && !/codebuddy/i.test(p))
-      .join(';');
-  }
-  return env;
-}
+
 
 // 已知的智能体集合（5 智能体：codebuddy / workbuddy / doubao / deepseek / qwen）。
 // UI 下拉据此提供「先选智能体再选项目」。
@@ -450,58 +438,14 @@ const EXCLUDE_DIRS = new Set([
 const SKIP_SUBDIRS = new Set(['node_modules', '.git', '.vite', '.axhub', '.workbuddy']);
 
 // ===== 工具函数 =====
-function send(res, status, data) {
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify(data));
-}
-function sendError(res, msg, status = 400) {
-  send(res, status, { ok: false, msg });
-}
-function readBody(req) {
-  return new Promise((resolve) => {
-    let data = '';
-    req.on('data', (c) => (data += c));
-    req.on('end', () => {
-      try { resolve(data ? JSON.parse(data) : {}); }
-      catch { resolve({}); }
-    });
-  });
-}
-function safeName(s) {
-  return (s || '').replace(/[<>:"|?*\\\/]/g, '').trim();
-}
+
+
+
+
 
 // 解析 SKILL.md 的 YAML frontmatter（只取 name / description 两个字段）
-function parseFrontmatter(text) {
-  const m = text.match(/^---\s*\n([\s\S]*?)\n---/);
-  if (!m) return { name: '', description: '' };
-  const lines = m[1].split('\n');
-  let name = '', description = '';
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (line.startsWith('name:')) {
-      name = line.slice(5).trim().replace(/^["']|["']$/g, '');
-    } else if (line.startsWith('description:')) {
-      let val = line.slice(12).trim();
-      if (val === '>' || val === '|') {
-        // 折叠块（> / |）：收集到 frontmatter 末尾（这些 SKILL.md 仅含 name + description）
-        const parts = [];
-        i++;
-        while (i < lines.length) { parts.push(lines[i].trim()); i++; }
-        description = parts.join(' ');
-        break;
-      } else {
-        description = val.replace(/^["']|["']$/g, '');
-      }
-    }
-  }
-  return { name, description };
-}
-function extractTriggers(desc) {
-  if (!desc) return '';
-  const m = desc.match(/(触发场景|适用场景)[：:]\s*([\s\S]*)/);
-  return m ? m[2].trim().slice(0, 200) : '';
-}
+
+
 
 // ===== 项目扫描 =====
 function isProjectDir(dir) {
@@ -1166,6 +1110,19 @@ const server = http.createServer(async (req, res) => {
           return path.basename(lp) !== '.git';
         },
       });
+      // vendor 装配：运行时素材（Vue/Element Plus/g2plot/fontawesome/vant/f2）从工作台模板源拷回
+      // （模板 .agents 已瘦身：vendor 移出到 02-模板/vendor，新项目创建时按需装配）
+      try {
+        const vendorSrc = path.join(AXHUB_ROOT, '02-模板', 'vendor');
+        const vendorMap = [
+          ['vibepm-web', path.join(dst, '.agents', 'skills', 'vibepm-web-generator', 'assets', 'vendor')],
+          ['vibepm-app', path.join(dst, '.agents', 'skills', 'vibepm-app-generator', 'assets', 'vendor')],
+        ];
+        for (const [vn2, vdst] of vendorMap) {
+          const vsrc = path.join(vendorSrc, vn2);
+          if (fs.existsSync(vsrc)) fs.cpSync(vsrc, vdst, { recursive: true });
+        }
+      } catch (e) { console.error('[vendor-assemble]', e.message); }
       // 生成唯一项目身份
       const clientFile = path.join(dst, '.axhub', 'make', 'client.json');
       const client = {

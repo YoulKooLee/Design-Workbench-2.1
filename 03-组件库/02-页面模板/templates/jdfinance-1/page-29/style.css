@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Subtle pastel red flare background for the profile page header */
+  .profile-hero-bg {
+    background: radial-gradient(circle at 80% 0%, rgba(250,200,200,0.4) 0%, rgba(248, 248, 251, 1) 40%);
+  }
+
+  /* Abstract medical card background mapping to the promo layout */
+  .abstract-medical-bg {
+    background: linear-gradient(135deg, #f5f8fc 0%, #e8edf3 100%);
+  }
+
+  /* A specific indicator under the active safety tab */
+  .tab-safety-indicator::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 4px;
+    background-color: #d6e8f8;
+    border-radius: 10px 10px 0 0;
+  }
+}

@@ -4,24 +4,24 @@
   "end": "react-proto",
   "runtime": "react + tailwind v4",
   "theme": "arco",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "status": "ready",
   "syncedAt": "2026-09-17",
   "source": "vibepm-demo-agent-v1.4 frame/admin（Vibe Design Pro）组件字典 → React 提炼",
   "componentsCatalog": "components.catalog.json",
   "categories": {
-    "base": "基础：Button/Card/Tag/Badge/Avatar/Typography/Divider/Overlay/Popconfirm",
-    "layout": "布局：Layout/PageHeader/Tabs/Breadcrumb/Steps/Toolbar/SideMenu",
-    "form": "表单：FormField/Input/Select/Choice/DatePicker/Upload/Transfer/Cascade/Slider/Suggest/VerificationCode",
-    "data": "数据展示：DataTable/Pagination/Descriptions/Progress/List/Tree/Chart/Timeline/Collapse/Calendar",
-    "feedback": "反馈：Modal/Drawer/Alert/Spin/ResultPage/Message/Notification",
-    "business": "业务：KpiRow/FilterBar/TableCard/StatusTag/Kanban"
+    "基础": "Button/Card/Tag/Badge/Avatar/Typography/Divider/Overlay/Popconfirm",
+    "布局": "Layout(Space/Row/Col/Grid)/PageHeader/Tabs/Breadcrumb/Steps/Toolbar",
+    "表单": "FormField/Input/Select/Choice/DatePicker/Upload/Transfer/Cascade/Slider/Suggest/VerificationCode",
+    "数据展示": "DataTable/Pagination/Descriptions/Progress/List/Tree/Chart/Timeline/Collapse/Calendar",
+    "反馈": "Modal/Drawer/Alert/Spin/ResultPage/Message/Notification",
+    "业务组件": "KpiRow/FilterBar/TableCard/StatusTag/Kanban"
   },
   "consume": {
     "mode": "copy-into-project",
     "target": "src/component-templates/axhub/",
     "entry": "index.ts",
-    "note": "整目录复制（组件间有跨分类引用）；零第三方依赖，图标内联 SVG；主题 token 在 _kit/theme.css。"
+    "note": "整目录复制（组件间有跨分类引用）；零第三方依赖，图标内联 SVG；主题 token 在 _kit/theme.css。新增组件可落 分类目录/ 或独立 <id>/ 目录（面板上传）。"
   },
   "docs": {
     "readme": "README.md",

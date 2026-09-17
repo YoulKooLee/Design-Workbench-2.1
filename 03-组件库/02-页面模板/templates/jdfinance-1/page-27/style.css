@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@layer components {
+  /* The main fiery orange hero gradient extending far down */
+  .gap-hero-bg {
+    background-image: linear-gradient(180deg, #ff5715 0%, #ff8349 25%, #feead8 70%, #fef3ef 100%);
+  }
+
+  /* The primary gap calculation card gradient */
+  .gap-card-gradient {
+    background-image: linear-gradient(135deg, #fffbf6 0%, #ffecd8 100%);
+  }
+
+  /* Small tooltip arrow on the bottom of the active family member tag */
+  .family-active-tag::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #ee463b;
+  }
+
+  /* The trailing chevron tabs */
+  .chevron-tab {
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%, 6px 50%);
+    padding-left: 12px;
+    padding-right: 18px;
+    margin-right: -6px; /* Create overlap */
+  }
+  
+  .chevron-tab-first {
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%);
+    padding-left: 12px;
+    padding-right: 18px;
+    margin-right: -6px; /* Create overlap */
+  }
+
+  /* Quotes SVG watermark */
+  .quote-watermark {
+    background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 24 24" fill="rgba(240,180,150,0.3)" xmlns="http://www.w3.org/2000/svg"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: top right;
+  }
+  
+  /* Abstract CSS avatar for dad */
+  .dad-avatar-bg {
+    background: radial-gradient(circle at center, #ffd3b6 0%, #e2a785 100%);
+    box-shadow: inset 0 -4px 10px rgba(0,0,0,0.1);
+  }
+}

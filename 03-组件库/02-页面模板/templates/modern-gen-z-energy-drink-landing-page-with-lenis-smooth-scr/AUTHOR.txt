@@ -1,0 +1,4 @@
+Title: GiGi Gen Z 能量饮料官网
+Platform: v0
+Source: https://v0.app/templates/modern-gen-z-energy-drink-landing-page-with-lenis-IQDdAvEEGsS
+Imported for Axhub Make template library.

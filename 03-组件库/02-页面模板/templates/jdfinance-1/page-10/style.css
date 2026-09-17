@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Minimal custom CSS needed. We rely on Tailwind for most layouts. */
+  .border-table {
+    border-color: #f0f0f4;
+  }
+}

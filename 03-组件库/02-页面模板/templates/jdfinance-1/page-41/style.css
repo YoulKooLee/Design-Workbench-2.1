@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Copy of page-41 backdrops */
+  .checkin-hero-bg {
+    background: linear-gradient(180deg, #fd3d33 0%, #ffd8cb 350px, #f5f6f9 600px);
+    background-color: #f5f6f9;
+  }
+  .grid-lines-bg {
+    background-image: repeating-linear-gradient(to bottom, #efefef, #efefef 1px, transparent 1px, transparent 14px);
+    background-position: top center;
+  }
+  .lottery-card-inner {
+    box-shadow: inset 0px -4px 8px -4px rgba(12, 177, 107, 0.2);
+  }
+
+  /* Modal Specific Styles */
+
+  /* The blinding green aura behind the prize box */
+  .celebration-aura {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.8) 0%, rgba(16, 185, 129, 0.3) 40%, rgba(255, 255, 255, 0) 70%);
+    z-index: 45;
+    pointer-events: none;
+    animation: auraPulse 2s ease-in-out infinite alternate;
+  }
+
+  /* Massive Golden Text Physics */
+  .mega-gold-text {
+    background: linear-gradient(180deg, #fff3cf 0%, #fbd17e 50%, #f4a530 100%);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0px 4px 15px rgba(245, 165, 48, 0.6), 0px 2px 2px rgba(255, 255, 255, 0.8);
+    transform: rotate(-3deg) scale(1.05);
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 50;
+  }
+  .mega-gold-text::after {
+    /* Hard brown drop shadow copy behind text for 3D extrusion effect */
+    content: '现金打款';
+    position: absolute;
+    left: 1px;
+    top: 2px;
+    z-index: -1;
+    background: none;
+    -webkit-background-clip: border-box;
+    color: #5c3008;
+    text-shadow: none;
+  }
+
+  /* Modal Box Internal Shadowing */
+  .mega-modal-box {
+    box-shadow: 0 20px 45px -5px rgba(0,0,0,0.4), inset 0px 3px 6px rgba(255,255,255,0.8), inset 0px -6px 12px -4px rgba(12, 177, 107, 0.6);
+  }
+
+  /* Modal Background Lines */
+  .modal-grid-lines {
+    background-image: repeating-linear-gradient(to bottom, transparent, transparent 16px, #f0f0f0 16px, #f0f0f0 17px);
+  }
+
+  /* Particle Confetti Animations */
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
+    20% { opacity: 1; transform: translateY(-30px) scale(1.1) rotate(15deg); }
+    80% { opacity: 0.8; transform: translateY(-150px) scale(0.9) rotate(45deg); }
+    100% { transform: translateY(-200px) scale(0.8) rotate(90deg); opacity: 0; }
+  }
+  
+  @keyframes auraPulse {
+    0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  }
+
+  .particle {
+    position: absolute;
+    z-index: 60;
+    pointer-events: none;
+    animation: floatUp 3s ease-in infinite;
+  }
+  
+  .particle-1 { left: 15%; bottom: 10%; font-size: 32px; animation-duration: 4s; animation-delay: 0.1s; }
+  .particle-2 { left: 45%; bottom: 15%; font-size: 24px; animation-duration: 3.5s; animation-delay: 0.4s; }
+  .particle-3 { right: 20%; bottom: 5%; font-size: 40px; animation-duration: 4.2s; animation-delay: 0.2s; }
+  .particle-4 { left: 30%; bottom: 25%; font-size: 20px; animation-duration: 3s; animation-delay: 0.8s; }
+  .particle-5 { right: 35%; bottom: 20%; font-size: 28px; animation-duration: 3.8s; animation-delay: 0.5s; }
+
+  /* Abstract Geometry Hand Claps (replaces raster image hands) */
+  .abstract-hand {
+    position: absolute;
+    bottom: -10px;
+    width: 60px;
+    height: 120px;
+    background: linear-gradient(to top, #fca5a5 0%, #fee2e2 100%);
+    border-radius: 30px;
+    z-index: 55;
+    box-shadow: inset 4px 0 10px rgba(255,255,255,0.5), -4px 0 15px rgba(0,0,0,0.1);
+  }
+  .hand-left-1 { left: -10px; transform: rotate(15deg); }
+  .hand-left-2 { left: 50px; transform: rotate(10deg); height: 140px; }
+  .hand-right-1 { right: 50px; transform: rotate(-10deg); height: 140px; }
+  .hand-right-2 { right: -10px; transform: rotate(-15deg); }
+}

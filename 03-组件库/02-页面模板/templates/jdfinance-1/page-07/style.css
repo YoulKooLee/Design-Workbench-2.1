@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Mimicking the gold bean shape visually using pure CSS shadows and gradients */
+  .jd-bean {
+    background: radial-gradient(circle at 30% 30%, #ffeecc 0%, #ffc64b 60%, #e29712 100%);
+    box-shadow: inset -2px -2px 6px rgba(200, 110, 0, 0.4), 2px 4px 8px rgba(0,0,0,0.1);
+    border-radius: 50% 40% 50% 40% / 60% 50% 40% 50%;
+    transform: rotate(-15deg);
+  }
+
+  .jd-bean-small {
+    background: radial-gradient(circle at 30% 30%, #ffeecc 0%, #ffc64b 60%, #e29712 100%);
+    border-radius: 50% 40% 50% 40% / 60% 50% 40% 50%;
+    transform: rotate(-15deg);
+  }
+
+  /* Red Arrow connecting the boxes */
+  .red-swoosh-arrow {
+    background: linear-gradient(135deg, #ff6b6b, #e1251b);
+    clip-path: polygon(0 40%, 60% 40%, 60% 0%, 100% 50%, 60% 100%, 60% 60%, 0 60%);
+  }
+  
+  /* The glowing yellow box */
+  .glow-box-yellow {
+    background: linear-gradient(180deg, #fffcf0 0%, #ffefa8 100%);
+    box-shadow: 0 0 30px rgba(255, 230, 100, 0.6);
+  }
+
+  /* Font styles for the large title */
+  .text-title-stroke {
+    -webkit-text-stroke: 1px #fff;
+    color: transparent;
+    background: linear-gradient(180deg, #ffffff 0%, #ffebca 100%);
+    -webkit-background-clip: text;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  }
+  
+  .text-title-glow {
+    text-shadow: 0 0 10px rgba(255, 200, 50, 0.8), 0 2px 4px rgba(0,0,0,1);
+  }
+}

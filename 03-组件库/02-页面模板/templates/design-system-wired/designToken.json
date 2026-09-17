@@ -1,0 +1,49 @@
+{
+  "palette": [
+    "#000000",
+    "#057dbc",
+    "#1a1a1a",
+    "#ffffff",
+    "#757575",
+    "#e0e0e0",
+    "#f5f5f5",
+    "#a0a0a0",
+    "#fbbf24",
+    "#8a8a8a",
+    "#0a0a0a"
+  ],
+  "typography": {
+    "display": "WiredDisplay",
+    "body": "BreveText",
+    "mono": "WiredMono",
+    "hints": [
+      "WiredDisplay",
+      "BreveText",
+      "WiredMono",
+      "mono-kickers",
+      "Apercu",
+      "Helvetica Neue",
+      "Inter",
+      "Manrope"
+    ]
+  },
+  "radius": {
+    "control": "0px",
+    "card": "0px",
+    "preview": "0px",
+    "pill": "9999px",
+    "source": "design-md"
+  },
+  "spacing": {
+    "xxs": "2px",
+    "xs": "4px",
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "20px",
+    "2xl": "24px",
+    "3xl": "32px",
+    "4xl": "48px",
+    "source": "design-md"
+  }
+}

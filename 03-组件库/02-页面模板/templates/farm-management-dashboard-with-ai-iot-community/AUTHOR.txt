@@ -1,0 +1,4 @@
+Title: 农场 AIoT 管理仪表盘
+Platform: Figma Community
+Source: https://www.figma.com/community/file/1536066541145305362/farm-management-dashboard-with-ai-iot
+Imported for Axhub Make template library.

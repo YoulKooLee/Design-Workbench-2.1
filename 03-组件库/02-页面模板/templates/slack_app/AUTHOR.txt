@@ -1,0 +1,4 @@
+Title: Slack App
+Platform: Make Project
+Source: current Make project / src/prototypes/slack_app
+Imported for Axhub Make template library.

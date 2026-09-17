@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Base Webkit Engine Smoothing Directives */
+button, div {
+    -webkit-tap-highlight-color: transparent;
+}
+span, h1 {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

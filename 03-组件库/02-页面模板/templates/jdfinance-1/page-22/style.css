@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Complex glowing red hero map */
+  .score-hero-bg {
+    background-color: #f62d3d;
+    background-image: 
+      radial-gradient(circle at 50% -10%, #ff6060 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 40%, rgba(255, 255, 255, 0.15) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  }
+
+  /* 
+   * Ticket cutouts for the monthly privilege cards.
+   * Modded to bite out circular holes at the left/right boundaries of the separation line.
+   */
+  .privilege-ticket {
+    position: relative;
+    border: 1px solid #ffeaeb;
+  }
+
+  .privilege-ticket-divider {
+    position: relative;
+    border-right: 1px dashed #ffeaeb;
+  }
+
+  .privilege-ticket-divider::before,
+  .privilege-ticket-divider::after {
+    content: '';
+    position: absolute;
+    right: -6px; /* center on the boundary */
+    width: 12px;
+    height: 12px;
+    background-color: #ffffff; /* Page card background color */
+    border-radius: 50%;
+    z-index: 10;
+  }
+  
+  .privilege-ticket-divider::before {
+    top: -7px;
+    border-bottom: 1px solid #ffeaeb;
+  }
+  
+  .privilege-ticket-divider::after {
+    bottom: -7px;
+    border-top: 1px solid #ffeaeb;
+  }
+}

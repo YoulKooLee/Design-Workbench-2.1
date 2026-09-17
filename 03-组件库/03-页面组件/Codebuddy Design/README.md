@@ -4,7 +4,16 @@
 
 > **为什么有它**：`Vibe Design Pro` 是 Vue 3 + Arco 的 **静态 HTML 母版**，React 原型工程（React 18 + Tailwind v4，无 arco）无法直接 import 其组件。因此本库按母版的**组件字典**一次性提炼为 React 源码 —— 之后所有原型 `import` 即用，不再逐页重写。
 
-> **当前交付状态（2026-09-17）**：`status = ready`，**49 个组件条目（合计 61 个导出组件）/ 6 个分类 / 68 个文件**；6 分类 `base`（基础）、`layout`（布局）、`form`（表单）、`data`（数据展示）、`feedback`（反馈）、`business`（业务组件）+ `_kit`（主题 token）。库状态以 `./index.json` 与 `../component-registry.json` 为准，**不一致即视为缺陷**。
+> **当前交付状态（2026-09-17）**：`status = ready`，**48 个组件条目（合计 60 个导出组件）/ 6 个分类 / 68+ 个文件**；6 个分类 `基础` / `布局` / `表单` / `数据展示` / `反馈` / `业务组件` + `_kit`（主题 token）。库状态以 `./index.json` 与 `../component-registry.json` 为准，**不一致即视为缺陷**。
+
+### 新增组件落位（两种，二选一）
+
+| 落位 | 路径 | 适用 |
+| --- | --- | --- |
+| **分类真源** | `Codebuddy Design/<中文分类>/<Name>.tsx`（+ 该分类 `index.ts` 追加导出） | 手工新增组件，归入真源分组 |
+| **独立组件目录** | `Codebuddy Design/<id>/`（与分类目录并列） | 工作台面板「上传模板 / 新增组件」自动落位，或第三方组件整包导入 |
+
+两种落位都必须登记 **`_meta/components.catalog.json`** 与 **`../custom-components.json`**（含 prompt 提示词）；建议用 `node _meta/sync-registry.mjs` 做单向同步与一致性校验。
 
 ## 消费方式
 
@@ -41,7 +50,7 @@ import { Button, Card, DataTable, ChartCard, LineChart, type Column } from '../c
 ```text
 03-组件库/
 ├── component-registry.json            ← 组件库总登记（库状态/分类/文档/registry 指向）
-├── custom-components.json             ← 面板「组件库」页签数据源（61+9 条，含 prompt 提示词）
+├── custom-components.json             ← 面板「组件库」页签数据源（58 条，含 prompt 提示词）
 ├── 03-页面组件/
 │   ├── Vibe Design Pro/               ← 静态 HTML 母版（Vue+Arco，admin/web/app + _meta 50 页）
 │   └── Codebuddy Design/              ← 本目录（React 组件源码）
@@ -50,14 +59,15 @@ import { Button, Card, DataTable, ChartCard, LineChart, type Column } from '../c
 │       ├── index.ts                   ← React 统一出口（自动加载主题 token）
 │       ├── _meta/
 │       │   ├── layout.manifest.json   ← 库元数据（id/theme/version/status/分类/消费方式/文档）
-│       │   └── components.catalog.json← component → 文件/导出/参数/场景/prompt（选型真源）
+│       │   ├── components.catalog.json ← component → 文件/导出/参数/场景/prompt（选型真源）
+│       │   └── sync-registry.mjs       ← catalog → custom-components.json 单向同步 / 一致性校验
 │       ├── _kit/                      ← 底座：theme.css（@theme token）+ cn.ts（零依赖类名工具）
-│       ├── base/    Button·Card·Tag·Badge·Avatar·Typography·Divider·Overlay·Popconfirm
-│       ├── layout/  Layout(Space/Row/Col/Grid)·PageHeader·Tabs·Breadcrumb·Steps·Toolbar·side-menu
-│       ├── form/    FormField·Input·Select·Choice·DatePicker·Upload·Transfer·Cascade·Slider·Suggest·VerificationCode
-│       ├── data/    DataTable·Pagination·Descriptions·Progress·List·Tree·Chart·Timeline·Collapse·Calendar
-│       ├── feedback/Modal·Drawer·Alert·Spin·ResultPage·Message·Notification
-│       ├── business/KpiRow·FilterBar·TableCard·StatusTag·Kanban
+│       ├── 基础/    Button·Card·Tag·Badge·Avatar·Typography·Divider·Overlay·Popconfirm
+│       ├── 布局/    Layout(Space/Row/Col/Grid)·PageHeader·Tabs·Breadcrumb·Steps·Toolbar
+│       ├── 表单/    FormField·Input·Select·Choice·DatePicker·Upload·Transfer·Cascade·Slider·Suggest·VerificationCode
+│       ├── 数据展示/ DataTable·Pagination·Descriptions·Progress·List·Tree·Chart·Timeline·Collapse·Calendar
+│       ├── 反馈/    Modal·Drawer·Alert·Spin·ResultPage·Message·Notification
+│       ├── 业务组件/KpiRow·FilterBar·TableCard·StatusTag·Kanban
 │       ├── gallery.html               ← 预览墙（组件清单 + 提示词复制）
 │       ├── 提示词手册.md               ← 每组件【组件引用】提示词
 │       └── 选型映射.md                 ← 页面/模块 → 组件组合 + 整页提示词模板

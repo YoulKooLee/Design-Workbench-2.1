@@ -1,0 +1,132 @@
+{
+  "pages": [
+    {
+      "name": "Zhipu Screen 01",
+      "path": "page-01"
+    },
+    {
+      "name": "Zhipu Screen 02",
+      "path": "page-02"
+    },
+    {
+      "name": "Zhipu Screen 03",
+      "path": "page-03"
+    },
+    {
+      "name": "Zhipu Screen 04",
+      "path": "page-04"
+    },
+    {
+      "name": "Zhipu Screen 05",
+      "path": "page-05"
+    },
+    {
+      "name": "Zhipu Screen 06",
+      "path": "page-06"
+    },
+    {
+      "name": "Zhipu Screen 07",
+      "path": "page-07"
+    },
+    {
+      "name": "Zhipu Screen 08",
+      "path": "page-08"
+    },
+    {
+      "name": "Zhipu Screen 09",
+      "path": "page-09"
+    },
+    {
+      "name": "Zhipu Screen 10",
+      "path": "page-10"
+    },
+    {
+      "name": "Zhipu Screen 11",
+      "path": "page-11"
+    },
+    {
+      "name": "Zhipu Screen 12",
+      "path": "page-12"
+    },
+    {
+      "name": "Zhipu Screen 13",
+      "path": "page-13"
+    },
+    {
+      "name": "Zhipu Screen 14",
+      "path": "page-14"
+    },
+    {
+      "name": "Zhipu Screen 15",
+      "path": "page-15"
+    },
+    {
+      "name": "Zhipu Screen 16",
+      "path": "page-16"
+    },
+    {
+      "name": "Zhipu Screen 17",
+      "path": "page-17"
+    },
+    {
+      "name": "Zhipu Screen 18",
+      "path": "page-18"
+    },
+    {
+      "name": "Zhipu Screen 19",
+      "path": "page-19"
+    },
+    {
+      "name": "Zhipu Screen 20",
+      "path": "page-20"
+    },
+    {
+      "name": "Zhipu Screen 21",
+      "path": "page-21"
+    },
+    {
+      "name": "Zhipu Screen 22",
+      "path": "page-22"
+    },
+    {
+      "name": "Zhipu Screen 23",
+      "path": "page-23"
+    },
+    {
+      "name": "Zhipu Screen 24",
+      "path": "page-24"
+    },
+    {
+      "name": "Zhipu Screen 25",
+      "path": "page-25"
+    },
+    {
+      "name": "Zhipu Screen 26",
+      "path": "page-26"
+    },
+    {
+      "name": "Zhipu Screen 27",
+      "path": "page-27"
+    },
+    {
+      "name": "Zhipu Screen 28",
+      "path": "page-28"
+    },
+    {
+      "name": "Zhipu Screen 29",
+      "path": "page-29"
+    },
+    {
+      "name": "Zhipu Screen 30",
+      "path": "page-30"
+    },
+    {
+      "name": "Zhipu Screen 31",
+      "path": "page-31"
+    },
+    {
+      "name": "Zhipu Screen 32",
+      "path": "page-32"
+    }
+  ]
+}

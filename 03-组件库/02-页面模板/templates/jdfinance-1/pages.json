@@ -1,0 +1,45 @@
+{
+  "pages": [
+    {
+      "id": "home",
+      "title": "首页"
+    },
+    {
+      "id": "wealth",
+      "title": "理财"
+    },
+    {
+      "id": "savings",
+      "title": "省钱"
+    },
+    {
+      "id": "community",
+      "title": "社区"
+    },
+    {
+      "id": "fund",
+      "title": "基金"
+    },
+    {
+      "id": "vault",
+      "title": "小金库"
+    },
+    {
+      "id": "loan",
+      "title": "借贷"
+    },
+    {
+      "id": "membership",
+      "title": "权益会员"
+    },
+    {
+      "id": "insurance",
+      "title": "保险"
+    },
+    {
+      "id": "profile-service",
+      "title": "我的与服务"
+    }
+  ],
+  "defaultPageId": "home"
+}

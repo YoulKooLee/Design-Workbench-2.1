@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .ios-border {
+    border-color: #E5E5EA;
+  }
+  .drawer-left-shadow {
+    box-shadow: -15px 0 45px rgba(0, 0, 0, 0.25);
+  }
+}

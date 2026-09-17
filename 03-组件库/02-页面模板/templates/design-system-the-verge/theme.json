@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "sourceName": "getdesign.md",
+    "originalDetailUrl": "https://getdesign.md/theverge/design-md",
+    "fallbackRawUrl": "https://raw.githubusercontent.com/VoltAgent/awesome-design-md/main/design-md/theverge/DESIGN.md",
+    "mirrorSource": "github:VoltAgent/awesome-design-md",
+    "websiteUrl": "https://www.theverge.com/"
+  },
+  "identity": {
+    "id": "P0-111",
+    "slug": "the-verge",
+    "brand": "The Verge",
+    "titleZh": "The Verge 主题",
+    "titleEn": "The Verge",
+    "descriptionZh": "The Verge 的 Design.md 主题展示，围绕编辑/机构、媒体内容、消费品牌、电商零售组织页面。",
+    "descriptionEn": "Tech editorial media. Acid-mint and ultraviolet accents, Manuka display, rave-flyer story tiles."
+  },
+  "tags": {
+    "sourceTags": [],
+    "generatedTags": [
+      "request-flow",
+      "editorial",
+      "media"
+    ],
+    "designTags": [],
+    "distributionTags": [
+      "编辑/机构",
+      "媒体内容",
+      "消费品牌",
+      "电商零售",
+      "品牌展示"
+    ]
+  },
+  "assets": {
+    "designMd": {
+      "path": "DESIGN.md",
+      "sourcePath": "DESIGN.md"
+    },
+    "tailwind": {
+      "path": "tw.css",
+      "sourcePath": "tw.css"
+    },
+    "tokens": {
+      "path": "assets/tokens.json",
+      "method": "derived_from_design_md_and_metadata",
+      "sourcePath": "designToken.json"
+    },
+    "cover": null,
+    "previewHtml": {
+      "type": "local-preview",
+      "path": "assets/official-homepage.webp",
+      "publicPath": "assets/official-homepage.webp",
+      "importPath": "./assets/official-homepage.webp?url",
+      "sourcePath": "assets/official-homepage.webp"
+    }
+  },
+  "tokens": {
+    "palette": [
+      "#3cffd0",
+      "#000000",
+      "#ffffff",
+      "#a0a0a0",
+      "#fbbf24",
+      "#8a8a8a",
+      "#0a0a0a",
+      "#e0e0e0"
+    ],
+    "typography": {
+      "display": "WiredDisplay",
+      "body": "Apercu",
+      "mono": "ui-monospace",
+      "hints": [
+        "WiredDisplay",
+        "Apercu",
+        "ui-monospace",
+        "Inter",
+        "Roboto"
+      ]
+    },
+    "radius": {
+      "control": "7px",
+      "card": "7px",
+      "preview": "7px",
+      "pill": "9999px",
+      "source": "design-md"
+    },
+    "spacing": {
+      "xxs": "90px",
+      "xs": "5.63rem",
+      "sm": "34px",
+      "md": "2.13rem",
+      "lg": "18px",
+      "xl": "1.13rem",
+      "xxl": "1.8px",
+      "xxxl": "1.9px",
+      "section": "0.16px",
+      "section-lg": "0.32px",
+      "hero": "1.07px",
+      "band": "107px",
+      "space-13": "60px",
+      "space-14": "10px",
+      "space-15": "24px",
+      "space-16": "20px",
+      "source": "design-md"
+    }
+  },
+  "previewImages": [
+    {
+      "type": "local-preview",
+      "path": "assets/official-homepage.webp"
+    }
+  ],
+  "display": {
+    "brand": "The Verge 主题",
+    "brandAlias": "The Verge",
+    "description": "The Verge 的 Design.md 主题展示，围绕编辑/机构、媒体内容、消费品牌、电商零售组织页面。",
+    "descriptionEn": "Tech editorial media. Acid-mint and ultraviolet accents, Manuka display, rave-flyer story tiles.",
+    "variant": "consumer-commerce",
+    "distributionTags": [
+      "编辑/机构",
+      "媒体内容",
+      "消费品牌",
+      "电商零售",
+      "品牌展示"
+    ],
+    "fontStylesheets": [],
+    "palette": [
+      {
+        "color": "#3cffd0",
+        "labelZh": "主色",
+        "labelEn": "Primary",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#000000",
+        "labelZh": "主色悬停",
+        "labelEn": "Primary Hover",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#ffffff",
+        "labelZh": "辅助色",
+        "labelEn": "Secondary",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#a0a0a0",
+        "labelZh": "强调色",
+        "labelEn": "Accent",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#fbbf24",
+        "labelZh": "背景色",
+        "labelEn": "Background",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#8a8a8a",
+        "labelZh": "表面色",
+        "labelEn": "Surface",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#0a0a0a",
+        "labelZh": "文本色",
+        "labelEn": "Text",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#e0e0e0",
+        "labelZh": "边框色",
+        "labelEn": "Border",
+        "textColor": "#171717"
+      }
+    ],
+    "shadows": [],
+    "borders": [
+      {
+        "label": "边框 1 - Border 1",
+        "value": "#ffffff",
+        "cssValue": "#ffffff",
+        "description": "There is no \"light mode\" on the homepage — the dark canvas is the product, and the only time the palette inverts is when a single story tile takes a mint or yellow fill. The depth is almost entirely flat: hairline 1px borders (`#ffffff`, `#3cffd0`, or `#5200ff`) do the work that shadows would do on a Material-flavored site. Every container is either `#131313` with a 1px outline, a fully saturated accent block, or a slate-gray `#2d2d2d` secondary surface."
+      },
+      {
+        "label": "边框 2 - Border 2",
+        "value": "#309875",
+        "cssValue": "#309875",
+        "description": "Console Mint Border (`#309875`): A darker variant of the jelly mint used on card outlines and button borders where pure mint would over-saturate."
+      },
+      {
+        "label": "边框 3 - Border 3",
+        "value": "#3cffd0",
+        "cssValue": "#3cffd0",
+        "description": "The Verge's 2024 redesign feels like somebody wired a Condé Nast magazine to a chiptune soundboard. The canvas is almost-black (`#131313`), the headlines are built from a brutally heavy display face (Manuka) that runs up to 107px, and the whole page is peppered with acid-mint `#3cffd0` and ultraviolet `#5200ff` that behave less like brand colors and more like hazard tape. Story tiles are not quiet gray cards — they're saturated, full-bleed color blocks (yellow, pink, orange, blue, purple) that feel like pasted-up rave flyers arranged into a timeline. The mood is \"developer console meets club night meets tech tabloid\": serious enough to cover a congressional hearing, loud enough to review a synthesizer."
+      },
+      {
+        "label": "边框 4 - Border 4",
+        "value": "#5200ff",
+        "cssValue": "#5200ff",
+        "description": "The Verge's 2024 redesign feels like somebody wired a Condé Nast magazine to a chiptune soundboard. The canvas is almost-black (`#131313`), the headlines are built from a brutally heavy display face (Manuka) that runs up to 107px, and the whole page is peppered with acid-mint `#3cffd0` and ultraviolet `#5200ff` that behave less like brand colors and more like hazard tape. Story tiles are not quiet gray cards — they're saturated, full-bleed color blocks (yellow, pink, orange, blue, purple) that feel like pasted-up rave flyers arranged into a timeline. The mood is \"developer console meets club night meets tech tabloid\": serious enough to cover a congressional hearing, loud enough to review a synthesizer."
+      },
+      {
+        "label": "边框 5 - Border 5",
+        "value": "#131313",
+        "cssValue": "#131313",
+        "description": "The Verge's 2024 redesign feels like somebody wired a Condé Nast magazine to a chiptune soundboard. The canvas is almost-black (`#131313`), the headlines are built from a brutally heavy display face (Manuka) that runs up to 107px, and the whole page is peppered with acid-mint `#3cffd0` and ultraviolet `#5200ff` that behave less like brand colors and more like hazard tape. Story tiles are not quiet gray cards — they're saturated, full-bleed color blocks (yellow, pink, orange, blue, purple) that feel like pasted-up rave flyers arranged into a timeline. The mood is \"developer console meets club night meets tech tabloid\": serious enough to cover a congressional hearing, loud enough to review a synthesizer."
+      },
+      {
+        "label": "边框 6 - Border 6",
+        "value": "rgba(255, 255, 255, 0.2)",
+        "cssValue": "rgba(255, 255, 255, 0.2)",
+        "description": "Hover: background shifts to `rgba(255, 255, 255, 0.2)` (translucent white), text stays black, adds a 1px `#c2c2c2` ring shadow"
+      }
+    ],
+    "typography": [
+      "WiredDisplay",
+      "Apercu",
+      "ui-monospace",
+      "Inter",
+      "Roboto"
+    ],
+    "previewImages": [
+      {
+        "type": "local-preview",
+        "path": "assets/official-homepage.webp"
+      }
+    ],
+    "panels": [
+      {
+        "eyebrow": "品牌",
+        "title": "第一眼识别明确",
+        "body": "适合消费品牌、电商、媒体和产品展示页。"
+      },
+      {
+        "eyebrow": "Token",
+        "title": "颜色与字体可复用",
+        "body": "页面从本地 metadata 与 Design.md 提取 palette、typography 和标签，用于快速预览主题质感。"
+      },
+      {
+        "eyebrow": "组件",
+        "title": "面向真实界面片段",
+        "body": "按钮、输入、卡片和间距样例保持克制，便于比较不同主题的系统性差异。"
+      }
+    ],
+    "usageGuidance": {
+      "do": [
+        "保持 #131313 暗色画布，让 mint、紫色、黄色等高饱和色只作为故事卡片和 CTA 的危险强调。",
+        "用 1px 边框和实色块建立层级，不依赖阴影或渐变。",
+        "Manuka 只用于大字号展示标题，正文与 UI 保持独立字体角色。"
+      ],
+      "dont": [
+        "不要启用浅色背景；The Verge 的暗色画布就是核心产品感。",
+        "不要给卡片添加 box-shadow，也不要把 mint 或 ultraviolet 铺成背景雾面。",
+        "不要在 UI、按钮或正文里使用 Manuka，也不要让 mono 标签变成小写。"
+      ]
+    },
+    "radius": {
+      "control": "7px",
+      "card": "7px",
+      "preview": "7px",
+      "pill": "9999px",
+      "source": "design-md"
+    },
+    "spacing": {
+      "xxs": "90px",
+      "xs": "5.63rem",
+      "sm": "34px",
+      "md": "2.13rem",
+      "lg": "18px",
+      "xl": "1.13rem",
+      "xxl": "1.8px",
+      "xxxl": "1.9px",
+      "section": "0.16px",
+      "section-lg": "0.32px",
+      "hero": "1.07px",
+      "band": "107px",
+      "space-13": "60px",
+      "space-14": "10px",
+      "space-15": "24px",
+      "space-16": "20px",
+      "source": "design-md"
+    }
+  },
+  "status": {
+    "displayPage": "todo",
+    "collectionErrors": []
+  }
+}

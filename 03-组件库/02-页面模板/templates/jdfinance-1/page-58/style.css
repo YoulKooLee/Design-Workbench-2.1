@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+@layer components {
+
+  /* 
+    ========================================================
+     PAGE 63 BACKGROUND & MODAL MASK
+    ========================================================
+  */
+  .bg-underlay {
+    background: linear-gradient(145deg, #ebd1c8 0%, #eeedef 40%, #ffffff 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Red flare at bottom left */
+  .bg-underlay::before {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(235, 60, 60, 0.4) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  .dark-mask {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 40;
+  }
+
+  /* 
+    ========================================================
+     BOTTOM SHEET MODAL
+    ========================================================
+  */
+  .bottom-sheet {
+    background-color: #ffffff;
+    border-radius: 18px 18px 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding: 22px 20px 35px 20px;
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #a0a0a0;
+    cursor: pointer;
+  }
+
+  /* Typography */
+  .ledger-lines-behind {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+  }
+  .ledger-lines-behind::before {
+    content: '';
+    position: absolute;
+    top: 55%;
+    transform: translateY(-50%);
+    width: 140%;
+    height: 52px;
+    background-image: linear-gradient(rgba(240,240,240,0.8) 1px, transparent 1px);
+    background-size: 100% 8px;
+    z-index: 0;
+  }
+
+  .currency-yen {
+    font-size: 34px;
+    font-weight: 600;
+    color: #111;
+    z-index: 10;
+    position: relative;
+    font-family: -apple-system, Arial, sans-serif;
+  }
+  .currency-num {
+    font-size: 60px;
+    font-weight: 800;
+    font-family: Arial, sans-serif;
+    color: #111;
+    letter-spacing: -2px;
+    position: relative;
+    z-index: 10;
+    line-height: 1;
+    margin-left: 2px;
+  }
+
+  .tag-hollow {
+    border: 1px solid rgba(242, 60, 60, 0.4);
+    color: #f23c3c;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    background: transparent;
+  }
+
+  /* Product Block */
+  .product-block {
+    background: linear-gradient(to right, #fcfcfc, #fbf8f8);
+    border-radius: 8px;
+    padding: 16px 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.015);
+  }
+  .tag-info-gray {
+    background: #f7f7f7;
+    color: #888;
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  .tag-info-red {
+    background: #fff4f4;
+    color: #f23c3c;
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+
+  /* Main Action Button */
+  .cta-red {
+    background: linear-gradient(to right, #ff4c4c, #f72d2d);
+    color: #fff;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 1px;
+    height: 52px;
+    border-radius: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 6px 16px rgba(247, 45, 45, 0.3);
+    position: relative;
+  }
+
+  /* Ripple Interaction */
+  .ripple-ring {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: 2px solid rgba(255,255,255,0.8);
+    top: -4px;
+    right: 48px;
+    animation: ripplePulse 1.5s infinite cubic-bezier(0.2, 0.8, 0.3, 1);
+    pointer-events: none;
+    z-index: 20;
+  }
+  
+  @keyframes ripplePulse {
+    0% { transform: scale(0.6); opacity: 1; border-width: 3px; background-color: rgba(255,255,255,0.4); }
+    100% { transform: scale(1.6); opacity: 0; border-width: 0px; background-color: transparent; }
+  }
+  
+  .mock-cursor-hand {
+    position: absolute;
+    right: 28px;
+    top: 20px;
+    font-size: 44px;
+    transform: rotate(-15deg);
+    z-index: 30;
+    pointer-events: none;
+    text-shadow: 2px 6px 8px rgba(0,0,0,0.3);
+  }
+
+  /* Radio unselected */
+  .radio-open {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #f23c3c;
+    border-radius: 50%;
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-right: 6px;
+    margin-top: 2px;
+  }
+}

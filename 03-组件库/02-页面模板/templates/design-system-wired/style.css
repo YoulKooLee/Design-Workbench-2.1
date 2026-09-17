@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/* TODO: Generate Tailwind v4 theme for Wired. */
+
+@font-face {
+  font-family: "WiredDisplay";
+  src: url("./assets/fonts/WiredDisplay-BoldCondensed.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "WiredMono";
+  src: url("./assets/fonts/WiredMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "WiredMono";
+  src: url("./assets/fonts/WiredMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BreveText";
+  src: url("./assets/fonts/BreveText-Book.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+.dmb-page {
+  --dmb-accent: #000000;
+  --dmb-accent-contrast: #ffffff;
+  --dmb-link: #057dbc;
+  --dmb-muted: #1a1a1a;
+  --dmb-bg: #ffffff;
+  --dmb-radius-xs: 0px;
+  --dmb-radius-control: 0px;
+  --dmb-radius-card: 0px;
+  --dmb-radius-preview: 0px;
+  --dmb-radius-pill: 9999px;
+  --dmb-border: #e0e0e0;
+  --dmb-border-sample-bg: #f5f5f5;
+  --dmb-spacing-xxs: 2px;
+  --dmb-spacing-xs: 4px;
+  --dmb-spacing-sm: 8px;
+  --dmb-spacing-md: 12px;
+  --dmb-spacing-lg: 16px;
+  --dmb-spacing-xl: 20px;
+  --dmb-spacing-2xl: 24px;
+  --dmb-spacing-3xl: 32px;
+  --dmb-spacing-4xl: 48px;
+
+  --dmb-font-display: "WiredDisplay", "Arial Narrow", "Times New Roman", Georgia, serif;
+  --dmb-font-body: "BreveText", Georgia, "Times New Roman", serif;
+  --dmb-font-mono: "WiredMono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

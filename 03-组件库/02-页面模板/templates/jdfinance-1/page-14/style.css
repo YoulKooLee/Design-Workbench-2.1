@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@layer components {
+  .bg-finance-header {
+    background: linear-gradient(180deg, #fceceb 0%, #f6f6f8 100%);
+  }
+
+  .guilloche-pattern {
+    /* Very subtle repeating radial gradient to simulate banknote patterns */
+    background-image: radial-gradient(circle at 100% 0%, transparent 60%, rgba(240, 200, 200, 0.2) 61%, rgba(240, 200, 200, 0.2) 65%, transparent 66%),
+                      radial-gradient(circle at 0% 50%, transparent 60%, rgba(240, 200, 200, 0.15) 61%, rgba(240, 200, 200, 0.15) 65%, transparent 66%);
+    background-size: 150px 150px;
+  }
+
+  .guarantee-banner {
+    background: linear-gradient(135deg, #fff2eb 0%, #ffdfd4 100%);
+  }
+}

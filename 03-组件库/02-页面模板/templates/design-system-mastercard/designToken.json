@@ -1,0 +1,48 @@
+{
+  "palette": [
+    "#EB001B",
+    "#000000",
+    "#ffffff",
+    "#a0a0a0",
+    "#fbbf24",
+    "#8a8a8a",
+    "#0a0a0a",
+    "#e0e0e0"
+  ],
+  "typography": {
+    "display": "Geist",
+    "body": "Inter",
+    "mono": "ui-monospace",
+    "hints": [
+      "Geist",
+      "Inter",
+      "ui-monospace"
+    ]
+  },
+  "radius": {
+    "control": "7px",
+    "card": "7px",
+    "preview": "7px",
+    "pill": "9999px",
+    "source": "design-md"
+  },
+  "spacing": {
+    "xxs": "36px",
+    "xs": "44px",
+    "sm": "0.72px",
+    "md": "14px",
+    "lg": "6px",
+    "xl": "24px",
+    "xxl": "16px",
+    "xxxl": "0.32px",
+    "section": "1px",
+    "section-lg": "30px",
+    "hero": "13px",
+    "band": "0.13px",
+    "space-13": "48px",
+    "space-14": "999px",
+    "space-15": "8px",
+    "space-16": "20px",
+    "source": "design-md"
+  }
+}

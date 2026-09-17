@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Mimic the background swirl pattern roughly */
+  .bg-header-glow {
+    background: 
+      radial-gradient(ellipse at 80% 0%, rgba(255, 219, 226, 0.6) 0%, transparent 60%),
+      linear-gradient(180deg, #f6f5fb 0%, #f6f5fb 100%);
+  }
+
+  .bg-credit-score {
+    background: linear-gradient(90deg, #fff0ed, #fff6f6);
+  }
+}

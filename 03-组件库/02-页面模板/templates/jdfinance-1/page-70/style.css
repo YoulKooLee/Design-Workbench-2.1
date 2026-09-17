@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+@layer components {
+
+  /* 
+    ========================================================
+     PAGE 75 BASE STYLING (Underlay)
+    ========================================================
+  */
+  .bg-ice-page {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(to bottom, #dcf0eb 0%, #f1f6f5 25%, #f4f5f7 100%);
+  }
+
+  /* Tracker Underlay details */
+  .v-line-faded {
+    position: absolute; left: 50%; top: 35px; width: 50%; height: 2px;
+    background: linear-gradient(to right, #8cd1c2, transparent);
+    transform: translateY(-50%);
+  }
+  .v-node-faded {
+    width: 12px; height: 12px; border-radius: 50%; background: #ffffff;
+    border: 3px solid #8cd1c2; position: absolute; top: 35px; left: 50%; transform: translate(-50%, -50%);
+  }
+  .v-node-text-faded {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    color: #0eb8a6; font-size: 16px; font-weight: bold; font-style: italic;
+  }
+
+  /* 
+    ========================================================
+     DARK OVERLAY
+    ========================================================
+  */
+  .dark-mask {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.82);
+    z-index: 40;
+  }
+
+  /* 
+    ========================================================
+     SPOTLIGHT CENTER CARD (Floating V3)
+    ========================================================
+  */
+  .elevated-card-wrapper {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 55;
+  }
+
+  .elevated-card {
+    position: relative;
+    width: 343px;
+    height: 180px;
+    background: radial-gradient(circle at 100% 50%, #ffeeef 0%, #ffffff 80%);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,1);
+    overflow: hidden;
+  }
+  .ec-tag {
+    position: absolute; left: 0; top: 0;
+    background-color: #660606; color: white;
+    font-size: 11px; padding: 4px 10px;
+    border-radius: 12px 0 12px 0;
+    letter-spacing: 0.5px;
+  }
+  .ec-title {
+    position: absolute; left: 24px; top: 40px;
+    font-size: 34px; font-weight: 800; color: #111;
+    font-style: italic; letter-spacing: -1px;
+  }
+  .ec-title span { font-weight: 900; }
+  .ec-script {
+    position: absolute; left: 24px; top: 80px;
+    font-family: "Brush Script MT", "Snell Roundhand", cursive;
+    font-size: 16px; color: #881e1e;
+    transform: rotate(-3deg);
+  }
+  
+  /* Progress Bar Rail */
+  .ec-prog-track {
+    position: absolute; left: 24px; bottom: 46px;
+    width: 140px; height: 3.5px;
+    background-color: #ffd6cd; border-radius: 2px;
+  }
+  .ec-prog-fill {
+    width: 65%; height: 100%;
+    background: linear-gradient(to right, #f86745, #d21711);
+    border-radius: 2px;
+    position: relative;
+  }
+  .ec-prog-sub {
+    position: absolute; left: 24px; bottom: 22px;
+    font-size: 11.5px; color: #881e1e; font-weight: 500;
+    display: flex; align-items: center;
+    letter-spacing: 0px;
+  }
+  .ec-prog-icon { display: inline-block; width: 13px; height: 13px; background: #ffd6cd; color: #e6241a; border-radius: 50%; text-align: center; line-height: 13px; font-size: 10px; font-weight: 900; margin-left: 5px; font-family:serif;}
+
+  /* Hexagon & Duck */
+  .ec-right-box {
+    position: absolute;
+    right: 15px; top: 15px; bottom: 15px;
+    width: 150px;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .pink-hexagon {
+    width: 126px; height: 144px;
+    background: linear-gradient(0deg, #ff9ca1, #ffdee1);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; justify-content: center; align-items: center;
+    position: relative;
+  }
+  .pink-hex-inner {
+    width: 110px; height: 126px;
+    background: linear-gradient(135deg, #fff0f0, #ffc0c3);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; justify-content: center;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(255,100,100,0.5);
+  }
+  
+  .duck-obj { position: absolute; bottom: 10px; font-size: 75px; z-index: 5; }
+  .crown-obj { position: absolute; top: 0px; left: 16px; font-size: 34px; z-index: 10; transform: rotate(10deg); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+  .ruby-obj { position: absolute; bottom: 15px; font-size: 40px; z-index: 15; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); transform: scaleY(0.9); }
+  .hand-l { position: absolute; left: 15px; bottom: 25px; font-size: 26px; z-index: 20; transform: scaleX(-1) rotate(-40deg); }
+  .hand-r { position: absolute; right: 20px; bottom: 25px; font-size: 26px; z-index: 20; transform: rotate(-40deg) scaleX(-1); }
+
+  /* 
+    ========================================================
+     WALKTHROUGH ELEMENTS
+    ========================================================
+  */
+  .walkthrough-layer {
+    position: fixed;
+    top: 310px; /* Positioned right below the spotlight card */
+    left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .up-indicator-box {
+    position: relative;
+    width: 40px;
+    height: 60px;
+  }
+  .glow-line-up {
+    width: 1.5px;
+    height: 45px;
+    background: linear-gradient(to top, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 100%);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 8px; /* line originates from bottom */
+  }
+  .glow-dot-up {
+    width: 8px;
+    height: 8px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255,255,255,1), 0 0 24px rgba(255,255,255,0.8);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0px; /* dot is at the top of the line */
+  }
+
+  .text-glow {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    line-height: 1.4;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+
+  .btn-outline-glow {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: #ffffff;
+    font-size: 15px;
+    border-radius: 20px;
+    padding: 8px 24px;
+    background: rgba(0, 0, 0, 0.25); 
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+
+  .skip-tag {
+    position: fixed;
+    right: 16px;
+    bottom: 30px;
+    background-color: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #ccc;
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: 16px;
+    z-index: 65;
+    font-weight: 500;
+  }
+}

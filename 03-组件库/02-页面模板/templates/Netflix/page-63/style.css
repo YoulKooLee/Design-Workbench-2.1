@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Nullify default highlight boundary outlines retaining App OS isolation */
+button, div, span, svg {
+    -webkit-tap-highlight-color: transparent;
+}
+span, p, h1, h2, h3 {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,7 @@
+{
+  "name": "design-system-bugatti",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Bugatti Design System 主题展示页（导入自 Make-Template design-systems）",
+  "dependencies": {}
+}

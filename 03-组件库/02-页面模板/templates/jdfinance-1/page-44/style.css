@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Complex Vault Watermark Background */
+  .vault-hero-bg {
+    background-color: #f5f6f9;
+    background-image: 
+      radial-gradient(circle at 80% -10%, rgba(244, 203, 192, 0.4) 0%, transparent 40%),
+      radial-gradient(circle at 100% 20%, rgba(228, 169, 137, 0.2) 0%, transparent 50%),
+      repeating-radial-gradient(ellipse at 85% 0%, rgba(200, 150, 100, 0.05) 0%, rgba(200, 150, 100, 0.05) 2%, transparent 2%, transparent 4%);
+  }
+
+  /* Right-side corner glow artifact */
+  .promo-red-glow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle at top right, rgba(240, 74, 75, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* CSS Icons (Monochrome Line Art) */
+  .icon-outline {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    color: #111;
+  }
+  
+  .icon-doc { border: 1.5px solid currentColor; border-radius: 4px; }
+  .icon-doc::after { content: ''; position: absolute; top: 5px; left: 4px; width: 8px; height: 1.5px; background: currentColor; box-shadow: 0 4px 0 currentColor; }
+  
+  .icon-doc-full { border: 1.5px solid currentColor; border-radius: 4px; }
+  .icon-doc-full::after { content: ''; position: absolute; top: 5px; left: 4px; width: 12px; height: 1.5px; background: currentColor; box-shadow: 0 4px 0 currentColor, 0 8px 0 currentColor; }
+
+  .icon-pie { border: 1.5px solid currentColor; border-radius: 50%; }
+  .icon-pie::after { content: ''; position: absolute; top: 50%; left: 50%; width: 50%; height: 1.5px; background: currentColor; transform-origin: left center; transform: rotate(-90deg); }
+  .icon-pie::before { content: ''; position: absolute; top: 50%; left: 50%; width: 1.5px; height: 50%; background: currentColor; }
+
+  .icon-cal { border: 1.5px solid currentColor; border-radius: 4px; }
+  .icon-cal::before { content: ''; position: absolute; top: -3px; left: 4px; width: 1.5px; height: 5px; background: currentColor; box-shadow: 12px 0 0 currentColor; }
+  .icon-cal::after { content: ''; position: absolute; top: 6px; left: 0; width: 100%; height: 1.5px; background: currentColor; }
+
+  .icon-badge { border: 1.5px solid currentColor; border-radius: 4px; border-bottom: none; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); height: 26px; }
+  .icon-badge::after { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; border: 1.5px solid currentColor; border-radius: 50%; transform: translate(-50%, -50%); }
+
+  /* Red Envelope Mini Icon */
+  .mini-envelope {
+    width: 16px;
+    height: 12px;
+    background-color: #f45b5c;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .mini-envelope::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 14px;
+    height: 14px;
+    background-color: #fc7576;
+    border-radius: 2px;
+  }
+  .mini-envelope::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 4px;
+    background-color: #fef08a;
+    border-radius: 50%;
+    z-index: 10;
+  }
+
+  /* Empty State Complex Geometric Build */
+  .empty-ticket-bg {
+    width: 150px;
+    height: 140px;
+    background-color: #ffefed;
+    border-radius: 12px;
+    position: relative;
+    /* CSS jagged perforations on left and right */
+    mask-image: radial-gradient(circle at 0% 50%, transparent 6px, black 7px), radial-gradient(circle at 100% 50%, transparent 6px, black 7px);
+    mask-size: 51% 100%;
+    mask-repeat: no-repeat;
+    mask-position: left, right;
+  }
+  .empty-ticket-bg::before {
+    /* Top dashed perforation fold line */
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 10px;
+    right: 10px;
+    height: 3px;
+    background-image: linear-gradient(to right, white 50%, transparent 50%);
+    background-size: 15px 3px;
+    opacity: 0.5;
+  }
+
+  /* Dog Mascot Geometry */
+  .dog-joy-minimal {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 85px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  
+  /* Dog Body & Limbs */
+  .joy-body { width: 50px; height: 55px; background: white; border-radius: 40% 40% 10% 10%; position: absolute; z-index: 10; bottom: 0;}
+  .joy-arm-l, .joy-arm-r { 
+    width: 16px; height: 35px; background: #ffe4e6; border-radius: 10px; position: absolute; z-index: 2; top: 15px;
+  }
+  .joy-arm-l { left: 0; transform: rotate(30deg); }
+  .joy-arm-r { right: 0; transform: rotate(-30deg); }
+  
+  /* Dog Head & Face */
+  .joy-head {
+    width: 65px; height: 45px; background: white; border-radius: 50px; position: absolute; z-index: 15; top: 5px; left: 50%; transform: translateX(-50%);
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.03);
+  }
+  .joy-ear-l, .joy-ear-r {
+    width: 18px; height: 26px; background: white; border-radius: 50%; position: absolute; z-index: 1; top: 0;
+  }
+  .joy-ear-l { left: 4px; transform: rotate(-45deg); }
+  .joy-ear-r { right: 4px; transform: rotate(45deg); }
+
+  .joy-eye-l, .joy-eye-r {
+    width: 6px; height: 8px; background: #111; border-radius: 50%; position: absolute; top: 18px;
+  }
+  .joy-eye-l { left: 16px; }
+  .joy-eye-r { right: 16px; width: 10px; height: 4px; border-radius: 50px; border-top: 3px solid #111; background: transparent; top: 20px;} /* Winking right eye */
+
+  .joy-smile {
+    width: 16px; height: 8px; border-bottom: 2.5px solid #111; border-radius: 0 0 10px 10px; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  }
+
+  /* Object Held (Red Wallet) */
+  .mini-wallet {
+    width: 24px; height: 18px; background: #f43f5e; border-radius: 3px; position: absolute; z-index: 20; bottom: 15px; left: 50%; transform: translateX(-50%);
+  }
+  .mini-wallet::before {
+    content: ''; position: absolute; top: -3px; left: 50%; transform: translateX(-50%); width: 8px; height: 4px; border: 1.5px solid #f43f5e; border-radius: 4px 4px 0 0;
+  }
+}

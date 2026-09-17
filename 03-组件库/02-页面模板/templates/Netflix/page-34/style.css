@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* Pipeline Scroll Rendering Normalization */
+.custom-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.custom-hide-scrollbar {
+    -ms-overflow-style: none; /* DOM-level IE purge */
+    scrollbar-width: none; /* DOM-level Firefox purge */
+}
+
+/* Linear Depth Mask for Fixed Headers against Scroll Grids */
+.mask-image-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+}

@@ -1,0 +1,276 @@
+{
+  "pages": [
+    {
+      "name": "Netflix Screen 01",
+      "path": "page-01"
+    },
+    {
+      "name": "Netflix Screen 02",
+      "path": "page-02"
+    },
+    {
+      "name": "Netflix Screen 03",
+      "path": "page-03"
+    },
+    {
+      "name": "Netflix Screen 04",
+      "path": "page-04"
+    },
+    {
+      "name": "Netflix Screen 05",
+      "path": "page-05"
+    },
+    {
+      "name": "Netflix Screen 06",
+      "path": "page-06"
+    },
+    {
+      "name": "Netflix Screen 07",
+      "path": "page-07"
+    },
+    {
+      "name": "Netflix Screen 08",
+      "path": "page-08"
+    },
+    {
+      "name": "Netflix Screen 09",
+      "path": "page-09"
+    },
+    {
+      "name": "Netflix Screen 10",
+      "path": "page-10"
+    },
+    {
+      "name": "Netflix Screen 11",
+      "path": "page-11"
+    },
+    {
+      "name": "Netflix Screen 12",
+      "path": "page-12"
+    },
+    {
+      "name": "Netflix Screen 13",
+      "path": "page-13"
+    },
+    {
+      "name": "Netflix Screen 14",
+      "path": "page-14"
+    },
+    {
+      "name": "Netflix Screen 15",
+      "path": "page-15"
+    },
+    {
+      "name": "Netflix Screen 16",
+      "path": "page-16"
+    },
+    {
+      "name": "Netflix Screen 17",
+      "path": "page-17"
+    },
+    {
+      "name": "Netflix Screen 18",
+      "path": "page-18"
+    },
+    {
+      "name": "Netflix Screen 19",
+      "path": "page-19"
+    },
+    {
+      "name": "Netflix Screen 20",
+      "path": "page-20"
+    },
+    {
+      "name": "Netflix Screen 21",
+      "path": "page-21"
+    },
+    {
+      "name": "Netflix Screen 22",
+      "path": "page-22"
+    },
+    {
+      "name": "Netflix Screen 23",
+      "path": "page-23"
+    },
+    {
+      "name": "Netflix Screen 24",
+      "path": "page-24"
+    },
+    {
+      "name": "Netflix Screen 25",
+      "path": "page-25"
+    },
+    {
+      "name": "Netflix Screen 26",
+      "path": "page-26"
+    },
+    {
+      "name": "Netflix Screen 27",
+      "path": "page-27"
+    },
+    {
+      "name": "Netflix Screen 28",
+      "path": "page-28"
+    },
+    {
+      "name": "Netflix Screen 29",
+      "path": "page-29"
+    },
+    {
+      "name": "Netflix Screen 30",
+      "path": "page-30"
+    },
+    {
+      "name": "Netflix Screen 31",
+      "path": "page-31"
+    },
+    {
+      "name": "Netflix Screen 32",
+      "path": "page-32"
+    },
+    {
+      "name": "Netflix Screen 33",
+      "path": "page-33"
+    },
+    {
+      "name": "Netflix Screen 34",
+      "path": "page-34"
+    },
+    {
+      "name": "Netflix Screen 35",
+      "path": "page-35"
+    },
+    {
+      "name": "Netflix Screen 36",
+      "path": "page-36"
+    },
+    {
+      "name": "Netflix Screen 37",
+      "path": "page-37"
+    },
+    {
+      "name": "Netflix Screen 38",
+      "path": "page-38"
+    },
+    {
+      "name": "Netflix Screen 39",
+      "path": "page-39"
+    },
+    {
+      "name": "Netflix Screen 40",
+      "path": "page-40"
+    },
+    {
+      "name": "Netflix Screen 41",
+      "path": "page-41"
+    },
+    {
+      "name": "Netflix Screen 42",
+      "path": "page-42"
+    },
+    {
+      "name": "Netflix Screen 43",
+      "path": "page-43"
+    },
+    {
+      "name": "Netflix Screen 44",
+      "path": "page-44"
+    },
+    {
+      "name": "Netflix Screen 45",
+      "path": "page-45"
+    },
+    {
+      "name": "Netflix Screen 46",
+      "path": "page-46"
+    },
+    {
+      "name": "Netflix Screen 47",
+      "path": "page-47"
+    },
+    {
+      "name": "Netflix Screen 48",
+      "path": "page-48"
+    },
+    {
+      "name": "Netflix Screen 49",
+      "path": "page-49"
+    },
+    {
+      "name": "Netflix Screen 50",
+      "path": "page-50"
+    },
+    {
+      "name": "Netflix Screen 51",
+      "path": "page-51"
+    },
+    {
+      "name": "Netflix Screen 52",
+      "path": "page-52"
+    },
+    {
+      "name": "Netflix Screen 53",
+      "path": "page-53"
+    },
+    {
+      "name": "Netflix Screen 54",
+      "path": "page-54"
+    },
+    {
+      "name": "Netflix Screen 55",
+      "path": "page-55"
+    },
+    {
+      "name": "Netflix Screen 56",
+      "path": "page-56"
+    },
+    {
+      "name": "Netflix Screen 57",
+      "path": "page-57"
+    },
+    {
+      "name": "Netflix Screen 58",
+      "path": "page-58"
+    },
+    {
+      "name": "Netflix Screen 59",
+      "path": "page-59"
+    },
+    {
+      "name": "Netflix Screen 60",
+      "path": "page-60"
+    },
+    {
+      "name": "Netflix Screen 61",
+      "path": "page-61"
+    },
+    {
+      "name": "Netflix Screen 62",
+      "path": "page-62"
+    },
+    {
+      "name": "Netflix Screen 63",
+      "path": "page-63"
+    },
+    {
+      "name": "Netflix Screen 64",
+      "path": "page-64"
+    },
+    {
+      "name": "Netflix Screen 65",
+      "path": "page-65"
+    },
+    {
+      "name": "Netflix Screen 66",
+      "path": "page-66"
+    },
+    {
+      "name": "Netflix Screen 67",
+      "path": "page-67"
+    },
+    {
+      "name": "Netflix Screen 68",
+      "path": "page-68"
+    }
+  ]
+}

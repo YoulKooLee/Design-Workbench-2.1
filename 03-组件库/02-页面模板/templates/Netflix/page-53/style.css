@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Maintain purity for OS wrapper environment rendering */
+button, div {
+    -webkit-tap-highlight-color: transparent;
+}

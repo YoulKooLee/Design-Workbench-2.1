@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .text-shadow-red {
+    text-shadow: 0 2px 8px rgba(225, 37, 27, 0.3);
+  }
+}

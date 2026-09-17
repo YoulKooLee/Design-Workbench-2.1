@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Subtle pastel red flare background for the profile page header */
+  .profile-hero-bg {
+    background: radial-gradient(circle at 80% 0%, rgba(250,200,200,0.4) 0%, rgba(248, 248, 251, 1) 40%);
+  }
+
+  /* Large geometric watermark on top right */
+  .hexagon-watermark-bg {
+    background-image: url('data:image/svg+xml;utf8,<svg width="180" height="200" viewBox="0 0 100 100" fill="none" opacity="0.3" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L93.3013 25V75L50 100L6.69873 75V25L50 0Z" stroke="url(%23grad1)" stroke-width="4"/><defs><linearGradient id="grad1" x1="50" y1="0" x2="50" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="%23f79d9e"/><stop offset="1" stop-color="%23f79d9e" stop-opacity="0"/></linearGradient></defs></svg>');
+    background-repeat: no-repeat;
+    background-position: top right;
+  }
+
+  /* The actual user avatar abstract base */
+  .user-avatar-bg {
+    background: radial-gradient(circle at center, #bf4415 0%, #762203 100%);
+    box-shadow: inset 0 -4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* Abstract medical card background mapping to the promo layout */
+  .abstract-medical-bg {
+    background: linear-gradient(135deg, #f5f8fc 0%, #e8edf3 100%);
+  }
+
+  /* A specific indicator under the active safety tab */
+  .tab-safety-indicator::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 4px;
+    background-color: #d6e8f8;
+    border-radius: 10px 10px 0 0;
+  }
+}

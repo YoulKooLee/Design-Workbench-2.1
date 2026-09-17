@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Eliminate touch flash and sub-pixel jitters */
+button, div, span, svg, h1 {
+    -webkit-tap-highlight-color: transparent;
+}
+span, p, h1, h2, h3 {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

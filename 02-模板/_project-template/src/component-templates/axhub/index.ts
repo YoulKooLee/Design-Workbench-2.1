@@ -1,5 +1,5 @@
 /**
- * Axhub 组件库 · 统一出口（React 18 + Tailwind v4）
+ * Codebuddy Design 组件库 · 统一出口（React 18 + Tailwind v4）
  * ------------------------------------------------------------------
  * 真源：C:\Users\游翔\Documents\AI work\产品设计工作台\03-组件库\03-页面组件\Codebuddy Design
  * 用法（用时复制）：
@@ -13,10 +13,10 @@
  */
 import './_kit/theme.css';
 
-export * from './base';
-export * from './layout';
-export * from './form';
-export * from './data';
-export * from './feedback';
-export * from './business';
+export * from './基础';
+export * from './布局';
+export * from './表单';
+export * from './数据展示';
+export * from './反馈';
+export * from './业务组件';
 export { cn, type ClassValue } from './_kit/cn';

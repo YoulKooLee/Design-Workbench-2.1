@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Survey floating side badge text vertical alignment */
+  .survey-badge {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 2px;
+  }
+
+  /* Font scalar icon custom SVG CSS placeholder */
+  .font-scale-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  /* Full Donut Chart */
+  .full-donut-container {
+    width: 140px;
+    height: 140px;
+    position: relative;
+    border-radius: 50%;
+    /* Mapping: 
+       Red (#ff3a48): 0% to ~88.4% (0 to 318deg)
+       Orange (#ffa24b): 88.4% to ~95.89% (318deg to 345deg)
+       Yellow (#ffcd50): 95.89% to 100% (345deg to 360deg) 
+    */
+    background: conic-gradient(
+      #ff3a48 0deg 318deg, 
+      #ffa24b 318deg 345deg, 
+      #ffcd50 345deg 360deg
+    );
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  }
+
+  .full-donut-cutout {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 110px;
+    height: 110px;
+    background-color: white;
+    border-radius: 50%;
+    z-index: 10;
+  }
+
+  /* Upward tiny red triangle */
+  .triangle-up-red {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 5px solid #fc4a4f;
+  }
+
+  /* Modern Half Donut Chart (carried over from page-34) */
+  .donut-chart-modern {
+    width: 110px;
+    height: 55px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 110px 110px 0 0;
+  }
+
+  .donut-chart-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    border-radius: 50%;
+    background: conic-gradient(from 270deg, #f7ac53 0%, #f7ac53 8.79%, #eaebf0 8.79%, #eaebf0 50%, transparent 50%);
+  }
+
+  .donut-chart-cutout {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 78px;
+    height: 39px;
+    background-color: #f8f9fb;
+    border-radius: 78px 78px 0 0;
+    z-index: 10;
+  }
+}

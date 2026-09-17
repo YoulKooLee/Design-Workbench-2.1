@@ -1,0 +1,4 @@
+Title: KATACHI 家具品牌官网
+Platform: v0
+Source: https://v0.app/templates/katachi-6rnQUvOhgnB
+Imported for Axhub Make template library.

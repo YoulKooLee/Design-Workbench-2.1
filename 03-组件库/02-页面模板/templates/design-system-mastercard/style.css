@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* TODO: Generate Tailwind v4 theme for Mastercard. */
+
+
+.dmb-page {
+  --dmb-accent: #EB001B;
+  --dmb-accent-contrast: #ffffff;
+  --dmb-link: #000000;
+  --dmb-muted: #000000;
+  --dmb-bg: #ffffff;
+  --dmb-radius-xs: 7px;
+  --dmb-radius-control: 7px;
+  --dmb-radius-card: 7px;
+  --dmb-radius-preview: 7px;
+  --dmb-radius-pill: 9999px;
+  --dmb-border: rgba(255,255,255,0.4);
+  --dmb-spacing-xxs: 36px;
+  --dmb-spacing-xs: 44px;
+  --dmb-spacing-sm: 0.72px;
+  --dmb-spacing-md: 14px;
+  --dmb-spacing-lg: 6px;
+  --dmb-spacing-xl: 24px;
+  --dmb-spacing-xxl: 16px;
+  --dmb-spacing-xxxl: 0.32px;
+  --dmb-spacing-section: 1px;
+  --dmb-spacing-section-lg: 30px;
+  --dmb-spacing-hero: 13px;
+  --dmb-spacing-band: 0.13px;
+  --dmb-spacing-space-13: 48px;
+  --dmb-spacing-space-14: 999px;
+  --dmb-spacing-space-15: 8px;
+  --dmb-spacing-space-16: 20px;
+
+  --dmb-font-display: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --dmb-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --dmb-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

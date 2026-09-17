@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@layer components {
+
+  /* 
+    ========================================================
+     PAGE 61 OVERALL BACKGROUND
+    ========================================================
+  */
+  .bg-canvas {
+    background-color: #f7f6fb;
+  }
+
+  /* 
+    ========================================================
+     FILTER BUTTONS
+    ========================================================
+  */
+  .filter-btn {
+    background-color: #f3f3f5;
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .filter-btn:active {
+    opacity: 0.7;
+  }
+
+  /* 
+    ========================================================
+     LIST ICONS
+    ========================================================
+  */
+
+  .list-icon-repay {
+    background-color: #ffbf00;
+    color: transparent;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+  }
+  .list-icon-repay::after {
+    content: "还";
+    position: absolute;
+    color: #fff;
+    font-family: -apple-system, sans-serif;
+  }
+
+  .list-icon-transfer {
+    background-color: #dcb38a;
+    color: transparent;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 1px;
+    padding-left: 1px;
+  }
+  .list-icon-transfer::after {
+    content: "转入";
+    position: absolute;
+    color: #fff;
+    font-family: -apple-system, sans-serif;
+  }
+
+  /* 
+    ========================================================
+     DIVIDERS & TYPOGRAPHY
+    ========================================================
+  */
+
+  .dash-divider {
+    border-bottom: 1px dashed #efefef;
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 25px;
+  }
+  
+  .title-month {
+    font-size: 14px;
+    font-weight: 800;
+    color: #111;
+    font-family: sans-serif;
+    letter-spacing: 0.5px;
+  }
+  
+  .item-title {
+    font-size: 15px;
+    color: #222;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  
+  .item-time {
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+    transform: scale(0.95);
+    transform-origin: left;
+    letter-spacing: 0.5px;
+  }
+
+  .item-amount {
+    font-size: 17px;
+    font-weight: 900;
+    color: #111;
+    font-family: Arial, sans-serif;
+  }
+  
+  .item-balance {
+    font-size: 12px;
+    color: #a0a0a0;
+    margin-top: 4px;
+    transform: scale(0.9);
+    transform-origin: right;
+    letter-spacing: 0.5px;
+  }
+
+}

@@ -1,0 +1,7 @@
+{
+  "name": "design-system-playstation",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Playstation Design System 主题展示页（导入自 Make-Template design-systems）",
+  "dependencies": {}
+}

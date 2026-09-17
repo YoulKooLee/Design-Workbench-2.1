@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Minimal overrides */
+  .text-xxs {
+    font-size: 10px;
+    line-height: 12px;
+  }
+}

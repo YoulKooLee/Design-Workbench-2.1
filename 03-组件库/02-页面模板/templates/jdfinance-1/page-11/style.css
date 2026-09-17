@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Minimal custom overrides for medals */
+  .rank-medal-gold {
+     background: radial-gradient(circle at 30% 30%, #ffd068 0%, #faa629 100%);
+     box-shadow: 0 2px 4px rgba(250, 166, 41, 0.4);
+  }
+  .rank-medal-silver {
+     background: radial-gradient(circle at 30% 30%, #d4e0eb 0%, #aab6ca 100%);
+     box-shadow: 0 2px 4px rgba(170, 182, 202, 0.4);
+  }
+  .rank-medal-bronze {
+     background: radial-gradient(circle at 30% 30%, #fbd5b5 0%, #e8955a 100%);
+     box-shadow: 0 2px 4px rgba(232, 149, 90, 0.4);
+  }
+
+  .text-xxs {
+    font-size: 10px;
+    line-height: 12px;
+  }
+}

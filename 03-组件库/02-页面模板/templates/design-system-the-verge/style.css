@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* TODO: Generate Tailwind v4 theme for The Verge. */
+
+@font-face {
+  font-family: "WiredDisplay";
+  src: url("./assets/fonts/WiredDisplay-BoldCondensed.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Apercu";
+  src: url("./assets/fonts/Apercu-Regular-Pro.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Apercu";
+  src: url("./assets/fonts/Apercu-Bold-Pro.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+.dmb-page {
+  --dmb-accent: #3cffd0;
+  --dmb-accent-contrast: #171717;
+  --dmb-link: #000000;
+  --dmb-muted: #000000;
+  --dmb-bg: #ffffff;
+  --dmb-radius-xs: 7px;
+  --dmb-radius-control: 7px;
+  --dmb-radius-card: 7px;
+  --dmb-radius-preview: 7px;
+  --dmb-radius-pill: 9999px;
+  --dmb-border: #ffffff;
+  --dmb-spacing-xxs: 90px;
+  --dmb-spacing-xs: 5.63rem;
+  --dmb-spacing-sm: 34px;
+  --dmb-spacing-md: 2.13rem;
+  --dmb-spacing-lg: 18px;
+  --dmb-spacing-xl: 1.13rem;
+  --dmb-spacing-xxl: 1.8px;
+  --dmb-spacing-xxxl: 1.9px;
+  --dmb-spacing-section: 0.16px;
+  --dmb-spacing-section-lg: 0.32px;
+  --dmb-spacing-hero: 1.07px;
+  --dmb-spacing-band: 107px;
+  --dmb-spacing-space-13: 60px;
+  --dmb-spacing-space-14: 10px;
+  --dmb-spacing-space-15: 24px;
+  --dmb-spacing-space-16: 20px;
+
+  --dmb-font-display: "WiredDisplay", "Arial Narrow", "Times New Roman", Georgia, serif;
+  --dmb-font-body: "Apercu", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --dmb-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

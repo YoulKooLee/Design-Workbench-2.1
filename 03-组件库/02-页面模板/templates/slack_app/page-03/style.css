@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .mention {
+    background-color: #E8F5FB;
+    color: #0B4C8C;
+    padding: 0 3px;
+    border-radius: 4px;
+    font-weight: 400;
+  }
+}

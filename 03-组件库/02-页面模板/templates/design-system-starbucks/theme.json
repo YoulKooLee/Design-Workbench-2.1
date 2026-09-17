@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "sourceName": "getdesign.md",
+    "originalDetailUrl": "https://getdesign.md/starbucks/design-md",
+    "fallbackRawUrl": "https://raw.githubusercontent.com/VoltAgent/awesome-design-md/main/design-md/starbucks/DESIGN.md",
+    "mirrorSource": "github:VoltAgent/awesome-design-md",
+    "websiteUrl": "https://starbucks.com/"
+  },
+  "identity": {
+    "id": "P0-107",
+    "slug": "starbucks",
+    "brand": "Starbucks",
+    "titleZh": "Starbucks 主题",
+    "titleEn": "Starbucks",
+    "descriptionZh": "Starbucks 的 Design.md 主题展示，围绕暖色调、消费品牌、电商零售、品牌展示组织页面。",
+    "descriptionEn": "Global coffee retail brand. Four-tier green system, warm cream canvas, full-pill buttons."
+  },
+  "tags": {
+    "sourceTags": [],
+    "generatedTags": [
+      "request-flow",
+      "warm"
+    ],
+    "designTags": [],
+    "distributionTags": [
+      "暖色调",
+      "消费品牌",
+      "电商零售",
+      "品牌展示"
+    ]
+  },
+  "assets": {
+    "designMd": {
+      "path": "DESIGN.md",
+      "sourcePath": "DESIGN.md"
+    },
+    "tailwind": {
+      "path": "tw.css",
+      "sourcePath": "tw.css"
+    },
+    "tokens": {
+      "path": "assets/tokens.json",
+      "method": "derived_from_design_md_and_metadata",
+      "sourcePath": "designToken.json"
+    },
+    "cover": null,
+    "previewHtml": {
+      "type": "local-preview",
+      "path": "assets/official-homepage.webp",
+      "publicPath": "assets/official-homepage.webp",
+      "importPath": "./assets/official-homepage.webp?url",
+      "sourcePath": "assets/official-homepage.webp"
+    }
+  },
+  "tokens": {
+    "palette": [
+      "#006241",
+      "#000000",
+      "#ffffff",
+      "#a0a0a0",
+      "#fbbf24",
+      "#8a8a8a",
+      "#0a0a0a",
+      "#e0e0e0"
+    ],
+    "typography": {
+      "display": "Helvetica Neue",
+      "body": "Manrope",
+      "mono": "ui-monospace",
+      "hints": [
+        "Helvetica Neue",
+        "Manrope",
+        "ui-monospace",
+        "Inter"
+      ]
+    },
+    "radius": {
+      "control": "8px",
+      "card": "8px",
+      "preview": "8px",
+      "pill": "9999px",
+      "source": "design-md"
+    },
+    "spacing": {
+      "xxs": "0.16px",
+      "xs": "1.6rem",
+      "sm": "16px",
+      "md": "6.4rem",
+      "lg": "64px",
+      "xl": "2.8rem",
+      "xxl": "45px",
+      "xxxl": "24px",
+      "section": "36px",
+      "section-lg": "7px",
+      "hero": "0.01em",
+      "band": "50px",
+      "space-13": "14px",
+      "space-14": "8px",
+      "space-15": "2.4rem",
+      "space-16": "8.8rem",
+      "source": "design-md"
+    }
+  },
+  "previewImages": [
+    {
+      "type": "local-preview",
+      "path": "assets/official-homepage.webp"
+    }
+  ],
+  "display": {
+    "brand": "Starbucks 主题",
+    "brandAlias": "Starbucks",
+    "description": "Starbucks 的 Design.md 主题展示，围绕暖色调、消费品牌、电商零售、品牌展示组织页面。",
+    "descriptionEn": "Global coffee retail brand. Four-tier green system, warm cream canvas, full-pill buttons.",
+    "variant": "consumer-commerce",
+    "distributionTags": [
+      "暖色调",
+      "消费品牌",
+      "电商零售",
+      "品牌展示"
+    ],
+    "fontStylesheets": [
+      "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+    ],
+    "palette": [
+      {
+        "color": "#006241",
+        "labelZh": "主色",
+        "labelEn": "Primary",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#000000",
+        "labelZh": "主色悬停",
+        "labelEn": "Primary Hover",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#ffffff",
+        "labelZh": "辅助色",
+        "labelEn": "Secondary",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#a0a0a0",
+        "labelZh": "强调色",
+        "labelEn": "Accent",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#fbbf24",
+        "labelZh": "背景色",
+        "labelEn": "Background",
+        "textColor": "#171717"
+      },
+      {
+        "color": "#8a8a8a",
+        "labelZh": "表面色",
+        "labelEn": "Surface",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#0a0a0a",
+        "labelZh": "文本色",
+        "labelEn": "Text",
+        "textColor": "#ffffff"
+      },
+      {
+        "color": "#e0e0e0",
+        "labelZh": "边框色",
+        "labelEn": "Border",
+        "textColor": "#171717"
+      }
+    ],
+    "shadows": [
+      {
+        "label": "阴影 1 - Shadow 1",
+        "value": "0 0 6px rgba(0,0,0,0.24)",
+        "cssValue": "0 0 6px rgba(0,0,0,0.24)",
+        "description": "The surfaces breathe through rounded geometry. Every button is a 50px full-pill. Cards take a 12px rounded-rectangle. The \"Frap\" floating CTA — a 56px circular order button in Green Accent (`#00754A`) — is the product's signature depth move: it floats bottom-right with a layered shadow stack (`0 0 6px rgba(0,0,0,0.24)` base + `0 8px 12px rgba(0,0,0,0.14)` ambient) and compresses via `scale(0.95)` on press. Elevations are otherwise restrained — card shadows stay at a whispered `0.14/0.24` alpha, global nav gets a quiet three-layer shadow stack. The whole system feels like clean café signage: legible, warm, and never shouting."
+      }
+    ],
+    "borders": [
+      {
+        "label": "边框 1 - Border 1",
+        "value": "Add",
+        "cssValue": "Add",
+        "description": "### Black / White Alpha Ladders"
+      },
+      {
+        "label": "边框 2 - Border 2",
+        "value": "#00754A",
+        "cssValue": "#00754A",
+        "description": "The surfaces breathe through rounded geometry. Every button is a 50px full-pill. Cards take a 12px rounded-rectangle. The \"Frap\" floating CTA — a 56px circular order button in Green Accent (`#00754A`) — is the product's signature depth move: it floats bottom-right with a layered shadow stack (`0 0 6px rgba(0,0,0,0.24)` base + `0 8px 12px rgba(0,0,0,0.14)` ambient) and compresses via `scale(0.95)` on press. Elevations are otherwise restrained — card shadows stay at a whispered `0.14/0.24` alpha, global nav gets a quiet three-layer shadow stack. The whole system feels like clean café signage: legible, warm, and never shouting."
+      },
+      {
+        "label": "边框 3 - Border 3",
+        "value": "#000000",
+        "cssValue": "#000000",
+        "description": "Black (`#000000`): Deep ink reserved for the dark top-of-page CTA strip (\"Join now\") and high-contrast top-nav sign-in buttons."
+      },
+      {
+        "label": "边框 4 - Border 4",
+        "value": "rgba(0, 0, 0, 0.87)",
+        "cssValue": "rgba(0, 0, 0, 0.87)",
+        "description": "Text Black (`rgba(0, 0, 0, 0.87)`): Primary heading and body text color on light surfaces. Not pure black — an 87%-opacity black that reads warmer."
+      },
+      {
+        "label": "边框 5 - Border 5",
+        "value": "#ffffff",
+        "cssValue": "#ffffff",
+        "description": "White (`#ffffff`): Primary card and modal surface. Also card fill on gift-card tiles."
+      },
+      {
+        "label": "边框 6 - Border 6",
+        "value": "#d6dbde",
+        "cssValue": "#d6dbde",
+        "description": "Border: `1px solid #d6dbde` (Input Border)"
+      }
+    ],
+    "typography": [
+      "Helvetica Neue",
+      "Manrope",
+      "ui-monospace",
+      "Inter"
+    ],
+    "previewImages": [
+      {
+        "type": "local-preview",
+        "path": "assets/official-homepage.webp"
+      }
+    ],
+    "panels": [
+      {
+        "eyebrow": "品牌",
+        "title": "第一眼识别明确",
+        "body": "适合消费品牌、电商、媒体和产品展示页。"
+      },
+      {
+        "eyebrow": "Token",
+        "title": "颜色与字体可复用",
+        "body": "页面从本地 metadata 与 Design.md 提取 palette、typography 和标签，用于快速预览主题质感。"
+      },
+      {
+        "eyebrow": "组件",
+        "title": "面向真实界面片段",
+        "body": "按钮、输入、卡片和间距样例保持克制，便于比较不同主题的系统性差异。"
+      }
+    ],
+    "usageGuidance": {
+      "do": [
+        "使用 Neutral Warm 或 Ceramic 作为页面画布，保持咖啡零售的暖色温。",
+        "保留四层绿色系统，并让 #006241 作为主要品牌识别色。",
+        "所有按钮都使用 50px full-pill，购物入口保留 Frap 圆形浮动 CTA。"
+      ],
+      "dont": [
+        "不要用纯白或纯黑替代暖灰画布与 rgba(0,0,0,0.87) 文本。",
+        "不要把 Gold 当作通用强调色；它只服务 Rewards 场景。",
+        "不要在主购物流中引入渐变、方角按钮、衬线或脚本字体。"
+      ]
+    },
+    "radius": {
+      "control": "8px",
+      "card": "8px",
+      "preview": "8px",
+      "pill": "9999px",
+      "source": "design-md"
+    },
+    "spacing": {
+      "xxs": "0.16px",
+      "xs": "1.6rem",
+      "sm": "16px",
+      "md": "6.4rem",
+      "lg": "64px",
+      "xl": "2.8rem",
+      "xxl": "45px",
+      "xxxl": "24px",
+      "section": "36px",
+      "section-lg": "7px",
+      "hero": "0.01em",
+      "band": "50px",
+      "space-13": "14px",
+      "space-14": "8px",
+      "space-15": "2.4rem",
+      "space-16": "8.8rem",
+      "source": "design-md"
+    }
+  },
+  "status": {
+    "displayPage": "todo",
+    "collectionErrors": []
+  }
+}

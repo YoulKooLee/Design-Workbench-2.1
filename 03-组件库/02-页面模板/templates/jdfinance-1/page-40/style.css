@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+@layer components {
+  /* Master background pattern for Check-in Page */
+  .checkin-hero-bg {
+    background: linear-gradient(180deg, #fd3d33 0%, #ffd8cb 350px, #f5f6f9 600px);
+    background-color: #f5f6f9;
+  }
+
+  /* Decorative underline for main titles */
+  .title-highlight-green {
+    position: relative;
+    z-index: 1;
+  }
+  .title-highlight-green::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background-color: #baeedb;
+    z-index: -1;
+  }
+
+  /* Faint background timeline lines for number display */
+  .grid-lines-bg {
+    background-image: repeating-linear-gradient(to bottom, #efefef, #efefef 1px, transparent 1px, transparent 14px);
+    background-position: top center;
+  }
+
+  /* Angled status watermark */
+  .watermark-stamp {
+    position: absolute;
+    font-size: 14px;
+    color: #eab308; /* Yellow-500 */
+    opacity: 0.35;
+    border: 1px solid #eab308;
+    border-radius: 4px;
+    padding: 0 4px;
+    transform: rotate(-15deg);
+    top: 50%;
+    left: 45%;
+    pointer-events: none;
+    letter-spacing: 2px;
+  }
+
+  /* Lottery draw glowing red button */
+  .lottery-btn-glow {
+    background: linear-gradient(to right, #ff4c3b, #ff2346);
+    box-shadow: 0 8px 20px -4px rgba(255, 35, 70, 0.4), inset 0px -3px 0px 0px rgba(200, 0, 20, 0.3);
+  }
+
+  /* Complex internal shadow for the lottery card grid items */
+  .lottery-card-inner {
+    box-shadow: inset 0px -4px 8px -4px rgba(12, 177, 107, 0.2);
+  }
+
+  /* CSS Geometry Gift Box Icon (instead of SVG) */
+  .icon-gift {
+    width: 20px;
+    height: 18px;
+    background-color: #6ee7b7; /* Emerald-300 */
+    border: 1.5px solid #059669; /* Emerald-600 */
+    border-radius: 2px;
+    position: relative;
+    display: inline-block;
+  }
+  .icon-gift::before { /* Horizontal Ribbon */
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #fca5a5;
+    transform: translateY(-50%);
+  }
+  .icon-gift::after { /* Vertical Ribbon */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 3px;
+    height: 100%;
+    background-color: #fca5a5;
+    transform: translateX(-50%);
+  }
+  .icon-gift-bow {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1px;
+  }
+  .icon-gift-bow div {
+    width: 6px;
+    height: 6px;
+    border: 1.5px solid #fca5a5;
+    border-radius: 50%;
+  }
+
+  /* Cartoon dog placeholder representation via pure CSS shapes */
+  .dog-mascot-hull {
+    position: absolute;
+    top: -24px;
+    right: 16px;
+    width: 48px;
+    height: 36px;
+    z-index: 10;
+  }
+  .dog-head {
+    width: 32px;
+    height: 28px;
+    background: white;
+    border-radius: 50% 50% 40% 40%;
+    position: absolute;
+    bottom: 0;
+    left: 8px;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+  }
+  .dog-ear-l {
+    width: 12px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 6px;
+    transform: rotate(-30deg);
+  }
+  .dog-ear-r {
+    width: 12px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    right: 0;
+    top: 6px;
+    transform: rotate(30deg);
+  }
+  .dog-snout {
+    width: 18px;
+    height: 12px;
+    background: #f87171; /* red mouth open */
+    border-radius: 5px 5px 10px 10px;
+    position: absolute;
+    bottom: 2px;
+    left: 7px;
+  }
+  .dog-nose {
+    width: 6px;
+    height: 4px;
+    background: black;
+    border-radius: 50%;
+    position: absolute;
+    top: -2px;
+    left: 6px;
+  }
+}

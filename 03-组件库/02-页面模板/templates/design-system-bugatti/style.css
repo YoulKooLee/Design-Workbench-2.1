@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* TODO: Generate Tailwind v4 theme for Bugatti. */
+
+
+.dmb-page {
+  --dmb-accent: #ffffff;
+  --dmb-accent-contrast: #171717;
+  --dmb-link: #c3d9f3;
+  --dmb-muted: #cccccc;
+  --dmb-bg: #000000;
+  --dmb-ink: #f8fafc;
+  --dmb-ink-muted: #d8dee8;
+  --dmb-ink-subtle: #aeb7c4;
+  --dmb-radius-xs: 0px;
+  --dmb-radius-control: 0px;
+  --dmb-radius-card: 0px;
+  --dmb-radius-preview: 0px;
+  --dmb-radius-pill: 9999px;
+  --dmb-border: #262626;
+  --dmb-border-sample-bg: #0d0d0d;
+  --dmb-spacing-xxs: 4px;
+  --dmb-spacing-xs: 8px;
+  --dmb-spacing-sm: 12px;
+  --dmb-spacing-md: 16px;
+  --dmb-spacing-lg: 24px;
+  --dmb-spacing-xl: 40px;
+  --dmb-spacing-xxl: 64px;
+  --dmb-spacing-section: 120px;
+
+  --dmb-font-display: "Bugatti Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --dmb-font-body: "Bugatti Text Regular", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --dmb-font-mono: "Bugatti Monospace", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

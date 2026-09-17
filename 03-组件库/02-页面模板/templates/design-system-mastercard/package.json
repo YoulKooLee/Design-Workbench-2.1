@@ -1,0 +1,7 @@
+{
+  "name": "design-system-mastercard",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Mastercard Design System 主题展示页（导入自 Make-Template design-systems）",
+  "dependencies": {}
+}
