@@ -10,4 +10,3 @@ export * from './Tabs';
 export * from './Breadcrumb';
 export * from './Steps';
 export * from './Toolbar';
-export { default as SideMenu } from './side-menu';

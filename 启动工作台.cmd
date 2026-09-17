@@ -1,4 +1,5 @@
 ﻿@echo off
+chcp 65001 >nul
 setlocal enabledelayedexpansion
 title 产品设计工作台 启动器
 cd /d "%~dp0"
