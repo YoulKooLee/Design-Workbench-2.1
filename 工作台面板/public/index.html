@@ -934,7 +934,7 @@ async function renderComponents(){
   const catSet = ['all', ...vibeCats, ...dcCats, 'other'];
   let activeGroup = 'page', activeSub = 'all', activeCat = 'all';
   let html = `<div class="toolbar" style="justify-content:flex-end">
-    <button class="btn sm" id="uploadTplBtn" title="上传模板：页面模板 → 03-组件库/页面模板；组件模板 → 03-组件库/组件模板（拖放文件夹）">⇪ 上传模板</button>
+    <button class="btn sm" id="uploadTplBtn" title="上传模板：页面模板 → 03-组件库/02-页面模板；组件模板 → 03-组件库/03-页面组件/Codebuddy Design（拖放文件夹）">⇪ 上传模板</button>
     <button class="btn sm primary" id="addComponentBtn" title="录入自定义组件（如 React 组件库扩展）">+ 新增组件</button>
   </div>
   <div class="clib-layout">
@@ -1127,8 +1127,8 @@ async function renderComponents(){
       openModal(`<div class="modal-head"><h3>上传模板</h3><button class="modal-x" onclick="closeModal()">✕</button></div>
         <div class="field"><label>类别 *</label>
           <select id="libCat">
-            <option value="component">🧩 组件模板（存 03-组件库/组件模板/）</option>
-            <option value="page">📄 页面模板（存 03-组件库/页面模板/templates/，新增项目可选）</option>
+            <option value="component">🧩 组件模板（存 03-组件库/03-页面组件/Codebuddy Design/）</option>
+            <option value="page">📄 页面模板（存 03-组件库/02-页面模板/templates/，新增项目可选）</option>
           </select></div>
         <div class="field"><label>名称（唯一标识，字母/数字/连字符）*</label><input id="libName" placeholder="例如 my-form-table / my-landing"></div>
         <div class="field"><label>说明（可选）</label><textarea id="libPrompt" rows="2" style="min-height:56px" placeholder="用途简述，作为卡片说明/复制提示词"></textarea></div>
