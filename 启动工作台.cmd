@@ -1,30 +1,30 @@
-@echo off
+﻿@echo off
 setlocal enabledelayedexpansion
-title Axhub ����̨������
+title Axhub 工作台启动器
 cd /d "%~dp0"
 
 echo ============================================
-echo   Axhub ��Ʒ��ƹ���̨ - �����ű�
+echo   Axhub 产品设计工作台 - 启动脚本
 echo ============================================
 echo.
 
-REM 1) ����ʹ�� WorkBuddy �Դ��� node������汾���ɣ�
+REM 1) 优先使用 WorkBuddy 自带的 node（任意版本均可）
 set "NODE="
 for /d %%d in ("%USERPROFILE%\.workbuddy\binaries\node\versions\*") do (
   if exist "%%d\node.exe" set "NODE=%%d\node.exe"
 )
-REM 2) ���˵�ϵͳ PATH ���Ѱ�װ�� node
+REM 2) 回退到系统 PATH 中已安装的 node
 if not defined NODE (
   where node >nul 2>nul && set "NODE=node"
 )
 if not defined NODE (
-  echo [ERROR] δ�ҵ� Node.js�����Ȱ�װ WorkBuddy���� https://nodejs.org ��װ Node �����ԡ�
-  echo ��������رձ�����...
+  echo [ERROR] 未找到 Node.js。请先安装 WorkBuddy，或到 https://nodejs.org 安装 Node 后重试。
+  echo 按任意键关闭本窗口...
   pause
   exit /b 1
 )
-echo [OK] ʹ�� Node: %NODE%
-REM 1b) У�� Node �ܹ���arm64 ����ʾ����ϣ�
+echo [OK] 使用 Node: %NODE%
+REM 1b) 校验 Node 架构（arm64 仅提示不阻断）
 set "ARCHF=%TEMP%\axhub-node-arch.txt"
 "%NODE%" -p "process.arch" > "%ARCHF%" 2>nul
 set "NODE_ARCH="
@@ -33,29 +33,29 @@ if exist "%ARCHF%" (
   del "%ARCHF%" >nul 2>&1
 )
 if /i "%NODE_ARCH%"=="arm64" (
-  echo [WARN] Node �ܹ�Ϊ arm64�����鰲װ x64 �� Node������ϣ�
+  echo [WARN] Node 架构为 arm64：建议安装 x64 版 Node（不阻断）
 ) else if "%NODE_ARCH%"=="" (
-  echo [WARN] �޷���� Node �ܹ������ԣ�
+  echo [WARN] 无法检测 Node 架构（忽略）
 )
 
-REM 3) ���������У���������������ظ�������
+REM 3) 若已在运行，仅打开浏览器（不重复启动）
 netstat -ano 2>nul | findstr ":7788 " | findstr "LISTEN" >nul
 if not errorlevel 1 (
-  echo [INFO] ����̨���� :7788 ���У����ڴ������...
+  echo [INFO] 工作台已在 :7788 运行，正在打开浏览器...
   start "" http://localhost:7788
-  echo ��������رձ�����...
+  echo 按任意键关闭本窗口...
   pause
   exit /b 0
 )
 
-REM 4) ������˷����ڶ�����С���������У����д����־�����Ų飩
-cd /d "%~dp0����̨���"
-if not exist "%~dp007-��־" mkdir "%~dp007-��־"
-set "LOG=%~dp007-��־\server-console.log"
-echo [INFO] ����������˷�����־: server-console.log��...
+REM 4) 启动后端服务（在独立最小化窗口运行，输出写入日志便于排查）
+cd /d "%~dp0工作台面板"
+if not exist "%~dp007-日志" mkdir "%~dp007-日志"
+set "LOG=%~dp007-日志\server-console.log"
+echo [INFO] 正在启动后端服务（日志: server-console.log）...
 start "Axhub Server" /min cmd /c ""%NODE%" server.mjs > "%LOG%" 2>&1"
 
-REM 5) ��ʱ�ȴ��˿ھ��������Լ 20 �룩
+REM 5) 限时等待端口就绪（最多约 20 秒）
 set "READY=0"
 for /L %%i in (1,1,20) do (
   netstat -ano 2>nul | findstr ":7788 " | findstr "LISTEN" >nul
@@ -67,14 +67,14 @@ for /L %%i in (1,1,20) do (
 )
 :done
 if "%READY%"=="1" (
-  echo [OK] ����Ѿ��������ڴ������...
+  echo [OK] 后端已就绪，正在打开浏览器...
   start "" http://localhost:7788
-  echo [OK] ����̨������: http://localhost:7788
-  echo [��ʾ] ��˷�������Ϊ "Axhub Server" ����С���������У��ɷ��Ĺرձ����ڡ�
+  echo [OK] 工作台已启动: http://localhost:7788
+  echo [提示] 后端服务在名为 "Axhub Server" 的最小化窗口运行；可放心关闭本窗口。
 ) else (
-  echo [ERROR] ��˷��� 20 ����δ��������鿴��־: %LOG%
-  echo [��ʾ] ����ԭ��: Node ·���쳣���˿� 7788 ��ռ�á�����δ��װ��
+  echo [ERROR] 后端服务 20 秒内未就绪，请查看日志: %LOG%
+  echo [提示] 常见原因: Node 路径异常、端口 7788 被占用、依赖未安装。
 )
 echo.
-echo ��������رձ�����...
+echo 按任意键关闭本窗口...
 pause

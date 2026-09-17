@@ -1,29 +1,29 @@
-@echo off
+ï»¿@echo off
 setlocal enabledelayedexpansion
-title Axhub ¹¤×÷Ì¨Í£Ö¹Æ÷
+title Axhub å·¥ä½œå°åœæ­¢å™¨
 cd /d "%~dp0"
 
 echo ============================================
-echo   Axhub ²úÆ·Éè¼Æ¹¤×÷Ì¨ - Í£Ö¹½Å±¾
+echo   Axhub äº§å“è®¾è®¡å·¥ä½œå° - åœæ­¢è„šæœ¬
 echo ============================================
 echo.
 
-call :killport 7788 "¹¤×÷Ì¨¹ÜÀíÃæ°å - Axhub Manager"
-call :killport 53817 "Axhub Make µ¥Àý"
-call :killport 32124 "Axhub ACP Ð­×÷·þÎñ"
+call :killport 7788 "å·¥ä½œå°ç®¡ç†é¢æ¿ - Axhub Manager"
+call :killport 53817 "Axhub Make å•ä¾‹"
+call :killport 32124 "Axhub ACP åä½œæœåŠ¡"
 call :killvite
-call :killport 8899 "Ô­ÐÍÔ¤ÀÀ·þÎñÆ÷"
+call :killport 8899 "åŽŸåž‹é¢„è§ˆæœåŠ¡å™¨"
 
 call :cleanstate
 
 echo.
 echo ============================================
-echo   ²Ù×÷Íê³É¡£ÏÂÃæÊÇ±»´¦ÀíµÄ·þÎñ»ã×Ü£º
-echo   ¡¤¹¤×÷Ì¨¹ÜÀíÃæ°å (7788) ¡¤ Make µ¥Àý (53817) ¡¤ ACP Ð­×÷ (32124)
-echo   ¡¤ Vite ¿ª·¢Õ» (517xx) ¡¤ Ô­ÐÍÔ¤ÀÀ·þÎñÆ÷ (8899)
-echo   ÈçÄ³ÏîÏÔÊ¾ [--] ±íÊ¾Ëü±¾À´¾ÍÃ»ÔÚÔËÐÐ¡£
+echo   æ“ä½œå®Œæˆã€‚ä¸‹é¢æ˜¯è¢«å¤„ç†çš„æœåŠ¡æ±‡æ€»ï¼š
+echo   Â·å·¥ä½œå°ç®¡ç†é¢æ¿ (7788) Â· Make å•ä¾‹ (53817) Â· ACP åä½œ (32124)
+echo   Â· Vite å¼€å‘æ ˆ (517xx) Â· åŽŸåž‹é¢„è§ˆæœåŠ¡å™¨ (8899)
+echo   å¦‚æŸé¡¹æ˜¾ç¤º [--] è¡¨ç¤ºå®ƒæœ¬æ¥å°±æ²¡åœ¨è¿è¡Œã€‚
 echo ============================================
-echo °´ÈÎÒâ¼ü¹Ø±Õ±¾´°¿Ú...
+echo æŒ‰ä»»æ„é”®å…³é—­æœ¬çª—å£...
 pause
 exit
 
@@ -33,16 +33,16 @@ set "NAME=%~2"
 set "PID="
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%PORT% " ^| findstr "LISTEN"') do set "PID=%%a"
 if not defined PID (
-  echo [--] %NAME%  [¶Ë¿Ú %PORT%]£ºÎ´ÔËÐÐ
+  echo [--] %NAME%  [ç«¯å£ %PORT%]ï¼šæœªè¿è¡Œ
   goto :eof
 )
 taskkill /PID !PID! /T /F >nul 2>&1
 set "STILL="
 for /f "tokens=5" %%b in ('netstat -ano ^| findstr ":%PORT% " ^| findstr "LISTEN"') do set "STILL=1"
 if defined STILL (
-  echo [X] %NAME%  [¶Ë¿Ú %PORT%] PID !PID!£º½áÊøÊ§°Ü£¬ÇëÊÖ¶¯ÔÚÈÎÎñ¹ÜÀíÆ÷½áÊø¸Ã½ø³Ì
+  echo [X] %NAME%  [ç«¯å£ %PORT%] PID !PID!ï¼šç»“æŸå¤±è´¥ï¼Œè¯·æ‰‹åŠ¨åœ¨ä»»åŠ¡ç®¡ç†å™¨ç»“æŸè¯¥è¿›ç¨‹
 ) else (
-  echo [OK] %NAME%  [¶Ë¿Ú %PORT%] PID !PID!£ºÒÑÍ£Ö¹
+  echo [OK] %NAME%  [ç«¯å£ %PORT%] PID !PID!ï¼šå·²åœæ­¢
 )
 goto :eof
 
@@ -50,10 +50,10 @@ goto :eof
 set "FOUND=0"
 for /f "tokens=2,5" %%a in ('netstat -ano ^| findstr "LISTENING" ^| findstr /r ":517[0-9][0-9] "') do (
   taskkill /PID %%b /T /F >nul 2>&1
-  echo [OK] Vite ¿ª·¢·þÎñÆ÷ [¶Ë¿Ú %%a] PID %%b£ºÒÑÍ£Ö¹
+  echo [OK] Vite å¼€å‘æœåŠ¡å™¨ [ç«¯å£ %%a] PID %%bï¼šå·²åœæ­¢
   set "FOUND=1"
 )
-if "!FOUND!"=="0" echo [--] Î´·¢ÏÖÔËÐÐÖÐµÄ Vite ¿ª·¢·þÎñÆ÷ (51700-51799)
+if "!FOUND!"=="0" echo [--] æœªå‘çŽ°è¿è¡Œä¸­çš„ Vite å¼€å‘æœåŠ¡å™¨ (51700-51799)
 goto :eof
 
 :cleanstate
