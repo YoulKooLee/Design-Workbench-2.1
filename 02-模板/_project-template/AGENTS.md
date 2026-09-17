@@ -13,6 +13,10 @@
 
 ---
 
+## ⚠️ 上下文预算（最高铁律）
+
+本文件约 41KB（≈1.4 万 token）；技能正文全量约 400KB（≈11 万 token）、知识库约 210KB（≈7 万 token）。**严禁**遍历 / 批量 Read `.agents/skills/`、`.agents/knowledge/`、`.agents/rules/` 目录——一次误读即击穿上下文窗口。技能匹配只用会话启动时**已预加载**的 SKILL.md description；命中后仅加载那一个技能，其正文由加载机制自动带入。
+
 ## 🧭 核心工作流
 
 ```text
@@ -109,15 +113,8 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 
 > 匹配靠运行时预加载的 SKILL.md description，下表仅快速定位；命中后只加载那一个技能（正文由加载机制带入），严禁遍历 SKILL.md。
 
-- **原型生成类**：`page-generator`（开发层页面生成，输入须为 SRS）、`frontend-design`（定制前端界面）、`vibepm-web-generator`（Web 原型脚手架）、`vibepm-app-generator`（App 原型脚手架）、`screenshot-to-prototype`（截图还原原型）、`prototype-list`（需求→功能与信息架构）
-- **原型标注与协作类**：`annotation`（视觉标注，输入须为 SRS）、`prototype-annotation`（标注替代 PRD）、`prototype-comments`（批注驱动微调）、`handle-comments`（Commentary 批注）、`write-design-notes`（设计说明）、`canvas-workspace`（画布工作区）、`explore-options`（多方案比稿）
-- **设计系统类**：`search-design-system`（设计系统检索）、`build-design-system`（主题构建）
-- **设计素材类**：`ui-design-image`（UI 设计图）、`ui-image-generation`（位图素材）、`vibepm-style-extractor`（风格 token 提取）
-- **产品管理类**：`brainstorming`（需求探讨前置）、`requirements-exploration`（需求探索，仅显式触发）、`req-doc`（SRS 生成维护，研发交付主规格）、`prd-writer`（PRD 写作）、`write-prd`（聚合 PRD）、`plan-prds`（PRD 规划）、`prototype-to-prd`（逆向 PRD，配合 prd-writer）、`feasibility-report`（可研）、`feature-list`（功能清单）、`hld-design`（概要设计）、`lld-design`（详细设计）、`delivery-plan`（交付链路）、`pm-product-pipeline`（全流程编排）、`pm-feature-prioritization`（优先级排序）、`pm-roadmap`（路线图）、`pm-sprint-planning`（迭代规划）、`pm-test-cases`（测试用例）、`pm-operation-manual`（操作手册）、`pm-release-notes`（发版说明）
-- **用户研究类**：`pm-user-persona`（用户画像）、`pm-user-interview`（用户访谈）、`pm-market-research`（市场调研）
-- **数据分析类**：`pm-okr-designer`（OKR/KPI）、`pm-product-metrics`（产品数据分析）、`pm-stakeholder-report`（汇报材料）
-- **开发辅助类**：`diagram-generator`（Markdown 插图图表）、`drawio-generator`（draw.io 源文件）、`systematic-debugging`（系统化调试）、`test-driven-development`（TDD）、`verification-before-completion`（完成前验证）、`finishing-branch`（分支收尾）、`slides`（HTML 演示文稿）
-- **扩展工具类**：`skill-creator`（创建/更新自定义技能）
+技能文件清单（52 个）见 `.agents/skills/` 目录；触发条件一律以预加载 description 为准，本文件不再逐项罗列。易混技能的冲突裁决见上表「同类技能裁决速查」，需求文档三体系走下一章专章路由。
+
 ---
 
 ## 需求文档技能路由（req-doc / prd-writer / prototype-to-prd）
