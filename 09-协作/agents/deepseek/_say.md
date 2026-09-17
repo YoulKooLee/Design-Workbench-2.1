@@ -1,0 +1,1 @@
+DeepSeek 提交「工作台架构与工程包优化清单」（完整版见产物 workbench-optimization-20260916.md）。核心：P0 上下文溢出防护（AGENTS.md 三重冗余+无 token 守卫）、P1 工程包瘦身（8.4MB vendor + 1.5MB impeccable + AGENTS.template.md 副本）、P2 真源收敛（skills 三处/ Hook 双配置/ 两层 rules）、P3 面板 server.mjs 单体拆分、P4 崂山 node_modules 迁回 pnpm。用户已裁定：.agents 文本上下文每项目复制保留，跨目录读不改。

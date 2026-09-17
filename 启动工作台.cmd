@@ -23,7 +23,11 @@ if not defined NODE (
   pause
   exit /b 1
 )
+
 echo [OK] 使用 Node: %NODE%
+
+REM 0) 编码自愈：所有脚本统一 UTF-8 BOM（本机代码页 65001，防 GBK 乱码）
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp009-协作\messages\tools\编码体检.ps1" -silent >nul 2>&1
 REM 1b) 校验 Node 架构（arm64 仅提示不阻断）
 set "ARCHF=%TEMP%\axhub-node-arch.txt"
 "%NODE%" -p "process.arch" > "%ARCHF%" 2>nul

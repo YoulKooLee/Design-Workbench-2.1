@@ -1,4 +1,4 @@
-# msg.ps1 — 多智能体消息 CLI（PowerShell 薄封装，核心逻辑在 msg-cli.mjs）
+﻿# msg.ps1 — 多智能体消息 CLI（PowerShell 薄封装，核心逻辑在 msg-cli.mjs）
 #
 # 用法：
 #   .\msg.ps1 check --who codebuddy
