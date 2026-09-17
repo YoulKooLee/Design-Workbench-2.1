@@ -570,7 +570,9 @@ function isAdminProject(dir) {
   try {
     const flag = path.join(dir, '.axhub', 'framework');
     if (fs.existsSync(flag)) {
-      return fs.readFileSync(flag, 'utf8').trim() === 'admin';
+      const v = fs.readFileSync(flag, 'utf8').trim();
+      // admin = 旧 vibepm-admin 资源包（Vue 工程）；admin-static = 标准产品框架（demo-agent 静态母版）
+      if (v === 'admin' || v === 'admin-static') return true;
     }
     const pkg = path.join(dir, 'package.json');
     if (fs.existsSync(pkg) && fs.existsSync(path.join(dir, 'index.html')) && !fs.existsSync(path.join(dir, 'src', 'prototypes'))) {
@@ -579,6 +581,13 @@ function isAdminProject(dir) {
     }
   } catch { /* ignore */ }
   return false;
+}
+// 标准产品框架（demo-agent 静态母版画廊）判定：.axhub/framework == 'admin-static'
+function isAdminStaticProject(dir) {
+  try {
+    const flag = path.join(dir, '.axhub', 'framework');
+    return fs.existsSync(flag) && fs.readFileSync(flag, 'utf8').trim() === 'admin-static';
+  } catch { return false; }
 }
 // 递归扫描项目（支持任意层级嵌套，如 01-项目/健康档案、01-项目/Digital Twin/数字孪生）
 function collectProjects(dir, prefix, out, depth) {
@@ -1088,16 +1097,50 @@ const server = http.createServer(async (req, res) => {
     fs.mkdirSync(projectsRoot, { recursive: true });
     const dst = path.join(projectsRoot, projName);
     if (fs.existsSync(dst)) return sendError(res, `目录已存在：${projName}`);
-    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '03-组件库', 'vibepm-admin模板');
-    if (isAdmin && !fs.existsSync(ADMIN_TEMPLATE_DIR)) return sendError(res, 'admin 框架模板不可用：缺少 03-组件库\\vibepm-admin模板');
+    // 标准产品框架模板 = demo-agent 静态母版（03-组件库/frame：gallery.html + admin/ + web/fonts）
+    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '03-组件库', 'frame');
+    if (isAdmin && !fs.existsSync(path.join(ADMIN_TEMPLATE_DIR, 'gallery.html'))) return sendError(res, '标准产品框架模板不可用：缺少 03-组件库\\frame\\gallery.html');
     if (!isAdmin && !fs.existsSync(TEMPLATE_DIR)) return sendError(res, '模板目录不存在');
     if (isMakeTpl) {
       const mtRoot = path.join(MAKE_TEMPLATES_DIR, 'templates', makeTplId);
       if (!fs.existsSync(mtRoot)) return sendError(res, `Make 页面模板不存在：${makeTplId}`);
     }
     try {
-      // admin 框架：仅复制骨架的 admin/（Vue 管理后台工程），项目根即 admin 工程
-      const copyRoot = isAdmin ? ADMIN_TEMPLATE_DIR : TEMPLATE_DIR;
+      if (isAdmin) {
+        // 标准产品框架：拷贝 demo-agent 静态母版（admin/ + gallery.html + web/fonts），保持画廊相对引用结构
+        fs.mkdirSync(dst, { recursive: true });
+        fs.cpSync(path.join(ADMIN_TEMPLATE_DIR, 'admin'), path.join(dst, 'admin'), {
+          recursive: true,
+          filter: (src) => {
+            const lp = src.toLowerCase();
+            if (lp.includes('node_modules')) return false;
+            return path.basename(lp) !== '.git';
+          },
+        });
+        fs.copyFileSync(path.join(ADMIN_TEMPLATE_DIR, 'gallery.html'), path.join(dst, 'index.html'));
+        // 画廊样式引用 ./web/fonts/inter.css，保留字体路径（避免缺字体 fallback）
+        const webFonts = path.join(ADMIN_TEMPLATE_DIR, 'web', 'fonts');
+        if (fs.existsSync(webFonts)) {
+          const wfDest = path.join(dst, 'web', 'fonts');
+          fs.mkdirSync(wfDest, { recursive: true });
+          for (const fe of fs.readdirSync(webFonts, { withFileTypes: true })) {
+            const sf = path.join(webFonts, fe.name);
+            if (fe.isDirectory()) fs.cpSync(sf, path.join(wfDest, fe.name), { recursive: true });
+            else fs.copyFileSync(sf, path.join(wfDest, fe.name));
+          }
+        }
+        // 不写 make client.json（非 make 工程）；写 framework 标记（标准产品框架静态母版）
+        try {
+          fs.mkdirSync(path.join(dst, '.axhub'), { recursive: true });
+          fs.writeFileSync(path.join(dst, '.axhub', 'framework'), 'admin-static', 'utf8');
+        } catch { /* ignore */ }
+        const ctx0 = readWorkspaceCtx();
+        const ctxN = upsertProject(ctx0, `01-项目/${projName}`, 'active');
+        writeWorkspaceCtx(ctxN);
+        return send(res, 200, { ok: true, msg: `项目已创建：${projName}（标准产品框架 · 静态母版画廊，打开 index.html 预览）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin-static' });
+      }
+      // make 原型工程：整体拷贝 _project-template 骨架
+      const copyRoot = TEMPLATE_DIR;
       fs.cpSync(copyRoot, dst, {
         recursive: true,
         filter: (src) => {
@@ -1109,28 +1152,6 @@ const server = http.createServer(async (req, res) => {
           return path.basename(lp) !== '.git';
         },
       });
-      if (isAdmin) {
-        // admin 框架：不写 make client.json（非 make 工程），只登记上下文；写 framework 标记（资源包本体）
-        try {
-          fs.mkdirSync(path.join(dst, '.axhub'), { recursive: true });
-          fs.writeFileSync(path.join(dst, '.axhub', 'framework'), 'admin', 'utf8');
-        } catch { /* ignore */ }
-        // admin 端口池：创建时分配唯一 VITE_PORT（3006 起避开已监听端口），写回项目 .env 并登记上下文，防多 admin 项目端口冲突
-        const adminPort = await allocAdminPort();
-        if (adminPort) {
-          const envFile = path.join(dst, '.env');
-          try {
-            let envTxt = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf8') : '';
-            if (/VITE_PORT\s*=/.test(envTxt)) envTxt = envTxt.replace(/VITE_PORT\s*=\s*\d+/, `VITE_PORT=${adminPort}`);
-            else envTxt += (envTxt.endsWith('\n') ? '' : '\n') + `VITE_PORT=${adminPort}\n`;
-            fs.writeFileSync(envFile, envTxt, 'utf8');
-          } catch { /* ignore */ }
-        }
-        const ctx0 = readWorkspaceCtx();
-        const ctxN = upsertProject(ctx0, `01-项目/${projName}`, 'active', adminPort ? { vitePort: adminPort } : {});
-        writeWorkspaceCtx(ctxN);
-        return send(res, 200, { ok: true, msg: `项目已创建：${projName}（admin 框架 · Vue 管理后台工程）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin' });
-      }
       // 生成唯一项目身份
       const clientFile = path.join(dst, '.axhub', 'make', 'client.json');
       const client = {
@@ -1269,8 +1290,20 @@ const server = http.createServer(async (req, res) => {
     const dir = safeResolve(relative);
     if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
     if (!fs.existsSync(dir)) return sendError(res, '项目路径不存在');
-    // admin 框架项目：Vue 管理后台工程（vibepm-admin 资源包），走 vite dev，不走 Make（launch-project.ps1 为 Make 专用）
+    // admin 框架项目：标准产品框架（demo-agent 静态母版）直接打开画廊；旧 vibepm-admin 工程走 vite dev
     if (isAdminProject(dir)) {
+      if (isAdminStaticProject(dir)) {
+        // 标准产品框架：静态母版画廊，无需依赖/构建，浏览器直接打开 index.html（file:// 下画廊自动降级为新窗口预览）
+        const logBase = safeName(relative).replace(/[\\/]+/g, '-') || 'project';
+        const logFile = path.join(AXHUB_ROOT, '07-日志', `launch-${logBase}.log`);
+        fs.mkdirSync(path.dirname(logFile), { recursive: true });
+        fs.appendFileSync(logFile, `\n启动 ${relative} [admin-static] @ ${new Date().toISOString()}\n`, 'utf8');
+        const openUrl = 'file:///' + path.join(dir, 'index.html').replace(/\\/g, '/');
+        fs.appendFileSync(logFile, `AXHUB_LAUNCH_STATUS: done\nAXHUB_OPEN_URL: ${openUrl}\n`, 'utf8');
+        const stctx = readWorkspaceCtx();
+        markProjectRunning(stctx, relative);
+        return send(res, 200, { ok: true, msg: '已打开标准产品框架母版画廊（静态预览，无需构建）', openUrl, hasNodeModules: true, framework: 'admin-static' });
+      }
       const logBase = safeName(relative).replace(/[\\/]+/g, '-') || 'project';
       const logFile = path.join(AXHUB_ROOT, '07-日志', `launch-${logBase}.log`);
       fs.mkdirSync(path.dirname(logFile), { recursive: true });
