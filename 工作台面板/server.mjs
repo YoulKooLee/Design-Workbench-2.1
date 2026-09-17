@@ -884,6 +884,18 @@ const server = http.createServer(async (req, res) => {
   const p = url.pathname;
   const method = req.method;
 
+  // CSRF / DNS 重绑定防护：写操作（POST/PUT/DELETE）若携带 Origin 或 Referer，必须指向本机面板；Host 必须为本机
+  // —— 防恶意网页借浏览器向 localhost:7788 发请求触发本地命令执行（面板仅服务本机，无跨域场景）
+  if (method !== 'GET' && method !== 'HEAD' && p.startsWith('/api/')) {
+    const hostOk = /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(req.headers['host'] || '');
+    const okRef = (v) => !v || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(v);
+    if (!hostOk || !okRef(req.headers['origin']) || !okRef(req.headers['referer'])) {
+      res.writeHead(403, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ ok: false, msg: '拒绝非本机来源请求' }));
+      return;
+    }
+  }
+
   // 静态首页
   if (method === 'GET' && (p === '/' || p === '/index.html')) {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });

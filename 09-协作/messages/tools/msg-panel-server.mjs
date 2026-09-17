@@ -329,7 +329,7 @@ const server = http.createServer(async (req, res) => {
         timestamp: ts, type: type || 'question', subject: autoSubject,
         body: content || '', attachments: [], status: 'unread',
         priority: priority || 'normal', thread_id: threadId, reply_to: '',
-        action: '', due_at: '', sender_note: 'user-panel/v2.1',
+        action: '', due_at: '', sender_note: 'user-panel/v2.2',
       };
       const outboxDir = path.join(OUTBOX, 'user');
       fs.mkdirSync(outboxDir, { recursive: true });
@@ -363,7 +363,7 @@ const server = http.createServer(async (req, res) => {
         timestamp: nowUTC(), type: type || 'question', subject: autoSubject,
         body: content, attachments: [], status: 'unread',
         priority: 'normal', thread_id: target.thread_id || '', reply_to,
-        action: '', due_at: '', sender_note: 'user-panel/v2.1',
+        action: '', due_at: '', sender_note: 'user-panel/v2.2',
       };
       const inboxDir = path.join(INBOX, to);
       const outboxDir = path.join(OUTBOX, 'user');

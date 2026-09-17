@@ -128,6 +128,20 @@ try {
   check('safeResolve 拒绝危险字符', /\["`\$&|;<>\(\)\{\}\[\]!\*?\?\]/.test(srv) || srv.includes('SAFE_RESOLVE_MSG'));
 } catch (e) { check('安全守卫检查', false, e.message); }
 
+// 4.7 CSRF / DNS 重绑定防护（WorkBuddy 审查：恶意网页借浏览器触发本地命令）
+console.log('\n[4.7/5] CSRF 防护');
+try {
+  const srv = fs.readFileSync(path.join(ROOT, '工作台面板', 'server.mjs'), 'utf8');
+  const hasGuard = srv.includes('CSRF / DNS 重绑定防护');
+  const hostCheck = /req\.headers\['host'\]/.test(srv) && /localhost|127\.0\.0\.1/.test(srv);
+  const refCheck = /req\.headers\['origin'\]/.test(srv) && /req\.headers\['referer'\]/.test(srv);
+  const writeScope = /method !== 'GET' && method !== 'HEAD'/.test(srv);
+  check('CSRF 防护中间件在位', hasGuard);
+  check('Host 本机校验', hostCheck);
+  check('Origin/Referer 校验', refCheck);
+  check('仅拦写操作（GET 不拦）', writeScope);
+} catch (e) { check('CSRF 防护检查', false, e.message); }
+
 // 5. 共享通信目录（09-协作）
 console.log('\n[5/5] 共享通信目录');
 const colRoot = path.join(ROOT, CFG.collaboration.rootDir);
