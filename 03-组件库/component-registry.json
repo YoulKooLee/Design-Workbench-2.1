@@ -2,13 +2,13 @@
   "schemaVersion": "1.0",
   "registryUpdatedAt": "2026-09-17",
   "maintainer": "豆包",
-  "note": "组件库登记与版本真源（H2/H3）。新增组件必须走标准流程：放样板三件套 → 登记 pages.catalog.json → 若新库更新 frame/index.json → 补 ui-libs 知识 → 本文件登记 → smoke-test 校验。",
+  "note": "组件库登记与版本真源（H2/H3）。03-组件库 已按用途重组：01-补丁源（新建项目自动应用）/ 02-标品框架（标准产品框架 Vue 工程）/ 02-页面模板（原型框架·页面模板，工作台可维护）/ 03-页面组件（原型框架·组件库：Vibe Design Pro + Codebuddy Design，工作台可维护）/ 03-UI风格（提示词 UI 风格知识库）。新增组件必须走标准流程：放样板三件套 → 登记 pages.catalog.json → 若新库更新 index.json → 补 03-UI风格 知识 → 本文件登记 → smoke-test 校验。",
   "ends": [
     {
       "id": "admin",
       "label": "管理后台 · Vibe Design Pro",
       "framework": "arco",
-      "source": "frame/admin",
+      "source": "03-页面组件/Vibe Design Pro/admin",
       "version": "1.1.0",
       "status": "ready",
       "catalog": "_meta/pages.catalog.json",
@@ -32,7 +32,7 @@
       "id": "web",
       "label": "WEB 静态站资源包",
       "framework": null,
-      "source": "frame/web",
+      "source": "03-页面组件/Vibe Design Pro/web",
       "version": "1.0.0",
       "status": "ready",
       "catalog": null,
@@ -43,7 +43,7 @@
       "id": "app",
       "label": "APP 设备壳资源包",
       "framework": null,
-      "source": "frame/app",
+      "source": "03-页面组件/Vibe Design Pro/app",
       "version": "1.0.0",
       "status": "ready",
       "catalog": null,
@@ -105,27 +105,27 @@
     "⑥ （可选）gallery.html 上墙"
   ],
   "componentTemplateLib": {
-    "id": "component-template",
-    "label": "组件模板库（React 原型可直接复用）",
-    "source": "03-组件库/组件模板",
+    "id": "codebuddy-design",
+    "label": "Codebuddy Design（React 原型组件库）",
+    "source": "03-组件库/03-页面组件/Codebuddy Design",
     "framework": "react + tailwind v4",
     "status": "ready",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "updatedAt": "2026-09-17",
     "categories": {
-      "base": "基础：Button/Card/Tag/Badge/Avatar/Typography/Divider/Overlay",
+      "base": "基础：Button/Card/Tag/Badge/Avatar/Typography/Divider/Overlay/Popconfirm",
       "layout": "布局：Layout/PageHeader/Tabs/Breadcrumb/Steps/Toolbar",
-      "form": "表单：FormField/Input/Select/Choice/DatePicker/Upload",
-      "data": "数据展示：DataTable/Pagination/Descriptions/Progress/List/Tree",
-      "feedback": "反馈：Modal/Drawer/Alert/Spin/ResultPage/Message",
-      "business": "业务：KpiRow/FilterBar/TableCard/StatusTag"
+      "form": "表单：FormField/Input/Select/Choice/DatePicker/Upload/Transfer/Cascade/Slider/Suggest/VerificationCode",
+      "data": "数据展示：DataTable/Pagination/Descriptions/Progress/List/Tree/Chart/Timeline/Collapse/Calendar",
+      "feedback": "反馈：Modal/Drawer/Alert/Spin/ResultPage/Message/Notification",
+      "business": "业务：KpiRow/FilterBar/TableCard/StatusTag/Kanban"
     },
     "docs": [
-      "03-组件库/组件模板/README.md",
-      "03-组件库/组件模板/提示词手册.md",
-      "03-组件库/组件模板/选型映射.md"
+      "03-组件库/03-页面组件/Codebuddy Design/README.md",
+      "03-组件库/03-页面组件/Codebuddy Design/提示词手册.md",
+      "03-组件库/03-页面组件/Codebuddy Design/选型映射.md"
     ],
     "registry": "03-组件库/custom-components.json",
-    "note": "2026-09-17 由 CodeBuddy 依用户指派从 vibepm-demo-agent-v1.4 admin 母版组件字典提炼为 React 组件（用时复制，骨架不改）。"
+    "note": "2026-09-17 由 CodeBuddy 依用户指派从 vibepm-demo-agent-v1.4 admin 母版组件字典提炼为 React 组件（用时复制，骨架不改）。第二批（长尾）新增图表/时间线/折叠/日历/穿梭框/级联/树选择/滑块/评分/联想/验证码/看板/气泡确认/通知。"
   }
 }

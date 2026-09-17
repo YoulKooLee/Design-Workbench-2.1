@@ -1,6 +1,0 @@
-import React from "react"
-import { PluginsContent } from "./content"
-
-export function Plugins() {
-  return <PluginsContent />
-}

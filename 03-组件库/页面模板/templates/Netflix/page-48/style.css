@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-/* Safe isolation overrides */
-button, div {
-    -webkit-tap-highlight-color: transparent;
-}

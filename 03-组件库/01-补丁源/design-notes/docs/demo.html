@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>设计说明模块 · 开箱即用 Demo</title>
+<!-- React + Babel 通过 CDN 加载；首次打开需联网。组件本体为 DesignNotesPanel 的无类型 JSX 端口，逻辑与 DesignNotesPanel.tsx 一致。 -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #eef1f6; color: #1f2937; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+  .demo-shell { display: flex; min-height: 100vh; }
+  .demo-left-menu { width: 180px; min-width: 180px; background: #2b6cff; color: #fff; padding: 18px 0; }
+  .demo-left-menu .logo { font-weight: 800; font-size: 14px; padding: 0 18px 16px; letter-spacing: .04em; }
+  .demo-left-menu .item { padding: 10px 18px; font-size: 13px; opacity: .82; cursor: default; }
+  .demo-left-menu .item.on { background: rgba(255,255,255,.16); opacity: 1; font-weight: 700; }
+  .demo-content { flex: 1; padding: 22px; overflow-x: hidden; }
+  .demo-content h1 { font-size: 18px; margin: 0 0 4px; }
+  .demo-content .sub { font-size: 12px; color: #6b7280; margin: 0 0 18px; }
+  .demo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+  .demo-card { background: #fff; border: 1px solid #e5e9f0; border-radius: 10px; padding: 16px; }
+  .demo-card .k { font-size: 12px; color: #6b7280; }
+  .demo-card .v { font-size: 22px; font-weight: 800; margin-top: 6px; }
+  .demo-panel { background: #fff; border: 1px solid #e5e9f0; border-radius: 10px; padding: 16px; margin-bottom: 18px; }
+  .demo-panel .ph { font-weight: 700; font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .demo-panel .ph .dot { width: 8px; height: 8px; border-radius: 50%; background: #2b6cff; }
+  .demo-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .demo-table th, .demo-table td { border: 1px solid #eef1f6; padding: 8px 10px; text-align: left; }
+  .demo-table th { background: #f7f9fc; }
+  .demo-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .demo-form label { font-size: 12px; color: #6b7280; display: block; margin-bottom: 4px; }
+  .demo-form input { width: 100%; padding: 8px 10px; border: 1px solid #d6dde7; border-radius: 6px; font-size: 13px; }
+  .demo-hint { font-size: 12px; color: #6b7280; background: #fffbe6; border: 1px solid #ffe58f; border-radius: 8px; padding: 10px 12px; margin-bottom: 18px; line-height: 1.6; }
+  .demo-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: #16a34a; color: #fff; font-size: 13px; padding: 10px 18px; border-radius: 8px; box-shadow: 0 8px 24px rgba(15,23,42,.25); z-index: 10000; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .demo-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useEffect, useRef, useState } = React;
+
+/* ============================================================
+ * 以下 DesignNotesPanel 为 DesignNotesPanel.tsx 的无类型 JSX 端口，
+ * 逻辑（连线 / 高亮 / 编辑 / 落盘 / 草稿兜底）与源文件完全一致。
+ * 接入正式项目请使用 DesignNotesPanel.tsx（含完整类型）。
+ * ============================================================ */
+const C = {
+  bg: '#f5f7fa', panel: '#ffffff', border: '#e5e9f0', border2: '#d6dde7',
+  hover: '#f0f4fa', active: '#e8f1ff', text: '#1f2937', text2: '#5b6b82',
+  text3: '#8c9bb0', primary: '#2b6cff', primaryHover: '#1a5af0', danger: '#dc2626',
+};
+const Z_MODAL = 1000, Z_CONN = 9999;
+
+function deriveLabel(el, id) {
+  const explicit = el.getAttribute('data-proto-label');
+  if (explicit) return explicit;
+  const titleEl = el.querySelector('h1,h2,h3,h4,.dn-desc-title,[class*="title"]');
+  const t = titleEl?.textContent?.replace(/\s+/g, ' ').trim();
+  if (t) return t.length > 30 ? t.slice(0, 30) + '…' : t;
+  const txt = el.textContent?.replace(/\s+/g, ' ').trim();
+  if (txt) return txt.length > 30 ? txt.slice(0, 30) + '…' : txt;
+  return id;
+}
+
+function DescCard({ m, index, onEdit, onRemove, bindLabel }) {
+  return (
+    <div data-proto-id={m.bind ?? m.id} className="dn-desc">
+      <div className="dn-desc-head">
+        <span className="dn-desc-num">{index + 1}</span>
+        <span className="dn-desc-title">{m.title}</span>
+        {m.bind && (
+          <span className="dn-desc-link" title={'已关联左侧页面模块：' + m.bind}>🔗 {bindLabel ?? m.bind}</span>
+        )}
+        <span className="dn-desc-actions">
+          <button className="dn-desc-edit" title="编辑本模块说明"
+            onClick={(e) => { e.stopPropagation(); onEdit(m, index); }}>✎ 编辑</button>
+          {onRemove && (
+            <button className="dn-desc-del" title="删除本模块"
+              onClick={(e) => { e.stopPropagation(); onRemove(index); }}>✕</button>
+          )}
+        </span>
+      </div>
+      {m.text && <div className="dn-desc-text">{m.text}</div>}
+      {m.list && m.list.length > 0 && (
+        <ul className="dn-desc-list">
+          {m.list.map((it, j) => <li key={j}>{it}</li>)}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function DescModal({ initial, onSave, onClose, bindOptions }) {
+  const [title, setTitle] = useState(initial.title);
+  const [text, setText] = useState(initial.text || '');
+  const [listText, setListText] = useState(initial.list?.join('\n') || '');
+  const [bind, setBind] = useState(initial.bind ?? (initial.id.startsWith('custom-') ? '' : initial.id));
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const handleSave = () => {
+    const list = listText.split('\n').filter((s) => s.trim());
+    onSave({ id: initial.id, title: title.trim() || initial.title, text: text.trim(), list, bind: bind || undefined });
+  };
+
+  return (
+    <div className="dn-modal-mask">
+      <div className="dn-modal">
+        <div className="dn-modal-head">
+          <div className="dn-modal-title">编辑设计说明模块</div>
+          <button className="dn-modal-close" onClick={onClose} title="关闭">✕</button>
+        </div>
+        <div className="dn-modal-body">
+          <div className="dn-modal-field">
+            <div className="dn-modal-label">模块标题</div>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="模块标题" autoFocus />
+          </div>
+          <div className="dn-modal-field">
+            <div className="dn-modal-label">关联左侧页面模块（可选 · 选择后自动生成连线）</div>
+            <select value={bind} onChange={(e) => setBind(e.target.value)}>
+              <option value="">（不关联 · 该模块不显示连线）</option>
+              {(bindOptions || []).map((o) => (
+                <option key={o.id} value={o.id}>{o.label}（{o.id}）</option>
+              ))}
+            </select>
+          </div>
+          <div className="dn-modal-field">
+            <div className="dn-modal-label">说明文本</div>
+            <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="输入该模块的说明文本" style={{ minHeight: 60 }} />
+          </div>
+          <div className="dn-modal-field">
+            <div className="dn-modal-label">要点列表（每行一条，可为空）</div>
+            <textarea value={listText} onChange={(e) => setListText(e.target.value)}
+              placeholder={'示例：\n对接厂商接口 /field\n待厂商补充单位字段'} style={{ minHeight: 240 }} />
+          </div>
+        </div>
+        <div className="dn-modal-foot">
+          <button className="dn-modal-btn ghost" onClick={onClose}>取消</button>
+          <button className="dn-modal-btn primary" onClick={handleSave}>保存修改</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const DescStyle = `
+  .dn-right{width:360px;min-width:360px;background:#fff;border-left:3px solid ${C.primary};padding:16px;overflow-y:auto;max-height:100vh;position:sticky;top:0}
+  .dn-rd-titlebar{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:2px solid ${C.primary};margin-bottom:12px}
+  .dn-rd-badge{background:${C.primary};color:#fff;font-size:11px;font-weight:700;padding:3px 8px;letter-spacing:.05em}
+  .dn-rd-title{font-size:15px;font-weight:700;color:${C.text}}
+  .dn-rd-hint{font-size:11px;color:${C.text3};margin:0 0 14px;line-height:1.5}
+  .dn-desc{background:#fff;border:2px solid ${C.primary};margin-bottom:12px;padding:12px;transition:background .15s,border-color .15s}
+  .dn-desc-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .dn-desc-num{width:24px;height:24px;background:${C.primary};color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .dn-desc-title{font-size:13px;font-weight:700;color:${C.text};flex:1}
+  .dn-desc-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+  .dn-desc-edit{font-size:11px;color:${C.primary};background:#eef4ff;border:1px solid ${C.primary};border-radius:4;padding:2px 8px;cursor:pointer;opacity:.85;transition:opacity .15s}
+  .dn-desc-edit:hover{opacity:1}
+  .dn-desc-del{font-size:11px;color:${C.text3};background:transparent;border:1px solid transparent;border-radius:4;padding:2px 6px;cursor:pointer}
+  .dn-desc-del:hover{color:${C.danger};border-color:${C.danger};background:#fff}
+  .dn-desc-text{font-size:12px;color:${C.text};line-height:1.6;margin:4px 0 0;white-space:pre-line}
+  .dn-desc-list{list-style:none;padding:0;margin:6px 0 0}
+  .dn-desc-list li{position:relative;padding:2px 0 2px 18px;font-size:12px;line-height:1.6;color:${C.text}}
+  .dn-desc-list li::before{content:'';position:absolute;left:2px;top:10px;width:8px;height:8px;background:${C.primary}}
+  .dn-add-module{width:100%;padding:8px;font-size:12px;color:${C.primary};background:#eef4ff;border:1px dashed ${C.primary};border-radius:6;cursor:pointer;margin-top:4px}
+  .dn-add-module:hover{background:#e3edff}
+  .dn-desc-link{font-size:10px;color:${C.primary};background:#eef4ff;border:1px solid ${C.primary};border-radius:4;padding:1px 6px;white-space:nowrap;flex-shrink:0;margin-left:4px}
+  .dn-modal-field select{width:100%;box-sizing:border-box;font-size:13px;padding:8px 12px;border:1px solid ${C.border2};border-radius:6;background:#fff;font-family:inherit}
+  .dn-modal-field select:focus{outline:none;border-color:${C.primary};box-shadow:0 0 0 3px rgba(43,108,255,.12)}
+  .dn-modal-mask{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.5);z-index:${Z_MODAL};display:flex;align-items:center;justify-content:center;padding:24px}
+  .dn-modal{background:#fff;border-radius:12px;width:min(680px,92vw);max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,23,42,.35);overflow:hidden}
+  .dn-modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid ${C.border}}
+  .dn-modal-title{font-size:15px;font-weight:700;color:${C.text}}
+  .dn-modal-close{font-size:14px;color:${C.text3};background:transparent;border:none;cursor:pointer;padding:2px 6px;border-radius:4}
+  .dn-modal-close:hover{background:#f1f5f9;color:${C.text}}
+  .dn-modal-body{padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+  .dn-modal-field{display:flex;flex-direction:column;gap:6px}
+  .dn-modal-label{font-size:12px;font-weight:600;color:${C.text2}}
+  .dn-modal-field input,.dn-modal-field textarea{width:100%;box-sizing:border-box;font-size:13px;padding:8px 12px;border:1px solid ${C.border2};border-radius:6;font-family:inherit;line-height:1.6;resize:vertical;background:#fff}
+  .dn-modal-field input:focus,.dn-modal-field textarea:focus{outline:none;border-color:${C.primary};box-shadow:0 0 0 3px rgba(43,108,255,.12)}
+  .dn-modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid ${C.border};background:#fafbfc}
+  .dn-modal-btn{font-size:13px;padding:7px 18px;border-radius:6;cursor:pointer;font-weight:500}
+  .dn-modal-btn.primary{background:${C.primary};color:#fff;border:1px solid ${C.primary}}
+  .dn-modal-btn.primary:hover{background:${C.primaryHover}}
+  .dn-modal-btn.ghost{background:#fff;color:${C.text2};border:1px solid ${C.border2}}
+  .dn-modal-btn.ghost:hover{background:#f1f5f9}
+  .dn-desc.active-highlight{background:${C.primary};border-color:${C.primary}}
+  .dn-desc.active-highlight .dn-desc-num{background:#fff;color:${C.primary}}
+  .dn-desc.active-highlight .dn-desc-title,.dn-desc.active-highlight .dn-desc-text,.dn-desc.active-highlight li{color:#fff}
+  [data-proto-id].active-highlight{box-shadow:0 0 0 3px ${C.primary};background:${C.active}}
+  .dn-connections{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:${Z_CONN}}
+  .dn-quick-add{position:fixed;z-index:${Z_CONN + 1};font-size:11px;line-height:1;padding:4px 10px;color:#fff;background:${C.primary};border:none;border-radius:12;box-shadow:0 2px 8px rgba(15,23,42,.25);cursor:pointer;transform:translate(30%,-30%);pointer-events:auto;white-space:nowrap}
+  .dn-quick-add:hover{background:${C.primaryHover}}
+  .dn-connection{opacity:0;transition:opacity .15s ease}
+  .dn-connection.active{opacity:1}
+  .dn-connection-line{fill:none;stroke:${C.primary};stroke-width:2}
+  .dn-connection.active .dn-connection-line{stroke-width:3}
+  .dn-connection-bg{fill:${C.primary}}
+  .dn-connection-label{fill:#fff;font-size:11px;font-weight:700;text-anchor:middle;dominant-baseline:central;font-family:inherit}
+  @media (max-width: 900px){.dn-connections{display:none}}
+`;
+
+function DesignNotesPanel({ modules, pageKey, pageSub, leftContentRef, onSave, title = '设计说明', contentKey }) {
+  const [editing, setEditing] = useState(null);
+  const [localOverride, setLocalOverride] = useState(null);
+  const [saveError, setSaveError] = useState(null);
+  const [bindTargets, setBindTargets] = useState([]);
+  const [quickAddTarget, setQuickAddTarget] = useState(null);
+
+  const storageKey = `dn-notes-${pageKey}-${pageSub ?? ''}-${modules.map((m) => m.id).join(',')}`;
+  const displayModules = localOverride ?? modules;
+
+  useEffect(() => {
+    const saved = localStorage.getItem(storageKey);
+    if (!saved) return;
+    try { const parsed = JSON.parse(saved); if (Array.isArray(parsed)) setLocalOverride(parsed); } catch {}
+    // eslint-disable-next-line
+  }, [storageKey]);
+
+  const persist = (next) => {
+    setLocalOverride(next);
+    setSaveError(null);
+    try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch {}
+    if (!onSave) return;
+    Promise.resolve(onSave(next, { pageKey, pageSub })).then(
+      () => { setSaveError(null); try { localStorage.removeItem(storageKey); } catch {} setLocalOverride(null); },
+      (err) => { console.error('[设计说明落盘失败]', err); setSaveError(err instanceof Error ? err.message : '设计说明保存失败，请重试'); }
+    );
+  };
+
+  const handleSaveModule = (m) => {
+    if (editing) {
+      if (m.bind && displayModules.some((mod, i) => i !== editing.index && (mod.bind ?? mod.id) === m.bind)) m = { ...m, bind: undefined };
+      const next = [...displayModules];
+      if (editing.isNew) next.push(m); else next[editing.index] = m;
+      persist(next);
+    }
+    setEditing(null);
+  };
+
+  const addModule = () => setEditing({ m: { id: `custom-${Date.now()}`, title: '新模块', text: '', list: [] }, index: -1, isNew: true });
+  const addModuleBoundTo = (bindId) => { setEditing({ m: { id: `custom-${Date.now()}`, title: '新模块', text: '', list: [], bind: bindId }, index: -1, isNew: true }); setQuickAddTarget(null); };
+  const removeModule = (index) => persist(displayModules.filter((_, i) => i !== index));
+  const handleReset = () => { try { localStorage.removeItem(storageKey); } catch {} setLocalOverride(null); setSaveError(null); };
+
+  const [activeId, setActiveId] = useState(null);
+  const activeIdRef = useRef(activeId); activeIdRef.current = activeId;
+  const rightRef = useRef(null), svgRef = useRef(null);
+  const connsRef = useRef([]); const quickAddHideTimer = useRef(null);
+
+  useEffect(() => {
+    const left = leftContentRef.current, right = rightRef.current, svg = svgRef.current;
+    if (!left || !right || !svg) return;
+    const indexMap = new Map(displayModules.map((m, i) => [m.bind ?? m.id, i + 1]));
+    const draw = () => {
+      svg.innerHTML = ''; connsRef.current = [];
+      const leftEls = Array.from(left.querySelectorAll('[data-proto-id]'));
+      leftEls.forEach((le) => {
+        const pid = le.getAttribute('data-proto-id');
+        const res = right.querySelectorAll(`.dn-desc[data-proto-id="${CSS.escape(pid)}"]`);
+        if (!res.length) return;
+        const lr = le.getBoundingClientRect();
+        if (!lr.width || !lr.height) return;
+        res.forEach((re, j) => {
+          const rr = re.getBoundingClientRect();
+          if (!rr.width || !rr.height) return;
+          const x1 = lr.right, y1 = lr.top + lr.height / 2, x2 = rr.left, y2 = rr.top + rr.height / 2 + j * 10;
+          const dx = Math.max((x2 - x1) * 0.4, 40);
+          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'dn-connection');
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`);
+          path.setAttribute('class', 'dn-connection-line'); g.appendChild(path);
+          const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2;
+          const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          bg.setAttribute('cx', String(midX)); bg.setAttribute('cy', String(midY)); bg.setAttribute('r', '10'); bg.setAttribute('class', 'dn-connection-bg'); g.appendChild(bg);
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', String(midX)); text.setAttribute('y', String(midY)); text.setAttribute('dy', '0.05em'); text.setAttribute('class', 'dn-connection-label');
+          const num = indexMap.get(pid); text.textContent = num != null ? String(num) : '';
+          g.appendChild(text);
+          const act = activeIdRef.current !== null && String(pid) === String(activeIdRef.current);
+          connsRef.current.push({ pid, g, le, re });
+          if (act) { g.classList.add('active'); le.classList.add('active-highlight'); re.classList.add('active-highlight'); }
+          svg.appendChild(g);
+        });
+      });
+    };
+    draw();
+    const onScroll = () => requestAnimationFrame(draw);
+    left.addEventListener('scroll', onScroll, { passive: true });
+    right.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => { left.removeEventListener('scroll', onScroll); right.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); };
+  }, [displayModules, leftContentRef, contentKey]);
+
+  useEffect(() => {
+    const left = leftContentRef.current; if (!left) { setBindTargets([]); return; }
+    const boundIds = new Set(displayModules.map((m) => m.bind ?? m.id));
+    const seen = new Set(); const opts = [];
+    left.querySelectorAll('[data-proto-id]').forEach((le) => {
+      const id = le.getAttribute('data-proto-id');
+      if (seen.has(id) || boundIds.has(id)) return; seen.add(id); opts.push({ id, label: deriveLabel(le, id) });
+    });
+    setBindTargets(opts);
+  }, [leftContentRef, contentKey, displayModules]);
+
+  useEffect(() => {
+    const left = leftContentRef.current; if (!left) return;
+    const boundIds = new Set(displayModules.map((m) => m.bind ?? m.id));
+    const enter = (e) => { const el = e.currentTarget; const id = el.getAttribute('data-proto-id'); if (boundIds.has(id)) return; if (quickAddHideTimer.current) { clearTimeout(quickAddHideTimer.current); quickAddHideTimer.current = null; } setQuickAddTarget({ id, rect: el.getBoundingClientRect() }); };
+    const leave = () => { if (quickAddHideTimer.current) clearTimeout(quickAddHideTimer.current); quickAddHideTimer.current = setTimeout(() => setQuickAddTarget(null), 1000); };
+    const els = Array.from(left.querySelectorAll('[data-proto-id]'));
+    els.forEach((el) => { el.addEventListener('mouseenter', enter); el.addEventListener('mouseleave', leave); });
+    return () => els.forEach((el) => { el.removeEventListener('mouseenter', enter); el.removeEventListener('mouseleave', leave); });
+  }, [leftContentRef, contentKey, displayModules]);
+
+  useEffect(() => {
+    const hide = () => setQuickAddTarget(null);
+    window.addEventListener('scroll', hide, true); window.addEventListener('resize', hide);
+    return () => { window.removeEventListener('scroll', hide, true); window.removeEventListener('resize', hide); };
+  }, []);
+
+  useEffect(() => {
+    connsRef.current.forEach((c) => {
+      const act = activeId !== null && String(c.pid) === String(activeId);
+      c.g.classList.toggle('active', act); c.le.classList.toggle('active-highlight', act); c.re.classList.toggle('active-highlight', act);
+    });
+  }, [activeId]);
+
+  const handleHover = (e) => { const el = e.target.closest('[data-proto-id]'); if (el) setActiveId(el.getAttribute('data-proto-id')); };
+  const hasOverride = localOverride !== null;
+
+  return (
+    <>
+      <style>{DescStyle}</style>
+      <aside ref={rightRef} className="dn-right" onMouseOver={handleHover} onMouseLeave={() => setActiveId(null)}>
+        <div className="dn-rd-titlebar" style={{ justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span className="dn-rd-badge">DESIGN NOTES</span>
+            <span className="dn-rd-title">{title}</span>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {saveError ? (
+              <span style={{ fontSize: 10, color: C.danger, display: 'flex', alignItems: 'center', gap: 4 }} title={saveError}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: C.danger, display: 'inline-block' }} />⚠ 落盘失败
+              </span>
+            ) : hasOverride ? (
+              <span style={{ fontSize: 10, color: '#b7791f', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#b7791f', display: 'inline-block' }} />本地草稿·待保存
+              </span>
+            ) : null}
+            {hasOverride && onSave && (
+              <button onClick={() => persist(displayModules)} title="将设计说明写入真源（落盘）" style={{ fontSize: 11, padding: '4px 10px', background: C.primary, color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>保存到真源</button>
+            )}
+            <button onClick={handleReset} title="恢复为默认说明内容" style={{ fontSize: 11, padding: '4px 10px', background: '#fff', color: C.text3, border: `1px solid ${C.border}`, borderRadius: 4, cursor: 'pointer' }}>重置</button>
+          </div>
+        </div>
+        <p className="dn-rd-hint">点击下方「+ 添加模块」可为页面任意区域补充设计说明：在弹窗中选择「关联左侧页面模块」即可自动生成连线；悬停模块可高亮对应区域。</p>
+        {displayModules.map((m, i) => (
+          <DescCard key={`${m.id}-${i}`} m={m} index={i}
+            bindLabel={bindTargets.find((t) => t.id === (m.bind ?? m.id))?.label ?? (m.bind ?? m.id)}
+            onEdit={(mod, idx) => setEditing({ m: mod, index: idx })} onRemove={removeModule} />
+        ))}
+        <button className="dn-add-module" onClick={addModule}>+ 添加模块</button>
+      </aside>
+      <svg className="dn-connections" ref={svgRef}></svg>
+      {quickAddTarget && (
+        <button className="dn-quick-add" style={{ left: quickAddTarget.rect.right - 8, top: quickAddTarget.rect.top + 4 }}
+          onMouseEnter={() => { if (quickAddHideTimer.current) { clearTimeout(quickAddHideTimer.current); quickAddHideTimer.current = null; } }}
+          onMouseLeave={() => setQuickAddTarget(null)}
+          onClick={() => addModuleBoundTo(quickAddTarget.id)}>+ 加说明</button>
+      )}
+      {editing && <DescModal initial={editing.m} onSave={handleSaveModule} onClose={() => setEditing(null)} bindOptions={bindTargets} />}
+    </>
+  );
+}
+
+/* ===================== Demo 应用 ===================== */
+const toastRef = { current: null };
+function showToast(msg) {
+  let el = toastRef.current;
+  if (!el) { el = document.createElement('div'); el.className = 'demo-toast'; document.body.appendChild(el); toastRef.current = el; }
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// 模拟落盘适配器（无真实后端）：延迟后 resolve，并把结果打到控制台 + 页面 toast
+function demoSave(next, meta) {
+  return new Promise((res) => {
+    setTimeout(() => { console.log('[demo 模拟落盘] meta=', meta, ' next=', next); showToast('已写入模拟真源（见控制台）'); res(); }, 400);
+  });
+}
+
+const DEMO_MODULES = [
+  { id: 'kpi', title: '核心指标卡', text: '展示当日关键运营指标。', list: ['对接 /metrics 接口', '待厂商补充单位字段'] },
+  { id: 'trend', title: '趋势折线图', bind: 'trend-chart', text: '近 7 日数值走势，支持悬停查看明细。' },
+  { id: 'table', title: '明细数据表', bind: 'data-table', list: ['默认按时间倒序', '支持表头排序'] },
+];
+
+function App() {
+  const leftRef = useRef(null);
+  return (
+    <div className="demo-shell">
+      <div className="demo-left-menu">
+        <div className="logo">结构监测 · Demo</div>
+        <div className="item on">概览看板</div>
+        <div className="item">告警中心</div>
+        <div className="item">设备台账</div>
+        <div className="item">智慧诊断</div>
+      </div>
+      <main className="demo-content" ref={leftRef}>
+        <h1>概览看板</h1>
+        <p className="sub">Demo 页面 · 左侧为可说明区域（带 data-proto-id），右侧为设计说明面板</p>
+        <div className="demo-hint">
+          试试：① 悬停左侧色块 / 右侧卡片 → 对应区域与连线高亮；② 右侧「+ 添加模块」或左侧悬停「+ 加说明」→ 选「关联左侧页面模块」自动连线；③ 编辑保存 → 右下角提示「已写入模拟真源」；④ 刷新页面，未落盘内容由本地草稿恢复。
+        </div>
+        <div className="demo-grid">
+          <div className="demo-card" data-proto-id="kpi" data-proto-label="核心指标">
+            <div className="k">今日在线设备</div><div className="v">1,284</div>
+          </div>
+          <div className="demo-card" data-proto-id="alarm" data-proto-label="告警数">
+            <div className="k">活跃告警</div><div className="v">37</div>
+          </div>
+          <div className="demo-card" data-proto-id="health" data-proto-label="健康度">
+            <div className="k">平均健康度</div><div className="v">86.2</div>
+          </div>
+        </div>
+        <div className="demo-panel" data-proto-id="trend-chart" data-proto-label="趋势折线图">
+          <div className="ph"><span className="dot"></span>趋势折线图</div>
+          <div style={{ height: 160, background: 'linear-gradient(180deg,#eef4ff,#fff)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8c9bb0', fontSize: 12 }}>（图表占位 · 此处为可关联的设计说明区域）</div>
+        </div>
+        <div className="demo-panel" data-proto-id="data-table" data-proto-label="明细数据表">
+          <div className="ph"><span className="dot"></span>明细数据表</div>
+          <table className="demo-table">
+            <thead><tr><th>时间</th><th>测点</th><th>数值</th><th>状态</th></tr></thead>
+            <tbody>
+              <tr><td>09:12</td><td>沉降-01</td><td>2.31 mm</td><td>正常</td></tr>
+              <tr><td>09:08</td><td>倾角-07</td><td>0.42 °</td><td>正常</td></tr>
+              <tr><td>09:01</td><td>应力-03</td><td>18.7 MPa</td><td>预警</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="demo-panel" data-proto-id="filter-form" data-proto-label="筛选表单">
+          <div className="ph"><span className="dot"></span>筛选表单</div>
+          <div className="demo-form">
+            <div><label>起始时间</label><input placeholder="2026-09-01" /></div>
+            <div><label>结束时间</label><input placeholder="2026-09-11" /></div>
+          </div>
+        </div>
+      </main>
+      <DesignNotesPanel modules={DEMO_MODULES} pageKey="demo-dashboard" leftContentRef={leftRef} onSave={demoSave} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

@@ -1,4 +1,0 @@
-Title: Brutalist AI SaaS Landing Page
-Platform: v0
-Source: https://v0.app/templates/brutalist-ai-saas-landing-page-6QYngsI1qTp
-Imported for Axhub Make template library.

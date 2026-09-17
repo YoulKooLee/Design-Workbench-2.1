@@ -1,8 +1,0 @@
-@import "tailwindcss";
-
-/* Zhipu SPA Base Structure */
-html, body {
-    margin: 0;
-    padding: 0;
-    background-color: #F8F9FA;
-}

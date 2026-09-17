@@ -1,0 +1,668 @@
+{
+  "libraryId": "codebuddy-design",
+  "theme": "arco",
+  "version": "1.2.0",
+  "syncedAt": "2026-09-17",
+  "description": "本库 component → 源码文件映射。绘制原型时以本文件为准：按 category/场景选组件，读 prompt 触发复用；路径勿写死到别处。",
+  "reuse": {
+    "default": "copy-library-then-import",
+    "rules": [
+      "把本库整目录复制到工程 src/component-templates/axhub/（不可只拷单个分类，组件间有跨分类引用）",
+      "页面一律 import 自 ../component-templates/axhub，不自造同类控件与样式",
+      "只读状态用 Tag/StatusTag；破坏性操作走 ConfirmModal/Popconfirm；表单字段必须用 FormField 包",
+      "图表必须用 ChartCard 承载标题/单位/统计周期；多系列必须有可点击图例",
+      "视觉改动只改 _kit/theme.css（token 级），不要在组件里写死颜色"
+    ]
+  },
+  "components": {
+    "axhub-base-button": {
+      "label": "Button 按钮",
+      "category": "base",
+      "file": "base/Button.tsx",
+      "exports": [
+        "Button",
+        "ButtonGroup"
+      ],
+      "props": "variant primary|secondary|outline|text|danger|success|warning；size sm|md|lg；loading；icon；ghost；block",
+      "scene": "页面主/次操作、工具栏、表单提交、弹窗底部（主操作放最右）",
+      "prompt": "【组件引用】Button 按钮（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Button.tsx（导出：Button / ButtonGroup）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Button } from '../component-templates/axhub';\n参数：variant primary|secondary|outline|text|danger|success|warning；size sm|md|lg；loading；icon；ghost；block\n场景：页面主/次操作、工具栏、表单提交、弹窗底部（主操作放最右）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-base-card": {
+      "label": "Card 卡片 / SectionCard",
+      "category": "base",
+      "file": "base/Card.tsx",
+      "exports": [
+        "Card",
+        "SectionCard"
+      ],
+      "props": "title；extra；bordered；flush（嵌表格用）；SectionCard 另有 desc",
+      "scene": "页面区块容器、表格/表单外包、看板分区",
+      "prompt": "【组件引用】Card 卡片 / SectionCard（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Card.tsx（导出：Card / SectionCard）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Card } from '../component-templates/axhub';\n参数：title；extra；bordered；flush（嵌表格用）；SectionCard 另有 desc\n场景：页面区块容器、表格/表单外包、看板分区\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-base-tag": {
+      "label": "Tag 标签",
+      "category": "base",
+      "file": "base/Tag.tsx",
+      "exports": [
+        "Tag"
+      ],
+      "props": "color blue|green|orange|red|gray|purple|cyan；closable+onClose；dot",
+      "scene": "状态/分类/属性标识、筛选回显（只读状态不要用 Switch）",
+      "prompt": "【组件引用】Tag 标签（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Tag.tsx（导出：Tag）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Tag } from '../component-templates/axhub';\n参数：color blue|green|orange|red|gray|purple|cyan；closable+onClose；dot\n场景：状态/分类/属性标识、筛选回显（只读状态不要用 Switch）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-base-badge": {
+      "label": "Badge 徽标",
+      "category": "base",
+      "file": "base/Badge.tsx",
+      "exports": [
+        "Badge"
+      ],
+      "props": "status default|processing|success|warning|danger + text；或 count + children 角标",
+      "scene": "表格状态列、通知计数角标",
+      "prompt": "【组件引用】Badge 徽标（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Badge.tsx（导出：Badge）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Badge } from '../component-templates/axhub';\n参数：status default|processing|success|warning|danger + text；或 count + children 角标\n场景：表格状态列、通知计数角标\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-base-avatar": {
+      "label": "Avatar 头像",
+      "category": "base",
+      "file": "base/Avatar.tsx",
+      "exports": [
+        "Avatar",
+        "AvatarGroup"
+      ],
+      "props": "src；name（无图时生成文字头像）；size xs|sm|md|lg；shape circle|square；AvatarGroup max",
+      "scene": "表格负责人列、顶部账号、评论动态、成员管理",
+      "prompt": "【组件引用】Avatar 头像（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Avatar.tsx（导出：Avatar / AvatarGroup）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Avatar } from '../component-templates/axhub';\n参数：src；name（无图时生成文字头像）；size xs|sm|md|lg；shape circle|square；AvatarGroup max\n场景：表格负责人列、顶部账号、评论动态、成员管理\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-base-typography": {
+      "label": "Typography 文本",
+      "category": "base",
+      "file": "base/Typography.tsx",
+      "exports": [
+        "Title",
+        "Text",
+        "Paragraph"
+      ],
+      "props": "Title level 1-5；Text type primary|secondary|success|warning|danger|disabled、bold、ellipsis、code",
+      "scene": "页面/区块标题、表格次要信息、错误文案、编号等宽显示",
+      "prompt": "【组件引用】Typography 文本（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Typography.tsx（导出：Title / Text / Paragraph）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Title } from '../component-templates/axhub';\n参数：Title level 1-5；Text type primary|secondary|success|warning|danger|disabled、bold、ellipsis、code\n场景：页面/区块标题、表格次要信息、错误文案、编号等宽显示\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-base-divider": {
+      "label": "Divider 分割线",
+      "category": "base",
+      "file": "base/Divider.tsx",
+      "exports": [
+        "Divider"
+      ],
+      "props": "direction horizontal|vertical；align left|center|right；可传 children 显示中间文字",
+      "scene": "表单分区之间、详情字段组之间、工具栏按钮组之间",
+      "prompt": "【组件引用】Divider 分割线（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Divider.tsx（导出：Divider）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Divider } from '../component-templates/axhub';\n参数：direction horizontal|vertical；align left|center|right；可传 children 显示中间文字\n场景：表单分区之间、详情字段组之间、工具栏按钮组之间\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-base-overlay": {
+      "label": "Tooltip / Dropdown / Popover 浮层",
+      "category": "base",
+      "file": "base/Overlay.tsx",
+      "exports": [
+        "Tooltip",
+        "Dropdown",
+        "Popover"
+      ],
+      "props": "Tooltip content+placement；Dropdown trigger+items[{key,label,icon,danger,dividerBefore}]+onSelect；Popover content+triggerMode",
+      "scene": "图标按钮释义、表格操作列「更多」、账号菜单、轻量设置面板",
+      "prompt": "【组件引用】Tooltip / Dropdown / Popover 浮层（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Overlay.tsx（导出：Tooltip / Dropdown / Popover）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Tooltip } from '../component-templates/axhub';\n参数：Tooltip content+placement；Dropdown trigger+items[{key,label,icon,danger,dividerBefore}]+onSelect；Popover content+triggerMode\n场景：图标按钮释义、表格操作列「更多」、账号菜单、轻量设置面板\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-layout-grid": {
+      "label": "Space / Row·Col / Grid 排版",
+      "category": "layout",
+      "file": "layout/Layout.tsx",
+      "exports": [
+        "Space",
+        "Row",
+        "Col",
+        "Grid"
+      ],
+      "props": "Space size xs|sm|md|lg|数字、direction、wrap；Col span（24 栅格）；Grid cols 1|2|3|4|6、gap",
+      "scene": "按钮间距、表单多列、卡片等宽网格（禁止用 margin 手工凑间距）",
+      "prompt": "【组件引用】Space / Row·Col / Grid 排版（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/layout/Layout.tsx（导出：Space / Row / Col / Grid）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Space } from '../component-templates/axhub';\n参数：Space size xs|sm|md|lg|数字、direction、wrap；Col span（24 栅格）；Grid cols 1|2|3|4|6、gap\n场景：按钮间距、表单多列、卡片等宽网格（禁止用 margin 手工凑间距）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-layout-page-header": {
+      "label": "PageHeader 页面头",
+      "category": "layout",
+      "file": "layout/PageHeader.tsx",
+      "exports": [
+        "PageHeader"
+      ],
+      "props": "title；desc；breadcrumb；onBack；extra；footer",
+      "scene": "详情页/表单页/复杂列表页顶部（标题+说明+面包屑+操作区）",
+      "prompt": "【组件引用】PageHeader 页面头（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/layout/PageHeader.tsx（导出：PageHeader）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { PageHeader } from '../component-templates/axhub';\n参数：title；desc；breadcrumb；onBack；extra；footer\n场景：详情页/表单页/复杂列表页顶部（标题+说明+面包屑+操作区）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-layout-tabs": {
+      "label": "Tabs 标签页",
+      "category": "layout",
+      "file": "layout/Tabs.tsx",
+      "exports": [
+        "Tabs"
+      ],
+      "props": "items[{key,label,children,disabled}]；defaultActiveKey；type line|card|capsule；centered",
+      "scene": "设置页分组、详情页信息分区、看板视图切换",
+      "prompt": "【组件引用】Tabs 标签页（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/layout/Tabs.tsx（导出：Tabs）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Tabs } from '../component-templates/axhub';\n参数：items[{key,label,children,disabled}]；defaultActiveKey；type line|card|capsule；centered\n场景：设置页分组、详情页信息分区、看板视图切换\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-layout-breadcrumb": {
+      "label": "Breadcrumb 面包屑",
+      "category": "layout",
+      "file": "layout/Breadcrumb.tsx",
+      "exports": [
+        "Breadcrumb"
+      ],
+      "props": "items[{title,onClick,href}]；separator",
+      "scene": "二级及以下页面层级导航（通常放 PageHeader.breadcrumb）",
+      "prompt": "【组件引用】Breadcrumb 面包屑（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/layout/Breadcrumb.tsx（导出：Breadcrumb）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Breadcrumb } from '../component-templates/axhub';\n参数：items[{title,onClick,href}]；separator\n场景：二级及以下页面层级导航（通常放 PageHeader.breadcrumb）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-layout-steps": {
+      "label": "Steps 步骤条",
+      "category": "layout",
+      "file": "layout/Steps.tsx",
+      "exports": [
+        "Steps"
+      ],
+      "props": "items[{title,desc}]；current；direction horizontal|vertical；status process|error",
+      "scene": "分步表单、导入向导、流程进度",
+      "prompt": "【组件引用】Steps 步骤条（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/layout/Steps.tsx（导出：Steps）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Steps } from '../component-templates/axhub';\n参数：items[{title,desc}]；current；direction horizontal|vertical；status process|error\n场景：分步表单、导入向导、流程进度\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-layout-toolbar": {
+      "label": "Toolbar 工具栏",
+      "category": "layout",
+      "file": "layout/Toolbar.tsx",
+      "exports": [
+        "Toolbar"
+      ],
+      "props": "left（主操作）；right（搜索/筛选/刷新）；divider",
+      "scene": "列表页/表格卡片顶部操作条",
+      "prompt": "【组件引用】Toolbar 工具栏（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/layout/Toolbar.tsx（导出：Toolbar）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Toolbar } from '../component-templates/axhub';\n参数：left（主操作）；right（搜索/筛选/刷新）；divider\n场景：列表页/表格卡片顶部操作条\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-field": {
+      "label": "FormField 表单字段容器",
+      "category": "form",
+      "file": "form/FormField.tsx",
+      "exports": [
+        "FormField",
+        "FormRow",
+        "FormActions"
+      ],
+      "props": "FormField label/required/hint/error/horizontal/labelWidth；FormRow cols 1|2|3；FormActions align",
+      "scene": "所有表单与筛选区字段包装（字段一律用它包，校验错误用 error）",
+      "prompt": "【组件引用】FormField 表单字段容器（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/FormField.tsx（导出：FormField / FormRow / FormActions）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { FormField } from '../component-templates/axhub';\n参数：FormField label/required/hint/error/horizontal/labelWidth；FormRow cols 1|2|3；FormActions align\n场景：所有表单与筛选区字段包装（字段一律用它包，校验错误用 error）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-input": {
+      "label": "Input 输入组件组",
+      "category": "form",
+      "file": "form/Input.tsx",
+      "exports": [
+        "Input",
+        "Textarea",
+        "InputNumber",
+        "SearchBar"
+      ],
+      "props": "Input prefix/suffix/allowClear/error；Textarea showCount+maxLength；InputNumber min/max/step/controls；SearchBar onSearch",
+      "scene": "文本输入、备注、数量金额阈值、列表页搜索框",
+      "prompt": "【组件引用】Input 输入组件组（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/Input.tsx（导出：Input / Textarea / InputNumber / SearchBar）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Input } from '../component-templates/axhub';\n参数：Input prefix/suffix/allowClear/error；Textarea showCount+maxLength；InputNumber min/max/step/controls；SearchBar onSearch\n场景：文本输入、备注、数量金额阈值、列表页搜索框\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-select": {
+      "label": "Select 下拉选择",
+      "category": "form",
+      "file": "form/Select.tsx",
+      "exports": [
+        "Select"
+      ],
+      "props": "options[{label,value,disabled}]；mode single|multiple；value/onChange；allowClear；placeholder；error",
+      "scene": "筛选条件（状态/类型）、表单枚举字段",
+      "prompt": "【组件引用】Select 下拉选择（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/Select.tsx（导出：Select）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Select } from '../component-templates/axhub';\n参数：options[{label,value,disabled}]；mode single|multiple；value/onChange；allowClear；placeholder；error\n场景：筛选条件（状态/类型）、表单枚举字段\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-choice": {
+      "label": "RadioGroup / CheckboxGroup / Switch",
+      "category": "form",
+      "file": "form/Choice.tsx",
+      "exports": [
+        "RadioGroup",
+        "CheckboxGroup",
+        "Switch"
+      ],
+      "props": "RadioGroup options/direction/buttonStyle（分段控件）；CheckboxGroup options/selectAll；Switch checked/onChange/size",
+      "scene": "状态选择、类型切换、多条件筛选、启用停用开关（不用于只读状态）",
+      "prompt": "【组件引用】RadioGroup / CheckboxGroup / Switch（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/Choice.tsx（导出：RadioGroup / CheckboxGroup / Switch）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { RadioGroup } from '../component-templates/axhub';\n参数：RadioGroup options/direction/buttonStyle（分段控件）；CheckboxGroup options/selectAll；Switch checked/onChange/size\n场景：状态选择、类型切换、多条件筛选、启用停用开关（不用于只读状态）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-date": {
+      "label": "DatePicker / RangePicker / TimePicker",
+      "category": "form",
+      "file": "form/DatePicker.tsx",
+      "exports": [
+        "DatePicker",
+        "RangePicker",
+        "TimePicker"
+      ],
+      "props": "DatePicker mode date|datetime；RangePicker 默认带近7天/近30天/今年快捷项；TimePicker HH:mm",
+      "scene": "单据日期、统计区间筛选、执行时刻",
+      "prompt": "【组件引用】DatePicker / RangePicker / TimePicker（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/DatePicker.tsx（导出：DatePicker / RangePicker / TimePicker）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { DatePicker } from '../component-templates/axhub';\n参数：DatePicker mode date|datetime；RangePicker 默认带近7天/近30天/今年快捷项；TimePicker HH:mm\n场景：单据日期、统计区间筛选、执行时刻\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-upload": {
+      "label": "Upload 上传",
+      "category": "form",
+      "file": "form/Upload.tsx",
+      "exports": [
+        "Upload",
+        "UploadFile"
+      ],
+      "props": "mode list|drag；accept；files+onChange（父级负责真实上传）；onRemove；maxCount；hint",
+      "scene": "导入 Excel、附件/图片上传、导入向导第一步",
+      "prompt": "【组件引用】Upload 上传（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/Upload.tsx（导出：Upload / UploadFile）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Upload } from '../component-templates/axhub';\n参数：mode list|drag；accept；files+onChange（父级负责真实上传）；onRemove；maxCount；hint\n场景：导入 Excel、附件/图片上传、导入向导第一步\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-table": {
+      "label": "DataTable 数据表格",
+      "category": "data",
+      "file": "data/DataTable.tsx",
+      "exports": [
+        "DataTable",
+        "Column"
+      ],
+      "props": "columns[{title,key,width,align,sortable,render,ellipsis}]；data；rowKey；loading；emptyText；rowSelection；onRowClick；summary",
+      "scene": "所有列表页主表格（状态列用 Tag/StatusTag，操作列 align=\"right\"）；不要手写 table",
+      "prompt": "【组件引用】DataTable 数据表格（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/DataTable.tsx（导出：DataTable / Column）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { DataTable } from '../component-templates/axhub';\n参数：columns[{title,key,width,align,sortable,render,ellipsis}]；data；rowKey；loading；emptyText；rowSelection；onRowClick；summary\n场景：所有列表页主表格（状态列用 Tag/StatusTag，操作列 align=\"right\"）；不要手写 table\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-pagination": {
+      "label": "Pagination 分页",
+      "category": "data",
+      "file": "data/Pagination.tsx",
+      "exports": [
+        "Pagination"
+      ],
+      "props": "current/pageSize/total/onChange(page,pageSize)；pageSizeOptions；showTotal；align",
+      "scene": "表格底部（TableCard 已内置）",
+      "prompt": "【组件引用】Pagination 分页（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/Pagination.tsx（导出：Pagination）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Pagination } from '../component-templates/axhub';\n参数：current/pageSize/total/onChange(page,pageSize)；pageSizeOptions；showTotal；align\n场景：表格底部（TableCard 已内置）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-descriptions": {
+      "label": "Descriptions 描述列表",
+      "category": "data",
+      "file": "data/Descriptions.tsx",
+      "exports": [
+        "Descriptions"
+      ],
+      "props": "items[{label,value,span}]；column 1|2|3|4；bordered；layout horizontal|vertical；labelWidth",
+      "scene": "详情页只读字段区（状态值传 StatusTag）",
+      "prompt": "【组件引用】Descriptions 描述列表（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/Descriptions.tsx（导出：Descriptions）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Descriptions } from '../component-templates/axhub';\n参数：items[{label,value,span}]；column 1|2|3|4；bordered；layout horizontal|vertical；labelWidth\n场景：详情页只读字段区（状态值传 StatusTag）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-progress": {
+      "label": "Progress 进度",
+      "category": "data",
+      "file": "data/Progress.tsx",
+      "exports": [
+        "Progress",
+        "RingProgress",
+        "autoStatus"
+      ],
+      "props": "percent；status 或 autoStatus(percent)；height；RingProgress size/thickness/text",
+      "scene": "任务完成率、导入进度、指标达成率",
+      "prompt": "【组件引用】Progress 进度（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/Progress.tsx（导出：Progress / RingProgress / autoStatus）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Progress } from '../component-templates/axhub';\n参数：percent；status 或 autoStatus(percent)；height；RingProgress size/thickness/text\n场景：任务完成率、导入进度、指标达成率\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-list": {
+      "label": "List 列表",
+      "category": "data",
+      "file": "data/List.tsx",
+      "exports": [
+        "List",
+        "ListItem"
+      ],
+      "props": "ListItem avatar/title/desc/extra/footer/onClick；List bordered/split/empty",
+      "scene": "消息通知、动态流、待办、搜索结果、主从分栏左列表",
+      "prompt": "【组件引用】List 列表（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/List.tsx（导出：List / ListItem）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { List } from '../component-templates/axhub';\n参数：ListItem avatar/title/desc/extra/footer/onClick；List bordered/split/empty\n场景：消息通知、动态流、待办、搜索结果、主从分栏左列表\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-tree": {
+      "label": "Tree 树形导航",
+      "category": "data",
+      "file": "data/Tree.tsx",
+      "exports": [
+        "Tree",
+        "TreeNode"
+      ],
+      "props": "data；selectedKey+onSelect；searchable；defaultExpandAll",
+      "scene": "左树右表、素材库目录、组织/分类导航",
+      "prompt": "【组件引用】Tree 树形导航（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/Tree.tsx（导出：Tree / TreeNode）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Tree } from '../component-templates/axhub';\n参数：data；selectedKey+onSelect；searchable；defaultExpandAll\n场景：左树右表、素材库目录、组织/分类导航\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-feedback-modal": {
+      "label": "Modal 弹窗 / ConfirmModal",
+      "category": "feedback",
+      "file": "feedback/Modal.tsx",
+      "exports": [
+        "Modal",
+        "ConfirmModal"
+      ],
+      "props": "Modal open/onClose/title/width/footer/maskClosable；ConfirmModal danger/content/onOk/loading",
+      "scene": "表单新增编辑、确认操作、详情速览（破坏性操作前必须二次确认）",
+      "prompt": "【组件引用】Modal 弹窗 / ConfirmModal（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/feedback/Modal.tsx（导出：Modal / ConfirmModal）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Modal } from '../component-templates/axhub';\n参数：Modal open/onClose/title/width/footer/maskClosable；ConfirmModal danger/content/onOk/loading\n场景：表单新增编辑、确认操作、详情速览（破坏性操作前必须二次确认）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-feedback-drawer": {
+      "label": "Drawer 抽屉",
+      "category": "feedback",
+      "file": "feedback/Drawer.tsx",
+      "exports": [
+        "Drawer"
+      ],
+      "props": "open/onClose/title/width(默认480)/footer/placement right|left",
+      "scene": "详情速览、编辑表单、筛选/配置面板（保留列表上下文）",
+      "prompt": "【组件引用】Drawer 抽屉（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/feedback/Drawer.tsx（导出：Drawer）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Drawer } from '../component-templates/axhub';\n参数：open/onClose/title/width(默认480)/footer/placement right|left\n场景：详情速览、编辑表单、筛选/配置面板（保留列表上下文）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-feedback-alert": {
+      "label": "Alert 提示条",
+      "category": "feedback",
+      "file": "feedback/Alert.tsx",
+      "exports": [
+        "Alert"
+      ],
+      "props": "type info|success|warning|error；title；closable；action；bordered",
+      "scene": "表单说明、校验失败原因汇总、数据异常/风险提示",
+      "prompt": "【组件引用】Alert 提示条（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/feedback/Alert.tsx（导出：Alert）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Alert } from '../component-templates/axhub';\n参数：type info|success|warning|error；title；closable；action；bordered\n场景：表单说明、校验失败原因汇总、数据异常/风险提示\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-feedback-spin": {
+      "label": "Spin / Skeleton / Empty 加载与空态",
+      "category": "feedback",
+      "file": "feedback/Spin.tsx",
+      "exports": [
+        "Spin",
+        "Skeleton",
+        "Empty"
+      ],
+      "props": "Spin tip/size/fullscreen；Skeleton variant text|card|table|list + rows；Empty desc+action",
+      "scene": "局部加载用 Spin；首次加载占位用 Skeleton；无结果/未配置用 Empty",
+      "prompt": "【组件引用】Spin / Skeleton / Empty 加载与空态（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/feedback/Spin.tsx（导出：Spin / Skeleton / Empty）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Spin } from '../component-templates/axhub';\n参数：Spin tip/size/fullscreen；Skeleton variant text|card|table|list + rows；Empty desc+action\n场景：局部加载用 Spin；首次加载占位用 Skeleton；无结果/未配置用 Empty\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-feedback-result": {
+      "label": "ResultPage 结果页",
+      "category": "feedback",
+      "file": "feedback/ResultPage.tsx",
+      "exports": [
+        "ResultPage"
+      ],
+      "props": "status success|error|warning|waiting|403|404|500；title/desc/actions/extra",
+      "scene": "提交成功、操作失败、审批等待、异常页",
+      "prompt": "【组件引用】ResultPage 结果页（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/feedback/ResultPage.tsx（导出：ResultPage）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { ResultPage } from '../component-templates/axhub';\n参数：status success|error|warning|waiting|403|404|500；title/desc/actions/extra\n场景：提交成功、操作失败、审批等待、异常页\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-feedback-message": {
+      "label": "message 轻提示",
+      "category": "feedback",
+      "file": "feedback/Message.tsx",
+      "exports": [
+        "message",
+        "MessageHost"
+      ],
+      "props": "根组件挂 <MessageHost />；调用 message.success/error/warning/info",
+      "scene": "保存/复制/校验结果的轻量反馈（需确认时用 ConfirmModal）",
+      "prompt": "【组件引用】message 轻提示（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/feedback/Message.tsx（导出：message / MessageHost）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { message } from '../component-templates/axhub';\n参数：根组件挂 <MessageHost />；调用 message.success/error/warning/info\n场景：保存/复制/校验结果的轻量反馈（需确认时用 ConfirmModal）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-business-kpi": {
+      "label": "StatCard / KpiRow 指标卡",
+      "category": "business",
+      "file": "business/KpiRow.tsx",
+      "exports": [
+        "StatCard",
+        "KpiRow"
+      ],
+      "props": "StatCard label/value/trend/trendUp/trendLabel/icon/tone/footer；KpiRow cols 2|3|4|6",
+      "scene": "数据概览/看板顶部 KPI 区",
+      "prompt": "【组件引用】StatCard / KpiRow 指标卡（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/business/KpiRow.tsx（导出：StatCard / KpiRow）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { StatCard } from '../component-templates/axhub';\n参数：StatCard label/value/trend/trendUp/trendLabel/icon/tone/footer；KpiRow cols 2|3|4|6\n场景：数据概览/看板顶部 KPI 区\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-business-filter": {
+      "label": "FilterBar 筛选栏",
+      "category": "business",
+      "file": "business/FilterBar.tsx",
+      "exports": [
+        "FilterBar",
+        "FilterBarInline"
+      ],
+      "props": "onSearch/onReset/columns 2|3|4/collapseAfter/card；FilterBarInline 用于顶部标签筛选",
+      "scene": "列表页/报表页多条件筛选区",
+      "prompt": "【组件引用】FilterBar 筛选栏（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/business/FilterBar.tsx（导出：FilterBar / FilterBarInline）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { FilterBar } from '../component-templates/axhub';\n参数：onSearch/onReset/columns 2|3|4/collapseAfter/card；FilterBarInline 用于顶部标签筛选\n场景：列表页/报表页多条件筛选区\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-business-table-card": {
+      "label": "TableCard 列表页骨架 / DetailCard",
+      "category": "business",
+      "file": "business/TableCard.tsx",
+      "exports": [
+        "TableCard",
+        "DetailCard"
+      ],
+      "props": "title/extra/toolbarLeft/toolbarRight/pagination/empty；DetailCard 用于详情分组",
+      "scene": "CRUD 列表页（卡片+工具栏+表格+分页）一次组装、详情页分组",
+      "prompt": "【组件引用】TableCard 列表页骨架 / DetailCard（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/business/TableCard.tsx（导出：TableCard / DetailCard）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { TableCard } from '../component-templates/axhub';\n参数：title/extra/toolbarLeft/toolbarRight/pagination/empty；DetailCard 用于详情分组\n场景：CRUD 列表页（卡片+工具栏+表格+分页）一次组装、详情页分组\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-business-status-tag": {
+      "label": "StatusTag 状态标签",
+      "category": "business",
+      "file": "business/StatusTag.tsx",
+      "exports": [
+        "StatusTag",
+        "STATUS_PRESETS"
+      ],
+      "props": "value + map；预设 STATUS_PRESETS.enabled/.approval/.task/.health；fallback/passthrough",
+      "scene": "表格状态列、详情页状态字段（集中映射，勿写死颜色 if/else）",
+      "prompt": "【组件引用】StatusTag 状态标签（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/business/StatusTag.tsx（导出：StatusTag / STATUS_PRESETS）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { StatusTag } from '../component-templates/axhub';\n参数：value + map；预设 STATUS_PRESETS.enabled/.approval/.task/.health；fallback/passthrough\n场景：表格状态列、详情页状态字段（集中映射，勿写死颜色 if/else）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-layout-side-menu": {
+      "label": "SideMenu 侧边菜单（规范组件）",
+      "category": "layout",
+      "file": "layout/side-menu/（index.tsx",
+      "exports": [],
+      "props": "title；items=[{key,label,icon?,disabled?,children?}]；defaultSelectedKey；onMenuSelect(key)；onCollapseChange；collapsible(默认true)；width(默认240)；defaultCollapsed",
+      "scene": "原型壳左侧功能目录（数据看板/预警/设备/诊断/报告等模块导航）",
+      "prompt": "【组件引用】SideMenu 侧边菜单（Codebuddy Design 组件库 layout）\n框架：React 18 + Tailwind v4（依赖 lucide-react）\n来源：03-组件库/03-页面组件/Codebuddy Design/layout/side-menu/（或工程 src/common/side-menu/）\n用法：import SideMenu from '../component-templates/axhub/layout/side-menu'（或 './side-menu'）\n参数：title；items=[{key,label,icon?,disabled?,children?}]；defaultSelectedKey；onMenuSelect(key)；onCollapseChange；collapsible(默认true)；width(默认240)；defaultCollapsed\n场景：原型壳左侧功能目录（数据看板/预警/设备/诊断/报告等模块导航）\n规则：二级 sub 用页内 Tab 不进菜单；选中态随 current 同步；折叠按钮组件自带。"
+    },
+    "axhub-data-chart": {
+      "label": "Chart 图表（折线/柱状/饼环/迷你趋势/图表卡片）",
+      "category": "data",
+      "file": "data/Chart.tsx",
+      "exports": [
+        "LineChart",
+        "AreaChart",
+        "BarChart",
+        "PieChart",
+        "DonutChart",
+        "Sparkline",
+        "ChartCard"
+      ],
+      "props": "LineChart/AreaChart：series[{name,data:[{label,value}],color}] 或 data+labels、height、area、smooth、dots、grid、axis、format；BarChart：stacked、barRatio；PieChart：data[{name,value,color}]、innerRadius、legendPosition；Sparkline：data、color、area；ChartCard：title/unit/desc/period/onPeriodChange/extra",
+      "scene": "所有图表场景。必须用 ChartCard 承载标题与单位（标题在图表区顶部、单位紧邻标题下方加粗主色、统计周期单选在标题旁）；多系列图例可点击切换显隐；禁止在图内塞「X轴·近XX小时级·Y轴单位」串词",
+      "prompt": "【组件引用】Chart 图表（折线/柱状/饼环/迷你趋势/图表卡片）（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/Chart.tsx（导出：LineChart / AreaChart / BarChart / PieChart / DonutChart / Sparkline / ChartCard）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { LineChart } from '../component-templates/axhub';\n参数：LineChart/AreaChart：series[{name,data:[{label,value}],color}] 或 data+labels、height、area、smooth、dots、grid、axis、format；BarChart：stacked、barRatio；PieChart：data[{name,value,color}]、innerRadius、legendPosition；Sparkline：data、color、area；ChartCard：title/unit/desc/period/onPeriodChange/extra\n场景：所有图表场景。必须用 ChartCard 承载标题与单位（标题在图表区顶部、单位紧邻标题下方加粗主色、统计周期单选在标题旁）；多系列图例可点击切换显隐；禁止在图内塞「X轴·近XX小时级·Y轴单位」串词\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-timeline": {
+      "label": "Timeline 时间线",
+      "category": "data",
+      "file": "data/Timeline.tsx",
+      "exports": [
+        "Timeline"
+      ],
+      "props": "items[{time,title,desc,color:blue|green|orange|red|gray,icon}]；mode left|right；line",
+      "scene": "操作日志、审批流程、运维变更、项目里程碑（最新节点放最上，颜色表达结果）",
+      "prompt": "【组件引用】Timeline 时间线（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/Timeline.tsx（导出：Timeline）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Timeline } from '../component-templates/axhub';\n参数：items[{time,title,desc,color:blue|green|orange|red|gray,icon}]；mode left|right；line\n场景：操作日志、审批流程、运维变更、项目里程碑（最新节点放最上，颜色表达结果）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-collapse": {
+      "label": "Collapse 折叠面板",
+      "category": "data",
+      "file": "data/Collapse.tsx",
+      "exports": [
+        "Collapse"
+      ],
+      "props": "items[{key,title,extra,children,disabled}]；defaultActiveKeys；accordion；ghost；onChange",
+      "scene": "详情页分区（信息/配置/日志）、FAQ、筛选项分组；主信息默认展开",
+      "prompt": "【组件引用】Collapse 折叠面板（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/Collapse.tsx（导出：Collapse）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Collapse } from '../component-templates/axhub';\n参数：items[{key,title,extra,children,disabled}]；defaultActiveKeys；accordion；ghost；onChange\n场景：详情页分区（信息/配置/日志）、FAQ、筛选项分组；主信息默认展开\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-data-calendar": {
+      "label": "Calendar 日历",
+      "category": "data",
+      "file": "data/Calendar.tsx",
+      "exports": [
+        "Calendar"
+      ],
+      "props": "value(YYYY-MM-DD)、onChange、marks{日期: dot|success|warning|danger|{type,text}}、renderCell",
+      "scene": "排期、值班表、活动日历、运维变更窗口",
+      "prompt": "【组件引用】Calendar 日历（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/data/Calendar.tsx（导出：Calendar）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Calendar } from '../component-templates/axhub';\n参数：value(YYYY-MM-DD)、onChange、marks{日期: dot|success|warning|danger|{type,text}}、renderCell\n场景：排期、值班表、活动日历、运维变更窗口\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-transfer": {
+      "label": "Transfer 穿梭框",
+      "category": "form",
+      "file": "form/Transfer.tsx",
+      "exports": [
+        "Transfer"
+      ],
+      "props": "dataSource[{key,label,group,disabled}]；targetKeys、onChange；titles；height；searchable；render",
+      "scene": "权限/角色分配、字段显隐选择、批量加入成员",
+      "prompt": "【组件引用】Transfer 穿梭框（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/Transfer.tsx（导出：Transfer）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Transfer } from '../component-templates/axhub';\n参数：dataSource[{key,label,group,disabled}]；targetKeys、onChange；titles；height；searchable；render\n场景：权限/角色分配、字段显隐选择、批量加入成员\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-cascade": {
+      "label": "Cascader 级联 / TreeSelect 树选择",
+      "category": "form",
+      "file": "form/Cascade.tsx",
+      "exports": [
+        "Cascader",
+        "TreeSelect"
+      ],
+      "props": "Cascader：options[{value,label,children}]、value 为路径数组、onChange(value,labels)、columnWidth；TreeSelect：data[{key,title,children}]、value/onChange、searchable",
+      "scene": "行政区划、组织层级、多级分类（层级 ≥2 用 Cascader；只需选一个节点用 TreeSelect）",
+      "prompt": "【组件引用】Cascader 级联 / TreeSelect 树选择（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/Cascade.tsx（导出：Cascader / TreeSelect）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Cascader } from '../component-templates/axhub';\n参数：Cascader：options[{value,label,children}]、value 为路径数组、onChange(value,labels)、columnWidth；TreeSelect：data[{key,title,children}]、value/onChange、searchable\n场景：行政区划、组织层级、多级分类（层级 ≥2 用 Cascader；只需选一个节点用 TreeSelect）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-slider": {
+      "label": "Slider 滑块 / Rate 评分",
+      "category": "form",
+      "file": "form/Slider.tsx",
+      "exports": [
+        "Slider",
+        "Rate"
+      ],
+      "props": "Slider：min/max/step/value/onChange/showValue/format/marks；Rate：count/value/onChange/readOnly/showText",
+      "scene": "阈值调节、权重分配（Slider）；满意度、优先级打分（Rate）",
+      "prompt": "【组件引用】Slider 滑块 / Rate 评分（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/Slider.tsx（导出：Slider / Rate）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Slider } from '../component-templates/axhub';\n参数：Slider：min/max/step/value/onChange/showValue/format/marks；Rate：count/value/onChange/readOnly/showText\n场景：阈值调节、权重分配（Slider）；满意度、优先级打分（Rate）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-suggest": {
+      "label": "AutoComplete 联想 / Mention 提及",
+      "category": "form",
+      "file": "form/Suggest.tsx",
+      "exports": [
+        "AutoComplete",
+        "Mention"
+      ],
+      "props": "AutoComplete：options[{value,label}]、value/onChange/onSelect、emptyText；Mention：users[{id,name,desc}]、value/onChange、rows",
+      "scene": "项目名/负责人联想输入（AutoComplete）；评论区 @成员、工单指派（Mention）",
+      "prompt": "【组件引用】AutoComplete 联想 / Mention 提及（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/Suggest.tsx（导出：AutoComplete / Mention）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { AutoComplete } from '../component-templates/axhub';\n参数：AutoComplete：options[{value,label}]、value/onChange/onSelect、emptyText；Mention：users[{id,name,desc}]、value/onChange、rows\n场景：项目名/负责人联想输入（AutoComplete）；评论区 @成员、工单指派（Mention）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-form-verification": {
+      "label": "VerificationCode 验证码 / PasswordInput 密码",
+      "category": "form",
+      "file": "form/VerificationCode.tsx",
+      "exports": [
+        "VerificationCode",
+        "PasswordInput",
+        "passwordStrength"
+      ],
+      "props": "VerificationCode：length/value/onChange/onComplete/cellWidth；PasswordInput：value/onChange/showStrength/autoComplete",
+      "scene": "短信/邮箱验证码、二次校验码（支持整段粘贴）；登录注册改密的密码输入（含强度条）",
+      "prompt": "【组件引用】VerificationCode 验证码 / PasswordInput 密码（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/form/VerificationCode.tsx（导出：VerificationCode / PasswordInput / passwordStrength）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { VerificationCode } from '../component-templates/axhub';\n参数：VerificationCode：length/value/onChange/onComplete/cellWidth；PasswordInput：value/onChange/showStrength/autoComplete\n场景：短信/邮箱验证码、二次校验码（支持整段粘贴）；登录注册改密的密码输入（含强度条）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-base-popconfirm": {
+      "label": "Popconfirm 气泡确认",
+      "category": "base",
+      "file": "base/Popconfirm.tsx",
+      "exports": [
+        "Popconfirm"
+      ],
+      "props": "title/desc/children/onConfirm/onCancel/okText/cancelText/danger/placement/align",
+      "scene": "表格操作列的轻量删除/停用确认（影响面小用 Popconfirm；影响大或需填原因用 ConfirmModal）",
+      "prompt": "【组件引用】Popconfirm 气泡确认（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/base/Popconfirm.tsx（导出：Popconfirm）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Popconfirm } from '../component-templates/axhub';\n参数：title/desc/children/onConfirm/onCancel/okText/cancelText/danger/placement/align\n场景：表格操作列的轻量删除/停用确认（影响面小用 Popconfirm；影响大或需填原因用 ConfirmModal）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-feedback-notification": {
+      "label": "notification 通知",
+      "category": "feedback",
+      "file": "feedback/Notification.tsx",
+      "exports": [
+        "notification",
+        "NotificationHost"
+      ],
+      "props": "根组件挂 <NotificationHost />；notification.success/error/warning/info({title,desc,duration,key})",
+      "scene": "需要标题+描述+可停留的较重反馈：导入结果、批处理完成、后台任务通知（轻量反馈用 message）",
+      "prompt": "【组件引用】notification 通知（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/feedback/Notification.tsx（导出：notification / NotificationHost）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { notification } from '../component-templates/axhub';\n参数：根组件挂 <NotificationHost />；notification.success/error/warning/info({title,desc,duration,key})\n场景：需要标题+描述+可停留的较重反馈：导入结果、批处理完成、后台任务通知（轻量反馈用 message）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    },
+    "axhub-business-kanban": {
+      "label": "Kanban 看板",
+      "category": "business",
+      "file": "business/Kanban.tsx",
+      "exports": [
+        "Kanban"
+      ],
+      "props": "columns[{key,title,color,cards[{id,title,desc,tags,owner,progress,meta}],limit}]；onCardClick；onMove(cardId,from,to)；onAdd；columnWidth",
+      "scene": "任务看板、工单流转、需求池、招聘流程（列=状态；卡片迁移用菜单「移动到」，拖拽由业务接 dnd）",
+      "prompt": "【组件引用】Kanban 看板（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/business/Kanban.tsx（导出：Kanban）\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Kanban } from '../component-templates/axhub';\n参数：columns[{key,title,color,cards[{id,title,desc,tags,owner,progress,meta}],limit}]；onCardClick；onMove(cardId,from,to)；onAdd；columnWidth\n场景：任务看板、工单流转、需求池、招聘流程（列=状态；卡片迁移用菜单「移动到」，拖拽由业务接 dnd）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。"
+    }
+  },
+  "files": [
+    "base/Avatar.tsx",
+    "base/Badge.tsx",
+    "base/Button.tsx",
+    "base/Card.tsx",
+    "base/Divider.tsx",
+    "base/index.ts",
+    "base/Overlay.tsx",
+    "base/Popconfirm.tsx",
+    "base/Tag.tsx",
+    "base/Typography.tsx",
+    "business/FilterBar.tsx",
+    "business/index.ts",
+    "business/Kanban.tsx",
+    "business/KpiRow.tsx",
+    "business/StatusTag.tsx",
+    "business/TableCard.tsx",
+    "data/Calendar.tsx",
+    "data/Chart.tsx",
+    "data/Collapse.tsx",
+    "data/DataTable.tsx",
+    "data/Descriptions.tsx",
+    "data/index.ts",
+    "data/List.tsx",
+    "data/Pagination.tsx",
+    "data/Progress.tsx",
+    "data/Timeline.tsx",
+    "data/Tree.tsx",
+    "feedback/Alert.tsx",
+    "feedback/Drawer.tsx",
+    "feedback/index.ts",
+    "feedback/Message.tsx",
+    "feedback/Modal.tsx",
+    "feedback/Notification.tsx",
+    "feedback/ResultPage.tsx",
+    "feedback/Spin.tsx",
+    "form/Cascade.tsx",
+    "form/Choice.tsx",
+    "form/DatePicker.tsx",
+    "form/FormField.tsx",
+    "form/index.ts",
+    "form/Input.tsx",
+    "form/Select.tsx",
+    "form/Slider.tsx",
+    "form/Suggest.tsx",
+    "form/Transfer.tsx",
+    "form/Upload.tsx",
+    "form/VerificationCode.tsx",
+    "gallery.html",
+    "index.ts",
+    "layout/Breadcrumb.tsx",
+    "layout/index.ts",
+    "layout/Layout.tsx",
+    "layout/PageHeader.tsx",
+    "layout/side-menu/index.tsx",
+    "layout/side-menu/side-menu-utils.ts",
+    "layout/side-menu/spec.md",
+    "layout/side-menu/style.css",
+    "layout/Steps.tsx",
+    "layout/Tabs.tsx",
+    "layout/Toolbar.tsx",
+    "README.md",
+    "_kit/cn.ts",
+    "_kit/theme.css",
+    "提示词手册.md",
+    "选型映射.md"
+  ]
+}

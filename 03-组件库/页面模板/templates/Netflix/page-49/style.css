@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-/* Global safeguards */
-button, div {
-    -webkit-tap-highlight-color: transparent;
-}

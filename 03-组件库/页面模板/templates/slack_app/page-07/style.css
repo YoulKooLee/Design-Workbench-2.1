@@ -1,7 +1,0 @@
-@import "tailwindcss";
-
-@layer utilities {
-  .ios-safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 34px);
-  }
-}

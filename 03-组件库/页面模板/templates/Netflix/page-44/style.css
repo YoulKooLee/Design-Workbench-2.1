@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-/* Scopes */
-button, div {
-    -webkit-tap-highlight-color: transparent;
-}

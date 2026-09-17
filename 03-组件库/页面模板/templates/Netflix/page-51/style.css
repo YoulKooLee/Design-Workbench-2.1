@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-/* Neutralize Webkit native bounds */
-button, div {
-    -webkit-tap-highlight-color: transparent;
-}

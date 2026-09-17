@@ -1,0 +1,22 @@
+{
+  "version": "1.2.0",
+  "description": "页面组件登记表（03-页面组件）。Codebuddy Design 为 React 组件库：按组件粒度组织（base/layout/form/data/feedback/business），以「整目录复制进工程 + import」方式消费，非运行时依赖。",
+  "ends": {
+    "react-proto": {
+      "outputDir": "src/component-templates/axhub",
+      "defaultFramework": "codebuddy-design",
+      "frameworks": {
+        "codebuddy-design": {
+          "path": ".",
+          "theme": "arco",
+          "capability": "source-components",
+          "label": "React 原型 · Codebuddy Design",
+          "status": "ready",
+          "componentCount": 49,
+          "catalog": "_meta/components.catalog.json",
+          "manifest": "_meta/layout.manifest.json"
+        }
+      }
+    }
+  }
+}

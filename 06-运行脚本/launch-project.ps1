@@ -462,6 +462,12 @@ try {
     } else {
         Write-Info 'node_modules 已存在，跳过安装'
     }
+    # ---------- 4.5/8 应用组件库补丁（01-补丁源：组件页签 + 设计说明模块，幂等） ----------
+    $patchScript = Join-Path $RootDir '06-运行脚本\apply-project-patches.mjs'
+    if (Test-Path $patchScript) {
+        $patchOut = & node $patchScript $projDir $RootDir 2>&1
+        Write-Info (($patchOut | Out-String).Trim())
+    }
     $viteJs = Join-Path $nodeModules 'vite\bin\vite.js'
     if (-not (Test-Path $viteJs)) { throw "未找到 Vite ($viteJs)，请先在项目目录手动安装依赖" }
 

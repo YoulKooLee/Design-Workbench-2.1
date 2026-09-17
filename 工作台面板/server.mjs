@@ -32,7 +32,7 @@ const CFG = (() => {
 const PORT = Number(process.env.AXHUB_MANAGER_PORT) || Number(CFG.workbench?.panelPort) || 7788;
 const BIND_HOST = CFG.workbench?.bindHost || '127.0.0.1';
 // Make-Template 页面模板目录（新增项目可选模板；可经 workbench.config.json 的 workbench.makeTemplatesDir 覆盖）
-const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench?.makeTemplatesDir || path.join(AXHUB_ROOT, '03-组件库', '页面模板');
+const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench?.makeTemplatesDir || path.join(AXHUB_ROOT, '03-组件库', '02-页面模板');
 
 // ===== AI 联动上下文 =====
 // 工作台级多项目上下文（供 codebuddy / workbuddy 感知"当前编辑项目 + 全部运行中项目"）
@@ -926,7 +926,7 @@ const server = http.createServer(async (req, res) => {
     if (!['admin', 'web', 'app'].includes(end) || !relFile || relFile.includes('..')) {
       return sendError(res, '非法路径', 400);
     }
-    const base = path.join(AXHUB_ROOT, '03-组件库', 'frame', end);
+    const base = path.join(AXHUB_ROOT, '03-组件库', '03-页面组件', 'Vibe Design Pro', end);
     const fp = path.join(base, relFile);
     if (!fp.startsWith(base) || !fs.existsSync(fp)) return sendError(res, '组件文件不存在', 404);
     const ext = path.extname(fp).toLowerCase();
@@ -1124,9 +1124,9 @@ const server = http.createServer(async (req, res) => {
     fs.mkdirSync(projectsRoot, { recursive: true });
     const dst = path.join(projectsRoot, projName);
     if (fs.existsSync(dst)) return sendError(res, `目录已存在：${projName}`);
-    // 标准产品框架模板 = demo-agent 静态母版（03-组件库/frame：gallery.html + admin/ + web/fonts）
-    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '03-组件库', 'frame');
-    if (isAdmin && !fs.existsSync(path.join(ADMIN_TEMPLATE_DIR, 'gallery.html'))) return sendError(res, '标准产品框架模板不可用：缺少 03-组件库\\frame\\gallery.html');
+    // 标准产品框架模板 = vibepm-admin 工程（03-组件库/02-标品框架/01-页面模板，Vue3+Arco 管理后台）
+    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '03-组件库', '02-标品框架', '01-页面模板');
+    if (isAdmin && !fs.existsSync(path.join(ADMIN_TEMPLATE_DIR, 'package.json'))) return sendError(res, '标准产品框架模板不可用：缺少 03-组件库\\02-标品框架\\01-页面模板\\package.json');
     if (!isAdmin && !fs.existsSync(TEMPLATE_DIR)) return sendError(res, '模板目录不存在');
     if (isMakeTpl) {
       const mtRoot = path.join(MAKE_TEMPLATES_DIR, 'templates', makeTplId);
@@ -1134,9 +1134,8 @@ const server = http.createServer(async (req, res) => {
     }
     try {
       if (isAdmin) {
-        // 标准产品框架：拷贝 demo-agent 静态母版（admin/ + gallery.html + web/fonts），保持画廊相对引用结构
-        fs.mkdirSync(dst, { recursive: true });
-        fs.cpSync(path.join(ADMIN_TEMPLATE_DIR, 'admin'), path.join(dst, 'admin'), {
+        // 标准产品框架：拷贝 vibepm-admin 工程（Vue3+Arco 管理后台，首次启动自动 pnpm install + vite dev）
+        fs.cpSync(ADMIN_TEMPLATE_DIR, dst, {
           recursive: true,
           filter: (src) => {
             const lp = src.toLowerCase();
@@ -1144,27 +1143,15 @@ const server = http.createServer(async (req, res) => {
             return path.basename(lp) !== '.git';
           },
         });
-        fs.copyFileSync(path.join(ADMIN_TEMPLATE_DIR, 'gallery.html'), path.join(dst, 'index.html'));
-        // 画廊样式引用 ./web/fonts/inter.css，保留字体路径（避免缺字体 fallback）
-        const webFonts = path.join(ADMIN_TEMPLATE_DIR, 'web', 'fonts');
-        if (fs.existsSync(webFonts)) {
-          const wfDest = path.join(dst, 'web', 'fonts');
-          fs.mkdirSync(wfDest, { recursive: true });
-          for (const fe of fs.readdirSync(webFonts, { withFileTypes: true })) {
-            const sf = path.join(webFonts, fe.name);
-            if (fe.isDirectory()) fs.cpSync(sf, path.join(wfDest, fe.name), { recursive: true });
-            else fs.copyFileSync(sf, path.join(wfDest, fe.name));
-          }
-        }
-        // 不写 make client.json（非 make 工程）；写 framework 标记（标准产品框架静态母版）
+        // 写 framework 标记（标准产品框架 · Vue 工程）
         try {
           fs.mkdirSync(path.join(dst, '.axhub'), { recursive: true });
-          fs.writeFileSync(path.join(dst, '.axhub', 'framework'), 'admin-static', 'utf8');
+          fs.writeFileSync(path.join(dst, '.axhub', 'framework'), 'admin', 'utf8');
         } catch { /* ignore */ }
         const ctx0 = readWorkspaceCtx();
         const ctxN = upsertProject(ctx0, `01-项目/${projName}`, 'active');
         writeWorkspaceCtx(ctxN);
-        return send(res, 200, { ok: true, msg: `项目已创建：${projName}（标准产品框架 · 静态母版画廊，打开 index.html 预览）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin-static' });
+        return send(res, 200, { ok: true, msg: `项目已创建：${projName}（标准产品框架 · Vue 管理后台工程，启动开发栈时自动安装依赖）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin' });
       }
       // make 原型工程：整体拷贝 _project-template 骨架
       const copyRoot = TEMPLATE_DIR;
@@ -1410,7 +1397,7 @@ const server = http.createServer(async (req, res) => {
     // 组件页签能力由 dist/server/cli.mjs（component-templates 扫描）与 admin bundle（P1-P19）承载，
     // 补丁源 03-组件库/_make-补丁/（维护方豆包维护）。已补丁的工程复制覆盖同内容文件，幂等。
     function applyMakeComponentPatch(dir) {
-      const patchRoot = path.join(AXHUB_ROOT, '03-组件库', '_make-补丁');
+      const patchRoot = path.join(AXHUB_ROOT, '03-组件库', '01-补丁源');
       if (!fs.existsSync(patchRoot)) return { applied: 0, reason: '补丁目录不存在' };
       const mk = path.join(dir, 'node_modules', '@axhub', 'make');
       if (!fs.existsSync(mk)) return { applied: 0, reason: 'node_modules/@axhub/make 不存在' };
@@ -2175,19 +2162,19 @@ const server = http.createServer(async (req, res) => {
     try {
       if (category === 'page') {
         // 页面模板 → 03-组件库/页面模板/templates/<id>/ + templates.json 登记
-        const targetDir = path.join(clRoot, '页面模板', 'templates', base);
+        const targetDir = path.join(clRoot, '02-页面模板', 'templates', base);
         if (fs.existsSync(targetDir)) return sendError(res, `页面模板已存在：${base}`);
         const n = writeFiles(targetDir);
         if (!n) return sendError(res, '没有可写入的文件');
-        const tjPath = path.join(clRoot, '页面模板', 'templates.json');
+        const tjPath = path.join(clRoot, '02-页面模板', 'templates.json');
         let tj = [];
         try { const raw = JSON.parse(fs.readFileSync(tjPath, 'utf8')); tj = Array.isArray(raw) ? raw : (Array.isArray(raw.templates) ? raw.templates : []); } catch { tj = []; }
         tj.push({ id: base, title: name, name: base, description: prompt || `上传的页面模板 ${name}`, source: 'make', coverUrl: `/make-covers/${base}.webp` });
         fs.writeFileSync(tjPath, JSON.stringify(tj, null, 2), 'utf8');
-        return send(res, 200, { ok: true, msg: `页面模板「${name}」已上传（${n} 个文件 → 03-组件库/页面模板/templates/${base}）` });
+        return send(res, 200, { ok: true, msg: `页面模板「${name}」已上传（${n} 个文件 → 03-组件库/02-页面模板/templates/${base}）` });
       }
-      // 组件模板 → 03-组件库/组件模板/<id>/ + custom-components.json 登记（面板展示 + /library/ 预览）
-      const targetDir = path.join(clRoot, '组件模板', base);
+      // 组件模板 → 03-组件库/03-页面组件/Codebuddy Design/<id>/ + custom-components.json 登记（面板展示 + /library/ 预览）
+      const targetDir = path.join(clRoot, '03-页面组件', 'Codebuddy Design', base);
       if (fs.existsSync(targetDir)) return sendError(res, `组件模板已存在：${base}`);
       const n = writeFiles(targetDir);
       if (!n) return sendError(res, '没有可写入的文件');
@@ -2200,15 +2187,15 @@ const server = http.createServer(async (req, res) => {
       const hasIndex = files.some(f => /index\.html?$/i.test((f.path || '').split('/').pop()));
       reg.items.push({ id: base, label: name, category: 'component-template', framework: 'uploaded', notes: prompt || `上传的组件模板 ${name}`, prompt: prompt || `【组件引用】${name}（组件模板库上传）`, previewUrl: hasIndex ? `/library/${base}/index.html` : '', source: 'component-template' });
       fs.writeFileSync(customPath, JSON.stringify(reg, null, 2), 'utf8');
-      return send(res, 200, { ok: true, msg: `组件模板「${name}」已上传（${n} 个文件 → 03-组件库/组件模板/${base}）` });
+      return send(res, 200, { ok: true, msg: `组件模板「${name}」已上传（${n} 个文件 → 03-组件库/03-页面组件/Codebuddy Design/${base}）` });
     } catch (e) {
       return sendError(res, '上传失败：' + e.message, 500);
     }
   }
 
-  // 组件模板静态预览：/library/<name>/<file> → 03-组件库/组件模板/<name>/<file>
+  // 组件模板静态预览：/library/<name>/<file> → 03-组件库/03-页面组件/Codebuddy Design/<name>/<file>
   if (method === 'GET' && p.startsWith('/library/')) {
-    const root = path.join(AXHUB_ROOT, '03-组件库', '组件模板');
+    const root = path.join(AXHUB_ROOT, '03-组件库', '03-页面组件', 'Codebuddy Design');
     const rel = decodeURIComponent(p.slice('/library/'.length)).replace(/\\/g, '/');
     const segs = rel.split('/').filter(s => s && s !== '..');
     if (!segs.length) return sendError(res, '路径无效', 400);
@@ -2231,7 +2218,7 @@ const server = http.createServer(async (req, res) => {
 
   // Frame 母版画廊静态预览：/frame/<rel> → 03-组件库/frame/<rel>（gallery.html 可直接在浏览器预览全部母版样板）
   if (method === 'GET' && p.startsWith('/frame/')) {
-    const root = path.join(AXHUB_ROOT, '03-组件库', 'frame');
+    const root = path.join(AXHUB_ROOT, '03-组件库', '03-页面组件', 'Vibe Design Pro');
     const rel = decodeURIComponent(p.slice('/frame/'.length)).replace(/\\/g, '/');
     const segs = rel.split('/').filter(s => s && s !== '..');
     if (!segs.length) return sendError(res, '路径无效', 400);
