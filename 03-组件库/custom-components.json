@@ -1,7 +1,468 @@
 {
     "schemaVersion":  1,
-    "updatedAt":  "",
+    "updatedAt":  "2026-09-17T02:22:16.414Z",
     "items":  [
-
-              ]
+                  {
+                      "id":  "design-components-button",
+                      "label":  "Button 按钮（design-components）",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/Button.tsx；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】Button 按钮（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/Button.tsx\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：variant/size/loading/icon/ghost\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "design-components-card",
+                      "label":  "Card 卡片（design-components）",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/Card.tsx；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】Card 卡片（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/Card.tsx\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：title/extra/bordered/flush\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "design-components-tag",
+                      "label":  "Tag 标签（design-components）",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/Tag.tsx；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】Tag 标签（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/Tag.tsx\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：color/closable\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "design-components-statcard",
+                      "label":  "StatCard 指标卡（design-components）",
+                      "category":  "data",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/StatCard.tsx；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】StatCard 指标卡（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/StatCard.tsx\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：label/value/trend/tone\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "design-components-datatable",
+                      "label":  "DataTable 表格（design-components）",
+                      "category":  "data",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/DataTable.tsx；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】DataTable 表格（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/DataTable.tsx\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：columns/data/rowKey/loading\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "design-components-formfield",
+                      "label":  "FormField 表单（design-components）",
+                      "category":  "form",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/FormField.tsx；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】FormField 表单（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/FormField.tsx\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：FormField/Input/Select/FormRow\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "design-components-modal",
+                      "label":  "Modal 弹窗（design-components）",
+                      "category":  "feedback",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/Modal.tsx；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】Modal 弹窗（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/Modal.tsx\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：open/onClose/title/footer/width\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "design-components-resultpage",
+                      "label":  "ResultPage 结果页（design-components）",
+                      "category":  "feedback",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/ResultPage.tsx；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】ResultPage 结果页（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/ResultPage.tsx\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：status/title/desc/actions\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "design-components-theme",
+                      "label":  "theme.css 主题（design-components）",
+                      "category":  "theme",
+                      "framework":  "react-tailwind",
+                      "notes":  "早期版本（2026-09-14）。真源：03-组件库/design-components/theme.css；新项目建议改用组件模板库（axhub-*）。",
+                      "prompt":  "【组件引用】theme.css 主题（design-components）\n框架：React + Tailwind v4\n来源：03-组件库/design-components/theme.css\n用法：import { ... } from \u0027../component-templates/Design-components\u0027（项目内已有副本）\n参数：Arco 色板 token\n说明：该组件已被「组件模板库（03-组件库/组件模板）」超集取代，新原型请优先用 axhub-* 条目。",
+                      "previewUrl":  "",
+                      "source":  "design-components"
+                  },
+                  {
+                      "id":  "axhub-base-button",
+                      "label":  "Button 按钮",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/base/Button.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Button 按钮（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/base/Button.tsx（导出：Button / ButtonGroup）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Button } from \u0027../component-templates/axhub\u0027;\n参数：variant primary|secondary|outline|text|danger|success|warning；size sm|md|lg；loading；icon；ghost；block\n场景：页面主/次操作、工具栏、表单提交、弹窗底部（主操作放最右）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-base-button",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-base-card",
+                      "label":  "Card 卡片 / SectionCard",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/base/Card.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Card 卡片 / SectionCard（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/base/Card.tsx（导出：Card / SectionCard）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Card } from \u0027../component-templates/axhub\u0027;\n参数：title；extra；bordered；flush（嵌表格用）；SectionCard 另有 desc\n场景：页面区块容器、表格/表单外包、看板分区\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-base-card",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-base-tag",
+                      "label":  "Tag 标签",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/base/Tag.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Tag 标签（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/base/Tag.tsx（导出：Tag）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Tag } from \u0027../component-templates/axhub\u0027;\n参数：color blue|green|orange|red|gray|purple|cyan；closable+onClose；dot\n场景：状态/分类/属性标识、筛选回显（只读状态不要用 Switch）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-base-tag",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-base-badge",
+                      "label":  "Badge 徽标",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/base/Badge.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Badge 徽标（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/base/Badge.tsx（导出：Badge）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Badge } from \u0027../component-templates/axhub\u0027;\n参数：status default|processing|success|warning|danger + text；或 count + children 角标\n场景：表格状态列、通知计数角标\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-base-badge",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-base-avatar",
+                      "label":  "Avatar 头像",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/base/Avatar.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Avatar 头像（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/base/Avatar.tsx（导出：Avatar / AvatarGroup）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Avatar } from \u0027../component-templates/axhub\u0027;\n参数：src；name（无图时生成文字头像）；size xs|sm|md|lg；shape circle|square；AvatarGroup max\n场景：表格负责人列、顶部账号、评论动态、成员管理\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-base-avatar",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-base-typography",
+                      "label":  "Typography 文本",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/base/Typography.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Typography 文本（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/base/Typography.tsx（导出：Title / Text / Paragraph）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Title } from \u0027../component-templates/axhub\u0027;\n参数：Title level 1-5；Text type primary|secondary|success|warning|danger|disabled、bold、ellipsis、code\n场景：页面/区块标题、表格次要信息、错误文案、编号等宽显示\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-base-typography",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-base-divider",
+                      "label":  "Divider 分割线",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/base/Divider.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Divider 分割线（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/base/Divider.tsx（导出：Divider）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Divider } from \u0027../component-templates/axhub\u0027;\n参数：direction horizontal|vertical；align left|center|right；可传 children 显示中间文字\n场景：表单分区之间、详情字段组之间、工具栏按钮组之间\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-base-divider",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-base-overlay",
+                      "label":  "Tooltip / Dropdown / Popover 浮层",
+                      "category":  "base",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/base/Overlay.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Tooltip / Dropdown / Popover 浮层（组件库 base）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/base/Overlay.tsx（导出：Tooltip / Dropdown / Popover）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Tooltip } from \u0027../component-templates/axhub\u0027;\n参数：Tooltip content+placement；Dropdown trigger+items[{key,label,icon,danger,dividerBefore}]+onSelect；Popover content+triggerMode\n场景：图标按钮释义、表格操作列「更多」、账号菜单、轻量设置面板\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-base-overlay",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-layout-grid",
+                      "label":  "Space / Row·Col / Grid 排版",
+                      "category":  "layout",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/layout/Layout.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Space / Row·Col / Grid 排版（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/layout/Layout.tsx（导出：Space / Row / Col / Grid）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Space } from \u0027../component-templates/axhub\u0027;\n参数：Space size xs|sm|md|lg|数字、direction、wrap；Col span（24 栅格）；Grid cols 1|2|3|4|6、gap\n场景：按钮间距、表单多列、卡片等宽网格（禁止用 margin 手工凑间距）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-layout-grid",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-layout-page-header",
+                      "label":  "PageHeader 页面头",
+                      "category":  "layout",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/layout/PageHeader.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】PageHeader 页面头（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/layout/PageHeader.tsx（导出：PageHeader）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { PageHeader } from \u0027../component-templates/axhub\u0027;\n参数：title；desc；breadcrumb；onBack；extra；footer\n场景：详情页/表单页/复杂列表页顶部（标题+说明+面包屑+操作区）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-layout-page-header",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-layout-tabs",
+                      "label":  "Tabs 标签页",
+                      "category":  "layout",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/layout/Tabs.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Tabs 标签页（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/layout/Tabs.tsx（导出：Tabs）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Tabs } from \u0027../component-templates/axhub\u0027;\n参数：items[{key,label,children,disabled}]；defaultActiveKey；type line|card|capsule；centered\n场景：设置页分组、详情页信息分区、看板视图切换\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-layout-tabs",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-layout-breadcrumb",
+                      "label":  "Breadcrumb 面包屑",
+                      "category":  "layout",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/layout/Breadcrumb.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Breadcrumb 面包屑（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/layout/Breadcrumb.tsx（导出：Breadcrumb）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Breadcrumb } from \u0027../component-templates/axhub\u0027;\n参数：items[{title,onClick,href}]；separator\n场景：二级及以下页面层级导航（通常放 PageHeader.breadcrumb）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-layout-breadcrumb",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-layout-steps",
+                      "label":  "Steps 步骤条",
+                      "category":  "layout",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/layout/Steps.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Steps 步骤条（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/layout/Steps.tsx（导出：Steps）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Steps } from \u0027../component-templates/axhub\u0027;\n参数：items[{title,desc}]；current；direction horizontal|vertical；status process|error\n场景：分步表单、导入向导、流程进度\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-layout-steps",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-layout-toolbar",
+                      "label":  "Toolbar 工具栏",
+                      "category":  "layout",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/layout/Toolbar.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Toolbar 工具栏（组件库 layout）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/layout/Toolbar.tsx（导出：Toolbar）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Toolbar } from \u0027../component-templates/axhub\u0027;\n参数：left（主操作）；right（搜索/筛选/刷新）；divider\n场景：列表页/表格卡片顶部操作条\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-layout-toolbar",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-form-field",
+                      "label":  "FormField 表单字段容器",
+                      "category":  "form",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/form/FormField.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】FormField 表单字段容器（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/form/FormField.tsx（导出：FormField / FormRow / FormActions）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { FormField } from \u0027../component-templates/axhub\u0027;\n参数：FormField label/required/hint/error/horizontal/labelWidth；FormRow cols 1|2|3；FormActions align\n场景：所有表单与筛选区字段包装（字段一律用它包，校验错误用 error）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-form-field",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-form-input",
+                      "label":  "Input 输入组件组",
+                      "category":  "form",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/form/Input.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Input 输入组件组（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/form/Input.tsx（导出：Input / Textarea / InputNumber / SearchBar）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Input } from \u0027../component-templates/axhub\u0027;\n参数：Input prefix/suffix/allowClear/error；Textarea showCount+maxLength；InputNumber min/max/step/controls；SearchBar onSearch\n场景：文本输入、备注、数量金额阈值、列表页搜索框\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-form-input",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-form-select",
+                      "label":  "Select 下拉选择",
+                      "category":  "form",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/form/Select.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Select 下拉选择（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/form/Select.tsx（导出：Select）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Select } from \u0027../component-templates/axhub\u0027;\n参数：options[{label,value,disabled}]；mode single|multiple；value/onChange；allowClear；placeholder；error\n场景：筛选条件（状态/类型）、表单枚举字段\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-form-select",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-form-choice",
+                      "label":  "RadioGroup / CheckboxGroup / Switch",
+                      "category":  "form",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/form/Choice.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】RadioGroup / CheckboxGroup / Switch（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/form/Choice.tsx（导出：RadioGroup / CheckboxGroup / Switch）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { RadioGroup } from \u0027../component-templates/axhub\u0027;\n参数：RadioGroup options/direction/buttonStyle（分段控件）；CheckboxGroup options/selectAll；Switch checked/onChange/size\n场景：状态选择、类型切换、多条件筛选、启用停用开关（不用于只读状态）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-form-choice",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-form-date",
+                      "label":  "DatePicker / RangePicker / TimePicker",
+                      "category":  "form",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/form/DatePicker.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】DatePicker / RangePicker / TimePicker（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/form/DatePicker.tsx（导出：DatePicker / RangePicker / TimePicker）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { DatePicker } from \u0027../component-templates/axhub\u0027;\n参数：DatePicker mode date|datetime；RangePicker 默认带近7天/近30天/今年快捷项；TimePicker HH:mm\n场景：单据日期、统计区间筛选、执行时刻\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-form-date",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-form-upload",
+                      "label":  "Upload 上传",
+                      "category":  "form",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/form/Upload.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Upload 上传（组件库 form）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/form/Upload.tsx（导出：Upload / UploadFile）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Upload } from \u0027../component-templates/axhub\u0027;\n参数：mode list|drag；accept；files+onChange（父级负责真实上传）；onRemove；maxCount；hint\n场景：导入 Excel、附件/图片上传、导入向导第一步\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-form-upload",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-data-table",
+                      "label":  "DataTable 数据表格",
+                      "category":  "data",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/data/DataTable.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】DataTable 数据表格（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/data/DataTable.tsx（导出：DataTable / Column）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { DataTable } from \u0027../component-templates/axhub\u0027;\n参数：columns[{title,key,width,align,sortable,render,ellipsis}]；data；rowKey；loading；emptyText；rowSelection；onRowClick；summary\n场景：所有列表页主表格（状态列用 Tag/StatusTag，操作列 align=\"right\"）；不要手写 table\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-data-table",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-data-pagination",
+                      "label":  "Pagination 分页",
+                      "category":  "data",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/data/Pagination.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Pagination 分页（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/data/Pagination.tsx（导出：Pagination）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Pagination } from \u0027../component-templates/axhub\u0027;\n参数：current/pageSize/total/onChange(page,pageSize)；pageSizeOptions；showTotal；align\n场景：表格底部（TableCard 已内置）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-data-pagination",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-data-descriptions",
+                      "label":  "Descriptions 描述列表",
+                      "category":  "data",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/data/Descriptions.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Descriptions 描述列表（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/data/Descriptions.tsx（导出：Descriptions）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Descriptions } from \u0027../component-templates/axhub\u0027;\n参数：items[{label,value,span}]；column 1|2|3|4；bordered；layout horizontal|vertical；labelWidth\n场景：详情页只读字段区（状态值传 StatusTag）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-data-descriptions",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-data-progress",
+                      "label":  "Progress 进度",
+                      "category":  "data",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/data/Progress.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Progress 进度（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/data/Progress.tsx（导出：Progress / RingProgress / autoStatus）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Progress } from \u0027../component-templates/axhub\u0027;\n参数：percent；status 或 autoStatus(percent)；height；RingProgress size/thickness/text\n场景：任务完成率、导入进度、指标达成率\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-data-progress",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-data-list",
+                      "label":  "List 列表",
+                      "category":  "data",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/data/List.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】List 列表（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/data/List.tsx（导出：List / ListItem）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { List } from \u0027../component-templates/axhub\u0027;\n参数：ListItem avatar/title/desc/extra/footer/onClick；List bordered/split/empty\n场景：消息通知、动态流、待办、搜索结果、主从分栏左列表\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-data-list",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-data-tree",
+                      "label":  "Tree 树形导航",
+                      "category":  "data",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/data/Tree.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Tree 树形导航（组件库 data）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/data/Tree.tsx（导出：Tree / TreeNode）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Tree } from \u0027../component-templates/axhub\u0027;\n参数：data；selectedKey+onSelect；searchable；defaultExpandAll\n场景：左树右表、素材库目录、组织/分类导航\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-data-tree",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-feedback-modal",
+                      "label":  "Modal 弹窗 / ConfirmModal",
+                      "category":  "feedback",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/feedback/Modal.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Modal 弹窗 / ConfirmModal（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/feedback/Modal.tsx（导出：Modal / ConfirmModal）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Modal } from \u0027../component-templates/axhub\u0027;\n参数：Modal open/onClose/title/width/footer/maskClosable；ConfirmModal danger/content/onOk/loading\n场景：表单新增编辑、确认操作、详情速览（破坏性操作前必须二次确认）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-feedback-modal",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-feedback-drawer",
+                      "label":  "Drawer 抽屉",
+                      "category":  "feedback",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/feedback/Drawer.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Drawer 抽屉（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/feedback/Drawer.tsx（导出：Drawer）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Drawer } from \u0027../component-templates/axhub\u0027;\n参数：open/onClose/title/width(默认480)/footer/placement right|left\n场景：详情速览、编辑表单、筛选/配置面板（保留列表上下文）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-feedback-drawer",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-feedback-alert",
+                      "label":  "Alert 提示条",
+                      "category":  "feedback",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/feedback/Alert.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Alert 提示条（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/feedback/Alert.tsx（导出：Alert）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Alert } from \u0027../component-templates/axhub\u0027;\n参数：type info|success|warning|error；title；closable；action；bordered\n场景：表单说明、校验失败原因汇总、数据异常/风险提示\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-feedback-alert",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-feedback-spin",
+                      "label":  "Spin / Skeleton / Empty 加载与空态",
+                      "category":  "feedback",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/feedback/Spin.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】Spin / Skeleton / Empty 加载与空态（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/feedback/Spin.tsx（导出：Spin / Skeleton / Empty）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { Spin } from \u0027../component-templates/axhub\u0027;\n参数：Spin tip/size/fullscreen；Skeleton variant text|card|table|list + rows；Empty desc+action\n场景：局部加载用 Spin；首次加载占位用 Skeleton；无结果/未配置用 Empty\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-feedback-spin",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-feedback-result",
+                      "label":  "ResultPage 结果页",
+                      "category":  "feedback",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/feedback/ResultPage.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】ResultPage 结果页（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/feedback/ResultPage.tsx（导出：ResultPage）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { ResultPage } from \u0027../component-templates/axhub\u0027;\n参数：status success|error|warning|waiting|403|404|500；title/desc/actions/extra\n场景：提交成功、操作失败、审批等待、异常页\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-feedback-result",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-feedback-message",
+                      "label":  "message 轻提示",
+                      "category":  "feedback",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/feedback/Message.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】message 轻提示（组件库 feedback）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/feedback/Message.tsx（导出：message / MessageHost）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { message } from \u0027../component-templates/axhub\u0027;\n参数：根组件挂 \u003cMessageHost /\u003e；调用 message.success/error/warning/info\n场景：保存/复制/校验结果的轻量反馈（需确认时用 ConfirmModal）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-feedback-message",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-business-kpi",
+                      "label":  "StatCard / KpiRow 指标卡",
+                      "category":  "business",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/business/KpiRow.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】StatCard / KpiRow 指标卡（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/business/KpiRow.tsx（导出：StatCard / KpiRow）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { StatCard } from \u0027../component-templates/axhub\u0027;\n参数：StatCard label/value/trend/trendUp/trendLabel/icon/tone/footer；KpiRow cols 2|3|4|6\n场景：数据概览/看板顶部 KPI 区\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-business-kpi",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-business-filter",
+                      "label":  "FilterBar 筛选栏",
+                      "category":  "business",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/business/FilterBar.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】FilterBar 筛选栏（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/business/FilterBar.tsx（导出：FilterBar / FilterBarInline）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { FilterBar } from \u0027../component-templates/axhub\u0027;\n参数：onSearch/onReset/columns 2|3|4/collapseAfter/card；FilterBarInline 用于顶部标签筛选\n场景：列表页/报表页多条件筛选区\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-business-filter",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-business-table-card",
+                      "label":  "TableCard 列表页骨架 / DetailCard",
+                      "category":  "business",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/business/TableCard.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】TableCard 列表页骨架 / DetailCard（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/business/TableCard.tsx（导出：TableCard / DetailCard）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { TableCard } from \u0027../component-templates/axhub\u0027;\n参数：title/extra/toolbarLeft/toolbarRight/pagination/empty；DetailCard 用于详情分组\n场景：CRUD 列表页（卡片+工具栏+表格+分页）一次组装、详情页分组\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-business-table-card",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-business-status-tag",
+                      "label":  "StatusTag 状态标签",
+                      "category":  "business",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/business/StatusTag.tsx；用法见 组件模板/README.md 与 提示词手册.md。",
+                      "prompt":  "【组件引用】StatusTag 状态标签（组件库 business）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/组件模板/business/StatusTag.tsx（导出：StatusTag / STATUS_PRESETS）\n用法：先把「组件模板」整目录复制到工程 src/component-templates/axhub/，然后\n  import { StatusTag } from \u0027../component-templates/axhub\u0027;\n参数：value + map；预设 STATUS_PRESETS.enabled/.approval/.task/.health；fallback/passthrough\n场景：表格状态列、详情页状态字段（集中映射，勿写死颜色 if/else）\n规则：请使用该组件，不要自造同类样式；组件库零第三方依赖（不引 arco/antd）。",
+                      "previewUrl":  "/library/gallery.html#axhub-business-status-tag",
+                      "source":  "component-template"
+                  },
+                  {
+                      "id":  "axhub-layout-side-menu",
+                      "label":  "SideMenu 侧边菜单（规范组件）",
+                      "category":  "layout",
+                      "framework":  "react-tailwind",
+                      "notes":  "真源：03-组件库/组件模板/layout/side-menu/（index.tsx + style.css + spec.md）。原型壳左菜单规范组件：展开 240 / 折叠 64、五态样式、items 契约；sub 不进菜单层级。⚠ 依赖 lucide-react（原型工程均已装 0.562.0）。2026-09-17 由豆包按方案A接入 4 处壳（结构监测/测试/指标管理平台/_project-template），替代私有 SideMenu。",
+                      "prompt":  "【组件引用】SideMenu 侧边菜单（组件模板库 layout）\n框架：React 18 + Tailwind v4（依赖 lucide-react）\n来源：03-组件库/组件模板/layout/side-menu/（或工程 src/common/side-menu/）\n用法：import SideMenu from \u0027../component-templates/axhub/layout/side-menu\u0027（或 \u0027./side-menu\u0027）\n参数：title；items=[{key,label,icon?,disabled?,children?}]；defaultSelectedKey；onMenuSelect(key)；onCollapseChange；collapsible(默认true)；width(默认240)；defaultCollapsed\n场景：原型壳左侧功能目录（数据看板/预警/设备/诊断/报告等模块导航）\n规则：二级 sub 用页内 Tab 不进菜单；选中态随 current 同步；折叠按钮组件自带。",
+                      "previewUrl":  "/library/gallery.html#axhub-layout-side-menu",
+                      "source":  "component-template"
+                  }
+              ],
+    "maintainer":  "豆包（共享目录维护方）",
+    "note":  "组件库登记（面板「组件库」页签数据源）。组件模板库真源：03-组件库/组件模板（React+Tailwind，复制即用）；旧库：03-组件库/design-components。"
 }

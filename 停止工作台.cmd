@@ -1,10 +1,10 @@
 ﻿@echo off
 setlocal enabledelayedexpansion
-title Axhub 工作台停止器
+title 产品设计工作台 停止器
 cd /d "%~dp0"
 
 echo ============================================
-echo   Axhub 产品设计工作台 - 停止脚本
+echo   产品设计工作台 - 停止脚本
 echo ============================================
 echo.
 

@@ -11,6 +11,7 @@
  * 因此「工作台面板」与「导出 HTML（含源码）」读取同一份真源，天然一致。
  */
 import React, { useEffect, useRef, useState } from 'react';
+import SideMenu from './side-menu';
 
 export const NAV: Array<{ key: string; label: string; sub?: string[]; group: 'core' | 'readonly' | 'placeholder' }> = [
   { key: 'dashboard', label: '数据看板', sub: ['最新数据', '历史数据', '趋势分析', '均值/极值'], group: 'core' },
@@ -36,11 +37,6 @@ export function goModule(k: NavKey) {
   window.location.href = '/prototypes/' + k + '/';
 }
 
-export const GROUP_META: Record<string, { title: string; tip: string }> = {
-  core: { title: 'MVP 核心', tip: '已对接厂商接口，必须实现' },
-  readonly: { title: '只读展示', tip: '仅消费接口数据，无写操作' },
-  placeholder: { title: '前端占位', tip: '待厂商提供接口或后续版本规划' },
-};
 
 export const C = {
   bg: '#f5f7fa',
@@ -272,41 +268,6 @@ export function Placeholder({ title, reason, fields }: {
         </div>
       )}
     </div>
-  );
-}
-
-// ============ 左侧功能目录 ============
-function SideMenu({ current, onSelect }: { current: NavKey; onSelect: (k: NavKey) => void }) {
-  return (
-    <nav style={{
-      width: 210, flexShrink: 0, background: C.panel, borderRight: `1px solid ${C.border}`,
-      overflowY: 'auto', boxSizing: 'border-box',
-    }}>
-      <div style={{
-        padding: '18px 16px', borderBottom: `1px solid ${C.border}`,
-        color: C.text, fontSize: 15, fontWeight: 700,
-      }}>
-        结构监测 <span style={{ fontSize: 11, fontWeight: 400, color: C.text3 }}>V1.0</span>
-      </div>
-      {NAV.map((n) => {
-        const active = current === n.key;
-        return (
-          <div key={n.key} onClick={() => onSelect(n.key)} style={{
-            display: 'flex', alignItems: 'center',
-            padding: '11px 16px 11px 20px', cursor: 'pointer', fontSize: 14,
-            color: active ? C.primary : C.text,
-            background: active ? C.active : 'transparent',
-            borderLeft: `3px solid ${active ? C.primary : 'transparent'}`,
-            justifyContent: 'space-between',
-          }}>
-            <span>{n.label}</span>
-            {n.group === 'core' && (
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: C.warnR, display: 'inline-block' }} />
-            )}
-          </div>
-        );
-      })}
-    </nav>
   );
 }
 
@@ -642,6 +603,12 @@ export function StructureMonitorShell({
   children: React.ReactNode;
 }) {
   const navItem = NAV.find((n) => n.key === current)!;
+
+  // 左菜单数据（规范组件 SideMenu 契约：sub 不进菜单层级，二级仍是页内 Tab）
+  const menuItems = React.useMemo(
+    () => NAV.map((n) => ({ key: n.key, label: n.label })),
+    [],
+  );
   const breadcrumb = `工程监测 / 结构监测 / ${navItem.label}`;
 
   // 编辑状态（按单模块弹窗编辑）
@@ -890,7 +857,12 @@ export function StructureMonitorShell({
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: C.bg }}>
       <style>{DescStyle}</style>
-      <SideMenu current={current} onSelect={onSelect} />
+      <SideMenu
+      title="结构监测"
+      items={menuItems}
+      defaultSelectedKey={current}
+      onMenuSelect={(k) => onSelect(k as NavKey)}
+    />
       <main style={{ flex: 1, minWidth: 0, display: 'flex' }}>
         <section ref={leftRef} className="sm-left-content" style={{ position: 'relative', zIndex: Z.content, flex: 1, minWidth: 0, padding: '20px 28px 40px', overflowY: 'auto', maxHeight: '100vh' }} onMouseOver={handleHover} onMouseLeave={() => setActiveId(null)}>
           <div style={{ fontSize: 12, color: C.text3, marginBottom: 8 }}>{breadcrumb}</div>

@@ -1,10 +1,10 @@
 ﻿@echo off
 setlocal enabledelayedexpansion
-title Axhub 工作台启动器
+title 产品设计工作台 启动器
 cd /d "%~dp0"
 
 echo ============================================
-echo   Axhub 产品设计工作台 - 启动脚本
+echo   产品设计工作台 - 启动脚本
 echo ============================================
 echo.
 
