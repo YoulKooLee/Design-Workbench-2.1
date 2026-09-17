@@ -417,7 +417,22 @@ function writeProjectOwner(dir, owner) {
     }
     let txt = fs.readFileSync(pm, 'utf8');
     const re = /(\|\s*owner_agent\s*\|\s*)[A-Za-z0-9_-]*(\s*\|)/;
-    if (!re.test(txt)) return { ok: false, msg: 'project-memory.md 缺少 owner_agent 行，请按协作规范补表头' };
+    if (!re.test(txt)) {
+      // legacy: patch collaboration header instead of erroring
+      const infoBlock =
+        '## 〇、协作信息（v2 新增）\n\n' +
+        '| 字段 | 值 | 说明 |\n' +
+        '|---|---|---|\n' +
+        '| owner_agent |  ' + owner + '| 负责智能体：doubao / codebuddy / workbuddy / deepseek / qwen |\n' +
+        '| collaboration | single | single=单智能体 / pipeline=流水线 / dispatch=路由分诊 |\n' +
+        '| room | （未关联） | 可选：共享目录 `rooms/<项目>-<任务>` |\n' +
+        '| handoff | `handoff.md` | 交接包：进度 / 推理注释 / 产物 / 已知坑（双写：共享目录 + 项目本地） |\n';
+      const m2 = txt.match(/^(## .*)$/m);
+      if (m2) txt = txt.replace(m2[1], infoBlock + '\n' + m2[1]);
+      else txt = txt.replace(/# 项目记忆[\s\S]*?\n/, '$&\n' + infoBlock + '\n');
+      fs.writeFileSync(pm, txt, 'utf8');
+      return { ok: true, patched: true };
+    }
     txt = txt.replace(re, `$1${owner}$2`);
     fs.writeFileSync(pm, txt, 'utf8');
     return { ok: true };
