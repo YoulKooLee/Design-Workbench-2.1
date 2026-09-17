@@ -11,3 +11,4 @@ export * from './Alert';
 export * from './Spin';
 export * from './ResultPage';
 export * from './Message';
+export * from './Notification';

@@ -9,13 +9,9 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps {
+/** Select 通用属性（与 mode 无关的部分） */
+export interface SelectCommonProps {
   options: SelectOption[];
-  /** 受控值（单选 string/number；多选数组） */
-  value?: string | number | Array<string | number> | null;
-  onChange?: (value: string | number | Array<string | number> | null) => void;
-  /** 多选模式 */
-  mode?: 'single' | 'multiple';
   placeholder?: string;
   /** 允许清空，默认 true */
   allowClear?: boolean;
@@ -26,24 +22,52 @@ export interface SelectProps {
 }
 
 /**
+ * Select 属性（**判别联合**，按 mode 收窄值类型）：
+ * - 不传 mode / mode='single'：value 为 `string | number | null`，onChange 直接兼容 `useState` setter
+ * - mode='multiple'：value 为 `Array<string | number>`
+ * @example
+ * const [v, setV] = useState<string | number | null>(null);
+ * <Select value={v} onChange={setV} options={opts} />              // ✅ 无需断言
+ * const [arr, setArr] = useState<Array<string | number>>([]);
+ * <Select mode="multiple" value={arr} onChange={setArr} options={opts} />  // ✅
+ */
+export type SelectProps =
+  | (SelectCommonProps & {
+      mode?: 'single';
+      value?: string | number | null;
+      onChange?: (value: string | number | null) => void;
+    })
+  | (SelectCommonProps & {
+      mode: 'multiple';
+      value?: Array<string | number>;
+      onChange?: (value: Array<string | number>) => void;
+    });
+
+/**
  * Select 下拉选择（对齐母版 a-select）
  * 场景：筛选条件（状态/类型）、表单枚举字段。选项少（≤8）时也可用 Choice 的 Radio 平铺。
  * @example
  * <Select placeholder="请选择状态" options={[{label:'运行中',value:'running'}]} value={v} onChange={setV} />
  * <Select mode="multiple" options={opts} value={arr} onChange={setArr} />
  */
-export function Select({
-  options,
-  value,
-  onChange,
-  mode = 'single',
-  placeholder = '请选择',
-  allowClear = true,
-  disabled,
-  error,
-  size = 'md',
-  className,
-}: SelectProps) {
+export function Select(props: SelectProps) {
+  // 联合类型内部统一按「宽值」处理，对外类型仍按 mode 收窄
+  const {
+    options,
+    placeholder = '请选择',
+    allowClear = true,
+    disabled,
+    error,
+    size = 'md',
+    className,
+    mode = 'single',
+    value,
+    onChange,
+  } = props as SelectCommonProps & {
+    mode?: 'single' | 'multiple';
+    value?: string | number | Array<string | number> | null;
+    onChange?: (value: string | number | Array<string | number> | null) => void;
+  };
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const multiple = mode === 'multiple';
@@ -64,7 +88,7 @@ export function Select({
       const idx = list.indexOf(v);
       if (idx >= 0) list.splice(idx, 1);
       else list.push(v);
-      onChange?.(list.length ? list : null);
+      onChange?.(list);
     } else {
       onChange?.(v);
       setOpen(false);

@@ -11,3 +11,8 @@ export * from './Select';
 export * from './Choice';
 export * from './DatePicker';
 export * from './Upload';
+export * from './Transfer';
+export * from './Cascade';
+export * from './Slider';
+export * from './Suggest';
+export * from './VerificationCode';

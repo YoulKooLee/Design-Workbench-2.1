@@ -9,3 +9,4 @@ export * from './KpiRow';
 export * from './FilterBar';
 export * from './TableCard';
 export * from './StatusTag';
+export * from './Kanban';

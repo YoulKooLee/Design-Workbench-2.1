@@ -19,7 +19,7 @@ export interface Column<T> {
   ellipsis?: boolean;
 }
 
-export interface DataTableProps<T> {
+export interface DataTableProps<T extends object> {
   columns: Column<T>[];
   data: T[];
   /** 行唯一键字段名，默认 id */
@@ -53,7 +53,7 @@ export interface DataTableProps<T> {
  * ];
  * <DataTable columns={columns} data={rows} rowKey="id" loading={loading} />
  */
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   columns,
   data,
   rowKey = 'id',
@@ -67,19 +67,21 @@ export function DataTable<T extends Record<string, unknown>>({
 }: DataTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
+  /** 泛型 T 不强制索引签名（interface 行类型可直接用），取值时统一按 Record 读 */
+  const cell = (record: T, k: string) => (record as Record<string, unknown>)[k];
 
   const sorted = useMemo(() => {
     if (!sortKey) return data;
     return [...data].sort((a, b) => {
-      const av = a[sortKey];
-      const bv = b[sortKey];
+      const av = cell(a, sortKey);
+      const bv = cell(b, sortKey);
       if (av === bv) return 0;
       const cmp = String(av ?? '') > String(bv ?? '') ? 1 : -1;
       return sortAsc ? cmp : -cmp;
     });
   }, [data, sortKey, sortAsc]);
 
-  const allKeys = data.map((r) => r[rowKey] as string | number);
+  const allKeys = data.map((r) => cell(r, rowKey) as string | number);
   const selected = rowSelection?.selectedKeys ?? [];
   const allChecked = allKeys.length > 0 && selected.length === allKeys.length;
 
@@ -156,7 +158,7 @@ export function DataTable<T extends Record<string, unknown>>({
           )}
           {!loading &&
             sorted.map((record, i) => {
-              const key = record[rowKey] as string | number;
+              const key = cell(record, rowKey) as string | number;
               const on = selected.includes(key);
               return (
                 <tr
@@ -175,7 +177,7 @@ export function DataTable<T extends Record<string, unknown>>({
                     </td>
                   )}
                   {columns.map((c) => {
-                    const content = c.render ? c.render(record, i) : (record[c.key] as ReactNode);
+                    const content = c.render ? c.render(record, i) : (cell(record, c.key) as ReactNode);
                     return (
                       <td
                         key={c.key}
