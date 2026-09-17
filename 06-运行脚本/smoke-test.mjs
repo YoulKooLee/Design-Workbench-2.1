@@ -30,12 +30,20 @@ check('停止工作台.cmd 在位', fs.existsSync(path.join(ROOT, '停止工作�
 
 // 2. 配置与组件库 JSON
 console.log('\n[2/5] 配置与组件库');
+const clRoot = path.join(ROOT, CFG.componentLibrary.rootDir);
+const reg = JSON.parse(fs.readFileSync(path.join(clRoot, 'component-registry.json'), 'utf8'));
+const libRootOf = (end) => path.dirname(path.join(clRoot, end.source)); // source 的上级 = 库根（如 Vibe Design Pro/）
 const jsons = [
   'workbench.config.json',
-  path.join('03-组件库', 'frame', 'index.json'),
-  path.join('03-组件库', CFG.componentLibrary.catalogFile),
   path.join('03-组件库', 'component-registry.json'),
 ];
+// 动态：每个带 catalog 的端 → catalog JSON；每个库根存在 index.json 时一并校验
+for (const end of reg.ends || []) {
+  if (end.catalog) jsons.push(path.join('03-组件库', end.source, end.catalog));
+}
+for (const ld of [...new Set((reg.ends || []).map((e) => path.dirname(e.source)))]) {
+  if (fs.existsSync(path.join(clRoot, ld, 'index.json'))) jsons.push(path.join('03-组件库', ld, 'index.json'));
+}
 for (const j of jsons) {
   const p = path.join(ROOT, j);
   try { JSON.parse(fs.readFileSync(p, 'utf8')); check(`JSON 合法 ${j}`, true); }
@@ -54,26 +62,29 @@ const pm = path.join(projRoot, '指标管理平台', 'project-memory.md');
 check(`project-memory.md 含协作字段`, fs.existsSync(pm) && fs.readFileSync(pm, 'utf8').includes('owner_agent'));
 check(`handoff.md 在位`, fs.existsSync(path.join(projRoot, '指标管理平台', 'handoff.md')));
 
-// 3.5 模板组件库（React 真组件库）
+// 3.5 模板组件库（React 真组件库，src/component-templates/axhub 中文分类真源）
 console.log('\n[3.5] 模板组件库');
-const axlib = path.join(ROOT, CFG.template?.rootDir || '02-模板', '_project-template', 'src', 'components', 'axhub');
-const axlibComps = ['Button', 'Card', 'StatCard', 'Tag', 'DataTable', 'FormField', 'Modal', 'ResultPage'];
-const axlibMissing = axlibComps.filter((c) => !fs.existsSync(path.join(axlib, `${c}.tsx`)));
-check(`axhub 组件库 9 件套在位${axlibMissing.length ? '（缺 ' + axlibMissing.join(',') + '）' : ''}`, axlibMissing.length === 0);
-check(`axhub 组件库主题 token 在位`, fs.existsSync(path.join(axlib, 'theme.css')) && fs.readFileSync(path.join(axlib, 'theme.css'), 'utf8').includes('--color-primary'));
+const axlib = path.join(ROOT, CFG.template?.rootDir || '02-模板', '_project-template', 'src', 'component-templates', 'axhub');
+const axlibCats = ['基础', '布局', '表单', '数据展示', '反馈', '业务组件'];
+const axlibMissingCats = axlibCats.filter((d) => !fs.existsSync(path.join(axlib, d)));
+check(`axhub 组件库 6 分类在位${axlibMissingCats.length ? '（缺 ' + axlibMissingCats.join(',') + '）' : ''}`, axlibMissingCats.length === 0);
+check(`axhub 组件库代表组件在位`, fs.existsSync(path.join(axlib, '基础', 'Button.tsx')) && fs.existsSync(path.join(axlib, '表单', 'index.ts')));
+check(`axhub 组件库索引与主题在位`, fs.existsSync(path.join(axlib, 'index.ts')) && fs.existsSync(path.join(axlib, '_kit', 'theme.css')) && fs.readFileSync(path.join(axlib, '_kit', 'theme.css'), 'utf8').includes('--color-primary'));
 check(`axhub 组件库演示页在位`, fs.existsSync(path.join(ROOT, '02-模板', '_project-template', 'src', 'prototypes', 'axhub-components', 'index.tsx')));
 
-// 4. 组件库引用完整性
+// 4. 组件库引用完整性（按 registry source 动态解析，不再硬编码 frame/）
 console.log('\n[4/5] 组件库引用');
-const clRoot = path.join(ROOT, CFG.componentLibrary.rootDir);
 try {
-  const cat = JSON.parse(fs.readFileSync(path.join(clRoot, CFG.componentLibrary.catalogFile), 'utf8'));
-  let missing = 0, total = 0;
-  for (const [key, pg] of Object.entries(cat.pages)) {
-    for (const f of [pg.html, pg.js, pg.css]) {
-      if (!f) continue;
-      total++;
-      if (!fs.existsSync(path.join(clRoot, 'frame', 'admin', f))) { missing++; console.log(`  缺: ${key} → ${f}`); }
+  let total = 0, missing = 0;
+  const endsWithCatalog = (reg.ends || []).filter((en) => en.catalog);
+  for (const end of endsWithCatalog) {
+    const cat = JSON.parse(fs.readFileSync(path.join(clRoot, end.source, end.catalog), 'utf8'));
+    for (const [key, pg] of Object.entries(cat.pages)) {
+      for (const f of [pg.html, pg.js, pg.css]) {
+        if (!f) continue;
+        total++;
+        if (!fs.existsSync(path.join(clRoot, end.source, f))) { missing++; console.log(`  缺: ${end.id}/${key} → ${f}`); }
+      }
     }
   }
   check(`catalog ${total} 个引用完整`, missing === 0, missing ? `${missing} 缺失` : '全部存在');
@@ -82,24 +93,29 @@ try {
 // 4.5 语义一致性（CodeBuddy A4：防假绿 —— 只验存在性/JSON 合法性不足，需验语义）
 console.log('\n[4.5/5] 语义一致性');
 try {
-  const idx = JSON.parse(fs.readFileSync(path.join(clRoot, 'frame', 'index.json'), 'utf8'));
   let readyMissing = [];
-  for (const [endId, end] of Object.entries(idx.ends || {})) {
-    for (const [fwName, fw] of Object.entries(end.frameworks || {})) {
-      if (fw.status === 'ready' && fw.path && !fs.existsSync(path.join(clRoot, 'frame', fw.path))) {
-        readyMissing.push(`${endId}/${fwName} → frame/${fw.path}`);
+  for (const end of reg.ends || []) {
+    const libRoot = libRootOf(end);
+    const idx = JSON.parse(fs.readFileSync(path.join(libRoot, 'index.json'), 'utf8'));
+    for (const [endId, en] of Object.entries(idx.ends || {})) {
+      for (const [fwName, fw] of Object.entries(en.frameworks || {})) {
+        if (fw.status === 'ready' && fw.path && !fs.existsSync(path.join(libRoot, fw.path))) {
+          readyMissing.push(`${endId}/${fwName} → ${fw.path}`);
+        }
       }
     }
   }
   check('index.json ready 端目录真实存在', readyMissing.length === 0, readyMissing.length ? readyMissing.join('; ') : '全部存在');
 } catch (e) { check('index.json ready 端目录真实存在', false, e.message); }
 try {
-  const reg = JSON.parse(fs.readFileSync(path.join(clRoot, 'component-registry.json'), 'utf8'));
-  const cat = JSON.parse(fs.readFileSync(path.join(clRoot, CFG.componentLibrary.catalogFile), 'utf8'));
-  const actual = Object.keys(cat.pages || {}).length;
-  const bad = (reg.ends || []).filter((en) => en.catalog && en.pageTypeCount !== actual)
-    .map((en) => `${en.id}: registry ${en.pageTypeCount} vs catalog ${actual}`);
-  check('registry pageTypeCount = catalog 实际页数', bad.length === 0, bad.length ? bad.join('; ') : `admin=${actual}`);
+  const endsWithCatalog = (reg.ends || []).filter((en) => en.catalog);
+  const bad = [];
+  for (const end of endsWithCatalog) {
+    const cat = JSON.parse(fs.readFileSync(path.join(clRoot, end.source, end.catalog), 'utf8'));
+    const actual = Object.keys(cat.pages || {}).length;
+    if (end.pageTypeCount !== actual) bad.push(`${end.id}: registry ${end.pageTypeCount} vs catalog ${actual}`);
+  }
+  check('registry pageTypeCount = catalog 实际页数', bad.length === 0, bad.length ? bad.join('; ') : (endsWithCatalog.length ? `${endsWithCatalog.map((e) => e.id + '=' + e.pageTypeCount).join(' / ')}` : '无 catalog 端'));
 } catch (e) { check('registry pageTypeCount = catalog 实际页数', false, e.message); }
 try {
   const srv = fs.readFileSync(path.join(ROOT, '工作台面板', 'server.mjs'), 'utf8');
@@ -109,8 +125,11 @@ try {
   check('server.listen 绑定 config.bindHost', bindOk, bindDef && listenM ? 'BIND_HOST 取自 config 且已用于 listen' : (bindDef ? 'listen 未用 BIND_HOST' : 'BIND_HOST 未取自 config'));
 } catch (e) { check('server.listen 绑定 config.bindHost', false, e.message); }
 try {
-  const idx = JSON.parse(fs.readFileSync(path.join(clRoot, 'frame', 'index.json'), 'utf8'));
-  const cat = JSON.parse(fs.readFileSync(path.join(clRoot, CFG.componentLibrary.catalogFile), 'utf8'));
+  const firstCat = (reg.ends || []).find((en) => en.catalog);
+  if (!firstCat) throw new Error('registry 无 catalog 端');
+  const libRoot = libRootOf(firstCat);
+  const idx = JSON.parse(fs.readFileSync(path.join(libRoot, 'index.json'), 'utf8'));
+  const cat = JSON.parse(fs.readFileSync(path.join(clRoot, firstCat.source, firstCat.catalog), 'utf8'));
   check('index.json version = catalog version', String(idx.version) === String(cat.version), `${idx.version} vs ${cat.version}`);
 } catch (e) { check('index.json version = catalog version', false, e.message); }
 

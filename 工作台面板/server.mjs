@@ -257,11 +257,9 @@ function markProjectRunning(ctx, rel, agent = null) {
   for (const ag of KNOWN_AGENTS) {
     if (ctx.agents[ag] && ctx.agents[ag].editing === rel2) return setEditing(ctx, ag, rel2).ctx;
   }
+  // 默认不占用智能体编辑焦点：无智能体编辑时直接置 active（由用户/智能体显式认领后再置 editing）
   const anyEditing = KNOWN_AGENTS.some((ag) => ctx.agents[ag] && ctx.agents[ag].editing);
-  if (!anyEditing) {
-    const a = agent && KNOWN_AGENTS.includes(agent) ? agent : KNOWN_AGENTS[0];
-    return setEditing(ctx, a, rel2).ctx;
-  }
+  if (anyEditing) return setProjectActive(ctx, rel2);
   return setProjectActive(ctx, rel2);
 }
 // 删除/移动项目时从上下文移除（并清理各智能体的编辑引用）
@@ -307,7 +305,7 @@ async function reconcileWorkspaceCtx() {
         const a = KNOWN_AGENTS.find((ag) => ctx.agents[ag] && ctx.agents[ag].editing === p.relative);
         if (a) setEditing(ctx, a, p.relative);
         else if (anyEditing) setProjectActive(ctx, p.relative);
-        else setEditing(ctx, KNOWN_AGENTS[0], p.relative);
+        else setProjectActive(ctx, p.relative);
         changed = true;
       }
     }

@@ -244131,7 +244131,7 @@ function resolveAllowedItemKeys(projectRoot, tab, metadata) {
     if (fs.existsSync(compTemplatesDir)) {
       for (const entry of fs.readdirSync(compTemplatesDir, { withFileTypes: true })) {
         const name = entry.name.replace(/\.html$/i, "");
-        if ((entry.isDirectory() || entry.name.endsWith(".html")) && name) {
+        if (entry.isDirectory() && name && !name.startsWith(".") && fs.existsSync(path.join(compTemplatesDir, name, "index.tsx"))) {
           keys.add(`components/${name}`);
         }
       }

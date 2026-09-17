@@ -223,7 +223,7 @@
   .st-stop{color:var(--muted)} .st-stop .dot{background:#cbd5e1}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}70%{box-shadow:0 0 0 6px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
   /* 端口池可滚动列表 */
-  .port-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:96px;overflow-y:auto}
+  .port-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:68px;overflow:hidden;scrollbar-width:none}
   .port-item{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#f8fafc;border:1px solid var(--line);border-radius:8px;font-size:12px}
   .port-item .pnum{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;color:var(--accent)}
   .port-item .pname{color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -754,6 +754,9 @@ async function renderProjects(){
   html += '</div>';
   view.innerHTML = html;
 
+  // Vite 端口池轮播：超过 2 个端口时自动循环滚动展示（限高 2 行）
+  setupPortCarousel();
+
   $('#newProjBtn').onclick = showNewProject;
   $('#trashBtn').onclick = showTrash;
   // 智能体监听：启动/关闭 可切换（进入项目页时查询状态）
@@ -857,6 +860,25 @@ async function renderProjects(){
       }
     };
   });
+}
+
+// Vite 端口池自动轮播：条目超过 2 个时，每 2.6s 平滑上滚一行，循环展示；不足则静止
+let _portCarouselTimer = null;
+function setupPortCarousel(){
+  if(_portCarouselTimer){ clearInterval(_portCarouselTimer); _portCarouselTimer = null; }
+  const box = $('#kpiVitePorts') || document.querySelector('.port-list');
+  if(!box) return;
+  const items = box.querySelectorAll('.port-item');
+  if(items.length <= 2){ box.scrollTop = 0; return; }
+  // 复制一份实现无缝循环
+  box.innerHTML += box.innerHTML;
+  const step = items[0].offsetHeight + 6;
+  let top = 0;
+  _portCarouselTimer = setInterval(()=>{
+    top += step;
+    if(top >= box.scrollHeight / 2){ box.scrollTop = 0; top = 0; return; }
+    box.scrollTop = top;
+  }, 2600);
 }
 
 // 启动轮询：等待 launch-log 变为 done（打开浏览器）或 failed（报错）；20s 安全超时避免按钮永久禁用

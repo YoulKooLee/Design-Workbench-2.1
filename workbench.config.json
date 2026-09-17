@@ -37,11 +37,7 @@
   },
   "componentLibrary": {
     "rootDir": "03-组件库",
-    "frameDir": "frame",
-    "uiLibsDir": "ui-libs",
-    "catalogFile": "frame/admin/_meta/pages.catalog.json",
     "registryFile": "component-registry.json",
-    "galleryFile": "frame/gallery.html",
     "validateOnBoot": true
   },
   "collaboration": {

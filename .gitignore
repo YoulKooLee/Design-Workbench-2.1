@@ -58,3 +58,7 @@ $RECYCLE.BIN/
 !03-组件库/01-补丁源/dist/admin/index.html
 # ===== 补丁备份（大文件不入库）=====
 04-维护台账/patches/*.pre-patch.bak
+
+# 项目文件不入库
+01-项目/
+
