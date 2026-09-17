@@ -13,3 +13,4 @@ export * from './Avatar';
 export * from './Typography';
 export * from './Divider';
 export * from './Overlay';
+export * from './Popconfirm';
