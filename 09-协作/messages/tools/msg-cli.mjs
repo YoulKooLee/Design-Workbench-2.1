@@ -70,6 +70,12 @@ function writeMsgAtomic(target, obj) {
   fs.renameSync(tmp, target);
 }
 
+// 统一读 JSON：兼容 UTF-8 BOM（JSON.parse 不认 BOM 开头，历史文件可能带 BOM）
+function readJSON(file) {
+  const c = fs.readFileSync(file, 'utf-8');
+  return JSON.parse(c.replace(/^\uFEFF/, ''));
+}
+
 // 把 to + 每个 cc 解析为去重收件人列表
 function recipientsOf(to, cc) {
   const set = new Set();
@@ -83,13 +89,15 @@ function scanInbox(who, filterStatus) {
   const dir = path.join(INBOX, who);
   if (!fs.existsSync(dir)) return [];
   const msgs = [];
+  const parseFail = [];
   for (const f of fs.readdirSync(dir)) {
     if (!f.endsWith('.json')) continue;
     try {
-      const m = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf-8'));
+      const m = readJSON(path.join(dir, f));
       msgs.push({ file: f, msg: m });
-    } catch { /* 跳过坏文件 */ }
+    } catch (e) { parseFail.push(f + ': ' + e.message); }
   }
+  if (parseFail.length) console.error('[PARSE_FAIL] ' + parseFail.length + ' 个文件解析失败，已跳过：\n  ' + parseFail.join('\n  '));
   return msgs;
 }
 
@@ -200,7 +208,7 @@ function read(args) {
   } else {
     const f = findMsg(who, id);
     if (!f) fail(`未找到消息 ${id}`);
-    const m = JSON.parse(fs.readFileSync(f, 'utf-8'));
+    const m = readJSON(f);
     console.log(JSON.stringify(m, null, 2));
     markStatus(f, 'read');
   }
@@ -208,7 +216,7 @@ function read(args) {
 
 function markStatus(file, status) {
   if (!fs.existsSync(file)) return;
-  const m = JSON.parse(fs.readFileSync(file, 'utf-8'));
+  const m = readJSON(file);
   m.status = status;
   writeMsgAtomic(file, m);
 }
@@ -254,12 +262,12 @@ function reply(args) {
   let origThreadId = '';
   const origFile = path.join(INBOX, from, replyTo + '.json');
   if (fs.existsSync(origFile)) {
-    try { origThreadId = JSON.parse(fs.readFileSync(origFile, 'utf-8')).thread_id || ''; } catch {}
+    try { origThreadId = readJSON(origFile).thread_id || ''; } catch {}
   }
   if (!origThreadId) {
     const origInTo = path.join(INBOX, to, replyTo + '.json');
     if (fs.existsSync(origInTo)) {
-      try { origThreadId = JSON.parse(fs.readFileSync(origInTo, 'utf-8')).thread_id || ''; } catch {}
+      try { origThreadId = readJSON(origInTo).thread_id || ''; } catch {}
     }
   }
 
