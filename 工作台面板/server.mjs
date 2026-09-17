@@ -1207,8 +1207,8 @@ const server = http.createServer(async (req, res) => {
         // 复制模板页面文件到原型目录（排除工程配置类文件，仅保留原型可运行部分）
         const SKIP_NAMES = new Set([
           '.git', '.gitignore', 'package.json', 'pnpm-lock.yaml', 'yarn.lock', 'next.config.mjs',
-          'tailwind.config.js', 'postcss.config.mjs', 'components.json', 'tsconfig.json', 'AUTHOR.txt',
-          '.eslintrc', '.eslintrc.json', '.prettierrc', 'README.md',
+          'tailwind.config.js', 'postcss.config.mjs', 'components.json', 'tsconfig.json', 'author.txt',
+          '.eslintrc', '.eslintrc.json', '.prettierrc', 'readme.md',
         ]);
         fs.cpSync(mtRoot, protoDir, {
           recursive: true,
@@ -1389,6 +1389,10 @@ const server = http.createServer(async (req, res) => {
           inst.on('error', (e) => fs.appendFileSync(logFile, `INSTALL ERROR: ${e.message}\n`, 'utf8'));
           inst.on('close', (code) => {
             fs.appendFileSync(logFile, `AXHUB_INSTALL_STATUS: done (exit ${code})\n`, 'utf8');
+            const patch = applyMakeComponentPatch(dir);
+            fs.appendFileSync(logFile, patch.applied
+              ? `MAKE_COMPONENT_PATCH: applied ${patch.applied} file(s)\n`
+              : `MAKE_COMPONENT_PATCH: skipped (${patch.reason || 'no-op'})\n`, 'utf8');
             launchVite();
           });
           inst.unref();
@@ -1402,6 +1406,26 @@ const server = http.createServer(async (req, res) => {
       if (!okV) return sendError(res, '启动 Vue 开发栈失败：缺少 vite，请重新安装依赖', 500);
       return send(res, 200, { ok: true, msg: 'Vue 开发栈已启动', openUrl, hasNodeModules: true });
     }
+    // 应用 @axhub/make 组件页签补丁（新工程 pnpm install 后执行）：
+    // 组件页签能力由 dist/server/cli.mjs（component-templates 扫描）与 admin bundle（P1-P19）承载，
+    // 补丁源 03-组件库/_make-补丁/（维护方豆包维护）。已补丁的工程复制覆盖同内容文件，幂等。
+    function applyMakeComponentPatch(dir) {
+      const patchRoot = path.join(AXHUB_ROOT, '03-组件库', '_make-补丁');
+      if (!fs.existsSync(patchRoot)) return { applied: 0, reason: '补丁目录不存在' };
+      const mk = path.join(dir, 'node_modules', '@axhub', 'make');
+      if (!fs.existsSync(mk)) return { applied: 0, reason: 'node_modules/@axhub/make 不存在' };
+      const rels = ['dist/server/cli.mjs', 'dist/admin/assets/index.js', 'dist/admin/index.html'];
+      let applied = 0;
+      for (const rel of rels) {
+        const src = path.join(patchRoot, rel);
+        const dst = path.join(mk, rel);
+        if (!fs.existsSync(src) || !fs.existsSync(dst)) continue;
+        fs.copyFileSync(src, dst);
+        applied++;
+      }
+      return { applied };
+    }
+
     const ps1 = path.join(AXHUB_ROOT, '06-运行脚本', 'launch-project.ps1');
     if (!fs.existsSync(ps1)) return sendError(res, '找不到 launch-project.ps1');
     try {

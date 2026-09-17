@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "registryUpdatedAt": "2026-09-13",
+  "registryUpdatedAt": "2026-09-17",
   "maintainer": "豆包",
   "note": "组件库登记与版本真源（H2/H3）。新增组件必须走标准流程：放样板三件套 → 登记 pages.catalog.json → 若新库更新 frame/index.json → 补 ui-libs 知识 → 本文件登记 → smoke-test 校验。",
   "ends": [
@@ -13,7 +13,20 @@
       "status": "ready",
       "catalog": "_meta/pages.catalog.json",
       "pageTypeCount": 50,
-      "entryPageTypes": ["login", "dashboard", "list", "form", "detail", "result", "exception", "user", "component-basic", "component-form", "component-table-extended", "component-chart"]
+      "entryPageTypes": [
+        "login",
+        "dashboard",
+        "list",
+        "form",
+        "detail",
+        "result",
+        "exception",
+        "user",
+        "component-basic",
+        "component-form",
+        "component-table-extended",
+        "component-chart"
+      ]
     },
     {
       "id": "web",
@@ -39,11 +52,49 @@
     }
   ],
   "uiLibs": [
-    { "id": "arco-design-vue", "files": ["components.md", "pages.md", "charts.md"], "status": "ready" },
-    { "id": "ant-design-pro", "files": ["components.md", "pages.md", "charts.md"], "status": "ready" },
-    { "id": "element-plus", "files": ["components.md", "pages.md"], "status": "ready" },
-    { "id": "shadcn", "files": ["components.md", "pages.md", "charts.md"], "status": "ready" },
-    { "id": "vant", "files": ["components.md", "pages.md"], "status": "ready" }
+    {
+      "id": "arco-design-vue",
+      "files": [
+        "components.md",
+        "pages.md",
+        "charts.md"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "ant-design-pro",
+      "files": [
+        "components.md",
+        "pages.md",
+        "charts.md"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "element-plus",
+      "files": [
+        "components.md",
+        "pages.md"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "shadcn",
+      "files": [
+        "components.md",
+        "pages.md",
+        "charts.md"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "vant",
+      "files": [
+        "components.md",
+        "pages.md"
+      ],
+      "status": "ready"
+    }
   ],
   "extensionFlow": [
     "① 03-组件库/frame/<end>/ 放样板三件套（html/js/css）",
@@ -52,5 +103,29 @@
     "④ 补 ui-libs/<库>/components.md 用法规范",
     "⑤ 运行 smoke-test 组件库校验段 → 全绿",
     "⑥ （可选）gallery.html 上墙"
-  ]
+  ],
+  "componentTemplateLib": {
+    "id": "component-template",
+    "label": "组件模板库（React 原型可直接复用）",
+    "source": "03-组件库/组件模板",
+    "framework": "react + tailwind v4",
+    "status": "ready",
+    "version": "1.0.0",
+    "updatedAt": "2026-09-17",
+    "categories": {
+      "base": "基础：Button/Card/Tag/Badge/Avatar/Typography/Divider/Overlay",
+      "layout": "布局：Layout/PageHeader/Tabs/Breadcrumb/Steps/Toolbar",
+      "form": "表单：FormField/Input/Select/Choice/DatePicker/Upload",
+      "data": "数据展示：DataTable/Pagination/Descriptions/Progress/List/Tree",
+      "feedback": "反馈：Modal/Drawer/Alert/Spin/ResultPage/Message",
+      "business": "业务：KpiRow/FilterBar/TableCard/StatusTag"
+    },
+    "docs": [
+      "03-组件库/组件模板/README.md",
+      "03-组件库/组件模板/提示词手册.md",
+      "03-组件库/组件模板/选型映射.md"
+    ],
+    "registry": "03-组件库/custom-components.json",
+    "note": "2026-09-17 由 CodeBuddy 依用户指派从 vibepm-demo-agent-v1.4 admin 母版组件字典提炼为 React 组件（用时复制，骨架不改）。"
+  }
 }

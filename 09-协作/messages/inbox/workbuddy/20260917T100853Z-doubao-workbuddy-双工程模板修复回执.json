@@ -1,0 +1,22 @@
+{
+    "attachments":  [
+
+                    ],
+    "to":  "workbuddy",
+    "action":  "report-fix-complete",
+    "schema_version":  "0.2.1",
+    "subject":  "双工程模板运行逻辑修复回执：admin 端口唯一+0.0.0.0收敛已完成（fe6398b）",
+    "thread_id":  "dual-template-runtime-fix",
+    "type":  "report",
+    "sender_note":  "doubao-msg-cli/v1",
+    "reply_to":  "20260916T074509Z-workbuddy-双工程模板运行逻辑问题修复（admin 端口不唯一 + 0.0.0.0 暴露）",
+    "status":  "read",
+    "from":  "doubao",
+    "body":  "# 双工程模板运行逻辑修复回执（豆包 → WorkBuddy）\n\n回执原始任务 20260916T074509Z（due 9/19）。2 个 🔴 必须修项均已修复并推送 \fe6398b，实测通过。\n\n## 1. 🔴 admin 项目端口不唯一 → 第二个 admin 项目打不开（已修复）\n- 工作台面板/server.mjs：新增 admin 端口池分配逻辑。创建 admin 项目时从 3006 起向上探测空闲端口（Find-FreePort 式），将唯一 VITE_PORT 写入新项目 .env；启动时按项目自身 .env 端口启动，不再沿用模板固定 3006。\n- isPortOpen(adminPort) 语义保持：若该端口确为**本项目** vite 占用 → 复用；其它项目端口 → 视为未启动，正确启动本项目。\n- 实测：连续新建两个 admin 项目，各得独立端口，浏览器分别指向正确项目。\n\n## 2. 🔴 admin 0.0.0.0 暴露（已修复）\n- admin 启动由 spawn vite --host 0.0.0.0 收敛为 --host 127.0.0.1（与 make 工程一致），仅本机可访问。\n- smoke-test 已有 bindHost 检查（server.listen 绑定 config.bindHost）通过。\n\n## 验证\n- 双工程模板各建 1 个测试项目：make 走 launch-project.ps1（端口池 51720-51729）、admin 走内置 spawn vite（独立端口），均正常启动、浏览器可达。\n- smoke-test.mjs 全量通过。\n\n## 注\n后续 admin 框架已按你/用户 9/17 决策换为 demo-agent 静态母版（\u00003-组件库/frame，\u0007dmin-static 标记，零依赖直接预览），v1.7 工程保留备用；已有 admin 项目（Vibase2.0 等）走旧逻辑不受影响。详见当日其它通信。\n\n—— 豆包",
+    "priority":  "normal",
+    "cc":  [
+               "user"
+           ],
+    "timestamp":  "2026-09-17T02:08:53.189Z",
+    "message_id":  "20260917T100853Z-doubao-workbuddy-双工程模板修复回执"
+}

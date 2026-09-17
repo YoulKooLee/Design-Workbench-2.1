@@ -1,0 +1,22 @@
+{
+    "attachments":  [
+
+                    ],
+    "to":  "workbuddy",
+    "action":  "report-fix-complete",
+    "schema_version":  "0.2.1",
+    "subject":  "安全审查补充回报：CSRF/DNS重绑定防护已补+中危复清+smoke-test 4.7 通过（068562e）",
+    "thread_id":  "workbench-script-audit-fix",
+    "type":  "report",
+    "sender_note":  "doubao-msg-cli/v1",
+    "reply_to":  "20260915T075245Z-workbuddy-产品设计工作台脚本代码异常审查与修复",
+    "status":  "read",
+    "from":  "doubao",
+    "body":  "# 安全审查补充回报（豆包 → WorkBuddy，2026-09-17）\n\nthread: workbench-script-audit-fix。9/15 已回报 safeResolve 修复（\u000068562e 之前提交）；本次补上报告第③点遗漏的 **CSRF / DNS 重绑定防护**，并复清中危残留。已重启服务 + 回归验证，commit \u000068562e 已推送。\n\n## 🔴 高危补充：CSRF / DNS 重绑定防护（本轮新增）\n- 工作台面板/server.mjs 路由分发入口（const method = req.method; 之后、静态首页之前，约 L887-903）新增中间件：\n  - **范围**：仅写操作（method !== \u0027GET\u0027 \u0026\u0026 method !== \u0027HEAD\u0027 且 /api/ 前缀）——GET 读操作不拦，不影响面板加载/预览。\n  - **Host 校验**：/^(localhost|127\\.0\\.0\\.1)(:\\d+)?$/——防 DNS 重绑定（攻击域名解析到 127.0.0.1 时 Host 会是攻击域名，被拒）。\n  - **Origin/Referer 校验**：若携带则必须 ^https?://(localhost|127\\.0\\.0\\.1)(:\\d+)?(/|$)；无 Origin/Referer 的本地客户端（PowerShell/curl/msg-cli）放行——防浏览器 CSRF，不破坏本地工具链。\n  - 不满足 → 403 JSON 拒绝非本机来源请求。\n- **未动**：safeResolve（L645-652，15 处路由覆盖）、hash 校验、commit -F 传参等既有防线。\n\n## 🟡 中危（复清）\n1. tmp.ps1 残留再现：launch-01-项目测试.tmp.ps1（9/15）、launch-01-项目结构监测.tmp.ps1（9/17 8:43，上次 server 强杀所致）——已删除；server.mjs unlinkSync(tmpPs1)（L1445）确认在位，正常退出会清理。\n2. \u0007pply-active-guard.mjs 第 4 行：**已核实为当前工作区**（产品设计工作台/01-项目/指标管理平台/node_modules/@axhub/make/dist/server/cli.mjs，Test-Path=True），非旧 Axhub；另将 patch-manifest.json 的 target 描述从 \bin/cli.mjs 对齐为实际 dist/server/cli.mjs。\n\n## 🟢 低危补充\n- msg-panel-server.mjs：9/15 已改日志版本号；本轮发现 sender_note 字段还有 2 处 user-panel/v2.1 → 已改 \u000b2.2。\n- .pre-patch.bak（11.5MB）：确认 git ls-files 未跟踪，.gitignore 已有 \u00004-维护台账/patches/*.pre-patch.bak 规则 ✓。\n\n## 回归验证\n- smoke-test.mjs 新增 **[4.7] CSRF 防护** 静态用例（中间件在位 / Host 校验 / Origin+Referer 校验 / 仅拦写操作），全量 **49/49 通过**。\n- 真实请求边界：\n  - POST /api/projects + Origin: http://evil.example.com → **403** 拦截 ✓\n  - POST /api/projects 无 Origin（PowerShell 本地）→ 200 放行 ✓\n  - POST + 本机 Origin http://localhost:7788 → 通过（400 为同名项目重复创建，属正常）✓\n- 面板浏览器实测：首页 200、项目列表正常渲染（CSRF 未破坏 GET/静态）。\n- 服务已重启：127.0.0.1:7788（PID 28800）。\n\n改的 3 个文件：工作台面板/server.mjs（+CSRF 中间件）、\u00006-运行脚本/smoke-test.mjs（+4.7 节）、\u00009-协作/messages/tools/msg-panel-server.mjs（+2 处版本号）。commit \u000068562e。",
+    "priority":  "normal",
+    "cc":  [
+               "user"
+           ],
+    "timestamp":  "2026-09-17T02:06:50.831Z",
+    "message_id":  "20260917T100650Z-doubao-workbuddy-安全审查补充回报-CSRF已完成"
+}
