@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.2.1",
+  "message_id": "20260917T012804Z-codebuddy-移交：左菜单规范未生效（根因+修复方案A",
+  "from": "codebuddy",
+  "to": "doubao",
+  "cc": [],
+  "timestamp": "2026-09-17T01:28:04.853Z",
+  "type": "handoff",
+  "subject": "移交：左菜单规范未生效（根因+修复方案A）",
+  "body": "豆包你好：\r\n\r\n用户发现 `src/common/side-menu/spec.md` 定义的左菜单规范\"之前的原型都没有生效\"，指派我排查并把问题移交给你修复。我已做完只读取证，完整报告在房间 `CodeBuddy_左菜单规范未生效-根因与修复移交/产物/`，此处给摘要。\r\n\r\n## 做了什么\r\n- 静态读码 + 全仓检索，定位左菜单的真实渲染链路与规范组件的引用情况。\r\n- 取证结论：规范组件 `src/common/side-menu/`（`items`/`onMenuSelect`/`onCollapseChange` 契约、240/64、折叠态）**全工作台 import 命中 0**；实际左菜单是 `StructureMonitorShell.tsx:279` 内**私有未导出**的 `function SideMenu`（`sm-left-menu`、`width: 210` 固定、写死「结构监测 V1.0」、硬编码 `NAV`、`:303` 一个 `group==='core'` 小红点），唯一使用点在壳 `:896`。\r\n- 同构范围：`02-模板\\_project-template`（`:279`/`:893`）+ `测试` + `指标管理平台` + `崂山国家实验室项目`，共 5 处一致。\r\n- 顺带发现：`03-组件库` 未登记 `side-menu`（T16）；`GROUP_META`（`:39-43`）导出后全工程 0 消费方。\r\n\r\n## 为什么（依据）\r\n- 规范没生效不是配置错误，而是**没接线**：所有页面经壳渲染 → 壳内只有私有实现这一条路径 → 规范组件无任何 import 点，物理上不可能生效。\r\n- 两者**同名** `SideMenu`，是它长期未被发现的原因；壳里又写死了项目专属内容（标题 + NAV），这正是此前\"模板孤儿壳带出结构监测 NAV\"的同一根源。\r\n\r\n## 排除了什么（勿重复试）\r\n- 方案 B（把 `spec.md` 改写成 `sm-left-menu` 契约、归档规范组件）—— 用户否决。\r\n- 方案 C（两套并存、仅补文档）—— 用户否决。\r\n- 用户已拍板走**方案 A**：壳改用规范组件、删除私有实现；`core` 小红点**去掉**；二级 `sub` **不进菜单层级**（仍是页内 Tab）。\r\n\r\n## 风险 / 待确认\r\n- 视觉：210 固定 → 240 + 折叠按钮（spec 行为，用户知悉）。\r\n- 配色：私有实现用壳主题 `C.primary #2b6cff`；规范组件 CSS 选中态为 `#0f172a` + `#e8f0ff`（与壳 `C.active #e8f1ff` 几乎一致）→ 是否把 `style.css` 硬编码色统一到壳 `C`。\r\n- 标题「V1.0」徽标：规范组件无 `titleExtra`，保留需加字段。\r\n- 待拍板：宽度 240 还是 210、徽标去留、色板统一、其余 4 个项目整改范围、`GROUP_META` 删或留。\r\n\r\n## 需对方回应\r\n- 复核取证（尤其\"`from '.*side-menu'` 全仓 0 命中\"与 `:279`/`:896` 两处）；按 4.1 的 5 步改造 5 处壳，并登记 `side-menu` 进 `03-组件库`；模板属共享目录，按你排期执行。\r\n- 若证据过期或误判，请直接指出并附实测，以你的实测为准，我不坚持。\r\n\r\n## 附：下一步建议\r\n1. 先修 `01-项目\\结构监测`（当前唯一在推的试点工程），验证通过后再推模板与其余 3 个工程。\r\n2. 验收：检索 `from '.*side-menu'` 至少 1 处命中；壳内私有 `SideMenu` 消失；左菜单可折叠（240↔64）；5 个 nav 项点击行为不变；`typecheck` 通过。\r\n\r\n核验边界：以上均来自静态读码 + 全仓检索，未实际启动 5 个项目逐个点击验证菜单行为；检索已排除 `node_modules`/`dist`。本轮我未修改任何工程文件。\r\n\r\n—— CodeBuddy 2026-09-17\r\n",
+  "attachments": [],
+  "status": "unread",
+  "priority": "high",
+  "thread_id": "left-menu-spec-not-wired",
+  "reply_to": "",
+  "action": "复核并修复左菜单规范未接线问题（壳改用规范组件、删私有实现）",
+  "due_at": "",
+  "sender_note": "codebuddy-cli/v1",
+  "need_reply": true
+}
