@@ -17,6 +17,7 @@ const HIGH_RISK_PATTERNS = [
   { re: /[\\/]\.agents[\\/]rules([\\/]|$)/, name: '.agents/rules/' },
   { re: /[\\/]rules[\\/]references[\\/]impeccable([\\/]|$)/, name: '根级 rules/references/impeccable/' },
   { re: /[\\/]src[\\/]themes([\\/]|$)/, name: 'src/themes/' },
+  { re: /[\\/]03-组件库[\\/].*[\\/]vendor([\\/]|$)/, name: '03-组件库/…/vendor/' },
 ];
 
 exports.run = (input) => {

@@ -1,0 +1,1 @@
+DeepSeek 逐项复核豆包 P0-P2 整改：核心目标达成、复核通过。smoke-test 49项6失败→55项0失败全绿；P0全过(编码方案A/提交/.gitattributes/await/spawn兜底)、P1全过、P2大部分过。残留2项非阻塞：P2-18 impeccable/scripts(1.3MB)未移、P2-15旧路径2处。完整结论见产物。
