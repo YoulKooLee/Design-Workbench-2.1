@@ -42,7 +42,7 @@ description: >
 
 ```
 1. 确定图表类型 → 查阅类型对照表
-2. 读取本技能 `examples/` 下对应类型的模板 XML（作结构与样式参考）
+2. 读取本技能 `../diagram-generator/examples/` 下对应类型的模板 XML（作结构与样式参考）
 3. 按本 Skill 内部执行流程生成 XML
 4. 保存 XML 源文件 → docs/images/src/<名称>.xml
 5. 调用本地校验脚本验证结构（见「本地校验脚本」）
@@ -90,23 +90,23 @@ description: >
 
 | 业务场景 | DIAGRAM_TYPE | 模板文件 | 适用情况 |
 | --- | --- | --- | --- |
-| 流程图 / 活动图 | flowchart | `examples/flowchart.xml` | 单角色线性流程：开始→步骤→判断→分支→结束 |
-| 技术架构图 | architecture | `examples/architecture.xml` | 技术分层：接入/网关/微服务/存储/第三方 |
-| 系统功能架构图 | system-arch | `examples/system-arch.xml` | 业务功能分层：左侧层标签 + 模块矩阵 + 图例 |
-| 时序图 | sequence | `examples/sequence.xml` | 系统间交互、API 调用链 |
-| 纵向泳道图 | swimlane | `examples/swimlane.xml` | 多角色纵向泳道、审批驳回回路 |
-| 横向泳道图 | cross-functional | `examples/cross-functional.xml` | 跨职能横向泳道（如请假：员工→主管→HR→财务） |
-| 矩阵泳道图 | matrix-swimlane | `examples/matrix-swimlane.xml` | 角色 × 阶段二维矩阵（如订单履约多环节） |
-| BPMN 流程图 | bpmn | `examples/bpmn-flow.xml` | 含排他/并行网关的标准 BPMN 建模 |
-| ER 图 | er | `examples/er-diagram.xml` | 数据库表关系、实体建模 |
-| 类图 | class | `examples/uml-class.xml` | 数据模型、继承与关联 |
-| 用例图 | usecase | `examples/uml-usecase.xml` | 角色用例、include 关系 |
-| 状态图 | state | `examples/uml-state.xml` | 状态机、订单/审批生命周期 |
-| 组织结构图 | orgchart | `examples/orgchart.xml` | 部门层级、汇报关系 |
-| 思维导图（左右平衡） | mindmap | `examples/mindmap.xml` | 中心主题左右展开、彩色分支：产品规划、需求拆解 |
-| 思维导图（自上而下） | mindmap-vertical | `examples/mindmap-vertical.xml` | 主题置顶、层级向下：功能模块、WBS 拆解 |
-| 思维导图（放射状） | mindmap-radial | `examples/mindmap-radial.xml` | 中心向四周辐射、高饱和配色：brainstorm、立项发散 |
-| 思维导图（简约线框） | mindmap-minimal | `examples/mindmap-minimal.xml` | 灰阶无阴影直角：OKR、汇报材料、正式文档 |
+| 流程图 / 活动图 | flowchart | `../diagram-generator/examples/flowchart.xml` | 单角色线性流程：开始→步骤→判断→分支→结束 |
+| 技术架构图 | architecture | `../diagram-generator/examples/architecture.xml` | 技术分层：接入/网关/微服务/存储/第三方 |
+| 系统功能架构图 | system-arch | `../diagram-generator/examples/system-arch.xml` | 业务功能分层：左侧层标签 + 模块矩阵 + 图例 |
+| 时序图 | sequence | `../diagram-generator/examples/sequence.xml` | 系统间交互、API 调用链 |
+| 纵向泳道图 | swimlane | `../diagram-generator/examples/swimlane.xml` | 多角色纵向泳道、审批驳回回路 |
+| 横向泳道图 | cross-functional | `../diagram-generator/examples/cross-functional.xml` | 跨职能横向泳道（如请假：员工→主管→HR→财务） |
+| 矩阵泳道图 | matrix-swimlane | `../diagram-generator/examples/matrix-swimlane.xml` | 角色 × 阶段二维矩阵（如订单履约多环节） |
+| BPMN 流程图 | bpmn | `../diagram-generator/examples/bpmn-flow.xml` | 含排他/并行网关的标准 BPMN 建模 |
+| ER 图 | er | `../diagram-generator/examples/er-diagram.xml` | 数据库表关系、实体建模 |
+| 类图 | class | `../diagram-generator/examples/uml-class.xml` | 数据模型、继承与关联 |
+| 用例图 | usecase | `../diagram-generator/examples/uml-usecase.xml` | 角色用例、include 关系 |
+| 状态图 | state | `../diagram-generator/examples/uml-state.xml` | 状态机、订单/审批生命周期 |
+| 组织结构图 | orgchart | `../diagram-generator/examples/orgchart.xml` | 部门层级、汇报关系 |
+| 思维导图（左右平衡） | mindmap | `../diagram-generator/examples/mindmap.xml` | 中心主题左右展开、彩色分支：产品规划、需求拆解 |
+| 思维导图（自上而下） | mindmap-vertical | `../diagram-generator/examples/mindmap-vertical.xml` | 主题置顶、层级向下：功能模块、WBS 拆解 |
+| 思维导图（放射状） | mindmap-radial | `../diagram-generator/examples/mindmap-radial.xml` | 中心向四周辐射、高饱和配色：brainstorm、立项发散 |
+| 思维导图（简约线框） | mindmap-minimal | `../diagram-generator/examples/mindmap-minimal.xml` | 灰阶无阴影直角：OKR、汇报材料、正式文档 |
 
 模板路径相对于 `{PROJECT_PATH}/.agents/skills/drawio-generator/`。
 
@@ -136,7 +136,7 @@ description: >
 
 生成前自动完成：
 
-1. 按 DIAGRAM_TYPE 读取 `examples/` 下对应模板 XML
+1. 按 DIAGRAM_TYPE 读取 `../diagram-generator/examples/` 下对应模板 XML
 2. 以模板为骨架，替换为实际业务内容
 3. 对照本 Skill 质量红线自检后输出 XML
 4. 保存至 `docs/images/src/` 并验证源文件
@@ -346,7 +346,7 @@ WARN 级：非英文文件名、空图、顶点尺寸异常、重叠（启用 `-
 
 收到请求后，在内部完成以下步骤（不必向用户输出推演过程）：
 
-1. **读取模板**：按图表类型读取 `examples/` 下对应 XML 文件
+1. **读取模板**：按图表类型读取 `../diagram-generator/examples/` 下对应 XML 文件
 2. **抽取节点**：识别模块、动作、判断、存储、外部系统和异常路径
 3. **编排 id**：从 `2` 开始分配节点 id，再分配边 id
 4. **计算画布**：按节点数量扩展 `pageWidth` / `pageHeight`；按需添加 spacer 留白

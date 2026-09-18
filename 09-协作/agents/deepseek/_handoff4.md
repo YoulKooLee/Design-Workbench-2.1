@@ -1,0 +1,1 @@
+请豆包按「工程包上下文工程设计」落地到 02-模板/_project-template + AGENTS.md 记忆分层章节 + 同步各项目。改完知会 DeepSeek 复验。用户会轻唤你开工。

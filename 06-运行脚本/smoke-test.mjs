@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -70,7 +71,7 @@ const axlibMissingCats = axlibCats.filter((d) => !fs.existsSync(path.join(axlib,
 check(`axhub 组件库 6 分类在位${axlibMissingCats.length ? '（缺 ' + axlibMissingCats.join(',') + '）' : ''}`, axlibMissingCats.length === 0);
 check(`axhub 组件库代表组件在位`, fs.existsSync(path.join(axlib, '基础', 'Button.tsx')) && fs.existsSync(path.join(axlib, '表单', 'index.ts')));
 check(`axhub 组件库索引与主题在位`, fs.existsSync(path.join(axlib, 'index.ts')) && fs.existsSync(path.join(axlib, '_kit', 'theme.css')) && fs.readFileSync(path.join(axlib, '_kit', 'theme.css'), 'utf8').includes('--color-primary'));
-check(`axhub 组件库演示页在位`, fs.existsSync(path.join(ROOT, '02-模板', '_project-template', 'src', 'prototypes', 'axhub-components', 'index.tsx')));
+check(`模板原型目录在位`, fs.existsSync(path.join(ROOT, '02-模板', '_project-template', 'src', 'prototypes')) && fs.existsSync(path.join(ROOT, '02-模板', '_project-template', 'src', 'prototypes', 'sample-page')));
 
 // 4. 组件库引用完整性（按 registry source 动态解析，不再硬编码 frame/）
 console.log('\n[4/5] 组件库引用');
@@ -180,6 +181,61 @@ function walk(dir) {
 walk(colRoot);
 const residue = mdFiles.filter((p) => fs.readFileSync(p, 'utf8').includes(oldPath));
 check('09-协作 无旧路径残留', residue.length === 0, residue.length ? residue.join('; ') : '干净');
+
+// 6. 可移植性（千问 P2-14：编码 / 硬编码路径 / gitattributes / make 可解析 / 中文空格路径 spawn）
+console.log('\n[6/5] 可移植性');
+try {
+  const scriptDirs = [ROOT, path.join(ROOT, '09-协作', 'messages', 'tools'), path.join(ROOT, '06-运行脚本'), path.join(ROOT, '04-维护台账')];
+  const scriptFiles = [];
+  for (const d of scriptDirs) {
+    if (!fs.existsSync(d)) continue;
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      if (e.isDirectory() || /^(node_modules|dist)$/.test(e.name)) continue;
+      if (/\.(cmd|bat|ps1|mjs|js|cjs|vbs)$/i.test(e.name)) scriptFiles.push(path.join(d, e.name));
+    }
+  }
+  // 6.1 脚本编码合规：.cmd/.bat 必须纯 ASCII（方案A）；.ps1 必须 UTF-8 BOM
+  const badAscii = [], noBom = [];
+  for (const p of scriptFiles) {
+    const b = fs.readFileSync(p);
+    if (/\.(cmd|bat)$/i.test(p)) {
+      if (b.some((x) => x > 0x7f)) badAscii.push(path.relative(ROOT, p));
+    } else if (/\.ps1$/i.test(p)) {
+      if (!(b[0] === 0xef && b[1] === 0xbb && b[2] === 0xbf)) noBom.push(path.relative(ROOT, p));
+    }
+  }
+  check('脚本编码合规（cmd/bat 纯ASCII，ps1 有BOM）', badAscii.length === 0 && noBom.length === 0,
+    [...badAscii.map((x) => x + '(非ASCII)'), ...noBom.map((x) => x + '(无BOM)')].join('; ') || `${scriptFiles.length} 个脚本全合规`);
+  // 6.2 硬编码绝对路径扫描（工作台用户绝对路径）
+  const hard = [];
+  for (const p of scriptFiles) {
+    const t = fs.readFileSync(p, 'utf8');
+    t.split(/\r?\n/).forEach((ln, i) => {
+      const s = ln.trim();
+      if (s.startsWith('//') || s.startsWith('#') || s.startsWith("'") || s.startsWith('rem')) return;
+      if (/['"]C:\\Users\\[^'"]+|['"]c:\/Users\/[^'"]+/i.test(s)) hard.push(path.relative(ROOT, p) + ':' + (i + 1));
+    });
+  }
+  check('无硬编码绝对路径（C:\\Users...）', hard.length === 0, hard.length ? hard.join('; ') : '干净');
+  // 6.3 .gitattributes
+  const ga = path.join(ROOT, '.gitattributes');
+  const gaOk = fs.existsSync(ga) && /eol\s*=\s*crlf/.test(fs.readFileSync(ga, 'utf8')) && /\.(cmd|bat|ps1)/.test(fs.readFileSync(ga, 'utf8'));
+  check('.gitattributes 存在且含 cmd/bat/ps1 的 eol=crlf', !!gaOk, gaOk ? '已配置' : '缺失或配置不完整');
+  // 6.4 @axhub/make 可解析性（模板或任意项目内存在即视为可解析；不触发网络下载）
+  const makeRel = path.join('node_modules', '@axhub', 'make', 'bin', 'cli.mjs');
+  const makeCandidates = [
+    path.join(ROOT, '02-模板', '_project-template', makeRel),
+    ...(fs.existsSync(path.join(ROOT, '01-项目')) ? fs.readdirSync(path.join(ROOT, '01-项目')).map((d) => path.join(ROOT, '01-项目', d, makeRel)) : []),
+  ];
+  const makeFound = makeCandidates.find((p) => fs.existsSync(p));
+  check('@axhub/make 本地可解析（无需 npx 下载）', !!makeFound, makeFound ? path.relative(ROOT, makeFound) : '未找到本地包，冷启动会回退 npx');
+  // 6.5 中文+空格路径下实际 spawn 冒烟
+  try {
+    const r = spawnSync(process.execPath, ['-e', "console.log('spawn-ok')"], { cwd: ROOT, encoding: 'utf8', timeout: 15000 });
+    const ok = r.status === 0 && /spawn-ok/.test(r.stdout || '');
+    check('中文+空格路径 spawn 冒烟', ok, ok ? 'spawn 正常' : 'status=' + r.status + ' stderr=' + String(r.stderr || '').slice(0, 120));
+  } catch (e) { check('中文+空格路径 spawn 冒烟', false, e.message); }
+} catch (e) { check('可移植性检查', false, e.message); }
 
 // 汇总
 console.log('\n================ 汇总 ================');

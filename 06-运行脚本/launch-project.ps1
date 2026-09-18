@@ -24,12 +24,32 @@ param(
     [string]$RootDir,
     [string]$ProjectName,
     [int]$VitePort = 0,
-    [int]$MakePort = 53817,
+    [int]$MakePort = 0,      # 0=从 workbench.config.json 读取，兜底 53817
     [string]$NodePath = ''
 )
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'   # 抑制 Invoke-WebRequest 进度条/响应流提示，避免污染日志
+
+# ===== 读唯一配置真源 workbench.config.json（千问 P2-13）=====
+$script:CFG = $null
+$cfgPath = Join-Path $RootDir 'workbench.config.json'
+if (Test-Path $cfgPath) {
+    try { $script:CFG = Get-Content $cfgPath -Raw -Encoding UTF8 | ConvertFrom-Json } catch { Write-Host "[WARN] workbench.config.json 解析失败: $($_.Exception.Message)" -ForegroundColor Yellow }
+}
+if (-not $script:CFG) { Write-Host "[WARN] 未找到 workbench.config.json，使用内置默认值" -ForegroundColor Yellow }
+
+# Make 端口 / Vite 端口池 / 环境清洗列表 均优先取配置
+if ($MakePort -le 0 -and $script:CFG -and $script:CFG.axhub.makePort) { $MakePort = [int]$script:CFG.axhub.makePort }
+if ($MakePort -le 0) { $MakePort = 53817 }
+$script:viteStart = 51720; $script:viteMaxOffset = 100
+if ($script:CFG -and $script:CFG.projects.vitePortPool) {
+    $script:viteStart = [int]$script:CFG.projects.vitePortPool.start; $script:viteMaxOffset = [int]$script:CFG.projects.vitePortPool.maxOffset
+}
+$script:stripVars = @('NODE_OPTIONS') + @((Get-ChildItem Env: | Where-Object { $_.Name -like 'CODEBUDDY*' } | Select-Object -ExpandProperty Name))
+if ($script:CFG -and $script:CFG.workbench.envClean.stripVars) {
+    $script:stripVars = @($script:CFG.workbench.envClean.stripVars) + $script:stripVars | Select-Object -Unique
+}
 
 # 修复某些运行环境（如 WorkBuddy/CodeBuddy 会话）中 PATH 环境变量出现 Path/PATH/path
 # 多个大小写键，导致 .NET 在创建子进程时合并环境变量抛 "已添加项" 的问题。
@@ -96,20 +116,28 @@ function Start-NodeBackground {
         [Parameter(Mandatory)][string]$ScriptPath,
         [Parameter(Mandatory)][string]$WorkingDir,
         [string[]]$ExtraArgs = @(),
-        [hashtable]$ExtraEnv = @{}
+        [hashtable]$ExtraEnv = @{},
+        [string]$LogFile = ''
     )
     $psi = New-Object System.Diagnostics.ProcessStartInfo
-    $psi.FileName = $NodePath
-    # ScriptPath 加双引号；额外参数逐个拼接。注意：不要在赋值表达式里用 `if` 子表达式，
-    # PowerShell 5.1 会把它当作 cmdlet 名解析报错。
+    $psi.WorkingDirectory = $WorkingDir
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
     $argLine = '"' + $ScriptPath + '"'
     if ($ExtraArgs -and $ExtraArgs.Count -gt 0) {
         $argLine += ' ' + ($ExtraArgs -join ' ')
     }
-    $psi.Arguments = $argLine
-    $psi.WorkingDirectory = $WorkingDir
-    $psi.UseShellExecute = $false
-    $psi.CreateNoWindow = $true
+    if ($LogFile) {
+        # 经 cmd /c 重定向 stdout/stderr 到日志（处理含空格路径），失败时可诊断。
+        # 必须用 /s /c + 外层引号：cmd 默认会剥掉 /c 后首尾引号，导致含空格路径被截断
+        $logDir = Split-Path -Parent $LogFile
+        if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+        $psi.FileName = 'cmd.exe'
+        $psi.Arguments = '/s /c ""' + $NodePath + '" ' + $argLine + ' > "' + $LogFile + '" 2>&1"'
+    } else {
+        $psi.FileName = $NodePath
+        $psi.Arguments = $argLine
+    }
     # 透传当前进程的 NODE_OPTIONS/CODEBUDDY_* 给子进程环境
     foreach ($k in @('NODE_OPTIONS') + @((Get-ChildItem Env: | Where-Object { $_.Name -like 'CODEBUDDY*' } | Select-Object -ExpandProperty Name))) {
         $val = [Environment]::GetEnvironmentVariable($k, 'Process')
@@ -412,8 +440,7 @@ try {
         #   1) NODE_OPTIONS=--require="...node-language-shim.cjs"（元凶，会强制所有子 node 加载 shim）
         #   2) CODEBUDDY_SAFE_DELETE_ENABLED=1 等环境变量
         #   3) PATH 中混入 CodeBuddy CN 目录（其下可能有劫持版 node）
-        [Environment]::SetEnvironmentVariable('NODE_OPTIONS', $null, 'Process')
-        foreach ($k in @(Get-ChildItem Env: | Where-Object { $_.Name -like 'CODEBUDDY*' } | Select-Object -ExpandProperty Name)) {
+        foreach ($k in $script:stripVars) {
             [Environment]::SetEnvironmentVariable($k, $null, 'Process')
         }
         $curPath = [Environment]::GetEnvironmentVariable('PATH', 'Process')
@@ -429,8 +456,10 @@ try {
         if (-not $NodePath) { $NodePath = (Get-Command node).Source }
         if ($makeCli) {
             Write-Info "使用本地 CLI: $makeCli"
-            # 用 .NET Process 启动，正确处理含空格的 node 路径和 makeCli 路径
-            [void](Start-NodeBackground -NodePath $NodePath -ScriptPath $makeCli -WorkingDir $projDir -ExtraArgs @('--no-open', '--port', $MakePort, '--host', '127.0.0.1'))
+            # 用 .NET Process 启动，正确处理含空格的 node 路径和 makeCli 路径；
+            # stdout/stderr 重定向到 07-日志\make-<port>.log，启动失败时可诊断
+            $makeLog = Join-Path $RootDir "07-日志\make-$MakePort.log"
+            $script:makeProc = Start-NodeBackground -NodePath $NodePath -ScriptPath $makeCli -WorkingDir $projDir -ExtraArgs @('--no-open', '--port', $MakePort, '--host', '127.0.0.1') -LogFile $makeLog
         } else {
             Write-Warn '本地未找到 @axhub/make，回退 npx 现场下载（这一步会明显变慢）'
             Write-Warn '建议：在任一项目下执行 pnpm add -D @axhub/make，之后所有项目都会走本地包'
@@ -533,7 +562,7 @@ try {
             if ($lastStatus -and [int]$lastStatus.vitePort -gt 0 -and (Test-PortFree ([int]$lastStatus.vitePort))) {
                 $VitePort = [int]$lastStatus.vitePort
             } else {
-                $VitePort = Find-FreePort 51720
+                $VitePort = Find-FreePort $script:viteStart $script:viteMaxOffset
             }
         }
         Write-Step 6 "启动 Vite 开发服务器 (端口 $VitePort)" '首次预构建依赖较慢，之后有缓存'
@@ -553,8 +582,7 @@ try {
         $env:AXHUB_MAKE_SKIP_AUTO_START_SERVER = '1'
         # 同样清掉 NODE_OPTIONS / CODEBUDDY_*，避免 Vite 进程被 CodeBuddy shim 劫持 fs 操作
         if (-not $NodePath) { $NodePath = (Get-Command node).Source }
-        [Environment]::SetEnvironmentVariable('NODE_OPTIONS', $null, 'Process')
-        foreach ($k in @(Get-ChildItem Env: | Where-Object { $_.Name -like 'CODEBUDDY*' } | Select-Object -ExpandProperty Name)) {
+        foreach ($k in $script:stripVars) {
             [Environment]::SetEnvironmentVariable($k, $null, 'Process')
         }
         $actualVitePort = 0
@@ -593,16 +621,36 @@ try {
     # ---------- 7/8 等待 Make 就绪并注册项目 ----------
     Write-Step 7 '等待 Make 就绪并注册项目' '与 Vite 启动并行，通常已就绪'
     if ($makeNeedWait) {
-        # 7a. 等 health 接口返回 admin 角色
+        # 7a. 等 health 接口返回 admin 角色；若 Make 进程启动即崩，检测到后自动清理重启（最多 2 次）
         $ready = $false
         $deadline = (Get-Date).AddSeconds(60)
         $attempt = 0
+        $restarts = 0
         while ((Get-Date) -lt $deadline) {
             $attempt++
             $h = Get-MakeHealth $MakePort 2
             if ($h -and $h.ok -and $h.role -eq 'admin' -and $h.devMode -ne $true) {
                 Write-Good "Make 服务已就绪 (pid $($h.server.pid))"
                 $ready = $true; break
+            }
+            # 自愈：Make 进程已退出（启动即崩）→ 清理残留心跳并重启，避免干等 60 秒
+            if ($script:makeProc -and $script:makeProc.HasExited) {
+                if ($restarts -ge 2) {
+                    Write-Warn "Make 进程已退出且自动重启 $restarts 次仍未成功，放弃等待"
+                    $makeLog = Join-Path $RootDir "07-日志\make-$MakePort.log"
+                    if (Test-Path $makeLog) { Write-Warn "Make 日志尾部：$((Get-Content $makeLog -Tail 8 -Encoding UTF8) -join ' | ')" }
+                    throw "Make 服务启动失败（进程退出码 $($script:makeProc.ExitCode)，端口 $MakePort），详见 07-日志\make-$MakePort.log"
+                }
+                Write-Warn "Make 进程已退出 (exit=$($script:makeProc.ExitCode))，清理残留并重启（第 $($restarts + 1) 次）…"
+                $adminInfoPath = Join-Path $env:USERPROFILE '.axhub\make\.admin-server-info.json'
+                if (Test-Path $adminInfoPath) { Remove-Item $adminInfoPath -Force -ErrorAction SilentlyContinue }
+                $makeCli2 = Resolve-MakeCli $projDir $RootDir
+                if ($makeCli2) {
+                    $makeLog2 = Join-Path $RootDir "07-日志\make-$MakePort.log"
+                    $script:makeProc = Start-NodeBackground -NodePath $NodePath -ScriptPath $makeCli2 -WorkingDir $projDir -ExtraArgs @('--no-open', '--port', $MakePort, '--host', '127.0.0.1') -LogFile $makeLog2
+                    $restarts++
+                    $deadline = (Get-Date).AddSeconds(30)   # 重启后再给 30 秒
+                }
             }
             if ($attempt % 10 -eq 0) {
                 $reason = if (-not $h) { '无响应' } else { "ok=$($h.ok) role=$($h.role) devMode=$($h.devMode)" }

@@ -54,6 +54,16 @@ entries.json
 !.agents/knowledge/
 !.agents/knowledge/**
 !.agents/rules/
+!.agents/agents/
+!.agents/agents/**
+!.agents/hooks/
+!.agents/hooks/**
+!.agents/scripts/
+!.agents/scripts/**
+!.agents/hooks.json
+!.agents/settings.json
+!.agents/skills-lock.json
+
 !.agents/rules/**
 .opencode/
 .codegraph/

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * room-cli.mjs — 任务房间命令 v0.3.1（智能体协作对话工具）
+ * room-cli.mjs — 任务房间命令 v0.3.2（智能体协作对话工具）
  *
  * 用法：
  *   node room-cli.mjs open "<任务名>" --m 甲,乙 [--who <id>]
@@ -11,6 +11,17 @@
  *   node room-cli.mjs handoff <房间名> <接棒方> "内容" [--who <id>] [--body-file <utf8文件>]
  *   node room-cli.mjs put <房间名> <文件路径> [--who <id>] [--force]
  *   node room-cli.mjs status <房间名> <状态> [--who <id>]
+ *
+ * v0.3.2 修复 B8（2026-09-18，qwen 报告+实证+修复）：
+ *   updateBoardMeta() 正则带 ^ 锚定，匹配不到 open() 生成的带「- 」列表前缀的元信息行
+ *   → 白板「状态」「接棒人」两字段写入静默失效（命令返回 {ok:true}、消息流也记了，
+ *     但文件原样写回）。实测全部 9 个房间状态无一例外卡在 active。
+ *   修法：① 正则改 `^([-*\s]*)${key}[:：]\s*.*$`，捕获并保留原前缀（向后兼容存量房间）；
+ *         ② 两分支都失败时返回 false；③ status() 改为写入失败即 return {error} 且不记消息流
+ *           （消除"日志说改了、白板没改"的假成功）；④ handoff() 返回值新增 boardUpdated，
+ *           失败附 boardWarn（消息流仍留痕，审计价值不丢）。
+ *   验证：8 项实测全过（含可逆写入、前缀保留、失败分支报错且不污染消息流、room read 解析）。
+ *   详见 rooms/千问_工作台三重审查整改闭环/产物/qwen-B8修复回报-room-cli白板写入失效-2026-09-18.md
  *
  * v0.3.1 修复（2026-09-05，豆包维护，测试 P0）：
  *   4. say/board/handoff 支持 --body-file：UTF-8 文件读正文并剥离 BOM，规避 PowerShell GBK 乱码
@@ -176,14 +187,38 @@ function updateBoardSection(name, section, content, who) {
   return stamp;
 }
 
-/** 更新白板元信息（接棒人/状态） */
+/**
+ * 更新白板元信息（接棒人/状态）
+ *
+ * v0.3.2 修复 B8（2026-09-18，qwen 报告并实证）：
+ *   open() 生成的元信息行带列表前缀「- 状态：active」，而原正则 `^${key}[:：]` 带 ^ 锚定，
+ *   匹配不到带前缀的行 → 走 else 分支，`/^状态[:：]/m` 同样匹配不到 → replace 无效，
+ *   文件原样写回，函数却无返回值，调用方（status/handoff）照常返回 {ok:true}。
+ *   后果：白板「状态」「接棒人」两个字段静默失效（读得到、改不动；
+ *   parseBoard 的正则未带 ^ 锚定，所以读取正常，掩盖了写入失败）。
+ *   现兼容任意列表前缀（- / * / 空白），替换时保留原前缀；两分支都失败返回 false。
+ *
+ * @returns {boolean} 是否真正写入成功
+ */
 function updateBoardMeta(name, key, value) {
   const specF = specFile(name);
   let txt = fs.existsSync(specF) ? fs.readFileSync(specF, 'utf-8').replace(/\r\n/g, '\n') : '';
-  const re = new RegExp(`^${key}[:：]\\s*.*$`, 'm');
-  if (re.test(txt)) txt = txt.replace(re, `${key}：${value}`);
-  else txt = txt.replace(/^状态[:：]/m, `${key}：${value}\n状态：`);
-  atomicWrite(specF, txt);
+  // 捕获组 1 = 原行的列表前缀（"- " / "* " / 空白 / 空），替换时原样保留
+  const re = new RegExp(`^([-*\\s]*)${key}[:：]\\s*.*$`, 'm');
+  const m = re.exec(txt);
+  if (m) {
+    txt = txt.replace(re, `${m[1]}${key}：${value}`);
+    atomicWrite(specF, txt);
+    return true;
+  }
+  // 白板缺该字段：插到「状态」行之前，保持元信息区顺序（同样保留前缀）
+  const anchor = /^([-*\s]*)状态[:：]/m.exec(txt);
+  if (anchor) {
+    txt = txt.replace(/^([-*\s]*)状态[:：]/m, `${anchor[1]}${key}：${value}\n${anchor[1]}状态：`);
+    atomicWrite(specF, txt);
+    return true;
+  }
+  return false;
 }
 
 /** 检测踢皮球：最近 handoff 是否 A→B→A 往返 ≥2 次 */
@@ -231,12 +266,17 @@ function handoff(name, to, content, who) {
   if (!to) return { error: '缺少接棒方（handoff <房间> <接棒方> "内容"）' };
   const entry = { ts: nowTs(), from: who, to, intent: 'handoff', content: `[handoff→${to}] ${content}` };
   appendLog(name, entry);
-  updateBoardMeta(name, '接棒人', to);
+  // B8：写入失败必须显式暴露，不能静默 ok（消息流已留痕，白板字段未更新）
+  const boardUpdated = updateBoardMeta(name, '接棒人', to);
   const pp = detectPingPong(name);
   const warn = pp.risk
     ? `⚠️ 检测到接力往返（${pp.seq.join(' | ')}），已往返 ${pp.backAndForth} 次，建议交用户仲裁（协议：同一任务转交超 2 次强制用户裁决）。`
     : '';
-  return { ok: true, room: name, entry, holder: to, pingpong: pp, warn };
+  return {
+    ok: true, room: name, entry, holder: to, pingpong: pp, warn,
+    boardUpdated,
+    ...(boardUpdated ? {} : { boardWarn: '⚠️ 消息流已记录 handoff，但白板「接棒人」字段写入失败（未匹配到元信息行），请手工校正 00-任务说明.md' }),
+  };
 }
 
 function put(name, filePath, who, force) {
@@ -258,9 +298,13 @@ function status(name, st, who) {
   const rp = roomPath(name);
   if (!fs.existsSync(rp)) return { error: '房间不存在: ' + name };
   if (!VALID_STATUS.includes(st)) return { error: '状态非法: ' + st + '（可选 ' + VALID_STATUS.join('/') + '）' };
-  updateBoardMeta(name, '状态', st);
+  // B8：先写白板，写入失败则报错且不记消息流（避免"日志说改了、白板没改"的假成功）
+  const boardUpdated = updateBoardMeta(name, '状态', st);
+  if (!boardUpdated) {
+    return { error: `白板「状态」字段写入失败：00-任务说明.md 中未找到可匹配的状态行（房间 ${name}）。消息流未记录，请检查白板格式后重试。` };
+  }
   appendLog(name, { ts: nowTs(), from: who, intent: 'confirm', content: `[${who}] 状态更新为 ${st}` });
-  return { ok: true, room: name, status: st };
+  return { ok: true, room: name, status: st, boardUpdated };
 }
 
 function open(name, members, who) {

@@ -139,3 +139,113 @@
 | "这次是紧急修改" | 紧急不是跳过规范的理由 |
 | "我记得规范内容" | 规范会更新，每次都要读当前版本 |
 | "内容太多，先写完再说" | 写完后扫描是强制的，不是可选的 |
+
+---
+
+## 需求文档技能路由（req-doc / prd-writer / prototype-to-prd）
+
+本包存在 **两套需求文档体系**，不可混为同一真源。收到任务时 **先按本表选技能**，再 Read 对应 `SKILL.md`；禁止跳过路由直接写文档。
+
+### 体系对比
+
+| 维度 | `req-doc`（SRS · 研发交付） | `prd-writer`（PRD · 产品探索） |
+| --- | --- | --- |
+| 定位 | 企业交付、研发规格、Hook/子 Agent 审查 | 产品方向对齐、Vibe 原型、快速迭代 |
+| 产出路径 | `docs/01-需求与规划/*-SRS需求规格说明书-V*.md` | `docs/YYYY-MM-DD-<主题>-概念版.md` + `*-PRD.md` |
+| 语言规范 | `.agents/knowledge/phase1-requirements/prd-language.md` | 技能内 `references/`，含交互/状态/ASCII 线框 |
+| 下游 | `feature-list`、`hld-design`、`page-generator`、`annotation` | `diagram-generator`、静态原型、测试/手册（按需） |
+| 子 Agent | req-analyzer → **req-writer**（子 Agent）→ req-reviewer | 无；主 Agent 按 `references/` 执行 |
+
+> **命名区分**：子 Agent `req-writer`（`.agents/agents/req-writer.md`）仅服务于 `req-doc`；技能 `prd-writer` 是独立技能目录，二者不可互换。
+
+### 触发路由（按优先级）
+
+**规则：输入源优先于泛化触发词；研发/SRS 关键词优先于 PRD 关键词；仅当明确产品探索语境或无 SRS 要求时用 prd-writer。**
+
+| 优先级 | 用户意图 / 输入 | 选用技能 | 禁止 |
+| --- | --- | --- | --- |
+| 1 | 提供 **Axure 导出包**、**线上 URL**、**本地 HTML 原型** 要写 PRD | **`prototype-to-prd`** → 盘点后 **`prd-writer`** | 不可用 `req-doc` 代替盘点；不可跳过盘点写 §5 |
+| 2 | **SRS**、**需求规格说明书**、**需求说明书**、**细化/完善 SRS**、**代码反向同步需求**、**Word 模板提炼** | **`req-doc`** | 不可用 `prd-writer` 产出 SRS 路径 |
+| 3 | 项目已进入 **研发交付**（已有/将要 SRS，或后续走 HLD/LLD/page-generator） | **`req-doc`** | 不可另起 `*-PRD.md` 作为研发真源 |
+| 4 | **PRD**、**概念版**、**产品需求**、**从零写 PRD**、**MVP 功能范围**（口述无原型） | **`prd-writer`** | 不可套用 SRS 章节模板 |
+| 5 | **需求文档** / **写需求** / **补充需求** / **审查需求**（**未说明 SRS 或 PRD**） | **按默认规则推断**（见下）；仍无法判断时 **问一次** | 不可默认任选其一 |
+| 6 | **导出 Word**（未指明文档类型） | 按 **已存在文件** 类型选导出；新建文档先完成上表路由 | — |
+
+**默认推断（优先级 5，减少无谓询问）：**
+
+| 工作区信号 | 默认技能 |
+| --- | --- |
+| 存在 `docs/01-需求与规划/*SRS*` 或 `*需求说明书*` | **`req-doc`** |
+| 存在 `docs/*-PRD.md` 或 `*-概念版.md` | **`prd-writer`** |
+| 用户 @ Axure / URL / HTML 原型 | **`prototype-to-prd`** |
+| 用户说「正式立项 / 进开发 / 出 HLD」 | **`req-doc`** |
+| 用户说「对齐方向 / 轻量 PRD / 做原型」 | **`prd-writer`** |
+| 以上皆无 | 问一次 SRS vs PRD（见下） |
+
+**歧义时的默认问句（优先级 5）：**
+
+> 这份需求是按 **研发交付 SRS**（`req-doc`，路径 `docs/01-需求与规划/`，供设计与开发）还是 **产品探索 PRD**（`prd-writer`，概念版 + 落地版，供方向对齐与原型）来写？
+
+用户已声明「正式立项 / 要进开发 / 要 SRS」→ `req-doc`；「先对齐方向 / 做原型 / 轻量 PRD」→ `prd-writer`。
+
+### 触发词速查
+
+| 技能 | 典型触发词（任一命中即进入路由） |
+| --- | --- |
+| **`prototype-to-prd`** | Axure 转 PRD、原型转需求、网站转 PRD、逆向 PRD、HTML 原型转文档、`/prototype-to-prd` |
+| **`req-doc`** | SRS、需求规格说明书、需求说明书、生成/细化/审查 SRS、代码和需求对齐、反向更新需求、导入需求模板 |
+| **`prd-writer`** | PRD、产品需求、概念版、从零写 PRD、整理/改进 PRD、MVP 范围、需求评审（PRD 语境） |
+
+**重叠词**（需求文档、补充需求、导出 Word 等）：**不自动匹配**，按上表优先级 5 澄清，或根据已有文件扩展名/路径判断。
+
+### 工作流衔接
+
+| 上游 | 默认下游 | 备注 |
+| --- | --- | --- |
+| `brainstorming` 设计方案确认后 | 问用户：**SRS（req-doc）** 或 **PRD（prd-writer）** | 不再默认仅 req-doc |
+| `prototype-to-prd` 盘点确认后 | **`prd-writer`** 模式 A | 模板复用 `prd-writer/references/`，禁止复制第二套 |
+| `prd-writer` PRD 确认且用户要进研发 | **强制 `req-doc` Step F**（PRD→SRS 转写）；不可跳过直接 `page-generator` | 转换时标注来源 PRD；登记 **`SPEC_SOURCE=SRS`**；规则见 **§ PRD→SRS 转写门禁** |
+| `pm-product-pipeline` 阶段 5 | Step 0 选文档类型：**含阶段6 默认 `req-doc`（SRS）**；PRD / 原型逆向须 **5C→Step F** 后再进阶段6 | 登记 **`SPEC_SOURCE`**；含阶段6 时真源须为 SRS |
+| `feature-list` / `annotation` / `hld-design` / `delivery-plan` | 输入须为 **SRS 路径** | 若仅有 `*-PRD.md` → **阻断**，输出门禁话术，路由 **`req-doc` Step F** |
+
+### PRD→SRS 转写门禁
+
+> 完整规则：Read `prd-to-srs-gate.md`；转写执行：`req-doc` **Step F** + `../skills/req-doc/references/prd-to-srs-handoff.md`。
+
+**铁律**：`page-generator`、`delivery-plan`（生成）、`hld-design`、`lld-design`、`feature-list`、`annotation` **不得**以 `*-PRD.md` 为规格真源。
+
+| 场景 | 动作 |
+| --- | --- |
+| 仅有 PRD，用户要「实现/开发/生成页面/交付计划/概要设计」 | **先 Step F**，再下游 |
+| PRD 刚落盘，用户说「进开发」 | 同上，不询问是否转写（批量/流水线默认转写） |
+| SRS + PRD 并存 | `SPEC_SOURCE` 指向 SRS |
+| 用户明确「跳过 SRS / 按 PRD 手动对齐」 | 仅 **单次** `page-generator` 降级；须标注非正式真源 |
+
+**触发 Step F 的典型说法**：PRD 转 SRS、进开发、转写需求、按 PRD 写 SRS。
+
+**出口**：SRS 落盘 + §5 七项检查 + `SPEC_SOURCE` 更新 → 方可 `page-generator`。
+
+### 安装与依赖
+
+- `prototype-to-prd` **必须与 `prd-writer` 同装**（硬依赖 `../skills/prd-writer/references/`）
+- Word 导出：三技能均共用 `../skills/common/export-word.*`
+- `prototype-to-prd` **不可单独安装使用**
+
+### 路由示例
+
+✅ 用户：「把这个 Axure 文件夹转成 PRD」→ `prototype-to-prd` → `-原型盘点.md` → `prd-writer`
+
+✅ 用户：「写 SRS 需求说明书，后面要开发」→ `req-doc`
+
+✅ 用户：「我有个 App 想法，先写 PRD 对齐方向」→ `prd-writer`
+
+✅ 用户：「根据现有前端代码更新需求说明书」→ `req-doc` 反向同步（非 prototype-to-prd）
+
+❌ 用户：「写需求文档」→ 未路由直接写 `docs/*-PRD.md` 或 SRS
+
+❌ 同一功能模块在 SRS 与 PRD 各写一套且未标注真源
+
+❌ 用户：「PRD 写好了，开始实现」→ 未走 Step F 直接 `page-generator`
+
+✅ 用户：「PRD 写好了，进开发」→ `req-doc` **Step F** → `delivery-plan` 或 `page-generator`
+

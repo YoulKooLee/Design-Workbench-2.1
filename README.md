@@ -68,21 +68,21 @@
 
 > 工作台面板本身无第三方 npm 依赖（纯 Node 内置模块），克隆即可运行；仅项目级（admin 框架）需要 pnpm 安装依赖。
 
-### 2. 部署步骤
+### 2. 部署步骤（推荐：一键引导）
 
 ```bash
 # 1) 获取代码
 git clone git@github.com:YoulKooLee/Design-Workbench-2.1.git   # 或解压 zip 到任意目录（路径含中文/空格均可）
 cd Design-Workbench-2.1
 
-# 2) 确认依赖
-node -v          # 需 ≥ 18
-# （如计划使用 admin 框架项目）npm i -g pnpm && pnpm -v
+# 2) 首次部署引导（自动：Node 探测/架构、Git 行尾规范、pnpm、@axhub/make 预装、编码体检、冒烟自检）
+powershell -ExecutionPolicy Bypass -File 06-运行脚本/bootstrap.ps1
 
 # 3) 一键启动
-双击 启动工作台.cmd        # 或 npm start（等价于 node 工作台面板/server.mjs）
-# 浏览器自动打开 http://127.0.0.1:7788
+双击 启动工作台.cmd        # 浏览器自动打开 http://127.0.0.1:7788
 ```
+
+> 工作台面板本身无第三方 npm 依赖（纯 Node 内置模块）；bootstrap 会预装 `@axhub/make` 到模板层（`02-模板/_project-template/node_modules/`），避免首次启动开发栈时 npx 现场下载。若跳过 bootstrap，直接双击 启动工作台.cmd 也可运行（缺少的依赖由启动器按需回退）。
 
 首次启动后建议跑一遍自检：
 

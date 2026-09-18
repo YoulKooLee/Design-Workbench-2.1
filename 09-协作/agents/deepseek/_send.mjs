@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const TOOLS = 'C:\\Users\\游翔\\Documents\\AI work\\产品设计工作台\\09-协作\\messages\\tools';
+const TOOLS = path.resolve(__dirname, '..', '..', 'messages', 'tools'); // 由本脚本位置推导（千问 P1-10）
 const node = process.execPath;
 const WHO = 'deepseek';
 const here = (f) => path.join(__dirname, f);

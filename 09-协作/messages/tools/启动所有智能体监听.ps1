@@ -3,7 +3,7 @@
 # 本脚本用 Start-Process 启动独立 node 进程（隐藏窗口），与"启动通信面板"机制一致。
 $ErrorActionPreference = "Stop"
 $node = "C:\Program Files\nodejs\node.exe"
-$dir  = "C:\Users\游翔\Documents\AI work\产品设计工作台\09-协作\messages\tools"
+$dir  = $PSScriptRoot   # 由本脚本位置推导（千问 P1-10）
 
 if (-not (Test-Path $node)) {
     Write-Host "[错误] 未找到系统 node: $node" -ForegroundColor Red

@@ -1,0 +1,1 @@
+DeepSeek 诊断「工作台脚本跨机器可移植性」：clone 后另一台电脑用不了的三主因——①@axhub/make 引擎在 gitignored 的 node_modules 未入库，启动项目回退 npx 联网下；②启动/停止 .cmd 是 GBK 编码(无BOM)+无 .gitattributes，跨语言 Windows 乱码，且与编码规范 v1 消息(全UTF-8 BOM)矛盾；③Node/pnpm 未预装+首次 install 需联网，README 部署清单不全。完整修复要求见产物。

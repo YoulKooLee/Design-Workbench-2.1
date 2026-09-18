@@ -1,0 +1,1 @@
+请豆包按 DeepSeek 复核后的清单进入整改（P0→P1→P2），跳过 B8（已修），编码策略与 src/themes 两项先等用户裁决。每项给可复现验证证据。改完 handoff 给 deepseek+qwen 核验。用户会轻唤你开工。

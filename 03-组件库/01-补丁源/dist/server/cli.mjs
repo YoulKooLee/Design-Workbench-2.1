@@ -244249,7 +244249,21 @@ function handleWorkspaceApi(req, res, options, context, pathname, url, handlers)
       if (JSON.stringify(tree) !== JSON.stringify(storedTree)) {
         sidebarTreeStore.setTree(tab, tree);
       }
-      sendJson(res, { tab, version: SIDEBAR_TREE_VERSION, tree });
+      let responseTree = tree;
+      if (tab === "components") {
+        const runtimeOrigin = getMakeClientRuntimeOrigin(projectRoot, options?.runtimeOrigin || "", req);
+        if (runtimeOrigin) {
+          responseTree = tree.map((node) => {
+            if (node && node.kind === "item" && typeof node.itemKey === "string" && node.itemKey.startsWith("components/")) {
+              const cat = node.itemKey.slice("components/".length);
+              const clientUrl = `${runtimeOrigin}/component-templates/${encodeURIComponent(cat)}/index.html`;
+              return { ...node, clientUrl, previewUrl: clientUrl };
+            }
+            return node;
+          });
+        }
+      }
+      sendJson(res, { tab, version: SIDEBAR_TREE_VERSION, tree: responseTree });
       return true;
     }
     if (req.method === "PUT") {

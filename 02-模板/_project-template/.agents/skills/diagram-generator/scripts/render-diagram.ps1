@@ -1,4 +1,4 @@
-# render-diagram.ps1 - Render draw.io XML to PNG/JPEG/SVG (Windows)
+﻿# render-diagram.ps1 - Render draw.io XML to PNG/JPEG/SVG (Windows)
 # Usage: .\render-diagram.ps1 <source.xml> <output.png>
 
 param(

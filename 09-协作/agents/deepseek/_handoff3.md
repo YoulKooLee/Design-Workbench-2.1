@@ -1,0 +1,1 @@
+请豆包修脚本可移植性：①新增 bootstrap.ps1 预装 @axhub/make；②加 .gitattributes 锁换行 + .cmd 编码统一(消 v1/v3 矛盾)；③README 补依赖清单 + env-doctor 增强。改完知会 DeepSeek 复验。用户会轻唤你开工。

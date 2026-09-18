@@ -18,15 +18,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 
-const SHARE = 'C:\\Users\\游翔\\Documents\\AI work\\产品设计工作台\\09-协作';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// 由脚本自身位置推导（tools -> messages -> 09-协作），可移植（千问 P1-10）
+const SHARE = path.resolve(__dirname, '..', '..');
 const INBOX = path.join(SHARE, 'messages', 'inbox', 'deepseek');
 const TOOLS = path.join(SHARE, 'messages', 'tools');
 const STATE_FILE = path.join(TOOLS, 'watcher-state.json');
 const LOG_FILE = path.join(TOOLS, 'watcher.log');
 const LOCK_FILE = path.join(TOOLS, 'watcher.lock');
 // 直接调 dsh 的 bin.js，避免 .cmd 包装与中文参数乱码（node→node argv 为 UTF-16，安全）
-const DSH_BIN = 'C:\\Users\\游翔\\deepseek-harness\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js';
+const DSH_BIN = path.join(os.homedir(), 'deepseek-harness', 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js');
 const POLL_MS = 15000;
 const RUN_TIMEOUT_MS = 600000; // headless 单次运行上限 10 分钟
 const MAX_FAILURES = 3;
@@ -102,25 +106,31 @@ function runHeadless() {
 }
 
 // 自动归档刚完成的 headless 会话（避免工作台面板会话堆积；仅归档标记，数据不删）
-const WORKSPACE_FILE = 'C:\\Users\\游翔\\.dsh\\storages\\workspace.json';
-const HEADLESS_SESSIONS_DIR = 'C:\\Users\\游翔\\.dsh\\sessions\\--C-Users-~6E38~7FD4-Documents-AI~0020work-~5171~4EAB~4FE1~606F~76EE~5F55--';
+// 路径全部由 homedir 推导，会话目录自动发现（不再硬编码 URL 编码目录名，千问 P1-10）
+const DSH_HOME = path.join(os.homedir(), '.dsh');
+const WORKSPACE_FILE = path.join(DSH_HOME, 'storages', 'workspace.json');
 
 function archiveLatestHeadlessSession() {
   try {
-    if (!fs.existsSync(WORKSPACE_FILE) || !fs.existsSync(HEADLESS_SESSIONS_DIR)) return;
-    const dirs = fs.readdirSync(HEADLESS_SESSIONS_DIR)
-      .filter((d) => d.startsWith('session-'))
-      .map((d) => path.join(HEADLESS_SESSIONS_DIR, d))
-      .filter((p) => fs.statSync(p).isDirectory());
-    if (!dirs.length) return;
-    dirs.sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
-    const newest = path.basename(dirs[0]);
+    if (!fs.existsSync(WORKSPACE_FILE)) return;
+    // 自动发现 sessions 根下所有工作区目录中的 session-* 子目录，取最新一个
+    const sessionsRoot = path.join(DSH_HOME, 'sessions');
+    if (!fs.existsSync(sessionsRoot)) return;
+    const isDir = (p) => { try { return fs.statSync(p).isDirectory(); } catch { return false; } };
+    let newest = null;
+    for (const ws of fs.readdirSync(sessionsRoot).map((d) => path.join(sessionsRoot, d)).filter(isDir)) {
+      for (const s of fs.readdirSync(ws).filter((d) => d.startsWith('session-')).map((d) => path.join(ws, d)).filter(isDir)) {
+        const m = fs.statSync(s).mtimeMs;
+        if (!newest || m > newest.m) newest = { name: path.basename(s), m };
+      }
+    }
+    if (!newest) return;
     const ws = JSON.parse(fs.readFileSync(WORKSPACE_FILE, 'utf8'));
     const archived = (ws.global && ws.global.archivedSessionIds) || [];
-    if (!archived.includes(newest)) {
-      ws.global.archivedSessionIds = archived.concat(newest);
+    if (!archived.includes(newest.name)) {
+      ws.global.archivedSessionIds = archived.concat(newest.name);
       fs.writeFileSync(WORKSPACE_FILE, JSON.stringify(ws, null, 2), 'utf8');
-      log(`已自动归档 headless 会话 ${newest}（面板不再堆积）`);
+      log(`已自动归档 headless 会话 ${newest.name}（面板不再堆积）`);
     }
   } catch (e) {
     log(`自动归档失败（不影响处理）: ${e.message}`);

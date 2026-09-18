@@ -39,7 +39,7 @@
 1. 确定原型或页面目标；目标不清时先请用户确认。
 2. 确定唯一的 `DESIGN.md`；不存在时记录降级但不中断。
 3. 读取目标源码和本地样式；有预览环境时检查桌面和移动端，可用浏览器时保留截图证据。
-4. 可以使用 `rules/references/impeccable/scripts/detect.mjs` 辅助取证，但不要让 detector 输出先污染设计判断。
+4. 可以使用 `../vendor/impeccable-scripts/detect.mjs` 辅助取证，但不要让 detector 输出先污染设计判断。
 5. 综合设计判断、响应式、可访问性和实现证据，不直接拼接第三方报告。
 6. 写入 `src/prototypes/<prototype-id>/.spec/reviews/ui-review.md`；页面级报告按需使用 `<page-id>-ui-review.md`。
 

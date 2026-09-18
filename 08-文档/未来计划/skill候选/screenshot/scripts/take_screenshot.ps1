@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$Path,
   [ValidateSet("default", "temp")][string]$Mode = "default",
   [string]$Format = "png",

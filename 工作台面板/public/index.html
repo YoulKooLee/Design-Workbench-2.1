@@ -59,6 +59,10 @@
   tr.selrow{cursor:pointer}
   tr.sel td{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
   .selmark{color:var(--accent);font-weight:700;width:24px;text-align:center}
+  /* 历史版本弹窗：列表区域独立滚动，底部按钮固定；说明列超长截断（悬停 title 看全文） */
+  .hist-list{flex:1;min-height:0;overflow-y:auto;margin:0 -6px 0 0;padding-right:6px}
+  .hist-list table{table-layout:fixed}
+  .hist-list .desc-cell{max-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .path{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted);word-break:break-all}
   .desc{color:var(--ink);font-size:13px;max-width:420px}
   .muted{color:var(--muted)}
@@ -1490,7 +1494,7 @@ function updateHistButtons(){
 }
 async function showHistory(rel){
   const decRel = decodeURIComponent(rel);
-  openModal(`<div class="modal-head"><h3>历史版本 · ${decRel}</h3><button class="modal-x" onclick="closeModal()">✕</button></div><div id="histBody"><span class="spinner"></span>读取中…</div>`);
+  openModal(`<div class="modal-head"><h3>历史版本 · ${decRel}</h3><button class="modal-x" onclick="closeModal()">✕</button></div><div id="histBody" style="flex:1;min-height:0;display:flex;flex-direction:column"><span class="spinner"></span>读取中…</div>`, true);
   const r = await api('/api/projects/history?relative='+encodeURIComponent(rel));
   let body = '';
   if(!r.isGit){
@@ -1501,17 +1505,19 @@ async function showHistory(rel){
       <div class="hint" style="margin:6px 0 12px">可先提交一次以建立版本历史。</div>
       <div class="modal-ops"><button class="btn primary" id="commitBtn">提交当前版本</button></div>`;
   } else {
-    body = `<div class="hint" style="margin:4px 0 10px">点击任意一条记录选中，再执行下方「提交 / 删除 / 回滚」操作。</div>
-      <div class="card"><table><thead><tr><th>提交</th><th>日期</th><th>说明</th><th></th></tr></thead><tbody id="histRows">`;
+    body = `<div class="hint" style="margin:4px 0 10px">点击任意一行选中（高亮）；每行可单独「删除 / 回滚」，底部「提交当前版本」新建记录。说明超长时悬停查看全文。</div>
+      <div class="card hist-list"><table><thead><tr><th style="width:92px">日期</th><th>说明</th><th style="width:112px">操作</th></tr></thead><tbody id="histRows">`;
     for(const c of r.commits){
       const rootBadge = c.isRoot ? '<span class="badge root" title="这是项目的初始提交，无法单独删除">初始提交</span>' : '';
-      body += `<tr class="selrow" data-hash="${c.hash}" data-root="${c.isRoot?'1':''}"><td><span class="path">${c.hash}</span> ${rootBadge}</td><td>${c.date}</td><td>${c.msg}</td><td class="selmark"></td></tr>`;
+      const delBtn = c.isRoot
+        ? '<button class="btn sm danger" disabled title="初始提交无法单独删除">删除</button>'
+        : `<button class="btn sm danger" data-hdel="${c.hash}" title="删除该版本">删除</button>`;
+      const msgEsc = String(c.msg).replace(/"/g,'&quot;');
+      body += `<tr class="selrow" data-hash="${c.hash}" data-root="${c.isRoot?'1':''}"><td>${c.date} ${rootBadge}</td><td class="desc-cell" title="${msgEsc}">${c.msg}</td><td class="selmark"><span class="ops">${delBtn}<button class="btn sm" data-hroll="${c.hash}" title="回滚到该版本">回滚</button></span></td></tr>`;
     }
     body += `</tbody></table></div>
-      <div class="modal-ops" style="margin-top:14px;gap:10px">
-        <button class="btn primary" id="commitBtn">提交</button>
-        <button class="btn" id="delBtn">删除选中版本</button>
-        <button class="btn danger" id="rollbackBtn">回滚到选中版本</button>
+      <div class="modal-ops" style="margin-top:12px;gap:10px">
+        <button class="btn primary" id="commitBtn">提交当前版本</button>
       </div>`;
   }
   $('#histBody').innerHTML = body;
@@ -1534,52 +1540,53 @@ async function showHistory(rel){
     if(rr.ok) showHistory(rel);
   };
 
-  // 选中行（默认选中最新的非根提交；若只有一个根提交则选它，但删除按钮会被禁用）
+  // 选中行（点击行高亮标记当前位置；删除/回滚在行内操作列直接执行）
   histSelHash = null;
   histSelIsRoot = false;
   const rows = document.querySelectorAll('#histRows tr.selrow');
   rows.forEach(tr=>{
     tr.onclick = ()=>{
-      rows.forEach(x=>{ x.classList.remove('sel'); x.querySelector('.selmark').textContent=''; });
+      rows.forEach(x=>{ x.classList.remove('sel'); });
       tr.classList.add('sel');
-      tr.querySelector('.selmark').textContent='✓';
       histSelHash = tr.dataset.hash;
       histSelIsRoot = tr.dataset.root === '1';
-      updateHistButtons();
     };
   });
-  // 默认选中第一个提交
+  // 默认选中第一行（高亮标记当前位置）
   if(rows.length > 0){
-    const first = rows[0];
-    first.classList.add('sel');
-    first.querySelector('.selmark').textContent='✓';
-    histSelHash = first.dataset.hash;
-    histSelIsRoot = first.dataset.root === '1';
+    rows[0].classList.add('sel');
+    histSelHash = rows[0].dataset.hash;
+    histSelIsRoot = rows[0].dataset.root === '1';
   }
   updateHistButtons();
 
-  const delBtn = $('#delBtn');
-  if(delBtn) delBtn.onclick = async ()=>{
-    if(!histSelHash){ toast('请先选择一条历史版本','err'); return; }
-    if(histSelIsRoot){ toast('初始提交无法单独删除，请选择后续提交','err'); return; }
-    confirmModal('删除版本', `确定要从历史中删除提交 <b>${histSelHash}</b> 吗？<br>该提交之后的版本会接上；若涉及冲突将自动中止。`, async ()=>{
-      const rr = await api('/api/projects/git-delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:decRel,hash:histSelHash})});
-      toast(rr.msg, rr.ok?'ok':'err');
-      if(rr.ok){ showHistory(rel); return true; }
-      return false;
-    }, '确认删除');
-  };
+  // 行内「删除」：直接删除该版本
+  document.querySelectorAll('#histRows [data-hdel]').forEach(b=>{
+    b.onclick = (e)=>{
+      e.stopPropagation();
+      const hash = b.dataset.hdel;
+      confirmModal('删除版本', `确定要从历史中删除提交 <b>${hash}</b> 吗？<br>该提交之后的版本会接上；若涉及冲突将自动中止。`, async ()=>{
+        const rr = await api('/api/projects/git-delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:decRel,hash})});
+        toast(rr.msg, rr.ok?'ok':'err');
+        if(rr.ok){ showHistory(rel); return true; }
+        return false;
+      }, '确认删除');
+    };
+  });
 
-  const rbBtn = $('#rollbackBtn');
-  if(rbBtn) rbBtn.onclick = async ()=>{
-    if(!histSelHash){ toast('请先选择一条历史版本','err'); return; }
-    confirmModal('回滚到历史版本', `确定要将项目文件还原到 <b>${histSelHash}</b> 吗？<br>该版本<b>之后</b>的所有提交将被丢弃（可通过 Git reflog 在 30 天内恢复）。`, async ()=>{
-      const rr = await api('/api/projects/git-rollback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:decRel,hash:histSelHash})});
-      toast(rr.msg, rr.ok?'ok':'err');
-      if(rr.ok){ showHistory(rel); return true; }
-      return false;
-    }, '确认回滚', true);
-  };
+  // 行内「回滚」：还原到该版本
+  document.querySelectorAll('#histRows [data-hroll]').forEach(b=>{
+    b.onclick = (e)=>{
+      e.stopPropagation();
+      const hash = b.dataset.hroll;
+      confirmModal('回滚到历史版本', `确定要将项目文件还原到 <b>${hash}</b> 吗？<br>该版本<b>之后</b>的所有提交将被丢弃（可通过 Git reflog 在 30 天内恢复）。`, async ()=>{
+        const rr = await api('/api/projects/git-rollback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:decRel,hash})});
+        toast(rr.msg, rr.ok?'ok':'err');
+        if(rr.ok){ showHistory(rel); return true; }
+        return false;
+      }, '确认回滚', true);
+    };
+  });
 }
 
 // Skill 库

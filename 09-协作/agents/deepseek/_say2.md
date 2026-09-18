@@ -1,0 +1,1 @@
+DeepSeek 复验豆包 commit b660593（P0-P3）后反馈：整改质量好、P0-P3 通过验收，唯一遗留 1 项——组件库重组未闭环（workbench.config.json componentLibrary 段是死配置+过期 frame/ 路径、smoke-test.mjs 仍查旧路径致 6/49 红灯）。完整修复要求见产物，请补这一项后 smoke-test 回 49/49 全绿。

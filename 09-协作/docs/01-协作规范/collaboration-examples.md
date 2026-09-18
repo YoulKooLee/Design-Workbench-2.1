@@ -39,7 +39,7 @@
 
 **任务上下文**
 - 目标：生成一份结构监测项目的汇报 PPT（约15页），用于客户演示
-- 项目：C:\Users\游翔\Documents\AI work\Axhub\01-项目\结构监测
+- 项目：C:\Users\游翔\Documents\AI work\产品设计工作台\01-项目\结构监测
 
 **推理注释**
 - 关键决策：PPT 结构建议为 项目背景→技术架构→功能演示→数据展示→总结
@@ -172,7 +172,7 @@ CodeBuddy 完成了一个复杂功能（如数字孪生的告警联动规则引�
 
 **任务上下文**
 - 目标：审查数字孪生项目的告警联动规则引擎代码
-- 代码路径：C:\Users\游翔\Documents\AI work\Axhub\01-项目\Digital Twin\数字孪生\src\prototypes\rule-engine\
+- 代码路径：C:\Users\游翔\Documents\AI work\产品设计工作台\01-项目\Digital Twin\数字孪生\src\prototypes\rule-engine\
 
 **推理注释（提交者给审查者的上下文）**
 - 关键决策：规则引擎采用事件驱动架构，告警触发后通过规则链匹配联动动作

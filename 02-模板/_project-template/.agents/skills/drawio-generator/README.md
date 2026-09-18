@@ -47,7 +47,7 @@ drawio-generator/
 │   ├── validate-diagram.py
 │   ├── validate-diagram.ps1
 │   └── validate-diagram.sh
-└── examples/                 # 17 种 draw.io 模板 XML
+└── ../diagram-generator/examples/                 # 17 种 draw.io 模板 XML
     ├── 模板索引.md             # 人类浏览用；Agent 以 SKILL.md 为准
     ├── flowchart.xml           # 流程图 / 活动图
     ├── architecture.xml        # 技术架构图
@@ -68,29 +68,29 @@ drawio-generator/
     └── mindmap-minimal.xml     # 思维导图（简约线框）
 ```
 
-> **完整性说明：** `SKILL.md` 类型对照表所列 17 个模板文件均已就绪；`examples/模板索引.md` 提供各模板示例内容概要；`scripts/` 提供本地 XML 校验。本技能仅交付可编辑源文件，不包含 PNG/SVG 渲染能力。
+> **完整性说明：** `SKILL.md` 类型对照表所列 17 个模板文件均已就绪；`../diagram-generator/examples/模板索引.md` 提供各模板示例内容概要；`scripts/` 提供本地 XML 校验。本技能仅交付可编辑源文件，不包含 PNG/SVG 渲染能力。
 
 ## 支持的图表类型
 
 | 业务场景 | DIAGRAM_TYPE | 模板文件 |
 | --- | --- | --- |
-| 流程图 / 活动图 | `flowchart` | `examples/flowchart.xml` |
-| 技术架构图 | `architecture` | `examples/architecture.xml` |
-| 系统功能架构图 | `system-arch` | `examples/system-arch.xml` |
-| 时序图 | `sequence` | `examples/sequence.xml` |
-| 纵向泳道图 | `swimlane` | `examples/swimlane.xml` |
-| 横向泳道图 | `cross-functional` | `examples/cross-functional.xml` |
-| 矩阵泳道图 | `matrix-swimlane` | `examples/matrix-swimlane.xml` |
-| BPMN 流程图 | `bpmn` | `examples/bpmn-flow.xml` |
-| ER 图 | `er` | `examples/er-diagram.xml` |
-| UML 类图 | `class` | `examples/uml-class.xml` |
-| UML 用例图 | `usecase` | `examples/uml-usecase.xml` |
-| UML 状态图 | `state` | `examples/uml-state.xml` |
-| 组织结构图 | `orgchart` | `examples/orgchart.xml` |
-| 思维导图（左右平衡） | `mindmap` | `examples/mindmap.xml` |
-| 思维导图（自上而下） | `mindmap-vertical` | `examples/mindmap-vertical.xml` |
-| 思维导图（放射状） | `mindmap-radial` | `examples/mindmap-radial.xml` |
-| 思维导图（简约线框） | `mindmap-minimal` | `examples/mindmap-minimal.xml` |
+| 流程图 / 活动图 | `flowchart` | `../diagram-generator/examples/flowchart.xml` |
+| 技术架构图 | `architecture` | `../diagram-generator/examples/architecture.xml` |
+| 系统功能架构图 | `system-arch` | `../diagram-generator/examples/system-arch.xml` |
+| 时序图 | `sequence` | `../diagram-generator/examples/sequence.xml` |
+| 纵向泳道图 | `swimlane` | `../diagram-generator/examples/swimlane.xml` |
+| 横向泳道图 | `cross-functional` | `../diagram-generator/examples/cross-functional.xml` |
+| 矩阵泳道图 | `matrix-swimlane` | `../diagram-generator/examples/matrix-swimlane.xml` |
+| BPMN 流程图 | `bpmn` | `../diagram-generator/examples/bpmn-flow.xml` |
+| ER 图 | `er` | `../diagram-generator/examples/er-diagram.xml` |
+| UML 类图 | `class` | `../diagram-generator/examples/uml-class.xml` |
+| UML 用例图 | `usecase` | `../diagram-generator/examples/uml-usecase.xml` |
+| UML 状态图 | `state` | `../diagram-generator/examples/uml-state.xml` |
+| 组织结构图 | `orgchart` | `../diagram-generator/examples/orgchart.xml` |
+| 思维导图（左右平衡） | `mindmap` | `../diagram-generator/examples/mindmap.xml` |
+| 思维导图（自上而下） | `mindmap-vertical` | `../diagram-generator/examples/mindmap-vertical.xml` |
+| 思维导图（放射状） | `mindmap-radial` | `../diagram-generator/examples/mindmap-radial.xml` |
+| 思维导图（简约线框） | `mindmap-minimal` | `../diagram-generator/examples/mindmap-minimal.xml` |
 
 ### 思维导图风格速查
 
@@ -119,7 +119,7 @@ drawio-generator/
 ### 单张图表
 
 1. 确定图表类型 → 查阅上表
-2. Agent 读取 `examples/` 下对应模板 XML（结构与样式参考）
+2. Agent 读取 `../diagram-generator/examples/` 下对应模板 XML（结构与样式参考）
 3. 按 `SKILL.md` 内部流程：拆解节点 → 分配 id → 计算坐标 → 规划连线 → 输出 XML
 4. 保存至 `docs/images/src/<模块>-<描述>.xml`（首次使用前创建该目录）
 5. 运行本地校验脚本（见下方「本地校验」）

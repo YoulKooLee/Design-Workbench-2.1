@@ -1,8 +1,9 @@
 # Agent 工作流程 · Axhub Make Client + VibePM v1.6
 
-> ⚠️ **维护提醒**：本文件是 `AGENTS.md` 的模板版本（含 `{{...}}` 占位符）。**改动 `AGENTS.md` 时必须同步本文件**（除占位符段落外两文件正文保持一致），否则新项目生成的 AGENTS.md 与模板脱节。
+> ⚠️ **维护提醒**：本文件是 `AGENTS.md` 的模板版本（含 `{{...}}` 占位符）。**改动 `AGENTS.md` 时必须重新运行 `node .agents/scripts/build-agents-template.mjs` 同步本文件**（除占位符段落外两文件正文保持一致），否则新项目生成的 AGENTS.md 与模板脱节。
 
 {{PROJECT_INFO_SECTION}}
+
 
 本工程是 **Axhub Make Client**——承载可运行 React 原型、主题和项目资料的本地工程，同时内置 **VibePM v1.6** 技能体系，覆盖「需求 → 设计 → 原型 → 开发 → 验收」全链路。
 
@@ -19,9 +20,9 @@
 
 ## ⚠️ 上下文预算（最高铁律）
 
-本文件约 41KB（≈1.4 万 token）；技能正文全量约 400KB（≈11 万 token）、知识库约 210KB（≈7 万 token）。**严禁**遍历 / 批量 Read `.agents/skills/`、`.agents/knowledge/`、`.agents/rules/` 目录——一次误读即击穿上下文窗口。技能匹配只用会话启动时**已预加载**的 SKILL.md description；命中后仅加载那一个技能，其正文由加载机制自动带入。
+本文件约 41KB（≈1.4 万 token）；技能区全量约 **3.3MB**（其中 SKILL.md 正文 442KB ≈ 11 万 token、references/templates/scripts/assets 约 2.9MB）、知识库约 210KB（≈7 万 token）、根级 `rules/` 约 1.7MB（含 1.3MB 工具代码）。**严禁**遍历 / 批量 Read `.agents/skills/`、`.agents/knowledge/`、`.agents/rules/`、根级 `rules/`、`src/themes/` 目录——一次误读即击穿上下文窗口。技能匹配只用会话启动时 **session-start hook 注入的 `.agents/skills/INDEX.md`**；命中后仅加载那一个技能，其正文由加载机制自动带入。
 
-**每次操作前自检**：凡即将执行 Read / Glob / 目录扫描且目标可能命中上述三个目录（含通配符、递归），先停下估算一次调用是否可能带进 >2 万 token——会则改为精确路径 Read 单个文件，不得整目录读。
+**每次操作前自检**：凡即将执行 Read / Glob / 目录扫描且目标可能命中上述目录（`.agents/skills/`、`.agents/knowledge/`、`.agents/rules/`、根级 `rules/`、`src/themes/`，含通配符、递归），先停下估算一次调用是否可能带进 >2 万 token——会则改为精确路径 Read 单个文件，不得整目录读。检查 `src/themes/` 的安全方法：只读 `theme.json` 的 name 字段，或只列一级目录名，**严禁递归**。根级 `rules/references/impeccable/` 为 UI 审查工具代码（约 1.65MB），**严禁** Read 其中 .js/.mjs/.cjs 文件。
 
 ## 🧭 核心工作流
 
@@ -85,13 +86,13 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 
 > **本表不是完整触发词表。** 下表「适用场景」是技能用途的概括，用于快速定位；技能的**实际触发条件**以各自 `SKILL.md` 的 `description` 字段为准。
 >
-> **该字段已由运行时在会话启动时预加载进上下文，直接凭已有信息匹配即可——严禁为了「查触发词」去 Read 这些 SKILL.md 文件。** 全量正文约 400 KB（≈11 万 tokens），遍历会挤爆上下文且 50/51 是白读；正确做法是命中后只加载那一个技能，其正文由技能加载机制自动带入。
+> **该字段已由 session-start hook 在会话启动时注入 `.agents/skills/INDEX.md`（自动生成，含全部技能的 name + description），直接凭注入的索引匹配即可——严禁为了「查触发词」去 Read 这些 SKILL.md 文件。** 技能区全量约 3.3 MB（SKILL.md 正文 442 KB ≈ 11 万 tokens），遍历会挤爆上下文；正确做法是命中后只加载那一个技能，其正文由技能加载机制自动带入。
 >
 > 唯一例外是需求文档三体系（`req-doc` / `prd-writer` / `prototype-to-prd`），它们的触发词、优先级与冲突裁决在下一章「需求文档技能路由」中显式定义。
 
 ### 通用技能匹配原则
 
-1. **先匹配后动手** — 任何任务开始前，用**已预加载的技能 description**（无需读任何文件）比对本次意图；命中即加载该技能执行，不得凭通用知识直接开工。
+1. **先匹配后动手** — 任何任务开始前，用**会话启动时注入的技能索引**（`.agents/skills/INDEX.md`，无需读任何文件）比对本次意图；命中即加载该技能执行，不得凭通用知识直接开工。
 2. **一次只加载必要技能** — 命中多个时按「输入源 > 产物类型 > 泛化词」收敛：用户给了什么（原型/代码/口述）> 要产出什么（SRS/PRD/页面/图表）> 用户说了哪个泛化词（"文档""设计"）。**收敛到 1 个再加载**，不要并行加载多个技能正文。
 3. **三体系冲突走专章** — 涉及需求文档时，冲突裁决一律使用下一章的 6 级优先级规则，该规则**优先于**本节原则。
 4. **无法区分就提问** — 收敛后仍有两个及以上候选，直接向用户提一个二选一问题，不要臆断。
@@ -116,115 +117,12 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 **仅作素材时都不触发**：用户只是提供图片作为参考图、需求图或风格上下文时，`screenshot-to-prototype` 与 `ui-design-image` 均不应触发。
 
 > 技能文件清单见 `.agents/skills/` 目录（52 个）；触发条件一律以预加载 description 为准，本文件不再逐项罗列。易混技能的冲突裁决见上表「同类技能裁决速查」，需求文档三体系走下一章专章路由。
+
 ---
 
 ## 需求文档技能路由（req-doc / prd-writer / prototype-to-prd）
 
-本包存在 **两套需求文档体系**，不可混为同一真源。收到任务时 **先按本表选技能**，再 Read 对应 `SKILL.md`；禁止跳过路由直接写文档。
-
-### 体系对比
-
-| 维度 | `req-doc`（SRS · 研发交付） | `prd-writer`（PRD · 产品探索） |
-| --- | --- | --- |
-| 定位 | 企业交付、研发规格、Hook/子 Agent 审查 | 产品方向对齐、Vibe 原型、快速迭代 |
-| 产出路径 | `docs/01-需求与规划/*-SRS需求规格说明书-V*.md` | `docs/YYYY-MM-DD-<主题>-概念版.md` + `*-PRD.md` |
-| 语言规范 | `.agents/knowledge/phase1-requirements/prd-language.md` | 技能内 `references/`，含交互/状态/ASCII 线框 |
-| 下游 | `feature-list`、`hld-design`、`page-generator`、`annotation` | `diagram-generator`、静态原型、测试/手册（按需） |
-| 子 Agent | req-analyzer → **req-writer**（子 Agent）→ req-reviewer | 无；主 Agent 按 `references/` 执行 |
-
-> **命名区分**：子 Agent `req-writer`（`.agents/agents/req-writer.md`）仅服务于 `req-doc`；技能 `prd-writer` 是独立技能目录，二者不可互换。
-
-### 触发路由（按优先级）
-
-**规则：输入源优先于泛化触发词；研发/SRS 关键词优先于 PRD 关键词；仅当明确产品探索语境或无 SRS 要求时用 prd-writer。**
-
-| 优先级 | 用户意图 / 输入 | 选用技能 | 禁止 |
-| --- | --- | --- | --- |
-| 1 | 提供 **Axure 导出包**、**线上 URL**、**本地 HTML 原型** 要写 PRD | **`prototype-to-prd`** → 盘点后 **`prd-writer`** | 不可用 `req-doc` 代替盘点；不可跳过盘点写 §5 |
-| 2 | **SRS**、**需求规格说明书**、**需求说明书**、**细化/完善 SRS**、**代码反向同步需求**、**Word 模板提炼** | **`req-doc`** | 不可用 `prd-writer` 产出 SRS 路径 |
-| 3 | 项目已进入 **研发交付**（已有/将要 SRS，或后续走 HLD/LLD/page-generator） | **`req-doc`** | 不可另起 `*-PRD.md` 作为研发真源 |
-| 4 | **PRD**、**概念版**、**产品需求**、**从零写 PRD**、**MVP 功能范围**（口述无原型） | **`prd-writer`** | 不可套用 SRS 章节模板 |
-| 5 | **需求文档** / **写需求** / **补充需求** / **审查需求**（**未说明 SRS 或 PRD**） | **按默认规则推断**（见下）；仍无法判断时 **问一次** | 不可默认任选其一 |
-| 6 | **导出 Word**（未指明文档类型） | 按 **已存在文件** 类型选导出；新建文档先完成上表路由 | — |
-
-**默认推断（优先级 5，减少无谓询问）：**
-
-| 工作区信号 | 默认技能 |
-| --- | --- |
-| 存在 `docs/01-需求与规划/*SRS*` 或 `*需求说明书*` | **`req-doc`** |
-| 存在 `docs/*-PRD.md` 或 `*-概念版.md` | **`prd-writer`** |
-| 用户 @ Axure / URL / HTML 原型 | **`prototype-to-prd`** |
-| 用户说「正式立项 / 进开发 / 出 HLD」 | **`req-doc`** |
-| 用户说「对齐方向 / 轻量 PRD / 做原型」 | **`prd-writer`** |
-| 以上皆无 | 问一次 SRS vs PRD（见下） |
-
-**歧义时的默认问句（优先级 5）：**
-
-> 这份需求是按 **研发交付 SRS**（`req-doc`，路径 `docs/01-需求与规划/`，供设计与开发）还是 **产品探索 PRD**（`prd-writer`，概念版 + 落地版，供方向对齐与原型）来写？
-
-用户已声明「正式立项 / 要进开发 / 要 SRS」→ `req-doc`；「先对齐方向 / 做原型 / 轻量 PRD」→ `prd-writer`。
-
-### 触发词速查
-
-| 技能 | 典型触发词（任一命中即进入路由） |
-| --- | --- |
-| **`prototype-to-prd`** | Axure 转 PRD、原型转需求、网站转 PRD、逆向 PRD、HTML 原型转文档、`/prototype-to-prd` |
-| **`req-doc`** | SRS、需求规格说明书、需求说明书、生成/细化/审查 SRS、代码和需求对齐、反向更新需求、导入需求模板 |
-| **`prd-writer`** | PRD、产品需求、概念版、从零写 PRD、整理/改进 PRD、MVP 范围、需求评审（PRD 语境） |
-
-**重叠词**（需求文档、补充需求、导出 Word 等）：**不自动匹配**，按上表优先级 5 澄清，或根据已有文件扩展名/路径判断。
-
-### 工作流衔接
-
-| 上游 | 默认下游 | 备注 |
-| --- | --- | --- |
-| `brainstorming` 设计方案确认后 | 问用户：**SRS（req-doc）** 或 **PRD（prd-writer）** | 不再默认仅 req-doc |
-| `prototype-to-prd` 盘点确认后 | **`prd-writer`** 模式 A | 模板复用 `prd-writer/references/`，禁止复制第二套 |
-| `prd-writer` PRD 确认且用户要进研发 | **强制 `req-doc` Step F**（PRD→SRS 转写）；不可跳过直接 `page-generator` | 转换时标注来源 PRD；登记 **`SPEC_SOURCE=SRS`**；规则见 **§ PRD→SRS 转写门禁** |
-| `pm-product-pipeline` 阶段 5 | Step 0 选文档类型：**含阶段6 默认 `req-doc`（SRS）**；PRD / 原型逆向须 **5C→Step F** 后再进阶段6 | 登记 **`SPEC_SOURCE`**；含阶段6 时真源须为 SRS |
-| `feature-list` / `annotation` / `hld-design` / `delivery-plan` | 输入须为 **SRS 路径** | 若仅有 `*-PRD.md` → **阻断**，输出门禁话术，路由 **`req-doc` Step F** |
-
-### PRD→SRS 转写门禁
-
-> 完整规则：Read `.agents/rules/prd-to-srs-gate.md`；转写执行：`req-doc` **Step F** + `references/prd-to-srs-handoff.md`。
-
-**铁律**：`page-generator`、`delivery-plan`（生成）、`hld-design`、`lld-design`、`feature-list`、`annotation` **不得**以 `*-PRD.md` 为规格真源。
-
-| 场景 | 动作 |
-| --- | --- |
-| 仅有 PRD，用户要「实现/开发/生成页面/交付计划/概要设计」 | **先 Step F**，再下游 |
-| PRD 刚落盘，用户说「进开发」 | 同上，不询问是否转写（批量/流水线默认转写） |
-| SRS + PRD 并存 | `SPEC_SOURCE` 指向 SRS |
-| 用户明确「跳过 SRS / 按 PRD 手动对齐」 | 仅 **单次** `page-generator` 降级；须标注非正式真源 |
-
-**触发 Step F 的典型说法**：PRD 转 SRS、进开发、转写需求、按 PRD 写 SRS。
-
-**出口**：SRS 落盘 + §5 七项检查 + `SPEC_SOURCE` 更新 → 方可 `page-generator`。
-
-### 安装与依赖
-
-- `prototype-to-prd` **必须与 `prd-writer` 同装**（硬依赖 `../prd-writer/references/`）
-- Word 导出：三技能均共用 `.agents/skills/common/export-word.*`
-- `prototype-to-prd` **不可单独安装使用**
-
-### 路由示例
-
-✅ 用户：「把这个 Axure 文件夹转成 PRD」→ `prototype-to-prd` → `-原型盘点.md` → `prd-writer`
-
-✅ 用户：「写 SRS 需求说明书，后面要开发」→ `req-doc`
-
-✅ 用户：「我有个 App 想法，先写 PRD 对齐方向」→ `prd-writer`
-
-✅ 用户：「根据现有前端代码更新需求说明书」→ `req-doc` 反向同步（非 prototype-to-prd）
-
-❌ 用户：「写需求文档」→ 未路由直接写 `docs/*-PRD.md` 或 SRS
-
-❌ 同一功能模块在 SRS 与 PRD 各写一套且未标注真源
-
-❌ 用户：「PRD 写好了，开始实现」→ 未走 Step F 直接 `page-generator`
-
-✅ 用户：「PRD 写好了，进开发」→ `req-doc` **Step F** → `delivery-plan` 或 `page-generator`
-
+> **完整路由表**（体系对比 / 触发优先级 / 默认推断 / 触发词速查 / 工作流衔接 / PRD→SRS 转写门禁 / 路由示例）已下沉至 `.agents/rules/req-doc-workflow.md` 与 `.agents/rules/prd-to-srs-gate.md`（千问 P2-16：常驻瘦身）。收到需求文档任务时**先 Read 这两个文件按表选技能**，再 Read 对应 `SKILL.md`；禁止跳过路由直接写文档。
 ---
 
 ## 交付模式（减少检查轮次）
@@ -455,7 +353,7 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 
 ## 编码底线
 
-- 单文件 ≤ 500 行，单函数 ≤ 80 行
+- 单文件 ≤ 500 行，单函数 ≤ 80 行（**既有豁免**：工作台自身 `工作台面板/server.mjs`、`06-运行脚本/launch-project.ps1` 等核心运行文件超出该限，属历史遗留，改造须在稳定期进行，不因本规范强行拆改）
 - 禁止 `console.log`，禁止裸写 `fetch`
 - 禁止通过修改 `.eslintrc`、`tsconfig.json` 等配置来消除报错
 - 新增页面必须同步注册路由
@@ -528,8 +426,6 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 
 ---
 
-
-
 ## 记忆分层与门禁
 
 记忆**分散保存、随时找回**：核心少量、索引可寻、知识分散。对话/任务产出的信息先分类落盘，不得随手堆进单一文件；**无法判断去向时主动询问人类**。
@@ -542,7 +438,7 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 | 核心基线 | `src/resources/` 需求文档 | 需求清单 → 概念版 → PRD → SRS | **设计基线**，跑题判定标准；每份文档头部登记版本 + 变更时间 |
 | 辅助层 | `src/resources/` 其他 | 标书 / 原型盘点 / 功能清单 / 其他资料 | 支撑基线，不参与跑题判定 |
 | 答疑层（项目） | 本工程根目录 `项目答疑手册.md` | 本项目专属问答、踩坑、经验 | 项目级复用价值 |
-| 答疑层（工作台） | Axhub 根 `../../工作台答疑手册.md` | 工具用法、工作流惯例、通用踩坑 | 工作台级复用价值 |
+| 答疑层（工作台） | 工作台根 `../../08-文档/工作台答疑手册.md` | 工具用法、工作流惯例、通用踩坑 | 工作台级复用价值 |
 
 ### 记忆门禁（三问）
 
@@ -550,7 +446,7 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 
 1. **影响设计基线？**（改动需求/概念版/PRD/SRS 任一条）→ 更新对应基线文档（版本+变更时间），并登记到 `project-memory.md` 索引
 2. **项目级可复用？** → 写入 `项目答疑手册.md`
-3. **工作台级可复用？** → 写入 `../../工作台答疑手册.md`
+3. **工作台级可复用？** → 写入 `../../08-文档/工作台答疑手册.md`
 4. **全否**（一次性操作、可从代码/文档还原的信息）→ 不保存
 5. **无法判断** → 主动询问人类，禁止自作主张
 
@@ -578,6 +474,7 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 | 本项目专属要求 / 踩坑经验 | 本工程根目录 `project-memory.md`（**优先于**上述全部） |
 
 加载优先级：**项目记忆（`project-memory.md`）> 通用层（universal）> 工作台层（`10-智能体记忆/`）**。
+
 ---
 
 ## 部署清单

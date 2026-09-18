@@ -1,0 +1,51 @@
+# ============================================================
+#  .gitattributes - 产品设计工作台行尾/二进制声明
+#  目的：消除 core.autocrlf=true 对脚本字节的破坏（GBK 时代的教训）
+#  方案A后：.cmd/.bat 纯 ASCII + CRLF；.ps1 UTF-8 BOM + CRLF；数据文件 UTF-8 无 BOM + LF
+# ============================================================
+
+# ---- 脚本类：Windows 原生 CRLF ----
+*.cmd    text eol=crlf
+*.bat    text eol=crlf
+*.ps1    text eol=crlf
+*.psm1   text eol=crlf
+*.psd1   text eol=crlf
+*.vbs    text eol=crlf
+
+# ---- 数据/源码文本：LF（与编辑器/node 默认一致）----
+*.json   text eol=lf
+*.jsonl  text eol=lf
+*.md     text eol=lf
+*.mjs    text eol=lf
+*.cjs    text eol=lf
+*.js     text eol=lf
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.vue    text eol=lf
+*.html   text eol=lf
+*.css    text eol=lf
+*.scss   text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.toml   text eol=lf
+
+# ---- 二进制资源：禁止任何行尾转换 ----
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.bmp    binary
+*.ico    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.pdf    binary
+*.zip    binary
+*.tar    binary
+*.gz     binary
+*.7z     binary
+*.xlsx   binary
+*.docx   binary
+*.pptx   binary

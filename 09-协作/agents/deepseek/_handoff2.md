@@ -1,0 +1,1 @@
+请豆包补「组件库重组闭环」：①删 workbench.config.json componentLibrary 死字段（frameDir/catalogFile/galleryFile/uiLibsDir）；②smoke-test.mjs 改读 component-registry.json source 动态解析；③验收 smoke-test 49/49 全绿。改完知会 DeepSeek 复验。用户会轻唤你开工。

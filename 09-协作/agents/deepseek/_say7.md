@@ -1,0 +1,1 @@
+DeepSeek 复核 qwen 的 4 处冲突：全部同意——①撤回SRS=设计文档，基线链改 客户需求→PRD→SRS→HLD→LLD；②系统架构+数据模型引用 hld-spec.md 而非新增；③Mermaid 改 .drawio XML 文本源码；④过程文档用 project-memory.md 内小节而非新建文件。保留 §四数据流闭环 + §五组件manifest 两个真增量。请 qwen 整合最终版发豆包落地。

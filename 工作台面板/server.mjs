@@ -8,6 +8,10 @@ import { exec, spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { cleanEnvForSpawn, send, sendError, readBody, safeName, parseFrontmatter, extractTriggers } from './lib/utils.mjs';
 
+// ===== 全局异常兜底（千问 P0-5）：spawn 目标缺失等异步 error 不再击穿面板进程 =====
+process.on('uncaughtException', (err) => { try { console.error('[uncaughtException]', (err && err.stack) || err); } catch {} });
+process.on('unhandledRejection', (reason) => { try { console.error('[unhandledRejection]', reason); } catch {} });
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(__dirname, 'public');
 
@@ -26,11 +30,23 @@ const RULES_DIR = path.join(LIBRARY_DIR, 'rules');
 const CFG = (() => {
   try {
     return JSON.parse(fs.readFileSync(path.join(AXHUB_ROOT, 'workbench.config.json'), 'utf-8'));
-  } catch {
+  } catch (e) {
+    // 千问 P2-13：配置缺失显式告警，不静默降级
+    console.error(`[config] 警告：无法读取 workbench.config.json（${e.message}），使用内置兜底值`);
     return {};
   }
 })();
 const PORT = Number(process.env.AXHUB_MANAGER_PORT) || Number(CFG.workbench?.panelPort) || 7788;
+// 千问 P2-13：日志轮转（logging.rotateSizeKB，默认 1MB）
+const LOG_ROTATE_KB = Number(CFG.logging?.rotateSizeKB) || 1024;
+function appendLogRotate(file, text) {
+  try {
+    if (fs.existsSync(file) && fs.statSync(file).size >= LOG_ROTATE_KB * 1024) {
+      fs.renameSync(file, file + '.1.log'); // 简单滚动：保留一份旧日志
+    }
+    fs.appendFileSync(file, text, 'utf8');
+  } catch { /* 日志失败不致命 */ }
+}
 const BIND_HOST = CFG.workbench?.bindHost || '127.0.0.1';
 // Make-Template 页面模板目录（新增项目可选模板；可经 workbench.config.json 的 workbench.makeTemplatesDir 覆盖）
 const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench?.makeTemplatesDir || path.join(AXHUB_ROOT, '03-组件库', '02-页面模板');
@@ -61,7 +77,10 @@ const MAKE_ADMIN_ORIGIN = `http://localhost:${MAKE_ADMIN_PORT}`;
 
 // 已知的智能体集合（5 智能体：codebuddy / workbuddy / doubao / deepseek / qwen）。
 // UI 下拉据此提供「先选智能体再选项目」。
-const KNOWN_AGENTS = ['codebuddy', 'workbuddy', 'doubao', 'deepseek', 'qwen'];
+// 千问 P2-13：KNOWN_AGENTS 优先读 workbench.config.json 的 axhubManager.knownAgents，兜底内置列表
+const KNOWN_AGENTS = Array.isArray(CFG.axhubManager?.knownAgents) && CFG.axhubManager.knownAgents.length
+  ? CFG.axhubManager.knownAgents
+  : ['codebuddy', 'workbuddy', 'doubao', 'deepseek', 'qwen'];
 
 // 从旧结构（active + projects[].intent）或新结构（agents + projects[].status）读取工作台上下文。
 // 兼容迁移：旧文件没有 agents，首次读时补齐默认 agents，并把旧 intent 映射到新 status。
@@ -197,10 +216,15 @@ function setEditing(ctx, agent, rel, { forceStoppedOld = false } = {}) {
   if (oldRel) {
     const oi = ctx.projects.findIndex((p) => p.relative === oldRel);
     if (oi >= 0) {
-      const alive = isProjectAlive(oldRel);
-      ctx.projects[oi].status = forceStoppedOld ? 'stopped' : (alive ? 'active' : 'stopped');
-      if (ctx.projects[oi].status === 'stopped') ctx.projects[oi].stoppedAt = new Date().toISOString();
-      ctx.projects[oi].editor = null;
+      // 活体探测是异步的（端口探测返回 Promise），原代码直接拿 Promise 对象当布尔值，
+      // 恒为真 → 永远判 'active'（确定性 Bug，千问 P0-4）。改为 Promise 链延迟修正，
+      // setEditing 保持同步契约不变，最终状态由探测结果真实写入。
+      Promise.resolve(isProjectAlive(oldRel)).then((alive) => {
+        ctx.projects[oi].status = forceStoppedOld ? 'stopped' : (alive ? 'active' : 'stopped');
+        if (ctx.projects[oi].status === 'stopped') ctx.projects[oi].stoppedAt = new Date().toISOString();
+        ctx.projects[oi].editor = null;
+        writeWorkspaceCtx(ctx);
+      }).catch(() => { /* 探测失败：保守保持原状态，不误标 */ });
     }
   }
   // 目标项目置 editing
@@ -960,7 +984,7 @@ const server = http.createServer(async (req, res) => {
     // 子进程异步删除（Windows 上目录被进程占用时 fs.rm 会 EPERM，force + 子进程隔离避免误伤服务自身）
     const payload = dirs.map((d) => path.join(trashBase, d.name));
     const clearLog = path.join(AXHUB_ROOT, '07-日志', 'trash-clear.log');
-    fs.appendFileSync(clearLog, `\n[${new Date().toISOString()}] 清空回收站：${dirs.length} 项\n`, 'utf8');
+    appendLogRotate(clearLog, `\n[${new Date().toISOString()}] 清空回收站：${dirs.length} 项\n`);
     const child = spawn(process.execPath, ['-e', `
       const fs = require('fs');
       const list = JSON.parse(Buffer.from(process.argv[1], 'base64').toString('utf8'));
@@ -975,9 +999,10 @@ const server = http.createServer(async (req, res) => {
       windowsHide: true,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
-    child.stdout.on('data', (d) => fs.appendFileSync(clearLog, d, 'utf8'));
-    child.stderr.on('data', (d) => fs.appendFileSync(clearLog, `STDERR: ${d}`, 'utf8'));
-    child.on('close', (code) => fs.appendFileSync(clearLog, `完成 exit=${code} @ ${new Date().toISOString()}\n`, 'utf8'));
+    child.stdout.on('data', (d) => appendLogRotate(clearLog, d));
+    child.stderr.on('data', (d) => appendLogRotate(clearLog, `STDERR: ${d}`));
+    child.on('close', (code) => appendLogRotate(clearLog, `完成 exit=${code} @ ${new Date().toISOString()}\n`));
+    child.on('error', (e) => { try { appendLogRotate(clearLog, `ERROR: ${e.message}\n`); } catch {} });
     child.unref();
     return send(res, 200, { ok: true, msg: `已开始清空回收站（${dirs.length} 个回收项），大目录需数十秒，请稍后刷新查看` });
   }
@@ -1480,6 +1505,7 @@ const server = http.createServer(async (req, res) => {
     if (!url || !/^https?:\/\//i.test(url)) return sendError(res, '非法的 url');
     try {
       const child = spawn('rundll32.exe', ['url.dll,FileProtocolHandler', url], { detached: true, stdio: 'ignore' });
+      child.on('error', (e) => { try { console.error('[spawn] 打开浏览器失败:', e.message); } catch {} });
       child.unref();
       return send(res, 200, { ok: true, msg: '已请求打开浏览器' });
     } catch (e) {
@@ -1494,7 +1520,7 @@ const server = http.createServer(async (req, res) => {
     if (!fs.existsSync(script)) return sendError(res, '未找到 停止工作台.cmd');
     try {
       // 1) 独立进程运行停止脚本（detached + unref），随后本服务自行退出
-      spawn('cmd', ['/c', 'start', '', script], { detached: true, stdio: 'ignore' }).unref();
+      spawn('cmd', ['/c', 'start', '', script], { detached: true, stdio: 'ignore' }).on('error', (e) => { try { console.error('[spawn] 停止脚本启动失败:', e.message); } catch {} }).unref();
       setTimeout(() => { try { process.exit(0); } catch { /* ignore */ } }, 500);
       return send(res, 200, { ok: true, msg: '正在停止工作台全部服务…' });
     } catch (e) {
@@ -1512,6 +1538,7 @@ const server = http.createServer(async (req, res) => {
       if (!fs.existsSync(script)) { sendError(res, `缺少脚本：${m}（${toolsDir}）`); return; }
       try {
         const child = spawn(node, [m], { cwd: toolsDir, detached: true, stdio: 'ignore', windowsHide: true });
+        child.on('error', (e) => { try { console.error('[spawn] 监听启动失败:', m, e.message); } catch {} });
         child.unref();
         started.push(m);
       } catch (e) {
@@ -1606,6 +1633,7 @@ const server = http.createServer(async (req, res) => {
         stdio: 'ignore',
         windowsHide: true,
       });
+      child.on('error', (e) => { try { console.error('[spawn] Make 引擎启动失败:', e.message); } catch {} });
       child.unref();
       steps.push(`已启动 Make (pid ${child.pid})`);
 

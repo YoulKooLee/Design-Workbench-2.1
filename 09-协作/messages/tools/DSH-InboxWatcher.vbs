@@ -1,2 +1,12 @@
+' DSH-InboxWatcher.vbs - ?????? inbox-watcher.mjs?DeepSeek ????????
+' ?? P1-10???????????? + ?????????????????
+' ???? ASCII?VB ????? ANSI ??????????
 Set sh = CreateObject("WScript.Shell")
-sh.Run """C:\Program Files\nodejs\node.exe"" ""C:\Users\游翔\Documents\AI work\产品设计工作台\09-协作\messages\tools\inbox-watcher.mjs""", 0, False
+Set fso = CreateObject("Scripting.FileSystemObject")
+base = fso.GetParentFolderName(WScript.ScriptFullName)     ' ...\09-??\messages\tools
+watcher = fso.BuildPath(base, "inbox-watcher.mjs")
+node = sh.ExpandEnvironmentStrings("%USERPROFILE%") & "\.workbuddy\binaries\node\versions\22.22.2-3\node.exe"
+If Not fso.FileExists(node) Then
+  node = "node.exe"    ' ?? PATH ?? node
+End If
+sh.Run """" & node & """ """ & watcher & """", 0, False

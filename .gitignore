@@ -63,3 +63,9 @@ $RECYCLE.BIN/
 # 项目文件不入库
 01-项目/
 
+
+# ===== 09-协作 对话记录不入库（协议/工具/文档保留）=====
+09-协作/rooms/**/*.json
+09-协作/rooms/**/*.jsonl
+09-协作/messages/**/*.json
+09-协作/messages/**/*.jsonl
