@@ -1,29 +1,29 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
-title 归档已处理消息
+title �鵵�Ѵ�����Ϣ
 set "NODE=C:\Program Files\nodejs\node.exe"
-set "TOOLS=C:\Users\游翔\Documents\AI work\产品设计工作台\09-协作\messages\tools"
+set "TOOLS=C:\Users\����\Documents\AI work\��Ʒ��ƹ���̨\09-Э��\messages\tools"
 
 echo ============================================
-echo   归档已处理消息（防上下文/存储过载）
-echo   - 默认：归档 7 天前已处理终态（replied/done/aborted）
-echo   - 历史移入 messages\archive\，面板仍可追溯，不丢
+echo   �鵵�Ѵ�����Ϣ����������/�洢���أ�
+echo   - Ĭ�ϣ��鵵 7 ��ǰ�Ѵ�����̬��replied/done/aborted��
+echo   - ��ʷ���� messages\archive\������Կ�׷�ݣ�����
 echo ============================================
 echo.
 
-echo [预览] 以下消息满足归档条件（7 天）：
+echo [Ԥ��] ������Ϣ����鵵������7 �죩��
 "%NODE%" "%TOOLS%\archive-tool.mjs"
 echo.
-set /p go=是否立即执行归档？(Y=执行 / 其他=仅预览):
+set /p go=�Ƿ�����ִ�й鵵��(Y=ִ�� / ����=��Ԥ��):
 if /i "%go%"=="Y" (
     echo.
-    echo [执行] 归档中...
+    echo [ִ��] �鵵��...
     "%NODE%" "%TOOLS%\archive-tool.mjs" --run
     echo.
-    echo 归档完成。
+    echo �鵵��ɡ�
 ) else (
-    echo 已取消执行（仅预览）。
-    echo 提示：如需归档更早历史，可用 archive-tool.mjs --force。
+    echo ��ȡ��ִ�У���Ԥ������
+    echo ��ʾ������鵵������ʷ������ archive-tool.mjs --force��
 )
 echo.
 pause

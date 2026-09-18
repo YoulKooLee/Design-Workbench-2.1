@@ -1,35 +1,34 @@
-ï»¿@echo off
-chcp 65001 >nul
+@echo off
 setlocal enabledelayedexpansion
-title äº§å“è®¾è®¡å·¥ä½œå° å¯åŠ¨å™¨
+title ²úÆ·Éè¼Æ¹¤×÷Ì¨ Æô¶¯Æ÷
 cd /d "%~dp0"
 
 echo ============================================
-echo   äº§å“è®¾è®¡å·¥ä½œå° - å¯åŠ¨è„šæœ¬
+echo   ²úÆ·Éè¼Æ¹¤×÷Ì¨ - Æô¶¯½Å±¾
 echo ============================================
 echo.
 
-REM 1) ä¼˜å…ˆä½¿ç”¨ WorkBuddy è‡ªå¸¦çš„ nodeï¼ˆä»»æ„ç‰ˆæœ¬å‡å¯ï¼‰
+REM 1) ÓÅÏÈÊ¹ÓÃ WorkBuddy ×Ô´øµÄ node£¨ÈÎÒâ°æ±¾¾ù¿É£©
 set "NODE="
 for /d %%d in ("%USERPROFILE%\.workbuddy\binaries\node\versions\*") do (
   if exist "%%d\node.exe" set "NODE=%%d\node.exe"
 )
-REM 2) å›žé€€åˆ°ç³»ç»Ÿ PATH ä¸­å·²å®‰è£…çš„ node
+REM 2) »ØÍËµ½ÏµÍ³ PATH ÖÐÒÑ°²×°µÄ node
 if not defined NODE (
   where node >nul 2>nul && set "NODE=node"
 )
 if not defined NODE (
-  echo [ERROR] æœªæ‰¾åˆ° Node.jsã€‚è¯·å…ˆå®‰è£… WorkBuddyï¼Œæˆ–åˆ° https://nodejs.org å®‰è£… Node åŽé‡è¯•ã€‚
-  echo æŒ‰ä»»æ„é”®å…³é—­æœ¬çª—å£...
+  echo [ERROR] Î´ÕÒµ½ Node.js¡£ÇëÏÈ°²×° WorkBuddy£¬»òµ½ https://nodejs.org °²×° Node ºóÖØÊÔ¡£
+  echo °´ÈÎÒâ¼ü¹Ø±Õ±¾´°¿Ú...
   pause
   exit /b 1
 )
 
-echo [OK] ä½¿ç”¨ Node: %NODE%
+echo [OK] Ê¹ÓÃ Node: %NODE%
 
-REM 0) ç¼–ç è‡ªæ„ˆï¼šæ‰€æœ‰è„šæœ¬ç»Ÿä¸€ UTF-8 BOMï¼ˆæœ¬æœºä»£ç é¡µ 65001ï¼Œé˜² GBK ä¹±ç ï¼‰
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp009-åä½œ\messages\tools\ç¼–ç ä½“æ£€.ps1" -silent >nul 2>&1
-REM 1b) æ ¡éªŒ Node æž¶æž„ï¼ˆarm64 ä»…æç¤ºä¸é˜»æ–­ï¼‰
+REM 0) ±àÂë×ÔÓú£ºËùÓÐ½Å±¾Í³Ò» UTF-8 BOM£¨±¾»ú´úÂëÒ³ 65001£¬·À GBK ÂÒÂë£©
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp009-Ð­×÷\messages\tools\±àÂëÌå¼ì.ps1" -silent >nul 2>&1
+REM 1b) Ð£Ñé Node ¼Ü¹¹£¨arm64 ½öÌáÊ¾²»×è¶Ï£©
 set "ARCHF=%TEMP%\axhub-node-arch.txt"
 "%NODE%" -p "process.arch" > "%ARCHF%" 2>nul
 set "NODE_ARCH="
@@ -38,29 +37,29 @@ if exist "%ARCHF%" (
   del "%ARCHF%" >nul 2>&1
 )
 if /i "%NODE_ARCH%"=="arm64" (
-  echo [WARN] Node æž¶æž„ä¸º arm64ï¼šå»ºè®®å®‰è£… x64 ç‰ˆ Nodeï¼ˆä¸é˜»æ–­ï¼‰
+  echo [WARN] Node ¼Ü¹¹Îª arm64£º½¨Òé°²×° x64 °æ Node£¨²»×è¶Ï£©
 ) else if "%NODE_ARCH%"=="" (
-  echo [WARN] æ— æ³•æ£€æµ‹ Node æž¶æž„ï¼ˆå¿½ç•¥ï¼‰
+  echo [WARN] ÎÞ·¨¼ì²â Node ¼Ü¹¹£¨ºöÂÔ£©
 )
 
-REM 3) è‹¥å·²åœ¨è¿è¡Œï¼Œä»…æ‰“å¼€æµè§ˆå™¨ï¼ˆä¸é‡å¤å¯åŠ¨ï¼‰
+REM 3) ÈôÒÑÔÚÔËÐÐ£¬½ö´ò¿ªä¯ÀÀÆ÷£¨²»ÖØ¸´Æô¶¯£©
 netstat -ano 2>nul | findstr ":7788 " | findstr "LISTEN" >nul
 if not errorlevel 1 (
-  echo [INFO] å·¥ä½œå°å·²åœ¨ :7788 è¿è¡Œï¼Œæ­£åœ¨æ‰“å¼€æµè§ˆå™¨...
+  echo [INFO] ¹¤×÷Ì¨ÒÑÔÚ :7788 ÔËÐÐ£¬ÕýÔÚ´ò¿ªä¯ÀÀÆ÷...
   start "" http://localhost:7788
-  echo æŒ‰ä»»æ„é”®å…³é—­æœ¬çª—å£...
+  echo °´ÈÎÒâ¼ü¹Ø±Õ±¾´°¿Ú...
   pause
   exit /b 0
 )
 
-REM 4) å¯åŠ¨åŽç«¯æœåŠ¡ï¼ˆåœ¨ç‹¬ç«‹æœ€å°åŒ–çª—å£è¿è¡Œï¼Œè¾“å‡ºå†™å…¥æ—¥å¿—ä¾¿äºŽæŽ’æŸ¥ï¼‰
-cd /d "%~dp0å·¥ä½œå°é¢æ¿"
-if not exist "%~dp007-æ—¥å¿—" mkdir "%~dp007-æ—¥å¿—"
-set "LOG=%~dp007-æ—¥å¿—\server-console.log"
-echo [INFO] æ­£åœ¨å¯åŠ¨åŽç«¯æœåŠ¡ï¼ˆæ—¥å¿—: server-console.logï¼‰...
+REM 4) Æô¶¯ºó¶Ë·þÎñ£¨ÔÚ¶ÀÁ¢×îÐ¡»¯´°¿ÚÔËÐÐ£¬Êä³öÐ´ÈëÈÕÖ¾±ãÓÚÅÅ²é£©
+cd /d "%~dp0¹¤×÷Ì¨Ãæ°å"
+if not exist "%~dp007-ÈÕÖ¾" mkdir "%~dp007-ÈÕÖ¾"
+set "LOG=%~dp007-ÈÕÖ¾\server-console.log"
+echo [INFO] ÕýÔÚÆô¶¯ºó¶Ë·þÎñ£¨ÈÕÖ¾: server-console.log£©...
 start "Axhub Server" /min cmd /c ""%NODE%" server.mjs > "%LOG%" 2>&1"
 
-REM 5) é™æ—¶ç­‰å¾…ç«¯å£å°±ç»ªï¼ˆæœ€å¤šçº¦ 20 ç§’ï¼‰
+REM 5) ÏÞÊ±µÈ´ý¶Ë¿Ú¾ÍÐ÷£¨×î¶àÔ¼ 20 Ãë£©
 set "READY=0"
 for /L %%i in (1,1,20) do (
   netstat -ano 2>nul | findstr ":7788 " | findstr "LISTEN" >nul
@@ -72,14 +71,14 @@ for /L %%i in (1,1,20) do (
 )
 :done
 if "%READY%"=="1" (
-  echo [OK] åŽç«¯å·²å°±ç»ªï¼Œæ­£åœ¨æ‰“å¼€æµè§ˆå™¨...
+  echo [OK] ºó¶ËÒÑ¾ÍÐ÷£¬ÕýÔÚ´ò¿ªä¯ÀÀÆ÷...
   start "" http://localhost:7788
-  echo [OK] å·¥ä½œå°å·²å¯åŠ¨: http://localhost:7788
-  echo [æç¤º] åŽç«¯æœåŠ¡åœ¨åä¸º "Axhub Server" çš„æœ€å°åŒ–çª—å£è¿è¡Œï¼›å¯æ”¾å¿ƒå…³é—­æœ¬çª—å£ã€‚
+  echo [OK] ¹¤×÷Ì¨ÒÑÆô¶¯: http://localhost:7788
+  echo [ÌáÊ¾] ºó¶Ë·þÎñÔÚÃûÎª "Axhub Server" µÄ×îÐ¡»¯´°¿ÚÔËÐÐ£»¿É·ÅÐÄ¹Ø±Õ±¾´°¿Ú¡£
 ) else (
-  echo [ERROR] åŽç«¯æœåŠ¡ 20 ç§’å†…æœªå°±ç»ªï¼Œè¯·æŸ¥çœ‹æ—¥å¿—: %LOG%
-  echo [æç¤º] å¸¸è§åŽŸå› : Node è·¯å¾„å¼‚å¸¸ã€ç«¯å£ 7788 è¢«å ç”¨ã€ä¾èµ–æœªå®‰è£…ã€‚
+  echo [ERROR] ºó¶Ë·þÎñ 20 ÃëÄÚÎ´¾ÍÐ÷£¬Çë²é¿´ÈÕÖ¾: %LOG%
+  echo [ÌáÊ¾] ³£¼ûÔ­Òò: Node Â·¾¶Òì³£¡¢¶Ë¿Ú 7788 ±»Õ¼ÓÃ¡¢ÒÀÀµÎ´°²×°¡£
 )
 echo.
-echo æŒ‰ä»»æ„é”®å…³é—­æœ¬çª—å£...
+echo °´ÈÎÒâ¼ü¹Ø±Õ±¾´°¿Ú...
 pause

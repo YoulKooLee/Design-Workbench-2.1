@@ -57,27 +57,44 @@ foreach ($p in $ports) {
   else { Write-Host "  ✓ 端口 $p 空闲" -ForegroundColor Green }
 }
 
-# 4. 组件库 JSON 合法性与引用完整性
+# 4. 组件库 JSON 合法性与引用完整性（v2：component-registry.json 为登记真源）
 Write-Host "`n[4/5] 组件库校验" -ForegroundColor Yellow
 $cl = $config.componentLibrary
 $clRoot = Join-Path $root $cl.rootDir
-$indexPath = Join-Path $clRoot 'frame\index.json'
-try { $null = Get-Content $indexPath -Raw -Encoding UTF8 | ConvertFrom-Json; Write-Host "  ✓ frame/index.json 合法" -ForegroundColor Green }
-catch { Write-Host "  ✗ frame/index.json 非法: $_" -ForegroundColor Red }
-$catalogPath = Join-Path $clRoot $cl.catalogFile
-try {
-  $catalog = Get-Content $catalogPath -Raw -Encoding UTF8 | ConvertFrom-Json
-  $missing = @()
-  foreach ($prop in $catalog.pages.PSObject.Properties) {
-    $pg = $prop.Value
-    foreach ($f in @($pg.html, $pg.js, $pg.css)) {
-      if ($f -and -not (Test-Path (Join-Path $clRoot "frame\admin\$f"))) { $missing += "$($prop.Name):$f" }
+$registryPath = Join-Path $clRoot $cl.registryFile
+if (Test-Path $registryPath) {
+  try {
+    $reg = Get-Content $registryPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    # source 口径兼容：registry 内 ends 相对 03-组件库，componentTemplateLib 相对工作台根，两者都试
+    function Test-SrcPath([string]$src) {
+      if (-not $src) { return $true }
+      return (Test-Path (Join-Path $clRoot $src)) -or (Test-Path (Join-Path $root $src))
     }
-  }
-  $pageTypeCount = @($catalog.pages.PSObject.Properties).Count
-  if ($missing.Count -eq 0) { Write-Host "  ✓ pages.catalog.json 引用完整 ($pageTypeCount 类页)" -ForegroundColor Green }
-  else { Write-Host "  ✗ catalog 引用缺失: $($missing -join '; ')" -ForegroundColor Red }
-} catch { Write-Host "  ✗ pages.catalog.json 解析失败: $_" -ForegroundColor Red }
+    $missingSrc = @()
+    $endCount = @($reg.ends).Count
+    foreach ($end in @($reg.ends)) {
+      if ($end.source -and -not (Test-SrcPath $end.source)) { $missingSrc += "end:$($end.id)" }
+    }
+    if ($reg.componentTemplateLib -and $reg.componentTemplateLib.source -and -not (Test-SrcPath $reg.componentTemplateLib.source)) { $missingSrc += 'componentTemplateLib' }
+    if ($missingSrc.Count -eq 0) {
+      Write-Host "  ✓ component-registry.json 合法（$endCount 个资源包，源目录齐全）" -ForegroundColor Green
+    } else {
+      Write-Host "  ✗ component-registry.json 源目录缺失: $($missingSrc -join '; ')" -ForegroundColor Red
+    }
+  } catch { Write-Host "  ✗ component-registry.json 解析失败: $_" -ForegroundColor Red }
+} else { Write-Host "  ✗ component-registry.json 缺失: $registryPath" -ForegroundColor Red }
+# Codebuddy Design 组件库主索引
+$cdIndex = Join-Path $clRoot '03-页面组件\Codebuddy Design\index.json'
+if (Test-Path $cdIndex) {
+  try { $null = Get-Content $cdIndex -Raw -Encoding UTF8 | ConvertFrom-Json; Write-Host "  ✓ Codebuddy Design/index.json 合法" -ForegroundColor Green }
+  catch { Write-Host "  ✗ Codebuddy Design/index.json 非法: $_" -ForegroundColor Red }
+} else { Write-Host "  ⚠ Codebuddy Design/index.json 不存在（组件模板未登记）" -ForegroundColor Yellow }
+# custom-components.json（工作台上传组件登记）
+$customPath = Join-Path $clRoot 'custom-components.json'
+if (Test-Path $customPath) {
+  try { $null = Get-Content $customPath -Raw -Encoding UTF8 | ConvertFrom-Json; Write-Host "  ✓ custom-components.json 合法" -ForegroundColor Green }
+  catch { Write-Host "  ✗ custom-components.json 非法: $_" -ForegroundColor Red }
+} else { Write-Host "  ⚠ custom-components.json 不存在（无自定义上传组件）" -ForegroundColor Yellow }
 
 # 5. 补丁在位与完整性检查（C2：哈希校验 + 日期占位检测）
 Write-Host "`n[5/5] 补丁状态" -ForegroundColor Yellow
