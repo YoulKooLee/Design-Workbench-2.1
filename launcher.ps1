@@ -7,6 +7,19 @@ $ErrorActionPreference = 'Continue'
 $OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 $root = $PSScriptRoot                    # launcher.ps1 位于工作台根目录
+# 端口监听查询（netstat 解析：部分环境 NetTCPIP 模块异常导致 Get-NetTCPConnection 失效，改用系统自带 netstat，跨机器稳定）
+function Get-ListenPids([int]$Port) {
+    $pids = @()
+    $lines = & netstat -ano 2>$null
+    foreach ($l in $lines) {
+        if ($l -match ":$Port\s+\S+\s+LISTENING\s+(\d+)\s*$") {
+            $p = [int]$Matches[1]
+            if ($p -gt 0 -and $pids -notcontains $p) { $pids += $p }
+        }
+    }
+    return ,$pids
+}
+
 $node = ''                               # 最终使用的 node 可执行文件
 $port = 7788                             # 面板端口
 
@@ -54,7 +67,7 @@ if ($arch -eq 'arm64') {
 }
 
 # ---------- 3) 若已在运行，仅打开浏览器 ----------
-$listen = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
+$listen = @(Get-ListenPids $port)
 if ($listen) {
     Write-Host "[INFO] 工作台已在 :$port 运行，正在打开浏览器..." -ForegroundColor Cyan
     Start-Process 'http://localhost:7788'
@@ -99,7 +112,7 @@ try {
 $ready = $false
 for ($i = 1; $i -le 20; $i++) {
     Start-Sleep -Seconds 1
-    if (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue) { $ready = $true; break }
+    if (@(Get-ListenPids $port).Count -gt 0) { $ready = $true; break }
 }
 
 if ($ready) {

@@ -3,6 +3,19 @@
 # 用法：powershell -ExecutionPolicy Bypass -File 06-运行脚本/env-doctor.ps1
 # 依赖：workbench.config.json（唯一配置真源）
 $ErrorActionPreference = 'Stop'
+# 端口监听查询（netstat 解析：部分环境 NetTCPIP 模块异常导致 Get-NetTCPConnection 失效，改用系统自带 netstat，跨机器稳定）
+function Get-ListenPids([int]$Port) {
+    $pids = @()
+    $lines = & netstat -ano 2>$null
+    foreach ($l in $lines) {
+        if ($l -match ":$Port\s+\S+\s+LISTENING\s+(\d+)\s*$") {
+            $p = [int]$Matches[1]
+            if ($p -gt 0 -and $pids -notcontains $p) { $pids += $p }
+        }
+    }
+    return ,$pids
+}
+
 $root = Split-Path -Parent $PSScriptRoot
 $configPath = Join-Path $root 'workbench.config.json'
 $config = Get-Content $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -38,9 +51,9 @@ if ($clean) { Write-Host "  ✓ NODE_OPTIONS / CODEBUDDY_* 未注入，环境干
 Write-Host "`n[3/5] 端口占用" -ForegroundColor Yellow
 $ports = @($config.axhub.makePort, $config.axhub.acpPort, $config.workbench.panelPort) | Where-Object { $_ }
 foreach ($p in $ports) {
-  $conn = Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction SilentlyContinue
-  if ($conn) {
-    $procId = [int]$conn[0].OwningProcess
+  $conn = @(Get-ListenPids $p)
+  if ($conn.Count -gt 0) {
+    $procId = [int]$conn[0]
     $cmd = ''
     try {
       $proc = Get-CimInstance Win32_Process -Filter "ProcessId=$procId" -ErrorAction Stop

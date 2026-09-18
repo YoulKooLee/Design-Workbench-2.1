@@ -7,6 +7,19 @@ $ErrorActionPreference = 'Continue'
 $OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 $root = $PSScriptRoot
+# 端口监听查询（netstat 解析：部分环境 NetTCPIP 模块异常导致 Get-NetTCPConnection 失效，改用系统自带 netstat，跨机器稳定）
+function Get-ListenPids([int]$Port) {
+    $pids = @()
+    $lines = & netstat -ano 2>$null
+    foreach ($l in $lines) {
+        if ($l -match ":$Port\s+\S+\s+LISTENING\s+(\d+)\s*$") {
+            $p = [int]$Matches[1]
+            if ($p -gt 0 -and $pids -notcontains $p) { $pids += $p }
+        }
+    }
+    return ,$pids
+}
+
 
 Write-Host ''
 Write-Host '============================================'
@@ -16,15 +29,15 @@ Write-Host ''
 
 # ---------- 按端口停止进程 ----------
 function Stop-Port([int]$Port, [string]$Name) {
-    $conn = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
-    if (-not $conn) {
+    $conn = @(Get-ListenPids $Port)
+    if ($conn.Count -eq 0) {
         Write-Host "[--] $Name [端口 $Port]：未运行"
         return
     }
-    $pids = $conn.OwningProcess | Sort-Object -Unique
-    foreach ($pid in $pids) {
-        try { Stop-Process -Id $pid -Force -ErrorAction Stop; Write-Host "[OK] $Name [端口 $Port] PID $pid：已停止" -ForegroundColor Green }
-        catch { Write-Host "[X] $Name [端口 $Port] PID $pid：结束失败，请手动在任务管理器结束该进程" -ForegroundColor Red }
+    $pids = $conn | Sort-Object -Unique
+    foreach ($procId in $pids) {
+        try { Stop-Process -Id $procId -Force -ErrorAction Stop; Write-Host "[OK] $Name [端口 $Port] PID $procId：已停止" -ForegroundColor Green }
+        catch { Write-Host "[X] $Name [端口 $Port] PID $procId：结束失败，请手动在任务管理器结束该进程" -ForegroundColor Red }
     }
 }
 

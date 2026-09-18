@@ -36,10 +36,23 @@ function Start-Hidden([string]$Script, [string]$WorkDir) {
     return $p
 }
 
+# 端口监听查询（netstat 解析：部分环境 NetTCPIP 模块异常导致 Get-NetTCPConnection 失效，改用系统自带 netstat，跨机器稳定）
+function Get-ListenPids([int]$Port) {
+    $pids = @()
+    $lines = & netstat -ano 2>$null
+    foreach ($l in $lines) {
+        if ($l -match ":$Port\s+\S+\s+LISTENING\s+(\d+)\s*$") {
+            $p = [int]$Matches[1]
+            if ($p -gt 0 -and $pids -notcontains $p) { $pids += $p }
+        }
+    }
+    return ,$pids
+}
+
 switch ($Task) {
     'panel' {
         $port = 8899
-        if (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue) {
+        if (@(Get-ListenPids $port).Count -gt 0) {
             Write-Host "端口 $port 已被占用，面板可能已在运行" -ForegroundColor Yellow
             Write-Host "请在浏览器打开: http://127.0.0.1:$port/" -ForegroundColor Cyan
         } else {
@@ -47,7 +60,7 @@ switch ($Task) {
             Write-Host '面板窗口会自动隐藏，服务在后台运行' -ForegroundColor DarkGray
             $p = Start-Hidden (Join-Path $tools 'msg-panel-server.mjs') $tools
             Start-Sleep -Seconds 2
-            if (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue) {
+            if (@(Get-ListenPids $port).Count -gt 0) {
                 Write-Host "[OK] 面板已启动 (PID $($p.Id))" -ForegroundColor Green
             } else {
                 Write-Host '[ERROR] 面板启动失败' -ForegroundColor Red
@@ -57,10 +70,10 @@ switch ($Task) {
         Write-Host "已打开: http://127.0.0.1:$port/" -ForegroundColor Green
     }
     'panel-stop' {
-        $conn = Get-NetTCPConnection -LocalPort 8899 -State Listen -ErrorAction SilentlyContinue
-        if (-not $conn) { Write-Host '[--] 通信面板未在运行（端口 8899）' }
+        $conn = @(Get-ListenPids 8899)
+        if ($conn.Count -eq 0) { Write-Host '[--] 通信面板未在运行（端口 8899）' }
         else {
-            $conn.OwningProcess | Sort-Object -Unique | ForEach-Object {
+            $conn | Sort-Object -Unique | ForEach-Object {
                 Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue
                 Write-Host "[OK] 通信面板已停止（端口 8899）PID $_" -ForegroundColor Green
             }
