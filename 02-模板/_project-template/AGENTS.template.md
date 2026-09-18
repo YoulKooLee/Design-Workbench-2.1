@@ -53,7 +53,7 @@
 - 如果目标、范围、内容来源、验收重点、信息架构、交互路径、视觉方向或设计基底存在会改变产出方向的多种选择，停在对应阶段与用户确认。
 - 详细对齐方法见 `rules/requirements-alignment-guide.md`；原型主规格、确认门槛和双向同步统一遵循该指南的「原型主规格」。
 - 主题和项目资料不使用原型主规格流程，分别使用 `$build-design-system` 和遵循 `rules/resource-management-guide.md`。
-- 选择设计基底时，先检查当前项目本地候选（项目默认主题、已有同类原型和 `src/themes/`）；本地不足 3 个时，再使用 `$search-design-system` 从 Design Knowledge 主题库补足。只有用户明确要求创建或修改主题时才使用 `$build-design-system`。
+- 选择设计基底时，先检查当前项目本地候选（项目默认主题、已有同类原型和 `src/themes/`）；共享层 `03-组件库/03-UI风格/src-themes/` 可作离线参考源；本地不足 3 个时，再使用 `$search-design-system` 从 Design Knowledge 主题库补足。只有用户明确要求创建或修改主题时才使用 `$build-design-system`。
 
 验收后由用户按需发起的可选阶段：
 
