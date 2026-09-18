@@ -69,3 +69,6 @@ $RECYCLE.BIN/
 09-协作/rooms/**/*.jsonl
 09-协作/messages/**/*.json
 09-协作/messages/**/*.jsonl
+
+# 临时调试产物
+_theme-refs.txt
