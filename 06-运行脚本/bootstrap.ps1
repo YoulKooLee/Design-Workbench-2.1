@@ -82,21 +82,16 @@ if (Test-Path $tplMake) {
     $tplDir = Join-Path $root '02-模板\_project-template'
     if (Test-Path (Join-Path $tplDir 'package.json')) {
         Push-Location $tplDir
-        $installed = $false
-        if ($pnpm) {
-            & pnpm install --no-save --prefer-offline @axhub/make 2>&1 | Out-Null
-            $installed = ($LASTEXITCODE -eq 0)
-        }
-        if (-not $installed) {
-            Write-Host '  pnpm 安装失败或不可用，改用 npm...' -ForegroundColor Yellow
-            & $node (Join-Path (Split-Path (Get-Command npm).Source) 'npm-cli.js') install --no-save @axhub/make 2>&1 | Out-Null
-            $installed = ($LASTEXITCODE -eq 0)
-        }
+        # pnpm 的 install 不支持 --no-save（PNPM_OPTION_NOT_SUPPORTED），统一用 npm --no-save 直装
+        Write-Host '  使用 npm --no-save 安装（不写入 package.json）...' -ForegroundColor DarkGray
+        & npm install --no-save @axhub/make 2>&1 | Out-Null
+        $installed = ($LASTEXITCODE -eq 0)
         Pop-Location
         if ($installed -and (Test-Path $tplMake)) {
             Write-Host '  [OK] @axhub/make 预装完成' -ForegroundColor Green
         } else {
-            Write-Host '  [FAIL] @axhub/make 预装失败。请手动执行：cd 02-模板/_project-template && npm install @axhub/make' -ForegroundColor Red
+            Write-Host '  [FAIL] @axhub/make 预装失败（可能无网络）。' -ForegroundColor Red
+            Write-Host '         请手动执行：cd 02-模板/_project-template && npm install --no-save @axhub/make' -ForegroundColor DarkGray
             $failed = $true
         }
     } else {
