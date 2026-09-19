@@ -4,7 +4,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
-import { exec, spawn, spawnSync } from 'node:child_process';
+import { exec, spawn, spawnSync, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { cleanEnvForSpawn, send, sendError, readBody, safeName, parseFrontmatter, extractTriggers } from './lib/utils.mjs';
 
@@ -1154,6 +1154,17 @@ const server = http.createServer(async (req, res) => {
       });
       // vendor 装配：运行时素材（Vue/Element Plus/g2plot/fontawesome/vant/f2）从工作台模板源拷回
       // （模板 .agents 已瘦身：vendor 移出到 02-模板/vendor，新项目创建时按需装配）
+      // cpSync 递归拷贝在 Windows 上偶发 EIO/Access denied（Defender 实时扫描锁定新文件），加重试
+      const cpRetry = async (src, dst, tag) => {
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try { execFileSync("robocopy", [src, dst, "/E", "/NFL", "/NDL", "/NJH", "/NJS", "/NC", "/NS"], { stdio: "ignore", windowsHide: true }); return; }
+          catch (e) {
+            if (e.status !== undefined && e.status < 8) return; // robocopy 0-7 均成功
+            if (attempt === 3) { console.error(`[${tag}] 第${attempt}次仍失败:`, e.message); return; }
+            await new Promise(r => setTimeout(r, 800 * attempt));
+          }
+        }
+      };
       try {
         const vendorSrc = path.join(AXHUB_ROOT, '02-模板', 'vendor');
         const vendorMap = [
@@ -1162,7 +1173,7 @@ const server = http.createServer(async (req, res) => {
         ];
         for (const [vn2, vdst] of vendorMap) {
           const vsrc = path.join(vendorSrc, vn2);
-          if (fs.existsSync(vsrc)) fs.cpSync(vsrc, vdst, { recursive: true });
+          if (fs.existsSync(vsrc)) await cpRetry(vsrc, vdst, 'vendor-assemble');
         }
       } catch (e) { console.error('[vendor-assemble]', e.message); }
       // themes 装配：UI 主题库（112 主题）从共享层 03-组件库/03-UI风格/src-themes 拷入 src/themes（「设计」页签数据源）
@@ -1173,7 +1184,7 @@ const server = http.createServer(async (req, res) => {
           fs.mkdirSync(themesDst, { recursive: true });
           for (const tItem of fs.readdirSync(themesSrc, { withFileTypes: true })) {
             if (tItem.isDirectory() && !tItem.name.startsWith('.')) {
-              fs.cpSync(path.join(themesSrc, tItem.name), path.join(themesDst, tItem.name), { recursive: true });
+              await cpRetry(path.join(themesSrc, tItem.name), path.join(themesDst, tItem.name), 'themes-assemble');
             }
           }
         }

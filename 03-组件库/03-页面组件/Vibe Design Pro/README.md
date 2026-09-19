@@ -169,3 +169,16 @@ web / app 扩展同理：根下新目录 + 挂到对应 `ends.web` / `ends.app`�
 | `../ui-libs/arco-design-vue/pages.md` | 对照重写与 page-type（增页选型） |
 | `../ui-libs/arco-design-vue/charts.md` | Admin 图表规范 |
 | `../ui-libs/`（ant-design-pro / element-plus / shadcn / vant） | 其余组件库规范 |
+
+## vendor 双副本同步维护声明（2026-09-19）
+
+本目录 `web/vendor/` 与 `app/vendor/`（预览页运行时依赖，304 处 `./vendor/...` 相对引用）
+与 `02-模板/vendor/{vibepm-web,vibepm-app}/`（新建项目装配到
+`.agents/skills/{vibepm-web,app}-generator/assets/vendor` 的素材）内容 MD5 一致。
+
+- **组件库侧 vendor**：预览页 gallery.html / frame 运行时必需，**不可删**（删即预览 404）。
+- **模板侧 vendor**：新建 make 项目时 server.mjs 按需装配到项目 .agents，**不可删**（删即技能生成器找不到运行时）。
+- **更新规则**：改任一侧 vendor 后，必须把改动同步到另一侧，保持两边 MD5 一致。
+  验证命令：分别对两侧同子目录算 MD5 清单，diff 应为空。
+- admin/vendor（5.00MB）为 admin 框架独有，不在双副本范围内。
+
