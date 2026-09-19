@@ -1189,6 +1189,30 @@ const server = http.createServer(async (req, res) => {
           }
         }
       } catch (e) { console.error('[themes-assemble]', e.message); }
+      // extraDependencies 装配：扫描 Codebuddy Design catalog 的 extraDependencies，合并到项目 package.json dependencies
+      // （方案 B：组件库只声明依赖，server.mjs 新建项目时按需写入；项目已有同包则不覆盖）
+      try {
+        const catalogPath = path.join(AXHUB_ROOT, '03-组件库', '03-页面组件', 'Codebuddy Design', '_meta', 'components.catalog.json');
+        if (fs.existsSync(catalogPath)) {
+          const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+          const extra = {};
+          for (const cid of Object.keys(catalog.components || {})) {
+            const ed = catalog.components[cid].extraDependencies;
+            if (ed && typeof ed === "object") Object.assign(extra, ed);
+          }
+          const pkgPath = path.join(dst, 'package.json');
+          if (Object.keys(extra).length > 0 && fs.existsSync(pkgPath)) {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            pkg.dependencies = pkg.dependencies || {};
+            let added = 0;
+            for (const [dep, ver] of Object.entries(extra)) {
+              if (!pkg.dependencies[dep]) { pkg.dependencies[dep] = ver; added++; }
+            }
+            if (added > 0) fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+            console.error(`[extra-deps] 写入 ${added} 个依赖: ${Object.keys(extra).join(', ')}`);
+          }
+        }
+      } catch (e) { console.error('[extra-deps-assemble]', e.message); }
       // 生成唯一项目身份
       const clientFile = path.join(dst, '.axhub', 'make', 'client.json');
       const client = {
