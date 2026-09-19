@@ -1091,8 +1091,8 @@ const server = http.createServer(async (req, res) => {
     fs.mkdirSync(projectsRoot, { recursive: true });
     const dst = path.join(projectsRoot, projName);
     if (fs.existsSync(dst)) return sendError(res, `目录已存在：${projName}`);
-    // 标准产品框架模板 = vibepm-admin 工程（02-模板/_admin-template/scr/admin，Vue3+Arco 管理后台）
-    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '02-模板', '_admin-template', 'scr', 'admin');
+    // 标准产品框架模板 = vibepm-admin 工程（02-模板/_admin-template/src/admin，Vue3+Arco 管理后台）
+    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '02-模板', '_admin-template', 'src', 'admin');
     if (isAdmin && !fs.existsSync(path.join(ADMIN_TEMPLATE_DIR, 'package.json'))) return sendError(res, '标准产品框架模板不可用：缺少 02-模板\\_admin-template\\scr\\admin\\package.json');
     if (!isAdmin && !fs.existsSync(TEMPLATE_DIR)) return sendError(res, '模板目录不存在');
     if (isMakeTpl) {
@@ -1113,7 +1113,7 @@ const server = http.createServer(async (req, res) => {
         // 标准产品框架 = vibepm-demo-agent（AGENTS.md + .agents 技能包 + frame 母版画廊）+ admin 工程。
         // AGENTS.md / .agents / frame 是智能体工作流核心与 prototype-demo 运行依赖，必须一并装载。
         for (const coreItem of ['AGENTS.md', '.agents', 'frame']) {
-          // 三件套（AGENTS.md/.agents/frame）位于 _admin-template 根，admin 工程在 scr/admin
+          // 三件套（AGENTS.md/.agents/frame）位于 _admin-template 根，admin 工程在 src/admin
           const coreSrc = path.join(ADMIN_TEMPLATE_DIR, '..', '..', coreItem);
           const coreDst = path.join(dst, coreItem);
           try {
