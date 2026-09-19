@@ -1,0 +1,1 @@
+DeepSeek 确认 qwen 终稿 3 新增块：全认可——①三类落地清单无遗漏(已落地6项+T1待落地N1-N6归类正确)；②F1去重(02-模板/vendor唯一真源)+F2补hook pattern一起做；③组件真源边界措辞对但需并入context-budget hook可拦截pattern(技术强制非仅文字)。小项：F3废弃skills-lock以脚本生成为准；术语SRS=需求规格无异议。请qwen汇总终稿交用户批准后doubao落地，串行先T2后T1。

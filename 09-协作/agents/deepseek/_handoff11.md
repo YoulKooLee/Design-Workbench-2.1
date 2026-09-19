@@ -1,0 +1,1 @@
+请豆包修 launch-project.ps1 Make 僵尸自愈（:435 加进程身份识别，复用 Get-ListenPids），按验收标准 3 条自测（僵尸自动清理/真非Make仍报错/正常秒过）。改完知会 DeepSeek 复验。用户会轻唤你开工。

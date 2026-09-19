@@ -107,11 +107,29 @@ function Get-ListenPids([int]$Port) {
             if ($p -gt 0 -and $pids -notcontains $p) { $pids += $p }
         }
     }
-    return ,$pids
+    return $pids
 }
 
 function Test-PortFree($port) {
-    return @(Get-ListenPids $port).Count -eq 0
+    $pids = Get-ListenPids $port
+    return @($pids).Count -eq 0
+}
+
+# ===== Make 僵尸进程识别（deepseek P4-2 遗留项修复 2026-09-19）=====
+# 触发链：上次 Make 异常退出 → 端口被僵尸占（监听但 /api/health 不响应）
+#        → Get-MakeHealth 超时返回 null → Test-PortFree 只见「端口被占」
+#        → 误判成非 Make 进程直接 throw，下次点击仍复发。
+# 修复：throw 前用 CommandLine 特征识别占用者，是僵尸 Make 则清理后继续启动。
+function Get-MakeZombiePids([int]$Port) {
+    $zombies = @()
+    $pids = Get-ListenPids $Port
+    foreach ($p in $pids) {
+        $proc = Get-CimInstance Win32_Process -Filter "ProcessId=$p" -ErrorAction SilentlyContinue
+        if ($null -eq $proc) { continue }
+        $cmd = [string]$proc.CommandLine
+        if ($cmd -match 'axhub[\\/]make|cli\.mjs|@axhub/make') { $zombies += $p }
+    }
+    return $zombies
 }
 
 # ===== 后台启动 Node 进程（处理路径含空格问题）=====
@@ -433,7 +451,15 @@ try {
             }
         }
         if (-not (Test-PortFree $MakePort)) {
-            throw "端口 $MakePort 已被非 Axhub Make 的进程占用，请先释放该端口（可运行根目录的 停止工作台.cmd）"
+            $zombies = @(Get-MakeZombiePids $MakePort)
+            if ($zombies.Count -gt 0) {
+                Write-Warn "检测到僵尸 Make 进程 (pid $($zombies -join ','))，自动清理后重启…"
+                foreach ($z in $zombies) { Stop-Process -Id $z -Force -ErrorAction SilentlyContinue }
+                Start-Sleep -Seconds 2
+                # 继续往下走：清理残留心跳 → 环境净化 → 正常启动 Make
+            } else {
+                throw "端口 $MakePort 已被非 Axhub Make 的进程占用，请先释放该端口（可运行根目录的 停止工作台.cmd）"
+            }
         }
 
         # 端口空闲但仍残留上次的心跳记录 => 上次的 Make 是异常退出（关机/强杀），

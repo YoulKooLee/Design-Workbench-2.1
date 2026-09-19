@@ -1,0 +1,1 @@
+DeepSeek 诊断启动开发栈报错：launch-project.ps1:435 只判端口是否空闲、没查占用者身份，僵尸 Make（端口监听但健康检查超时）被误判成非 Make 进程直接 throw。修复=throw 前加进程身份识别（复用 Get-ListenPids + Get-CimInstance 命令行匹配 axhub/make），僵尸 Make 自动清理重启。完整方案见产物。

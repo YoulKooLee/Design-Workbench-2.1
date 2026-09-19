@@ -17,7 +17,7 @@ function Get-ListenPids([int]$Port) {
             if ($p -gt 0 -and $pids -notcontains $p) { $pids += $p }
         }
     }
-    return ,$pids
+    return $pids
 }
 
 

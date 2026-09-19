@@ -15,9 +15,20 @@
 
 ## ⚠️ 上下文预算（最高铁律）
 
-本文件约 41KB（≈1.4 万 token）；技能区全量约 **3.3MB**（其中 SKILL.md 正文 442KB ≈ 11 万 token、references/templates/scripts/assets 约 2.9MB）、知识库约 210KB（≈7 万 token）、根级 `rules/` 约 1.7MB（含 1.3MB 工具代码）。**严禁**遍历 / 批量 Read `.agents/skills/`、`.agents/knowledge/`、`.agents/rules/`、根级 `rules/`、`src/themes/` 目录——一次误读即击穿上下文窗口。技能匹配只用会话启动时 **session-start hook 注入的 `.agents/skills/INDEX.md`**；命中后仅加载那一个技能，其正文由加载机制自动带入。
+**体量实测基线**（2026-09-19 核验，改动后须重新实测）：本文件 **38KB**（≈1.3 万 token）；`.agents/skills/` **2.41MB / 272 文件**（SKILL.md 正文合计 442KB ≈ 11 万 token）；`.agents/knowledge/` **200KB / 47 文件**（≈7 万 token）；根级 `rules/` **0.43MB / 47 文件**（全部为 .md，工具代码已外移至 `02-模板/vendor/impeccable-scripts/`）。
 
-**每次操作前自检**：凡即将执行 Read / Glob / 目录扫描且目标可能命中上述目录（`.agents/skills/`、`.agents/knowledge/`、`.agents/rules/`、根级 `rules/`、`src/themes/`，含通配符、递归），先停下估算一次调用是否可能带进 >2 万 token——会则改为精确路径 Read 单个文件，不得整目录读。检查 `src/themes/` 的安全方法：只读 `theme.json` 的 name 字段，或只列一级目录名，**严禁递归**。根级 `rules/references/impeccable/` 为 UI 审查工具代码（约 1.65MB），**严禁** Read 其中 .js/.mjs/.cjs 文件。
+**严禁遍历 / 批量 Read 以下目录**（含通配符、递归）：`.agents/skills/`、`.agents/knowledge/`、`.agents/rules/`、根级 `rules/`、`src/themes/`、`03-组件库/**/vendor/`。
+
+技能匹配只用会话启动时 **session-start hook 注入的 `.agents/skills/INDEX.md`**；命中后仅加载那一个技能，其正文由加载机制自动带入。
+
+**每次操作前自检**：目标命中上述目录时，先估算单次调用是否可能带进 >2 万 token——会则改为精确路径 Read 单个文件，不得整目录读。
+
+**安全替代方法**：
+- `src/themes/` → 只读 `theme.json` 的 name 字段，或只列一级目录名，严禁递归
+- 技能触发词 → 用已注入的 `.agents/skills/INDEX.md`，严禁 Read 各 SKILL.md
+- 组件 → 用 `.agents/component-manifest.json` 反查单组件，严禁整目录 Read `03-组件库`
+
+> 该护栏由 `.agents/hooks/context-budget.cjs` 技术强制（preToolUse 拦截 Read/Glob/Grep），非仅文字约束。理由与历史事故见 `.agents/rules/AGENTS-rationale.md`。
 
 ## 📐 上下文装配协议（T1 落地 · 每次会话的「装什么」）
 
@@ -52,7 +63,7 @@
 |---|---|---|---|
 | 常驻基线 1-6 | ≤ 40 KB | ≈ 20K | 10% |
 | 模块滑窗 7-9 | ≤ 20 KB | ≈ 10K | 5% |
-| AGENTS.md + 系统提示 | 42.7 KB | ≈ 18.3K（实测更新） | 9.2% |
+| AGENTS.md（本文件，常驻入口） | ≈ 34 KB | ≈ 15K | 7.5% |
 | **合计** | | **≈ 48K** | **≈ 24%** |
 | 留给生成与对话 | | ≈ 152K | 76% |
 
@@ -158,7 +169,7 @@ Make 管理端默认使用 `http://localhost:53817/`；`check-app-ready` 返回 
 
 **仅作素材时都不触发**：用户只是提供图片作为参考图、需求图或风格上下文时，`screenshot-to-prototype` 与 `ui-design-image` 均不应触发。
 
-> 技能文件清单见 `.agents/skills/` 目录（52 个）；触发条件一律以预加载 description 为准，本文件不再逐项罗列。易混技能的冲突裁决见上表「同类技能裁决速查」，需求文档三体系走下一章专章路由。
+> 技能清单见 `.agents/skills/`（**51 个技能 + `common/` 共享脚本目录**）；触发条件一律以已注入的 INDEX.md description 为准，本文件不再逐项罗列。易混技能的冲突裁决见上表，需求文档三体系走下一章专章路由。
 
 ---
 

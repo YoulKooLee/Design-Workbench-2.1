@@ -17,7 +17,7 @@ function Get-ListenPids([int]$Port) {
             if ($p -gt 0 -and $pids -notcontains $p) { $pids += $p }
         }
     }
-    return ,$pids
+    return $pids
 }
 
 $node = ''                               # 最终使用的 node 可执行文件
