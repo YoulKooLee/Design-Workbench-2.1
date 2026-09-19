@@ -2,6 +2,26 @@
 
 本文说明**不含前端脚手架（无 admin/）**时的 vibepm-dev-agent 交付内容。用户自行创建 Vue / React 等前端项目后，将 vibepm-dev-agent 接入即可使用 AI 工作流。
 
+## 部署清单（从业务项目根目录视角）
+
+将以下文件复制到业务项目根目录（2026-09-19 由 `AGENTS.md` 移入本文：部署属打包动作，项目设计执行时用不到）：
+
+| 路径 | 必需 | 说明 |
+| --- | --- | --- |
+| `.agents/` | ✅ | 技能、Agent、知识库、规则、Hook 的完整配置 |
+| `AGENTS.md` | ✅ | AI 代理工作指南（唯一正本；`AGENTS.template.md` 是其派生副本，见下） |
+| `templates/` | 建议 | 接入模板：`README-DEV.template.md`、`project-init.md`、本文 |
+| `README-DEV.md` | ✅ | 项目开发规范；从 `templates/README-DEV.template.md` 复制到各 `{PROJECT_PATH}/` 并填写 |
+| `admin/` | 可选（建议） | Vue3 + Element Plus 后台框架；`page-generator` 的交付目标；不含 node_modules |
+| `rules/` | 建议 | 原型开发、主题、Review 等工作规则 |
+| `project-memory.md` | ✅ | 项目级记忆（项目画像 / 项目经验 / 结项状态）；项目专属要求记录于此，优先级最高 |
+
+### AGENTS.md 与 AGENTS.template.md 的关系（重要，避免误改）
+
+- **`AGENTS.md` 是唯一正本**。由产品设计工作台面板新建项目时，`工作台面板/server.mjs` 用 `fs.cpSync` 从 `02-模板/_project-template` **整体拷贝**（仅排除 `node_modules` 与 `.git`），项目初始即带 `AGENTS.md`。
+- **不存在"由 template 再生成 AGENTS.md"的步骤。** `AGENTS.template.md` 由 `.agents/scripts/build-agents-template.mjs` 从 `AGENTS.md` **单向派生**（仅在标题后插入维护提醒 + `{{PROJECT_INFO_SECTION}}` 占位符，其余正文一致），定位接近**备份/占位参考**，不参与项目生成。
+- 故：改 `AGENTS.md` 即刻对新项目生效；跑生成器同步 template 是**可选的收尾动作**（避免 template 成为过期副本误导后续维护者），不是生效前提。
+
 ## 交付目录结构
 
 ```
