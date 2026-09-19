@@ -10,6 +10,7 @@ const EVENT_BY_HOOK = {
   'session-start': 'SessionStart',
   'config-protection': 'PreToolUse',
   'gateguard': 'PreToolUse',
+  'context-budget': 'PreToolUse',
   'review-reminder': 'PostToolUse',
   'review-tracker': 'PostToolUse',
   'pre-compact': 'PreCompact',

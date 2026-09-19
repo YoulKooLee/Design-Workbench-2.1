@@ -1,23 +1,23 @@
 'use strict';
 
 // ============================================================
-//  context-budget.cjs - 上下文预算护栏（千问 P1-7）
+//  context-budget.cjs - 上下文预算护栏（admin 版 · 按本模板资产裁剪）
 //  拦截 Read|Glob|Grep 命中高危目录（.agents/skills、.agents/knowledge、
-//  .agents/rules、根级 rules/references/impeccable、src/themes）的
+//  .agents/rules、frame 母版画廊、vendor、node_modules）的
 //  递归/通配/目录级操作，提示改为精确路径读取。
-//  注册：hooks.json preToolUse matcher=Read|Glob|Grep
+//  注册：hooks.json + adapters/{cursor,claude} preToolUse matcher=Read|Glob|Grep
 // ============================================================
 const path = require('path');
 const fs = require('fs');
 
-// 高危目录特征（按 AGENTS.md 上下文预算禁令）
+// 高危目录特征（按 AGENTS.md 上下文预算禁令；frame 为本模板最大资产 ≈17.6MB）
 const HIGH_RISK_PATTERNS = [
   { re: /[\\/]\.agents[\\/]skills([\\/]|$)/, name: '.agents/skills/' },
   { re: /[\\/]\.agents[\\/]knowledge([\\/]|$)/, name: '.agents/knowledge/' },
   { re: /[\\/]\.agents[\\/]rules([\\/]|$)/, name: '.agents/rules/' },
-  { re: /[\\/]rules[\\/]references[\\/]impeccable([\\/]|$)/, name: '根级 rules/references/impeccable/' },
-  { re: /[\\/]src[\\/]themes([\\/]|$)/, name: 'src/themes/' },
-  { re: /[\\/]03-组件库[\\/].*[\\/]vendor([\\/]|$)/, name: '03-组件库/…/vendor/' },
+  { re: /(^|[\\/])frame([\\/]|$)/, name: 'frame/（母版画廊）' },
+  { re: /[\\/]vendor([\\/]|$)/, name: 'vendor/' },
+  { re: /[\\/]node_modules([\\/]|$)/, name: 'node_modules/' },
 ];
 
 exports.run = (input) => {
@@ -50,8 +50,8 @@ exports.run = (input) => {
         '【上下文预算拦截】目标命中高危目录（' + hits.map((h) => h.name).join('、') + '）' +
         (isSearchTool ? '，且为 Glob/Grep 检索' : hasWildcard ? '，且含通配符' : '，且为目录级 Read') +
         '，可能一次带进数万 token 击穿上下文窗口。\n' +
-        '请改为：精确路径 Read 单个文件；检查 src/themes/ 只读 theme.json 的 name 字段或只列一级目录名；' +
-        '检索技能/知识库用 .agents/skills/INDEX.md（会话启动已注入）。'
+        '请改为：精确路径 Read 单个文件；浏览 frame 母版只列一级目录名或读单个 demo 文件；' +
+        '检索技能/知识库用会话启动注入的 .agents/skills/INDEX.md，不遍历技能目录。'
     }
   };
 };

@@ -1674,13 +1674,20 @@ const server = http.createServer(async (req, res) => {
       }
 
       // 3) 定位 Make CLI 并重新启动（优先 WorkBuddy 自带 node，与工作台一致）
+      // 方案 C（deepseek 2026-09-19）：优先用补丁源自包含 cli.mjs，稳定不受 pnpm install 影响
       let makeCli = null;
       let cliCwd = null;
-      for (const baseDir of [path.join(AXHUB_ROOT, '01-项目'), path.join(AXHUB_ROOT, '02-模板')]) {
-        if (!fs.existsSync(baseDir) || makeCli) continue;
-        for (const name of fs.readdirSync(baseDir)) {
-          const cand = path.join(baseDir, name, 'node_modules', '@axhub', 'make', 'bin', 'cli.mjs');
-          if (fs.existsSync(cand)) { makeCli = cand; cliCwd = path.join(baseDir, name); break; }
+      const patchCli = path.join(AXHUB_ROOT, '03-组件库', '01-补丁源', 'dist', 'server', 'cli.mjs');
+      if (fs.existsSync(patchCli)) {
+        makeCli = patchCli;
+        cliCwd = path.dirname(patchCli);
+      } else {
+        for (const baseDir of [path.join(AXHUB_ROOT, '01-项目'), path.join(AXHUB_ROOT, '02-模板')]) {
+          if (!fs.existsSync(baseDir) || makeCli) continue;
+          for (const name of fs.readdirSync(baseDir)) {
+            const cand = path.join(baseDir, name, 'node_modules', '@axhub', 'make', 'bin', 'cli.mjs');
+            if (fs.existsSync(cand)) { makeCli = cand; cliCwd = path.join(baseDir, name); break; }
+          }
         }
       }
       if (!makeCli) return sendError(res, '未找到 @axhub/make，请先在任一项目执行 npm install / pnpm install', 500);

@@ -4,7 +4,7 @@
   "end": "react-proto",
   "runtime": "react + tailwind v4",
   "theme": "arco",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "status": "ready",
   "syncedAt": "2026-09-19",
   "source": "vibepm-demo-agent-v1.4 frame/admin（Vibe Design Pro）组件字典 → React 提炼",
@@ -16,7 +16,7 @@
     "数据展示": "DataTable/Pagination/Descriptions/Progress/List/Tree/Chart/Timeline/Collapse/Calendar",
     "反馈": "Modal/Drawer/Alert/Spin/ResultPage/Message/Notification",
     "业务组件": "KpiRow/FilterBar/TableCard/StatusTag/Kanban",
-    "页面模式": "PageListSearchTable",
+    "页面模式": "PageListSearchTable/PageListCard/PageFormBasic/PageFormGroup",
     "订单": "OrderTable/OrderDetailHeader/OrderItemList/OrderStatusFlow/OrderTimeline/OrderAmountSummary",
     "付款": "PaymentMethodPicker/PaymentCashier/PaymentCountdown/PaymentResult/InvoiceForm",
     "触发器": "TriggerTypePicker/TriggerConditionBuilder/TriggerActionList/TriggerRuleCard",
@@ -24,10 +24,11 @@
     "工作流": "WorkflowList/NodePalettePanel/ExecutionLogTimeline/ApprovalNodeCard/WorkflowCanvas(需 @xyflow/react)"
   },
   "consume": {
-    "mode": "copy-into-project",
-    "target": "src/component-templates/axhub/",
-    "entry": "index.ts",
-    "note": "整目录复制（组件间有跨分类引用）；除 工作流/WorkflowCanvas（需 @xyflow/react）外零第三方依赖，图标内联 SVG；主题 token 在 _kit/theme.css；金额/日期格式化在 _kit/format.ts。新增组件可落 分类目录/ 或独立 <id>/ 目录（面板上传）。"
+    "mode": "one-dir-per-component",
+    "target": "src/component-templates/<分类>/<组件名>/",
+    "entry": "index.tsx（组件源码） + index.html（预览页，make 组件页签 iframe 入口）",
+    "note": "make「组件」页签按「每个含 index.tsx 的目录」扫描，预览加载 ${origin}/component-templates/<分类>/<组件名>/index.html。组件间有跨分类引用，复制时需整目录保持结构；_kit/theme.css 为主题 token。除 工作流/WorkflowCanvas（需 @xyflow/react）外零第三方依赖。",
+    "legacyNote": "旧格式（分类根 index.tsx 统一出口 + ../axhub/ 子目录）已废弃并清理。"
   },
   "docs": {
     "readme": "README.md",

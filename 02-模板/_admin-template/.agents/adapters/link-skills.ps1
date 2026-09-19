@@ -1,4 +1,4 @@
-# 将 Cline 的 .cline/skills 联接到本包真源 .agents/skills（Windows Junction）
+﻿# 将 Cline 的 .cline/skills 联接到本包真源 .agents/skills（Windows Junction）
 # 用法：在含 .agents/ 的仓库根执行  .\.agents\adapters\link-skills.ps1
 $ErrorActionPreference = 'Stop'
 $root = (Get-Location).Path

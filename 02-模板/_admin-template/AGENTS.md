@@ -6,6 +6,8 @@
 
 ## 技能清单
 
+> 下表仅概括用途；**实际触发条件以会话启动注入的 `.agents/skills/INDEX.md`（自动生成，name+description）为准**，严禁为查触发词遍历 Read 各 `SKILL.md`（技能区 1.75MB，遍历击穿上下文）。INDEX 缺失或过期时运行 `node .agents/scripts/build-skills-index.mjs` 重新生成。唯一例外：需求文档四体系的裁决见下一章专章。
+
 ### 原型生成类
 
 | 技能名称 | 功能说明 | 适用场景 |
@@ -301,6 +303,7 @@
 
 ```
 【常驻基线】每次会话都在，条目级摘要，禁止全文灌入
+  0. 本文件 AGENTS.md（模板级固定开销，所有项目相同；只讲执行，解释外置）
   1. 需求清单     feature-list 条目（id + 一句话 + 优先级 + 状态）
   2. 数据模型     实体清单 + 关系 + 关键字段（概念 ER，引用 hld-spec 数据架构）
   3. 总体架构     分层 + 模块清单 + 模块依赖（每模块标注端：web / mobile / both）
@@ -381,7 +384,7 @@
 ### 组件与生成器边界（防止双套误读）
 
 - **组件真源**：开发层组件以项目内 `src/components/`（Vue 工程）与 `src/views/` 页面为准；`03-组件库` 是母版 / catalog（JSON + 提示词），运行时按白名单拷贝、**禁止整目录 Read**。
-- **生成器裁决**：`feature-dev`（→ `scr/admin/` Vue 开发层，输入须 SRS）与原型生成类按「交付层」二选一，不得同时加载两套；选错即浪费整个滑窗预算。
+- **生成器裁决**：`feature-dev`（→ Vue 开发层 `{PROJECT_PATH}`，输入须 SRS）与原型生成类（`frontend-design` 等）按「交付层」二选一，不得同时加载两套；选错即浪费整个滑窗预算。
 - **跨端装配**：模块有 web/mobile 双端时，切端只装配「该端滑窗 + 对端已完成模块快照」，不重读对端实现。
 
 ---
@@ -454,7 +457,8 @@
 | review-reminder | 代码改动后提醒调度 code-reviewer |
 | review-tracker | 记录本次会话是否已执行 code-reviewer |
 | stop-quality-gate | 回复结束前检查 console.log 残留与审查合规 |
-| session-start | 会话启动时注入强制执行清单 |
+| context-budget | 拦截命中高危目录（skills/knowledge/rules/frame/vendor）的递归·通配读取（preToolUse Read\|Glob\|Grep） |
+| session-start | 会话启动时注入强制执行清单 + 技能索引（INDEX.md） |
 
 复杂工作流约束（SRS 扫描、角色调度、Git 流程等）见 `.agents/rules/` 目录，按需 Read。运行时降级见 `agent-runtime.md`；角色调度话术见 `role-dispatch.md`；无 Hook 软门禁见 `soft-gates.md`；其它 ADE 映射见 `ade-compat.md`。
 
@@ -504,14 +508,4 @@
 
 ---
 
-## 部署清单
-
-将以下文件复制到业务项目根目录：
-
-| 路径 | 必需 | 说明 |
-| --- | --- | --- |
-| `.agents/` | ✅ | 通用核：`skills` / `agents` / `knowledge` / `rules`；`hooks/` 与 `adapters/` 随包提供。硬 Hook 按上表从 `adapters/` 复制到项目 `.cursor/` 或 `.claude/`，根目录不预置 |
-| `AGENTS.md` | ✅ | 本文件，作为 AI 代理的工作指南 |
-| `templates/` | 建议 | 接入模板：`README-DEV.template.md`、`project-init.md`（见 `templates/PACKAGING.md`） |
-| `README-DEV.md` | ✅ | 项目开发规范；从 `templates/README-DEV.template.md` 复制到各 `{PROJECT_PATH}/` 并填写 |
-| 前端源码（Starter） | 可选 | 非必需；包内可选 `admin/`（Vibe Design Pro）、`element-plus/`、`ant-design-pro/`、`shadcn/`，或用户自建框架 / 独立 Starter 仓库 |
+> **部署清单**（接入业务项目时复制哪些文件）见 `templates/PACKAGING.md` 与 `templates/project-init.md`——属工作台/交付层动作，项目设计执行期用不到，不常驻本文件。

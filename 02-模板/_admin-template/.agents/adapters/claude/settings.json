@@ -33,6 +33,18 @@
             "timeout": 5000
           }
         ]
+      },
+      {
+        "matcher": "Read|Glob|Grep",
+        "hooks": [
+          {
+            "id": "pre:read:context-budget",
+            "description": "命中高危目录的递归/通配读取前注入预算拦截提示",
+            "type": "command",
+            "command": "node .agents/hooks/run.cjs context-budget",
+            "timeout": 5000
+          }
+        ]
       }
     ],
     "PostToolUse": [

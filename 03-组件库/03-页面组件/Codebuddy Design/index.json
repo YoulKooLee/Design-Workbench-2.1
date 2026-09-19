@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "页面组件登记表（03-页面组件）。Codebuddy Design 为 React 组件库：分类目录（中文：基础/布局/表单/数据展示/反馈/业务组件/页面模式/订单/付款/触发器/CMS/工作流）= 真源分组，另支持独立 <id>/ 组件目录（面板上传落位）；以「整目录复制进工程 + import」方式消费，非运行时依赖。仅 工作流/WorkflowCanvas 需 @xyflow/react，且不在统一出口导出。",
   "ends": {
     "react-proto": {
@@ -12,7 +12,7 @@
           "capability": "source-components",
           "label": "React 原型 · Codebuddy Design",
           "status": "ready",
-          "componentCount": 75,
+          "componentCount": 79,
           "catalog": "_meta/components.catalog.json",
           "manifest": "_meta/layout.manifest.json"
         }
