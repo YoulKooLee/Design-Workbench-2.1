@@ -1110,6 +1110,24 @@ const server = http.createServer(async (req, res) => {
             return path.basename(lp) !== '.git';
           },
         });
+        // 标准产品框架 = vibepm-demo-agent（AGENTS.md + .agents 技能包 + frame 母版画廊）+ admin 工程。
+        // AGENTS.md / .agents / frame 是智能体工作流核心与 prototype-demo 运行依赖，必须一并装载。
+        for (const coreItem of ['AGENTS.md', '.agents', 'frame']) {
+          const coreSrc = path.join(ADMIN_TEMPLATE_DIR, '..', coreItem);
+          const coreDst = path.join(dst, coreItem);
+          try {
+            if (fs.existsSync(coreSrc)) {
+              fs.cpSync(coreSrc, coreDst, {
+                recursive: true,
+                filter: (src) => {
+                  const lp = src.toLowerCase();
+                  if (lp.includes('node_modules')) return false;
+                  return path.basename(lp) !== '.git';
+                },
+              });
+            }
+          } catch (e) { console.error('[standard-framework-assemble]', coreItem, e.message); }
+        }
         // 写 framework 标记（标准产品框架 · Vue 工程）
         try {
           fs.mkdirSync(path.join(dst, '.axhub'), { recursive: true });
