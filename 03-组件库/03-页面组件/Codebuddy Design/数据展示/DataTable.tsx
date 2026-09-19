@@ -196,7 +196,19 @@ export function DataTable<T extends object>({
               );
             })}
         </tbody>
-        {summary != null && <tfoot className="bg-neutral-1 text-neutral-10">{summary}</tfoot>}
+        {summary != null && (
+          <tfoot className="bg-neutral-1 text-neutral-10">
+            {/* summary 直接塞进 <tfoot> 时，必须是一整行 <tr>；传其它节点则自动包一层 <tr><td colSpan>，
+                避免出现「div 落在表格结构外」导致的表尾错位 */}
+            {React.isValidElement(summary) && summary.type === 'tr' ? (
+              summary
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="px-4 py-3">{summary}</td>
+              </tr>
+            )}
+          </tfoot>
+        )}
       </table>
     </div>
   );

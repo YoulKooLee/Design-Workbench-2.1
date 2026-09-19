@@ -72,3 +72,10 @@ $RECYCLE.BIN/
 
 # 临时调试产物
 _theme-refs.txt
+
+# ===== 智能体协作与记忆（不入库）=====
+09-协作/agents/
+10-智能体记忆/
+09-协作/messages/tools/*.pid
+09-协作/messages/tools/*.lock
+

@@ -41,20 +41,27 @@ function Stop-Port([int]$Port, [string]$Name) {
     }
 }
 
-# ---------- 停止 Vite 开发栈（51700-51799）----------
+# ---------- 停止 Vite 开发栈（按命令行特征匹配，覆盖 517xx 与自定义端口如 3006）----------
+# 2026-09-19 修复：PS 5.1 的 Get-Process 无 CommandLine 属性（恒为 null），
+# 旧实现 $p.CommandLine -match 全部落空 => 所有 Vite 残留漏杀（实测 51720/3006 双残留）。
+# 改为 CIM 读取命令行，按 Vite 入口特征 vite.js 匹配（不含 server.mjs / cli.mjs / dsh 等非 Vite node 服务）。
 function Stop-ViteStack {
     $found = $false
-    foreach ($p in Get-Process -Name node -ErrorAction SilentlyContinue) {
-        try {
-            $cmd = $p.CommandLine
-            if ($cmd -match '--port\s+517\d\d' -or $cmd -match 'vite') {
-                Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
-                Write-Host "[OK] Vite 开发服务器 PID $($p.Id)：已停止" -ForegroundColor Green
+    $nodes = Get-CimInstance Win32_Process -Filter "Name='node.exe'" -ErrorAction SilentlyContinue
+    foreach ($n in $nodes) {
+        $cmd = $n.CommandLine
+        if (-not $cmd) { continue }
+        if ($cmd -match 'vite\.js') {
+            try {
+                Stop-Process -Id $n.ProcessId -Force -ErrorAction Stop
+                Write-Host "[OK] Vite 开发服务器 PID $($n.ProcessId)：已停止" -ForegroundColor Green
                 $found = $true
+            } catch {
+                Write-Host "[X] Vite 开发服务器 PID $($n.ProcessId)：结束失败，请手动在任务管理器结束该进程" -ForegroundColor Red
             }
-        } catch {}
+        }
     }
-    if (-not $found) { Write-Host '[--] 未发现运行中的 Vite 开发服务器 (51700-51799)' }
+    if (-not $found) { Write-Host '[--] 未发现运行中的 Vite 开发服务器' }
 }
 
 # ---------- 清理状态文件 ----------
@@ -83,7 +90,7 @@ Write-Host ''
 Write-Host '============================================'
 Write-Host '   操作完成。下面是被处理的服务汇总：'
 Write-Host '   ·工作台管理面板 (7788) · Make 单例 (53817) · ACP 协作 (32124)'
-Write-Host '   · Vite 开发栈 (517xx) · 原型预览服务器 (8899)'
+Write-Host '   · Vite 开发栈 (517xx/自定义端口) · 原型预览服务器 (8899)'
 Write-Host '   如某项显示 [--] 表示它本来就没在运行。'
 Write-Host '============================================'
 Write-Host '按任意键关闭本窗口...'

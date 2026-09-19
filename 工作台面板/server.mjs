@@ -1,4 +1,4 @@
-﻿// 产品设计工作台 —— 本地管理面板后端
+// 产品设计工作台 —— 本地管理面板后端
 // 纯 Node 内置模块（http/fs/path/child_process），无第三方依赖。
 import http from 'node:http';
 import fs from 'node:fs';
@@ -1091,9 +1091,9 @@ const server = http.createServer(async (req, res) => {
     fs.mkdirSync(projectsRoot, { recursive: true });
     const dst = path.join(projectsRoot, projName);
     if (fs.existsSync(dst)) return sendError(res, `目录已存在：${projName}`);
-    // 标准产品框架模板 = vibepm-admin 工程（03-组件库/02-标品框架/01-页面模板，Vue3+Arco 管理后台）
-    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '03-组件库', '02-标品框架', '01-页面模板');
-    if (isAdmin && !fs.existsSync(path.join(ADMIN_TEMPLATE_DIR, 'package.json'))) return sendError(res, '标准产品框架模板不可用：缺少 03-组件库\\02-标品框架\\01-页面模板\\package.json');
+    // 标准产品框架模板 = vibepm-admin 工程（02-模板/_admin-template/scr/admin，Vue3+Arco 管理后台）
+    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '02-模板', '_admin-template', 'scr', 'admin');
+    if (isAdmin && !fs.existsSync(path.join(ADMIN_TEMPLATE_DIR, 'package.json'))) return sendError(res, '标准产品框架模板不可用：缺少 02-模板\\_admin-template\\scr\\admin\\package.json');
     if (!isAdmin && !fs.existsSync(TEMPLATE_DIR)) return sendError(res, '模板目录不存在');
     if (isMakeTpl) {
       const mtRoot = path.join(MAKE_TEMPLATES_DIR, 'templates', makeTplId);
@@ -1113,7 +1113,8 @@ const server = http.createServer(async (req, res) => {
         // 标准产品框架 = vibepm-demo-agent（AGENTS.md + .agents 技能包 + frame 母版画廊）+ admin 工程。
         // AGENTS.md / .agents / frame 是智能体工作流核心与 prototype-demo 运行依赖，必须一并装载。
         for (const coreItem of ['AGENTS.md', '.agents', 'frame']) {
-          const coreSrc = path.join(ADMIN_TEMPLATE_DIR, '..', coreItem);
+          // 三件套（AGENTS.md/.agents/frame）位于 _admin-template 根，admin 工程在 scr/admin
+          const coreSrc = path.join(ADMIN_TEMPLATE_DIR, '..', '..', coreItem);
           const coreDst = path.join(dst, coreItem);
           try {
             if (fs.existsSync(coreSrc)) {
@@ -1164,6 +1165,19 @@ const server = http.createServer(async (req, res) => {
           if (fs.existsSync(vsrc)) fs.cpSync(vsrc, vdst, { recursive: true });
         }
       } catch (e) { console.error('[vendor-assemble]', e.message); }
+      // themes 装配：UI 主题库（112 主题）从共享层 03-组件库/03-UI风格/src-themes 拷入 src/themes（「设计」页签数据源）
+      try {
+        const themesSrc = path.join(AXHUB_ROOT, '03-组件库', '03-UI风格', 'src-themes');
+        const themesDst = path.join(dst, 'src', 'themes');
+        if (fs.existsSync(themesSrc)) {
+          fs.mkdirSync(themesDst, { recursive: true });
+          for (const tItem of fs.readdirSync(themesSrc, { withFileTypes: true })) {
+            if (tItem.isDirectory() && !tItem.name.startsWith('.')) {
+              fs.cpSync(path.join(themesSrc, tItem.name), path.join(themesDst, tItem.name), { recursive: true });
+            }
+          }
+        }
+      } catch (e) { console.error('[themes-assemble]', e.message); }
       // 生成唯一项目身份
       const clientFile = path.join(dst, '.axhub', 'make', 'client.json');
       const client = {

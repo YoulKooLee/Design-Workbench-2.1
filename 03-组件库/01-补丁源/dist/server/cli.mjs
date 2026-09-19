@@ -258395,6 +258395,20 @@ async function startMakeServer(options) {
             return;
           }
         }
+        if (pathname.startsWith("/component-templates/")) {
+          const relPath = decodeURIComponent(pathname.slice("/component-templates/".length));
+          const ctRoot = path82.join(activeProjectRoot || projectRoot, "src", "component-templates");
+          const target = path82.resolve(ctRoot, relPath);
+          if (!(target === ctRoot || target.startsWith(ctRoot + path82.sep))) {
+            sendJson(res, { error: "Not found" }, { status: 404 });
+            return;
+          }
+          if (sendFile(res, target)) {
+            return;
+          }
+          sendJson(res, { error: "Not found" }, { status: 404 });
+          return;
+        }
         if (pathname.startsWith("/api/")) {
           sendJson(res, { error: "Not found" }, { status: 404 });
           return;
@@ -258462,6 +258476,20 @@ async function startMakeServer(options) {
           return;
         }
         proxyToRuntime(req, res, requestRuntimeOrigin);
+        return;
+      }
+      if (pathname.startsWith("/component-templates/")) {
+        const relPath = decodeURIComponent(pathname.slice("/component-templates/".length));
+        const ctRoot = path82.join(activeProjectRoot || projectRoot, "src", "component-templates");
+        const target = path82.resolve(ctRoot, relPath);
+        if (!(target === ctRoot || target.startsWith(ctRoot + path82.sep))) {
+          sendJson(res, { error: "Not found" }, { status: 404 });
+          return;
+        }
+        if (sendFile(res, target)) {
+          return;
+        }
+        sendJson(res, { error: "Not found" }, { status: 404 });
         return;
       }
       if (handleAdminStatic(req, res, adminStaticOptions)) {

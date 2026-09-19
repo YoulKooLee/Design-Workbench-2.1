@@ -49,7 +49,7 @@ const notesOf = (c, id) =>
 /** 由 catalog 条目构造 registry 条目 */
 function buildItem(id, c) {
   const firstExport = (c.exports && c.exports[0]) || id;
-  return {
+  const item = {
     id,
     label: c.label,
     category: c.category,
@@ -62,7 +62,21 @@ function buildItem(id, c) {
     previewUrl: c.previewUrl || `/library/gallery.html#${id}`,
     source: 'component-template',
   };
+  // 依赖声明透传：目前仅 工作流/WorkflowCanvas 带 @xyflow/react。
+  // 该字段只是「声明」，实际装配（合并进工程 package.json）由工作台侧负责，待豆包裁定方案。
+  if (c.extraDependencies) item.extraDependencies = c.extraDependencies;
+  return item;
 }
+
+/** 字段级等值比较：对象按 JSON 比较，保证重复运行幂等 */
+function sameValue(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return a == null && b == null;
+  if (typeof a === 'object' || typeof b === 'object') return JSON.stringify(a) === JSON.stringify(b);
+  return false;
+}
+
+const COMPARE_KEYS = ['label', 'category', 'categoryLabel', 'notes', 'prompt', 'previewUrl', 'extraDependencies'];
 
 const desired = Object.entries(catalog.components || {}).map(([id, c]) => [id, buildItem(id, c)]);
 const desiredIds = new Set(desired.map(([id]) => id));
@@ -79,12 +93,10 @@ for (const [id, item] of desired) {
     if (!CHECK_ONLY) registry.items.push(item);
   } else {
     const old = registry.items[i];
-    const changed = ['label', 'category', 'categoryLabel', 'notes', 'prompt', 'previewUrl'].some((k) => old[k] !== item[k]);
-    if (changed) {
+    const changedKeys = COMPARE_KEYS.filter((k) => !sameValue(old[k], item[k]));
+    if (changedKeys.length) {
       updated++;
-      diffs.push(`~ ${id}（更新：${['label', 'category', 'categoryLabel', 'notes', 'prompt', 'previewUrl']
-        .filter((k) => old[k] !== item[k])
-        .join('/')}）`);
+      diffs.push(`~ ${id}（更新：${changedKeys.join('/')}）`);
       if (!CHECK_ONLY) registry.items[i] = { ...old, ...item };
     }
   }
