@@ -4,7 +4,7 @@
 
 > **为什么有它**：`Vibe Design Pro` 是 Vue 3 + Arco 的 **静态 HTML 母版**，React 原型工程（React 18 + Tailwind v4，无 arco）无法直接 import 其组件。因此本库按母版的**组件字典**一次性提炼为 React 源码 —— 之后所有原型 `import` 即用，不再逐页重写。
 
-> **当前交付状态（2026-09-19）**：`status = ready`，**75 个组件条目 / 12 个分类 / 100 个文件（其中 76 个 `.tsx`）**；分类为 `基础` / `布局` / `表单` / `数据展示` / `反馈` / `业务组件` / `页面模式` / `订单` / `付款` / `触发器` / `CMS` / `工作流` + `_kit`（主题 token）。库状态以 `./index.json` 与 `../component-registry.json` 为准，**不一致即视为缺陷**。
+> **当前交付状态（2026-09-19）**：`status = ready`，**79 个组件条目 / 12 个分类 / 103 个文件（其中 79 个 `.tsx`）**；分类为 `基础` / `布局` / `表单` / `数据展示` / `反馈` / `业务组件` / `页面模式` / `订单` / `付款` / `触发器` / `CMS` / `工作流` + `_kit`（主题 token）。库状态以 `./index.json` 与 `../component-registry.json` 为准，**不一致即视为缺陷**。
 >
 > **依赖例外（唯一）**：全库零第三方依赖，**唯 `工作流/WorkflowCanvas.tsx` 依赖 `@xyflow/react@^12`**（React Flow，MIT）。该组件**刻意不在 `index.ts` 统一出口导出**，避免 `export * from './工作流'` 把所有工程强制拉入该依赖。需要画布的工程请按路径单独引入（见 `提示词手册.md` workflow 章节）。
 
@@ -52,7 +52,7 @@ import { Button, Card, DataTable, ChartCard, LineChart, type Column } from '../c
 ```text
 03-组件库/
 ├── component-registry.json            ← 组件库总登记（库状态/分类/文档/registry 指向）
-├── custom-components.json             ← 面板「组件库」页签数据源（85 条，含 prompt 提示词）
+├── custom-components.json             ← 面板「组件库」页签数据源（89 条，含 prompt 提示词）
 ├── 03-页面组件/
 │   ├── Vibe Design Pro/               ← 静态 HTML 母版（Vue+Arco，admin/web/app + _meta 50 页）
 │   └── Codebuddy Design/              ← 本目录（React 组件源码）
@@ -70,7 +70,7 @@ import { Button, Card, DataTable, ChartCard, LineChart, type Column } from '../c
 │       ├── 数据展示/ DataTable·Pagination·Descriptions·Progress·List·Tree·Chart·Timeline·Collapse·Calendar
 │       ├── 反馈/    Modal·Drawer·Alert·Spin·ResultPage·Message·Notification
 │       ├── 业务组件/KpiRow·FilterBar·TableCard·StatusTag·Kanban
-│       ├── 页面模式/PageListSearchTable（列表页搜索表格模板）
+│       ├── 页面模式/PageListSearchTable·PageListCard·PageFormBasic·PageFormGroup（整页级模板）
 │       ├── 订单/    OrderTable·OrderDetailHeader·OrderItemList·OrderStatusFlow·OrderTimeline·OrderAmountSummary
 │       ├── 付款/    PaymentCashier·PaymentMethodPicker·PaymentCountdown·PaymentResult·InvoiceForm
 │       ├── 触发器/  TriggerTypePicker·TriggerConditionBuilder·TriggerActionList·TriggerRuleCard
@@ -154,4 +154,4 @@ PRD / 原型设计 → 选型映射.md 选组件组合 → 复制本库到工程
 
 ---
 
-_维护：CodeBuddy（2026-09-17 依用户指派填充并按 03-页面组件 规范迁移整改；2026-09-19 WorkBuddy 增补 27 个业务场景组件：订单/付款/触发器/CMS/工作流 + `_kit/format.ts`，并引入唯一依赖例外 WorkflowCanvas）；共享目录工程变更需与豆包协调排期。_
+_维护：CodeBuddy（2026-09-17 依用户指派填充并按 03-页面组件 规范迁移整改；2026-09-19 WorkBuddy 增补 27 个业务场景组件：订单/付款/触发器/CMS/工作流 + `_kit/format.ts`，并引入唯一依赖例外 WorkflowCanvas；2026-09-19 后续由 WorkBuddy 补登 `页面模式` 4 条并同步四文档口径至 v1.5.0/79）；共享目录工程变更需与豆包协调排期。_

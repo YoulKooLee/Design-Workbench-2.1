@@ -8,11 +8,26 @@ import { exec, spawn, spawnSync, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { cleanEnvForSpawn, send, sendError, readBody, safeName, parseFrontmatter, extractTriggers } from './lib/utils.mjs';
 
-// ===== 全局异常兜底（千问 P0-5）：spawn 目标缺失等异步 error 不再击穿面板进程 =====
-process.on('uncaughtException', (err) => { try { console.error('[uncaughtException]', (err && err.stack) || err); } catch {} });
-process.on('unhandledRejection', (reason) => { try { console.error('[unhandledRejection]', reason); } catch {} });
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// ===== 全局异常兜底：EPIPE 自激防护 =====
+// EPIPE 自激防护（deepseek 诊断）：管道断裂时 console.error 写坏管道会再次触发 uncaughtException -> 自激循环
+const crashLogPath = path.join(__dirname, '..', '07-日志', 'server-crash.log');
+let crashLogStream = null;
+try { fs.mkdirSync(path.dirname(crashLogPath), { recursive: true }); crashLogStream = fs.createWriteStream(crashLogPath, { flags: 'a' }); } catch {}
+const safeLog = (tag, data) => {
+  const line = `[${new Date().toISOString()}] [${tag}] ${(data && data.stack) || data}\n`;
+  try { crashLogStream && crashLogStream.write(line); } catch {}
+};
+process.on('uncaughtException', (err) => {
+  if (err && (err.code === 'EPIPE' || err.code === 'ERR_STREAM_DESTROYED')) return;
+  safeLog('uncaughtException', err);
+});
+process.on('unhandledRejection', (reason) => {
+  if (reason && (reason.code === 'EPIPE' || reason.code === 'ERR_STREAM_DESTROYED')) return;
+  safeLog('unhandledRejection', reason);
+});
+
 const PUBLIC = path.join(__dirname, 'public');
 
 // ===== 路径配置 =====
@@ -1176,17 +1191,13 @@ const server = http.createServer(async (req, res) => {
           if (fs.existsSync(vsrc)) await cpRetry(vsrc, vdst, 'vendor-assemble');
         }
       } catch (e) { console.error('[vendor-assemble]', e.message); }
-      // themes 装配：UI 主题库（112 主题）从共享层 03-组件库/03-UI风格/src-themes 拷入 src/themes（「设计」页签数据源）
+      // themes 装配：UI 主题库（112 主题）从共享层拷入 src/themes（deepseek 优化：112 次串行 -> 1 次合并）
       try {
         const themesSrc = path.join(AXHUB_ROOT, '03-组件库', '03-UI风格', 'src-themes');
         const themesDst = path.join(dst, 'src', 'themes');
         if (fs.existsSync(themesSrc)) {
           fs.mkdirSync(themesDst, { recursive: true });
-          for (const tItem of fs.readdirSync(themesSrc, { withFileTypes: true })) {
-            if (tItem.isDirectory() && !tItem.name.startsWith('.')) {
-              await cpRetry(path.join(themesSrc, tItem.name), path.join(themesDst, tItem.name), 'themes-assemble');
-            }
-          }
+          await cpRetry(themesSrc, themesDst, 'themes-assemble-bulk');
         }
       } catch (e) { console.error('[themes-assemble]', e.message); }
       // extraDependencies 装配：扫描 Codebuddy Design catalog 的 extraDependencies，合并到项目 package.json dependencies

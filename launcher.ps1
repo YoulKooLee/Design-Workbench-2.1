@@ -81,25 +81,15 @@ $panelDir = Join-Path $root '工作台面板'
 $logDir = Join-Path $root '07-日志'
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
 $logFile = Join-Path $logDir 'server-console.log'
+$errFile = Join-Path $logDir 'server-error.log'
 $serverJs = Join-Path $panelDir 'server.mjs'
 
 Write-Host '[INFO] 正在启动后端服务（日志: server-console.log）...' -ForegroundColor Cyan
 
-$psi = New-Object System.Diagnostics.ProcessStartInfo
-$psi.FileName = $node
-$psi.Arguments = '"' + $serverJs + '"'
-$psi.WorkingDirectory = $panelDir
-$psi.UseShellExecute = $false
-$psi.CreateNoWindow = $true
-$psi.RedirectStandardOutput = $true
-$psi.RedirectStandardError = $true
-
-$proc = New-Object System.Diagnostics.Process
-$proc.StartInfo = $psi
+# 修复 EPIPE 自激（deepseek 诊断）：删 Start-Job ReadToEnd（窗口关 Job 死 -> 管道断 -> 自激循环）。
+# 改用 Start-Process -RedirectStandardOutput/Error：重定向由 PowerShell 进程管理，写文件不落管道。
 try {
-    $proc.Start() | Out-Null
-    # 日志落盘（异步读取避免管道阻塞）
-    Start-Job -ScriptBlock { param($p, $f) try { $o = $p.StandardOutput.ReadToEnd(); $e = $p.StandardError.ReadToEnd(); Add-Content -Path $f -Value $o -Encoding UTF8; if ($e) { Add-Content -Path $f -Value ('[stderr] ' + $e) -Encoding UTF8 } } catch {} } -ArgumentList $proc, $logFile | Out-Null
+    $serverProc = Start-Process -FilePath $node -ArgumentList "`"$serverJs`"" -WorkingDirectory $panelDir -WindowStyle Hidden -RedirectStandardOutput $logFile -RedirectStandardError $errFile -PassThru
 } catch {
     Write-Host "[ERROR] 启动后端服务失败: $($_.Exception.Message)" -ForegroundColor Red
     Write-Host "请查看日志: $logFile"
@@ -119,7 +109,7 @@ if ($ready) {
     Write-Host '[OK] 后端已就绪，正在打开浏览器...' -ForegroundColor Green
     Start-Process 'http://localhost:7788'
     Write-Host '[OK] 工作台已启动: http://localhost:7788' -ForegroundColor Green
-    Write-Host '[提示] 后端服务在名为 "Axhub Server" 的最小化窗口运行；可放心关闭本窗口。' -ForegroundColor DarkGray
+    Write-Host '[提示] 后端服务在隐藏窗口运行；可放心关闭本窗口。' -ForegroundColor DarkGray
 } else {
     Write-Host "[ERROR] 后端服务 20 秒内未就绪，请查看日志: $logFile" -ForegroundColor Red
     Write-Host '[提示] 常见原因: Node 路径异常、端口 7788 被占用、依赖未安装。' -ForegroundColor DarkGray
