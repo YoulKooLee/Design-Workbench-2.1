@@ -42,3 +42,13 @@
 - **DONE_WITH_CONCERNS** — 有 MEDIUM/LOW 问题，可继续但建议修复
 - **NEEDS_CONTEXT** — 缺少上下文，需补充
 - **BLOCKED** — 有 CRITICAL/HIGH 问题，必须修复
+
+## 子 Agent 不可用时的自审兜底
+
+当宿主不支持 `.agents/agents/` 定义（部分宿主只认自己的路径）时，不强行调用 code-reviewer，按以下清单自行审查：
+
+1. 构建 / type-check 通过，且有输出为证（不主观判断）
+2. 无 `console.log` 残留、无裸写 `fetch`
+3. 新增页面已同步注册路由
+4. 认证 / 权限 / 加密相关改动逐条自查
+5. 改动点由自己精确重读一遍（**不派子 Agent 审查**——实测会返回截断）

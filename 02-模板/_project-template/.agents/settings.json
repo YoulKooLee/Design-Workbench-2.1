@@ -33,6 +33,18 @@
             "timeout": 5000
           }
         ]
+      },
+      {
+        "matcher": "Read|Glob|Grep",
+        "hooks": [
+          {
+            "id": "pre:read:context-budget",
+            "description": "拦截命中高危目录的递归/通配/目录级读取，保护上下文窗口",
+            "type": "command",
+            "command": "node .agents/hooks/run.cjs context-budget",
+            "timeout": 5000
+          }
+        ]
       }
     ],
     "PostToolUse": [

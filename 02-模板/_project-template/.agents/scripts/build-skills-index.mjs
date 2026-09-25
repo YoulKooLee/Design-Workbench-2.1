@@ -63,7 +63,7 @@ entries.sort((a, b) => a.name.localeCompare(b.name));
 const lines = [];
 lines.push('# 技能索引（自动生成）');
 lines.push('');
-lines.push(`> 共 ${entries.length} 个技能。本文件由 \`.agents/scripts/build-skills-index.mjs\` 自动生成，由 \`session-start.cjs\` 在会话启动时注入上下文。**请勿手改**；更新技能后重新运行生成脚本。`);
+lines.push(`> 共 ${entries.length} 个技能。本文件由 \`.agents/scripts/build-skills-index.mjs\` 自动生成，**按需 Read，不常驻**。**请勿手改**；更新技能后重新运行生成脚本。`);
 lines.push('');
 lines.push('## 技能速查');
 lines.push('');

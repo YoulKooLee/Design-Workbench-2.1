@@ -3,7 +3,7 @@
 // ============================================================
 //  context-budget.cjs - 上下文预算护栏（千问 P1-7）
 //  拦截 Read|Glob|Grep 命中高危目录（.agents/skills、.agents/knowledge、
-//  .agents/rules、根级 rules/references/impeccable、src/themes）的
+//  .agents/rules、根级 rules、src/themes、src/component-templates、03-组件库）的
 //  递归/通配/目录级操作，提示改为精确路径读取。
 //  注册：hooks.json preToolUse matcher=Read|Glob|Grep
 // ============================================================
@@ -15,9 +15,10 @@ const HIGH_RISK_PATTERNS = [
   { re: /[\\/]\.agents[\\/]skills([\\/]|$)/, name: '.agents/skills/' },
   { re: /[\\/]\.agents[\\/]knowledge([\\/]|$)/, name: '.agents/knowledge/' },
   { re: /[\\/]\.agents[\\/]rules([\\/]|$)/, name: '.agents/rules/' },
-  { re: /[\\/]rules[\\/]references[\\/]impeccable([\\/]|$)/, name: '根级 rules/references/impeccable/' },
+  { re: /(^|[\\/])rules([\\/]|$)/, name: '根级 rules/' },
   { re: /[\\/]src[\\/]themes([\\/]|$)/, name: 'src/themes/' },
-  { re: /[\\/]03-组件库[\\/].*[\\/]vendor([\\/]|$)/, name: '03-组件库/…/vendor/' },
+  { re: /[\\/]src[\\/]component-templates([\\/]|$)/, name: 'src/component-templates/' },
+  { re: /[\\/]03-组件库([\\/]|$)/, name: '03-组件库/' },
 ];
 
 exports.run = (input) => {
