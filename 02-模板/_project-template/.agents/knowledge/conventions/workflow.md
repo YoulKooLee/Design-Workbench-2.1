@@ -1,4 +1,4 @@
-﻿---
+---
 updated: 2026-05-22
 version: 2.0
 scope: global

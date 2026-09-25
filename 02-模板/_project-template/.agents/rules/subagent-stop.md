@@ -1,4 +1,4 @@
-﻿# 子 Agent 技能触发禁止
+# 子 Agent 技能触发禁止
 
 <SUBAGENT-STOP>
 如果你是被派发执行特定任务的子 Agent，跳过所有技能触发检查。

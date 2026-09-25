@@ -1,4 +1,4 @@
-﻿---
+---
 name: code-reviewer
 description: >
   代码审查专家。写完或修改代码后立即调用，审查代码质量、安全性和可维护性。

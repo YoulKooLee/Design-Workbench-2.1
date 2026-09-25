@@ -1,4 +1,4 @@
-﻿---
+---
 name: diagram-drawer
 description: >
   图表绘制子 agent。接收图表需求，强制读取绘图规范后生成 draw.io XML。

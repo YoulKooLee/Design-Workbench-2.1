@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # .agents/hooks/sync-annotation-templates.sh
 # 当 Annotation 组件文件被修改时，自动同步到另一边
 # template → project，或 project → template

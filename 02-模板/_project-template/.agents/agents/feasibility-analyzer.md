@@ -1,4 +1,4 @@
-﻿---
+---
 name: feasibility-analyzer
 description: 可行性研究报告分析师，在生成可研报告前分析项目上下文（SRS需求说明书、设计方案、已有可研报告、代码），输出结构化的项目信息摘要供 feasibility-writer 使用。由 feasibility-report skill 在生成模式中调用。
 tools: Read, Glob, Grep

@@ -1,4 +1,4 @@
-﻿# export-word.ps1 - Export Markdown to Word (.docx) on Windows
+# export-word.ps1 - Export Markdown to Word (.docx) on Windows
 # Usage: .\export-word.ps1 <markdown-file> <template>
 
 param(

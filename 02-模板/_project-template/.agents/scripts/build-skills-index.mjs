@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 // ============================================================
 //  build-skills-index.mjs - 生成技能索引（千问 P1-6）
 //  遍历 .agents/skills/*/SKILL.md 的 frontmatter（name + description），
