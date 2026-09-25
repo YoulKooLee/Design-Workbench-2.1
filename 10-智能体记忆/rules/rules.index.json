@@ -12,6 +12,8 @@
     { "trigger": ["状态", "乱跳", "touchProjectCtx", "reconcile", "intent"], "rules": ["R-START-05"], "scope": "workspace" },
     { "trigger": ["布局", "大屏", "塌陷", "contents", "fullWidth", "Tailwind", "grid", "样式"], "rules": ["R-LAYOUT-01", "R-LAYOUT-02", "R-LAYOUT-03"], "scope": "universal" },
     { "trigger": ["大屏比例", "大屏尺寸", "布局风格", "项目记忆", "project-memory"], "rules": ["R-LAYOUT-04"], "scope": "project" },
-    { "trigger": ["新建文件", "存放", "备份", "删除", "锁文件", "创建文件", "放哪"], "rules": ["R-FILE-01", "R-FILE-02", "R-FILE-03", "R-FILE-04"], "scope": "universal" }
+    { "trigger": ["新建文件", "存放", "备份", "删除", "锁文件", "创建文件", "放哪"], "rules": ["R-FILE-01", "R-FILE-02", "R-FILE-03", "R-FILE-04"], "scope": "universal" },
+    { "trigger": ["批量筛选", "扩展名", "Include", "LiteralPath", "批量改写", "批量清理"], "rules": ["R-SCRIPT-08"], "scope": "universal" },
+    { "trigger": ["PowerShell", "变量", "循环", "Cannot find module", "路径拼接", "大小写"], "rules": ["R-SCRIPT-09"], "scope": "universal" }
   ]
 }

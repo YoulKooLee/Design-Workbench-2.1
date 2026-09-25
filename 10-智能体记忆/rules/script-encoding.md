@@ -52,3 +52,17 @@
 - **rule**: 两端都 norm：`const norm = s => String(s).replace(/\\/g,'/').toLowerCase().replace(/\/+$/,'')`
 - **reason**: path.join 返回反斜杠，与外部正斜杠永远不匹配
 - **verify**: Make active 能切到目标项目
+## R-SCRIPT-08 — Get-ChildItem 过滤用 Where-Object，不用 -Include
+- **level**: must | **status**: valid
+- **trigger**: 按扩展名批量筛选文件、批量改写、批量清理
+- **rule**: 用 `Where-Object { $_.Extension -in '.md','.json' }` 显式过滤；**不要**用 `-Include` 配 `-LiteralPath`
+- **reason**: `-Include` 仅在 `-Path`（含通配符）或 `-Recurse` 组合下生效，配 `-LiteralPath` 时静默失效 → 过滤形同不存在，批量操作作用域静默扩大
+- **verify**: 脚本先打印实际命中清单并计数，与预期一致后再执行写操作
+
+## R-SCRIPT-09 — PowerShell 变量名必须大小写可区分
+- **level**: must | **status**: valid
+- **trigger**: 写 PowerShell 循环/脚本、出现路径拼接异常
+- **rule**: 同段内变量名大小写必须可区分（`$root`/`$tgt`）；**禁止** `$p` 与 `$P` 共存
+- **reason**: PowerShell 变量名大小写不敏感，`$p` 与 `$P` 是同一变量；循环内 `$p = Join-Path $P $f` 覆盖 `$P`，路径逐轮拼接变长，报 `Cannot find module '<怪路径>'`
+- **verify**: 循环体内打印每轮变量值，确认不累积
+
