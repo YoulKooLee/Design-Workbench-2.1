@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // ============================================================
 //  build-skills-index.mjs - 生成技能索引（千问 P1-6）
 //  遍历 .agents/skills/*/SKILL.md 的 frontmatter（name + description），
@@ -22,19 +22,14 @@ function parseFrontmatter(text) {
   if (!m) return null;
   const lines = m[1].split(/\r?\n/);
 
-  // 按行扫描：兼容单行、缩进块标量、本仓库常见的「内容不缩进」块标量
-  //（旧版单行正则把 description: > 的 ">" 当值 → INDEX 出现 12/51、14/32 条空触发依据；
-  //  旧版前瞻正则的 $ 在多行模式下每行行尾即成立 → 只吃到第一句，同样废）
   const get = (key) => {
     const start = lines.findIndex((l) => new RegExp('^' + key + ':(.*)$').test(l));
     if (start < 0) return '';
-    const head = lines[start].match(new RegExp('^' + key + ':[ \\t]*(.*)$'))[1].trim();
+    const head = lines[start].match(new RegExp('^' + key + ':[ \t]*(.*)$'))[1].trim();
     if (head && head !== '|' && head !== '>' && !/^[|>][+-]?$/.test(head)) {
-      // 单行值（可带引号）
       const q = head.match(/^["'](.*)["']$/s);
       return (q ? q[1] : head).trim();
     }
-    // 块标量：收集后续行，直到「下一个顶层键（列首 name:/description:/license: 等）」或块结束
     const buf = [];
     for (let i = start + 1; i < lines.length; i++) {
       const l = lines[i];
@@ -59,7 +54,7 @@ for (const d of fs.readdirSync(skillsDir, { withFileTypes: true })) {
 
 entries.sort((a, b) => a.name.localeCompare(b.name));
 
-// 生成 INDEX.md（紧凑：name + description 首行）
+// 生成 INDEX.md（精简：每个技能只取第一句，≤120 字，控制总大小 ≤6KB）
 const lines = [];
 lines.push('# 技能索引（自动生成）');
 lines.push('');
@@ -68,8 +63,12 @@ lines.push('');
 lines.push('## 技能速查');
 lines.push('');
 for (const e of entries) {
-  const desc = (e.description || '').split(/\r?\n/)[0].trim();
-  lines.push(`- **${e.name}** — ${desc}`);
+  let desc = (e.description || '').split(/\r?\n/)[0].trim();
+  // 按句号/感叹号/问号截断，只留第一句
+  const m = desc.match(/^(.{1,40}?[。！？.!?])(\s|$)/);
+  if (m) desc = m[1];
+  else if (desc.length > 40) desc = desc.slice(0, 37) + '...';
+  lines.push(`- **${e.name}** - ${desc}`);
 }
 lines.push('');
 const indexText = lines.join('\n') + '\n';
