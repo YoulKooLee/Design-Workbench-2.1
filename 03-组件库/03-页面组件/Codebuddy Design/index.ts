@@ -27,6 +27,7 @@ export * from './付款';
 export * from './触发器';
 export * from './CMS';
 export * from './工作流';
+export * from './物联网';
 export { cn, type ClassValue } from './_kit/cn';
 export * from './_kit/format';
 /**

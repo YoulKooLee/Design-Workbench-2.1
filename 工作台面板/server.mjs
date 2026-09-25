@@ -1,4 +1,4 @@
-// 产品设计工作台 —— 本地管理面板后端
+﻿// 产品设计工作台 —— 本地管理面板后端
 // 纯 Node 内置模块（http/fs/path/child_process），无第三方依赖。
 import http from 'node:http';
 import fs from 'node:fs';
@@ -923,7 +923,30 @@ const server = http.createServer(async (req, res) => {
 
   // ===== 项目管理 =====
   if (p === '/api/projects' && method === 'GET') {
-    return send(res, 200, { ok: true, projects: listProjects() });
+    const projects = listProjects();
+    // 给每个项目附加 installStatus：读 launch-log 判断是否在安装/启动中
+    for (const p of projects) {
+      try {
+        const lb = safeName(p.relative).replace(/[\\/]+/g, '-') || 'project';
+        const lf = path.join(AXHUB_ROOT, '07-日志', `launch-${lb}.log`);
+        if (fs.existsSync(lf)) {
+          const txt = fs.readFileSync(lf, 'utf8');
+          const startIdx = txt.lastIndexOf(`启动 ${p.relative}`);
+          const live = startIdx >= 0 ? txt.slice(startIdx) : txt;
+          const mtime = fs.statSync(lf).mtimeMs;
+          const recent = (Date.now() - mtime) < 300000; // 5分钟内有更新
+          if (live.includes('AXHUB_LAUNCH_STATUS: done') || live.includes('启动完成')) p.installStatus = 'done';
+          else if (live.includes('AXHUB_LAUNCH_STATUS: failed') || live.includes('启动失败')) p.installStatus = 'failed';
+          else if (recent && (live.includes('install') || live.includes('首次') || live.includes('AXHUB_INSTALL_STATUS'))) p.installStatus = 'installing';
+          else if (recent) p.installStatus = 'starting';
+          // 提取当前步骤
+          const lines = live.split('\n').filter(l => l.trim());
+          const lastStep = lines.reverse().find(l => l.includes(']') && l.includes('/8]'));
+          if (lastStep) p.installStep = lastStep.trim();
+        }
+      } catch {}
+    }
+    return send(res, 200, { ok: true, projects });
   }
 
   // ===== 回收站（C1：有进有出）=====
@@ -1279,6 +1302,27 @@ const server = http.createServer(async (req, res) => {
         } catch { /* 模板无 package.json 或读取失败时忽略依赖合并 */ }
         tplMsg = `，Make 页面模板「${makeTplId}」已嵌入 src/prototypes/${protoSlug}${depsMsg}（首次启动前需 pnpm install）`;
       }
+      // 新建项目后自动后台安装依赖（不等用户点启动开发栈），写 launch-log 供前端轮询进度
+      (() => {
+        try {
+          const logBase = safeName(`01-项目/${projName}`).replace(/[\\/]+/g, '-') || 'project';
+          const logFile = path.join(AXHUB_ROOT, '07-日志', `launch-${logBase}.log`);
+          fs.mkdirSync(path.dirname(logFile), { recursive: true });
+          fs.writeFileSync(logFile, '\uFEFF' + `[${new Date().toISOString()}] 启动 01-项目/${projName}\n`, 'utf8');
+          const pnpmCjs = path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'pnpm', 'bin', 'pnpm.cjs');
+          const useLocalPnpm = fs.existsSync(pnpmCjs);
+          fs.appendFileSync(logFile, useLocalPnpm ? `后台开始 pnpm install...\n` : '后台开始 npx pnpm install...\n', 'utf8');
+          const instArgs = useLocalPnpm ? [process.execPath, [pnpmCjs, 'install']] : ['cmd.exe', ['/c', 'npx -y pnpm@10 install']];
+          const inst = spawn(instArgs[0], instArgs[1], { cwd: dst, detached: true, stdio: ['ignore','pipe','pipe'], env: cleanEnvForSpawn() });
+          inst.stdout.on('data', d => fs.appendFileSync(logFile, d, 'utf8'));
+          inst.stderr.on('data', d => fs.appendFileSync(logFile, `STDERR: ` + d, 'utf8'));
+          inst.on('error', e => fs.appendFileSync(logFile, `INSTALL ERROR: ` + e.message + `\nAXHUB_LAUNCH_STATUS: failed\n`, 'utf8'));
+          inst.on('close', code => {
+            fs.appendFileSync(logFile, `AXHUB_INSTALL_STATUS: done (exit ${code})\nAXHUB_LAUNCH_STATUS: done\n`, 'utf8');
+          });
+          inst.unref();
+        } catch(e) { console.error('[auto-install]', e.message); }
+      })();
       return send(res, 200, { ok: true, msg: `项目已创建：${projName}${tplMsg}`, relative: `01-项目/${projName}`, path: dst, template: isMakeTpl ? makeTplId : '_project-template' });
     } catch (e) {
       return sendError(res, '创建失败：' + e.message, 500);

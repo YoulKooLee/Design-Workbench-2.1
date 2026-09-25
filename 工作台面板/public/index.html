@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
@@ -226,6 +226,7 @@
   .st-run{color:var(--green)} .st-run .dot{background:var(--green);animation:pulse 2s infinite}
   .st-stop{color:var(--muted)} .st-stop .dot{background:#cbd5e1}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}70%{box-shadow:0 0 0 6px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
   /* 端口池可滚动列表 */
   .port-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:68px;overflow:hidden;scrollbar-width:none}
   .port-item{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#f8fafc;border:1px solid var(--line);border-radius:8px;font-size:12px}
@@ -748,10 +749,9 @@ async function renderProjects(){
         <span>Vite <b class="mono">${escapeHtml(String((ctxProjects.find(x=>x.relative===p.relative)||{}).port || '—'))}</b></span>
       </div>
       <div class="proj-actions">
-        <button class="btn sm primary" data-act="open" data-rel="${rel}" title="${p.isAdmin ? 'admin 工程为 Vue 管理后台：启动 vite dev，预览智能体按母版生成的业务原型页面（首次自动安装依赖）；母版样板请到组件库页查看' : ''}">▶ 启动开发栈</button>
-        <button class="btn sm" data-act="copy" data-rel="${rel}" data-name="${p.name}"${dis}>复制</button>
-        <button class="btn sm" data-act="history" data-rel="${rel}"${dis}>历史版本</button>
-        <button class="btn sm danger" data-act="delete" data-rel="${rel}" data-name="${p.name}"${dis}>删除</button>
+        ${(p.installStatus==='installing'||p.installStatus==='starting') ? `<div style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:#e8f3ff;border:1px solid #94bfff;border-radius:6px;font-size:13px;color:#1d6ce0;"><span style="width:8px;height:8px;border-radius:50%;background:#1d6ce0;display:inline-block;animation:blink 1.2s infinite;"></span> ${p.installStatus==='installing' ? '安装依赖中' : '启动开发栈中'}…</div>` : `<button class="btn sm primary" data-act="open" data-rel="${rel}">▶ 启动开发栈</button><button class="btn sm" data-act="copy" data-rel="${rel}" data-name="${p.name}"${dis}>复制</button><button class="btn sm" data-act="history" data-rel="${rel}"${dis}>历史版本</button><button class="btn sm danger" data-act="delete" data-rel="${rel}" data-name="${p.name}"${dis}>删除</button>`}
+
+
       </div>
     </div>`;
   }
@@ -850,7 +850,7 @@ async function renderProjects(){
         b.textContent = isFirst
           ? '首次启动，正在安装依赖（可能需数分钟），请勿重复点击…'
           : '正在启动开发栈，请勿重复点击…';
-        // 轮询启动日志，直到完成/失败再恢复按钮；同时 20s 安全超时避免按钮永久禁用
+        render();
         pollLaunch(rel, b, isFirst);
       } else if(act==='copy'){
         const nn = prompt('请输入复制后的新项目名称：', b.dataset.name+'-copy');
@@ -909,6 +909,7 @@ function pollLaunch(rel, b, isFirst){
         b.disabled=false; b.textContent='启动开发栈';
       }
       // running / pending：继续等待
+      render();
     }catch(e){
       clearInterval(iv); clearTimeout(to);
       captureError('Launch Polling Error', `项目「${rel}」启动轮询异常`, e.message + (e.stack ? '\n'+e.stack : ''));
@@ -1383,7 +1384,25 @@ function showNewProject(){
     const template = framework === 'admin' ? '' : ($('#npTemplate') ? $('#npTemplate').value : '_project-template');
     const r = await api('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, template, framework})});
     toast(r.msg, r.ok?'ok':'err');
-    if(r.ok){ closeModal(); render(); }
+    if(r.ok){
+      closeModal();
+      render();
+      if(r.relative){
+        const rel = r.relative;
+        let polls = 0;
+        const iv = setInterval(async ()=>{
+          polls++;
+          try{
+            const s = await api('/api/projects/launch-log?relative='+encodeURIComponent(rel), {silent:true});
+            if(s.status==='done' || s.status==='failed' || polls>=120){
+              clearInterval(iv);
+              if(s.status==='failed') toast('依赖安装失败，请查看 07-日志','err');
+            }
+          }catch(e){}
+          render();
+        }, 3000);
+      }
+    }
   };
 }
 
@@ -1408,7 +1427,25 @@ function confirmDeleteProject(name, rel){
     btn.disabled = true;
     const r = await api('/api/projects',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({relative:rel})});
     toast(r.msg, r.ok?'ok':'err');
-    if(r.ok){ closeModal(); render(); } else { btn.disabled = false; }
+    if(r.ok){
+      closeModal();
+      render();
+      if(r.relative){
+        const rel = r.relative;
+        let polls = 0;
+        const iv = setInterval(async ()=>{
+          polls++;
+          try{
+            const s = await api('/api/projects/launch-log?relative='+encodeURIComponent(rel), {silent:true});
+            if(s.status==='done' || s.status==='failed' || polls>=120){
+              clearInterval(iv);
+              if(s.status==='failed') toast('依赖安装失败，请查看 07-日志','err');
+            }
+          }catch(e){}
+          render();
+        }, 3000);
+      }
+    } else { btn.disabled = false; }
   };
 }
 
