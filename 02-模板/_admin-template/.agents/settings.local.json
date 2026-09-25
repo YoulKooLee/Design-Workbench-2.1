@@ -5,16 +5,8 @@
       "Bash(grep:*)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(chmod:*)",
-      "Bash(curl:*)",
-      "Bash(bash:*)",
-      "Bash(kill:*)",
-      "Bash(pkill:*)",
       "Bash(lsof:*)",
-      "Bash(xargs kill:*)",
       "Bash(node:*)",
-      "Bash(python:*)",
-      "Bash(python3:*)",
       "Bash(d2:*)",
       "Bash(jq)",
       "Bash(git checkout:*)",
@@ -30,13 +22,11 @@
       "Skill(skill-creator)",
       "Skill(srs-writer)",
       "WebSearch",
-      "mcp__ide__getDiagnostics",
-      "Read(//private/tmp/**)"
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []
   },
-  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "figma"
   ]
