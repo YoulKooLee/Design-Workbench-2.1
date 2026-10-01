@@ -33,12 +33,16 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 
 function Demo() {
   return (
-      <DemoBoundary>
-        <LineChart />
-      </DemoBoundary>
+    <LineChart
+      labels={['周一', '周二', '周三', '周四', '周五', '周六', '周日']}
+      data={[92, 95, 91, 88, 96, 94, 97]}
+      area
+      dots
+      height={220}
+      format={(v) => v + '%'}
+    />
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

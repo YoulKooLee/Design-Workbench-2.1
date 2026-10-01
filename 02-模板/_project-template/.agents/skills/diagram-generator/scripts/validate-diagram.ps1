@@ -1,4 +1,4 @@
-# validate-diagram.ps1 - Validate draw.io XML locally (Windows)
+﻿# validate-diagram.ps1 - Validate draw.io XML locally (Windows)
 # Usage: .\validate-diagram.ps1 <source.xml> [more.xml ...]
 #        .\validate-diagram.ps1 -Dir docs\images\src
 

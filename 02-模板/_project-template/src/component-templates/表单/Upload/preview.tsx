@@ -32,13 +32,13 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
-  return (
-      <DemoBoundary>
-        <Upload />
-      </DemoBoundary>
-  );
+  const [files, setFiles] = React.useState([
+    { uid: 'f1', name: '设备点位表-v3.xlsx', size: 48213, status: 'done' },
+    { uid: 'f2', name: '验收报告.pdf', size: 1048576, status: 'uploading', percent: 62 },
+    { uid: 'f3', name: '园区拓扑图.dwg', size: 5242880, status: 'error', error: '超过 4MB 限制' },
+  ]);
+  return <Upload files={files} onChange={setFiles} accept=".xlsx,.pdf,.dwg" hint="支持 xlsx / pdf / dwg，单文件不超过 4MB" />;
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

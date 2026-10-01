@@ -32,13 +32,14 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
+  const [choice, setChoice] = React.useState('a');
   return (
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
       <RadioGroup value={choice} onChange={(v) => setChoice(String(v))} options={[{ value: 'a', label: '方案 A' }, { value: 'b', label: '方案 B' }, { value: 'c', label: '方案 C' }]} />
-      </div>
+      <CheckboxGroup value={['a']} onChange={() => {}} options={[{ value: 'a', label: '回显勾选' }, { value: 'b', label: '未勾选' }]} />
+    </div>
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

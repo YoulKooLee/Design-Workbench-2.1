@@ -33,12 +33,13 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 
 function Demo() {
   return (
-      <div style={{ display: 'flex', gap: 24, justifyContent: 'center', alignItems: 'center', padding: 14 }}>
-      <Spin size="sm" /><Spin /><Spin size="lg" tip="加载中…" />
-      </div>
+    <div style={{ display: 'flex', gap: 40, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <Spin size="sm" />
+      <Spin size="md" tip="数据加载中…" />
+      <Spin size="lg" />
+    </div>
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

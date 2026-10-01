@@ -32,13 +32,13 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
+  const [suggest, setSuggest] = React.useState('');
   return (
-      <div style={{ width: '100%' }}>
-      <AutoComplete value={suggest} onChange={setSuggest} options={[{ value: '指标管理平台' }, { value: '供应商门户' }, { value: '数据看板' }]} />
-      </div>
+    <div style={{ width: '100%' }}>
+      <AutoComplete value={suggest} onChange={setSuggest} options={[{ value: '指标管理平台' }, { value: '供应商门户' }, { value: '数据看板' }]} placeholder="输入以联想…" />
+    </div>
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

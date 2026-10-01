@@ -32,13 +32,16 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
-  return (
-      <DemoBoundary>
-        <Transfer />
-      </DemoBoundary>
-  );
+  const [keys, setKeys] = React.useState(['p1', 'p3']);
+  const dataSource = [
+    { key: 'p1', label: '数据看板查看', group: '基础权限' },
+    { key: 'p2', label: '设备远程控制', group: '基础权限' },
+    { key: 'p3', label: '告警确认', group: '运维权限' },
+    { key: 'p4', label: '固件升级下发', group: '运维权限' },
+    { key: 'p5', label: '用户管理', group: '管理权限' },
+  ];
+  return <Transfer dataSource={dataSource} targetKeys={keys} onChange={setKeys} titles={['待分配权限', '已分配权限']} height={240} />;
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

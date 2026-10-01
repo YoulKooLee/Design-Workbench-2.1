@@ -33,14 +33,13 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 
 function Demo() {
   return (
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <Input placeholder="搜索项目…" prefix={<Search size={13} />} />
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <Input placeholder="搜索项目…" prefix={<span style={{ fontSize: 13, color: '#86909c' }}>⌕</span>} />
       <Input placeholder="只读示例" value="已填写内容" readOnly />
       <Input placeholder="禁用示例" disabled />
-      </div>
+    </div>
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

@@ -32,13 +32,20 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
+  const [d, setD] = React.useState('2026-09-26');
   return (
-      <DemoBoundary>
-        <Calendar />
-      </DemoBoundary>
+    <Calendar
+      value={d}
+      onChange={setD}
+      marks={{
+        '2026-09-03': 'success',
+        '2026-09-15': { type: 'warning', text: '巡检' },
+        '2026-09-26': 'dot',
+        '2026-09-29': 'danger',
+      }}
+    />
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

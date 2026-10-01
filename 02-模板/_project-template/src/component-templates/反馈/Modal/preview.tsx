@@ -32,17 +32,17 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
+  const [modalOpen, setModalOpen] = React.useState(false);
   return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: 10 }}>
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 10 }}>
       <button onClick={() => setModalOpen(true)} style={{ border: '1px solid #e5e7eb', background: '#fff', borderRadius: 6, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>打开弹窗</button>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="确认操作" width={480}
-      footer={<><button onClick={() => setModalOpen(false)} style={{ border: '1px solid #e5e7eb', background: '#fff', borderRadius: 6, padding: '5px 12px', fontSize: 13, cursor: 'pointer', marginRight: 8 }}>取消</button><button onClick={() => setModalOpen(false)} style={{ border: 'none', background: '#165dff', color: '#fff', borderRadius: 6, padding: '5px 12px', fontSize: 13, cursor: 'pointer' }}>确定</button></>}>
-      <div style={{ fontSize: 13, color: '#4e5969' }}>弹窗内容区：用于确认/详情/编辑（示例）</div>
+        footer={<><button onClick={() => setModalOpen(false)} style={{ border: '1px solid #e5e7eb', background: '#fff', borderRadius: 6, padding: '5px 12px', fontSize: 13, cursor: 'pointer', marginRight: 8 }}>取消</button><button onClick={() => setModalOpen(false)} style={{ border: 'none', background: '#165dff', color: '#fff', borderRadius: 6, padding: '5px 12px', fontSize: 13, cursor: 'pointer' }}>确定</button></>}>
+        <div style={{ fontSize: 13, color: '#4e5969' }}>弹窗内容区：用于确认/详情/编辑（示例）</div>
       </Modal>
-      </div>
+    </div>
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

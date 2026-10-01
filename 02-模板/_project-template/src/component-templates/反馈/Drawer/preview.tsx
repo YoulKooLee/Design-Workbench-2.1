@@ -32,16 +32,16 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: 10 }}>
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 10 }}>
       <button onClick={() => setDrawerOpen(true)} style={{ border: '1px solid #e5e7eb', background: '#fff', borderRadius: 6, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>打开抽屉</button>
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="详情抽屉" width={360}>
-      <div style={{ fontSize: 13, color: '#4e5969' }}>抽屉内容区：适合详情/表单侧滑（示例）</div>
+        <div style={{ fontSize: 13, color: '#4e5969' }}>抽屉内容区：适合详情/表单侧滑（示例）</div>
       </Drawer>
-      </div>
+    </div>
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

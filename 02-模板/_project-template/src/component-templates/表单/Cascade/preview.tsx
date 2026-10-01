@@ -32,13 +32,22 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
-  return (
-      <DemoBoundary>
-        <Cascader />
-      </DemoBoundary>
-  );
+  const [v, setV] = React.useState(['shandong', 'qingdao', 'laoshan']);
+  const options = [
+    { value: 'shandong', label: '山东省', children: [
+      { value: 'qingdao', label: '青岛市', children: [
+        { value: 'laoshan', label: '崂山区' },
+        { value: 'shinan', label: '市南区' },
+      ] },
+      { value: 'jinan', label: '济南市' },
+    ] },
+    { value: 'jiangsu', label: '江苏省', children: [
+      { value: 'nanjing', label: '南京市' },
+      { value: 'suzhou', label: '苏州市' },
+    ] },
+  ];
+  return <Cascader options={options} value={v} onChange={(nv) => setV(nv || [])} />;
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

@@ -32,13 +32,20 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
-  return (
-      <DemoBoundary>
-        <Tree />
-      </DemoBoundary>
-  );
+  const [sel, setSel] = React.useState('a-1');
+  const data = [
+    { key: 'park', title: '崂山实验室园区', children: [
+      { key: 'a', title: 'A 区 · 科研楼', extra: '12 台', children: [
+        { key: 'a-1', title: '冷冻水泵-01' },
+        { key: 'a-2', title: '冷却塔-02' },
+        { key: 'a-3', title: '空调机组-03' },
+      ] },
+      { key: 'b', title: 'B 区 · 数据中心', extra: '8 台' },
+      { key: 'c', title: 'C 区 · 综合楼', extra: '5 台' },
+    ] },
+  ];
+  return <Tree data={data} selectedKey={sel} onSelect={(k) => setSel(k)} searchable searchPlaceholder="搜索楼栋 / 设备…" />;
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

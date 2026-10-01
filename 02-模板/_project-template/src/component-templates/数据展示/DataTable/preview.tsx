@@ -32,13 +32,21 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
-  return (
-      <DemoBoundary>
-        <DataTable />
-      </DemoBoundary>
-  );
+  const [sel, setSel] = React.useState([1, 3]);
+  const columns = [
+    { title: '订单号', key: 'no', width: 110 },
+    { title: '客户', key: 'cust' },
+    { title: '金额', key: 'amount', align: 'right', render: (r) => '¥' + r.amount.toLocaleString() },
+    { title: '状态', key: 'status', width: 90 },
+  ];
+  const data = [
+    { id: 1, no: 'SO-0042', cust: '青岛海洋研究所', amount: 128000, status: '已发货' },
+    { id: 2, no: 'SO-0043', cust: '崂山实验室后勤处', amount: 86400, status: '待付款' },
+    { id: 3, no: 'SO-0044', cust: '蓝谷科技有限公司', amount: 45200, status: '已完成' },
+    { id: 4, no: 'SO-0045', cust: '即墨区中医院', amount: 21900, status: '待付款' },
+  ];
+  return <DataTable columns={columns} data={data} rowKey="id" rowSelection={{ selectedKeys: sel, onChange: setSel }} />;
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

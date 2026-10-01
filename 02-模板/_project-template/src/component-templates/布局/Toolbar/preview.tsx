@@ -33,12 +33,17 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 
 function Demo() {
   return (
-      <div style={{ width: '100%', padding: '6px 0' }}>
-      <Toolbar left={<div style={{ display: 'flex', gap: 6, alignItems: 'center' }}><span style={{ fontSize: 13, fontWeight: 600 }}>项目列表</span><span style={{ fontSize: 12, color: '#86909c' }}>共 12 个</span></div>} right={<div style={{ display: 'flex', gap: 6 }}><button style={{ border: '1px solid #e5e7eb', background: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}><Search size={12} />筛选</button><button style={{ border: 'none', background: '#165dff', color: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}><Plus size={12} />新增</button></div>} />
-      </div>
+    <div style={{ width: '100%', padding: '6px 0' }}>
+      <Toolbar
+        left={<div style={{ display: 'flex', gap: 6, alignItems: 'center' }}><span style={{ fontSize: 13, fontWeight: 600 }}>项目列表</span><span style={{ fontSize: 12, color: '#86909c' }}>共 12 个</span></div>}
+        right={<div style={{ display: 'flex', gap: 6 }}>
+          <button style={{ border: '1px solid #e5e7eb', background: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer' }}>筛选</button>
+          <button style={{ border: 'none', background: '#165dff', color: '#fff', borderRadius: 6, padding: '4px 10px', fontSize: 12, cursor: 'pointer' }}>新增</button>
+        </div>}
+      />
+    </div>
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {

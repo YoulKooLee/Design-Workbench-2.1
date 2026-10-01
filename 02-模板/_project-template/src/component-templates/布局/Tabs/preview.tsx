@@ -32,13 +32,13 @@ class DemoBoundary extends React.Component<{ children: React.ReactNode }, { err:
 }
 
 function Demo() {
+  const [tab, setTab] = React.useState('a');
   return (
-      <div style={{ width: '100%' }}>
+    <div style={{ width: '100%' }}>
       <Tabs activeKey={tab} onChange={setTab} items={[{ key: 'a', title: '全部', content: <div style={{ fontSize: 12, color: '#86909c', padding: '10px 2px' }}>全部内容</div> }, { key: 'b', title: '运行中', content: <div style={{ fontSize: 12, color: '#86909c', padding: '10px 2px' }}>运行中内容</div> }, { key: 'c', title: '已归档', content: <div style={{ fontSize: 12, color: '#86909c', padding: '10px 2px' }}>已归档内容</div> }]} />
-      </div>
+    </div>
   );
 }
-
 function App() {
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {
