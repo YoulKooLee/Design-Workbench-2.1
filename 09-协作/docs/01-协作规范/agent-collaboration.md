@@ -317,8 +317,9 @@
 
 ## 九、维护约定
 
-- 本文件由用户主智能体维护，能力矩阵需根据实际使用体验定期调整。
-- **新增智能体入网**：运行 `messages/tools/onboard-agent.mjs <id> "<显示名>"` 一键入网（自动建 inbox/outbox 目录 + 面板注册），出网用 `--remove <id>`；完整流程见 `messages/onboarding-guide.md`。入网后须：能力矩阵加一列、创建 `agents/<id>/` 目录、让新智能体读协议文档并做链路验证。
+- 本文件由豆包统一维护（工程包单一维护者 = 豆包，2026-09-30 用户裁定·暂定），能力矩阵需根据实际使用体验定期调整。
+- **新增智能体入网**：运行 `messages/tools/onboard-agent.mjs <id> "<显示名>"` 一键入网（自动建 inbox/outbox 目录 + 面板注册 + msg-cli/hub/config 全量注册），出网用 `--remove <id>`；完整流程见 `messages/onboarding-guide.md`。入网后须：能力矩阵加一列、创建 `agents/<id>/` 目录、让新智能体读协议文档并做链路验证。
 - **成员登记**：CodeBuddy / WorkBuddy / DeepSeek Harness / 豆包于 2026-08-24 入网；千问（qwen）于 2026-08-31 入网。
 - 协作模式如果在实践中发现不适用，更新本文件并记录变更原因。
 - 本文件与 `session-handoff.md`、`access-guide.md` 保持一致，发现冲突以本文件为准。
+- 其他智能体对工程包（tools/ 源码、协议文档、面板、房间结构）只提建议不直接改动，见 `working-conventions.md` §〇。

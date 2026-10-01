@@ -1,7 +1,8 @@
 # Onboarding — 新智能体入网指南
 
-> 本文档说明**如何让一个新的智能体加入**多智能体协作体系（当前成员：CodeBuddy / WorkBuddy / DeepSeek Harness / 豆包）。
+> 本文档说明**如何让一个新的智能体加入**多智能体协作体系（当前成员：豆包 / CodeBuddy / WorkBuddy / DeepSeek / 千问）。
 > 适用对象：新增的 AI 智能体、同一智能体的新实例、或想接入的自有工具。
+> 工程包维护归属：`09-协作/` 单一维护者 = 豆包（暂定，2026-09-30 用户裁定），其他智能体为使用方，见 `docs/01-协作规范/working-conventions.md` §〇。
 
 ---
 
@@ -27,7 +28,7 @@
 
 ### 第 2 步：一键入网（推荐，自动化）
 
-在 `messages/tools/` 下运行入网脚本，会自动完成目录创建 + 面板注册：
+在 `messages/tools/` 下运行入网脚本，会自动完成目录创建 + 面板注册 + msg-cli/hub/config 全量注册：
 
 ```bash
 node onboard-agent.mjs <id> "<显示名>"
@@ -37,22 +38,26 @@ node onboard-agent.mjs <id> "<显示名>"
 脚本自动做三件事：
 1. 创建 `messages/inbox/<id>/`、`messages/outbox/<id>/`
 2. 在 `msg-panel-server.mjs` 的 `AGENTS` 数组注册 ID、`AGENT_NAMES` 注册显示名（面板下拉/发布多选自动出现该智能体）
-3. 打印后续人工待办清单
+3. 在 `msg-cli.mjs` / `agent-hub-watcher.mjs` / `agent-hub-config.json` 全量注册（保证发消息不被拒、收消息有通知）
 
-> 若脚本不可用（无 node 环境），按第 3 步手动操作。
+> 入网一致性核对：`node onboard-agent.mjs --check <id>` 输出全部注册点状态（inbox/outbox、面板、msg-cli、hub、config），任一项 ❌ 即表示未真正可用。
+> 若脚本不可用（无 node 环境），按第 3 步申请由维护者手动补齐。
 
 ### 第 3 步：手动补齐（脚本未覆盖或不可用时）
+
+> **由维护者（豆包）执行**——新智能体只提交申请，不直接编辑工程包（见 `working-conventions.md` §〇）。
 
 1. **建目录**：
    ```
    messages/inbox/<id>/      ← 收件箱（别人给它发消息放这）
    messages/outbox/<id>/     ← 发件留档（它发消息的真相源）
    ```
-2. **面板注册**：编辑 `messages/tools/msg-panel-server.mjs` 顶部
+2. **面板注册**（维护者操作）：编辑 `messages/tools/msg-panel-server.mjs` 顶部
    - `const AGENTS = [..., '<id>', 'user'];`
    - `const AGENT_NAMES = { ..., <id>:'显示名' };`
    - 改完重启面板（`停止通信面板.lnk` → `启动通信面板.lnk`）
-3. **协作框架登记**（根目录）：
+3. **消息/监听注册**（维护者操作）：在 `msg-cli.mjs` 的 `AGENTS`、`agent-hub-watcher.mjs` 的 `AGENTS`、`agent-hub-config.json` 的 `agents` 中登记该 ID，否则新成员发消息被拒、收消息无通知。
+4. **协作框架登记**（根目录）：
    - `agent-collaboration.md`：能力矩阵加一列、第九节维护约定登记新成员
    - `agents/<id>/` 建专属产物目录
 
@@ -74,7 +79,7 @@ node onboard-agent.mjs <id> "<显示名>"
 
 > 发送方法：直接写 JSON 到 `messages/inbox/doubao/`（注意原子写：先写 `.tmp` 再 `rename`），并在 `messages/outbox/<id>/` 留档。或用 `node messages/tools/msg-cli.mjs send --to doubao ...`（用法见 MESSAGE_FORMAT.md §7）。
 
-豆包或 CodeBuddy 收到后回 ack，链路即打通。
+豆包（维护者）收到后回 ack，链路即打通。
 
 ---
 
@@ -119,4 +124,4 @@ A：重启面板（停止 → 启动），刷新浏览器。
 A：检查消息是否为合法 JSON、文件名是否 `.json` 结尾、`message_id` 是否唯一；面板 15s 自动刷新，也可手动点「刷新」。
 
 **Q：要移除一个智能体？**
-A：反向操作：删 `inbox/<id>/`、`outbox/<id>/`（或移入 archive），从 `msg-panel-server.mjs` 的 AGENTS/AGENT_NAMES 移除，重启面板，从 `agent-collaboration.md` 删除对应列。
+A：由维护者（豆包）执行：删 `inbox/<id>/`、`outbox/<id>/`（或移入 archive），从 `msg-panel-server.mjs` 的 AGENTS/AGENT_NAMES 移除（或用 `node onboard-agent.mjs --remove <id>` 对称清理 msg-cli/hub/config），重启面板，从 `agent-collaboration.md` 删除对应列。
