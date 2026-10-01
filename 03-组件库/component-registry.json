@@ -2,7 +2,7 @@
   "schemaVersion": "1.0",
   "registryUpdatedAt": "2026-09-19",
   "maintainer": "豆包",
-  "note": "组件库登记与版本真源（H2/H3）。03-组件库 已按用途重组：01-补丁源（新建项目自动应用）/ 02-标品框架（标准产品框架 Vue 工程）/ 02-页面模板（原型框架·页面模板，工作台可维护）/ 03-页面组件（原型框架·组件库：Vibe Design Pro + Codebuddy Design，工作台可维护）/ 03-UI风格（提示词 UI 风格知识库）。新增组件必须走标准流程：放样板三件套 → 登记 pages.catalog.json → 若新库更新 index.json → 补 03-UI风格 知识 → 本文件登记 → smoke-test 校验。",
+  "note": "组件库登记与版本真源（H2/H3）。03-组件库 已按用途重组：01-补丁源（新建项目自动应用）/ 02-页面模板（原型框架·页面模板，工作台可维护）/ 03-页面组件（原型框架·组件库：Vibe Design Pro + Codebuddy Design，工作台可维护）/ 03-UI风格（提示词 UI 风格知识库）。Vue编码工程（原标准产品框架，历史目录 02-标品框架 已移除）承接原型项目进入开发。新增组件必须走标准流程：放样板三件套 → 登记 pages.catalog.json → 若新库更新 index.json → 补 03-UI风格 知识 → 本文件登记 → smoke-test 校验。",
   "ends": [
     {
       "id": "admin",
