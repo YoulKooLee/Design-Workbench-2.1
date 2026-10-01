@@ -736,7 +736,7 @@ async function renderProjects(){
       <div class="proj-top">
         <div class="avatar ${avCls}">${escapeHtml(initial)}</div>
         <div style="min-width:0">
-          <div class="proj-title">${escapeHtml(p.name)}${p.isDemo?' <span class="badge demo">演示</span>':''}${p.isAdmin?' <span class="badge admin" title="admin 框架项目：VibePM 管理后台资源包本体（Vue 工程骨架），非可直接运行的业务工程；业务原型由 Agent 按 frame 母版生成到项目 admin/ 目录">母版资源包</span>':''}</div>
+          <div class="proj-title">${escapeHtml(p.name)}${p.isDemo?' <span class="badge demo">演示</span>':''}${p.isAdmin?' <span class="badge admin" title="Vue编码工程：Vue3 + Element Plus 工程骨架，由 Agent 依据上游原型包交付的 SRS/HLD/数据模型/原型实现业务代码；接手前先过交接清单七项门禁">Vue编码工程</span>':''}</div>
           <div class="proj-path">${escapeHtml(p.relative || p.path)}</div>
         </div>
         <span class="${badgeCls}"><span class="dot"></span>${escapeHtml(st.statusLabel)}</span>
@@ -1358,15 +1358,33 @@ function showNewProject(){
       <div class="field"><label>项目名称 <span class="req">*</span></label><input id="npName" placeholder="如 my-dashboard"/><div class="hint">名称即目录名：不能含 * ? &lt; &gt; | : \\ / 等非法字符；目录已存在时会创建失败</div></div>
       <div class="field"><label>项目框架</label><select id="npFramework">
         <option value="make">React原型工程</option>
-        <option value="admin">标准产品框架</option>
+        <option value="admin">Vue编码工程（Vue3 + Element Plus）</option>
       </select></div>
+      <div class="field" id="npUpstreamField" style="display:none"><label>上游 React 原型项目 <span class="req">*</span></label><select id="npUpstream"><option value="">加载中…</option></select><div class="hint">建项时继承其 SRS/HLD/LLD/原型文档到 <span class="path">研发基线/</span>，并自动生成交接清单；仅列含 <span class="path">src/prototypes/</span> 的项目</div></div>
       <div class="field" id="npTplField"><label>页面模板（可选）</label><select id="npTemplate"><option value="">空白（仅工程骨架）</option></select><div class="hint">工程骨架（Skill 库 / 知识库 / 工作规则）始终加载；页面模板会额外嵌入为项目的首个原型页（需按模板自带依赖安装，首次启动前 pnpm install）</div></div>
     </div>
     <div class="modal-ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" id="npCreate">创建</button></div>`);
-  // 框架联动：admin 时隐藏页面模板（跳过选择）
+  // 框架联动：admin 时显示上游必选下拉 + 隐藏页面模板（跳过选择）
   const fw = $('#npFramework');
   const tplField = $('#npTplField');
-  fw.onchange = ()=>{ tplField.style.display = fw.value === 'admin' ? 'none' : ''; };
+  const upField = $('#npUpstreamField');
+  const upSel = $('#npUpstream');
+  const toggleFw = ()=>{ tplField.style.display = fw.value === 'admin' ? 'none' : ''; upField.style.display = fw.value === 'admin' ? '' : 'none'; };
+  fw.onchange = toggleFw;
+  toggleFw();
+  // 异步加载上游项目列表（Vue编码工程必选）
+  api('/api/projects/upstreams').then(r => {
+    if (!upSel || !r || !r.ok || !Array.isArray(r.upstreams)) { upSel.innerHTML = '<option value="">无可用上游（刷新重试）</option>'; return; }
+    if (r.upstreams.length === 0) { upSel.innerHTML = '<option value="">无可用上游原型项目</option>'; return; }
+    const opts = r.upstreams.map(u => {
+      const marks = [];
+      if (!u.hasSRS) marks.push('缺SRS');
+      if (!u.hasHLD) marks.push('缺HLD');
+      if (!u.hasLLD) marks.push('缺LLD');
+      return `<option value="${escapeHtml(u.relative)}">${escapeHtml(u.name)}${marks.length ? `（${marks.join('、')}，建项标记缺失不阻塞）` : ''}</option>`;
+    }).join('');
+    upSel.innerHTML = opts;
+  }).catch(() => { if (upSel) upSel.innerHTML = '<option value="">上游加载失败（刷新重试）</option>'; });
   // 异步加载页面模板列表（仅 Make 页面模板；工程模板为隐式基底不展示）
   api('/api/templates').then(r => {
     const sel = $('#npTemplate');
@@ -1381,8 +1399,10 @@ function showNewProject(){
     const name = $('#npName').value.trim();
     if(!name){ toast('请输入项目名称','err'); return; }
     const framework = $('#npFramework') ? $('#npFramework').value : 'make';
+    const upstream = framework === 'admin' ? ($('#npUpstream') ? $('#npUpstream').value : '') : '';
+    if (framework === 'admin' && !upstream) { toast('请选择上游 React 原型项目','err'); return; }
     const template = framework === 'admin' ? '' : ($('#npTemplate') ? $('#npTemplate').value : '_project-template');
-    const r = await api('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, template, framework})});
+    const r = await api('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, template, framework, upstream})});
     toast(r.msg, r.ok?'ok':'err');
     if(r.ok){
       closeModal();

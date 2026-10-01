@@ -567,7 +567,7 @@ function isAdminProject(dir) {
     const flag = path.join(dir, '.axhub', 'framework');
     if (fs.existsSync(flag)) {
       const v = fs.readFileSync(flag, 'utf8').trim();
-      // admin = 旧 vibepm-admin 资源包（Vue 工程）；admin-static = 标准产品框架（demo-agent 静态母版）
+      // admin = 旧 vibepm-admin 资源包（Vue 工程）；admin-static (deprecated，0 存量) = 旧 demo-agent 静态母版画廊
       if (v === 'admin' || v === 'admin-static') return true;
     }
     const pkg = path.join(dir, 'package.json');
@@ -578,7 +578,7 @@ function isAdminProject(dir) {
   } catch { /* ignore */ }
   return false;
 }
-// 标准产品框架（demo-agent 静态母版画廊）判定：.axhub/framework == 'admin-static'
+// 标准产品框架（demo-agent 静态母版画廊）判定（deprecated：01-项目 0 存量，仅保留兼容历史标记）：.axhub/framework == 'admin-static'
 function isAdminStaticProject(dir) {
   try {
     const flag = path.join(dir, '.axhub', 'framework');
@@ -627,6 +627,165 @@ function listProjects() {
   out.sort((a, b) => (a.isDemo === b.isDemo ? 0 : a.isDemo ? 1 : -1));
   return out;
 }
+
+// ===== 上游原型文档继承（Vue编码工程建项时物理复制快照，缺项放行+标记）=====
+// 五区映射（与 templates/交接清单模板.md §二 七项一一对应）：
+//   docs/**/*SRS*.md               → 研发基线/01-需求规格/
+//   docs/**/*概要设计*.md + *功能清单*.md → 研发基线/02-功能架构/
+//   docs/**/*详细设计*.md          → 研发基线/04-数据流/
+//   src/prototypes/** + demo.html + docs 内 PRD/概念版 → 研发基线/原型参考/
+// 决策 C1：物理复制快照（不做软链）；C2：每类缺失不阻塞建项，写 [MISS] 进交接清单，研发开工七项门禁在 AGENTS.md §二。
+function inheritUpstreamDocs(upstreamDir, dst, upstreamRel, projName) {
+  const base = path.join(dst, '研发基线');
+  const zones = ['01-需求规格', '02-功能架构', '03-数据模型', '04-数据流', '原型参考'];
+  for (const z of zones) fs.mkdirSync(path.join(base, z), { recursive: true });
+  const inherited = { upstream: upstreamRel, copied: [], missing: [], zones: {} };
+  const copyFilter = (src) => {
+    const lp = src.toLowerCase();
+    if (lp.includes('node_modules')) return false;
+    return path.basename(lp) !== '.git';
+  };
+  const copyMatching = (upstreamRoot, glob, zone) => {
+    // 简易递归扫描（无第三方 glob），按文件名子串匹配；返回复制文件数
+    let count = 0;
+    const walk = (d, rel) => {
+      let ents = [];
+      try { ents = fs.readdirSync(d, { withFileTypes: true }); } catch { return; }
+      for (const en of ents) {
+        const full = path.join(d, en.name);
+        if (en.isDirectory()) { if (en.name !== 'node_modules' && !en.name.startsWith('.')) walk(full, rel + '/' + en.name); }
+        else {
+          const ok = glob.some(g => en.name.includes(g));
+          if (ok) {
+            const zdir = path.join(base, zone);
+            fs.mkdirSync(zdir, { recursive: true });
+            try {
+              fs.copyFileSync(full, path.join(zdir, en.name));
+              count++;
+              inherited.copied.push(`${zone}/${en.name}`);
+            } catch (e) { console.error('[inherit-docs]', zone, en.name, e.message); }
+          }
+        }
+      }
+    };
+    if (fs.existsSync(upstreamRoot)) walk(upstreamRoot, '');
+    return count;
+  };
+  // 1) 需求规格：docs 下 SRS
+  const srsCount = copyMatching(path.join(upstreamDir, 'docs'), ['SRS'], '01-需求规格');
+  inherited.zones['01-需求规格'] = srsCount;
+  // 2) 功能架构：概要设计 + 功能清单
+  const hldCount = copyMatching(path.join(upstreamDir, 'docs'), ['概要设计', '功能清单'], '02-功能架构');
+  inherited.zones['02-功能架构'] = hldCount;
+  // 3) 数据模型：无独立文档约定（数据模型/数据流是 HLD 章节，实测约定见交接清单 2.3）
+  inherited.zones['03-数据模型'] = 0;
+  // 4) 数据流：详细设计（LLD 实现细节）
+  const lldCount = copyMatching(path.join(upstreamDir, 'docs'), ['详细设计'], '04-数据流');
+  inherited.zones['04-数据流'] = lldCount;
+  // 5) 原型参考：src/prototypes/** 整目录复制 + demo.html + docs 内 PRD/概念版
+  let protoCount = 0;
+  const protoSrc = path.join(upstreamDir, 'src', 'prototypes');
+  if (fs.existsSync(protoSrc)) {
+    try {
+      fs.cpSync(protoSrc, path.join(base, '原型参考'), { recursive: true, filter: copyFilter });
+      // 统计复制文件数（排除顶层目录自身）
+      let n = 0;
+      const walk2 = (d) => { let ents = []; try { ents = fs.readdirSync(d, { withFileTypes: true }); } catch { return; } for (const en of ents) { if (en.isDirectory()) walk2(path.join(d, en.name)); else n++; } };
+      walk2(path.join(base, '原型参考'));
+      protoCount = n;
+    } catch (e) { console.error('[inherit-docs] 原型参考', e.message); }
+  }
+  const demoHtml = path.join(upstreamDir, 'demo.html');
+  if (fs.existsSync(demoHtml)) {
+    try { fs.copyFileSync(demoHtml, path.join(base, '原型参考', 'demo.html')); protoCount++; } catch (e) { console.error('[inherit-docs] demo.html', e.message); }
+  }
+  const prdCount = copyMatching(path.join(upstreamDir, 'docs'), ['PRD', '概念版'], '原型参考');
+  inherited.zones['原型参考'] = protoCount + prdCount;
+  // 缺失标记（不阻塞建项）
+  const keyMap = [
+    ['SRS 需求规格', '01-需求规格'],
+    ['功能清单 / HLD 概要设计', '02-功能架构'],
+    ['LLD 详细设计', '04-数据流'],
+    ['原型参考', '原型参考'],
+  ];
+  for (const [label, zone] of keyMap) {
+    if ((inherited.zones[zone] || 0) === 0) inherited.missing.push(label);
+  }
+  // 自动生成 docs/交接清单.md（基于模板；模板不存在则生成最小骨架）
+  let tpl = '';
+  const tplFile = path.join(dst, 'templates', '交接清单模板.md');
+  if (fs.existsSync(tplFile)) tpl = fs.readFileSync(tplFile, 'utf8');
+  const now = new Date();
+  const ts = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const specOk = (inherited.zones['01-需求规格'] || 0) > 0;
+  const statusRow = (label, cnt) => `${label}：${cnt > 0 ? '继承成功' : '缺失已标记'}（${cnt} 个文件${cnt > 0 ? `，来源：上游 ${upstreamRel}` : ''}）`;
+  const inheritBlock = [
+    '## 〇、建项继承记录（面板自动生成）',
+    '',
+    `| 项 | 值 |`,
+    `|---|---|`,
+    `| 上游原型项目 | \`01-项目/${upstreamRel}\` |`,
+    `| 继承时间 | ${ts} |`,
+    `| 继承方式 | 物理复制快照（不做软链） |`,
+    `| SPEC_SOURCE 登记值 | ${specOk ? 'SRS' : '待补（上游无 SRS，研发开工前须先跑 srs-writer 补齐）'} |`,
+    '',
+    '**继承文档清单**：',
+    '',
+    `- ${statusRow('SRS 需求规格', inherited.zones['01-需求规格'] || 0)}`,
+    `- ${statusRow('功能清单 / HLD 概要设计', inherited.zones['02-功能架构'] || 0)}`,
+    `- ${statusRow('数据模型（HLD 章节）', inherited.zones['03-数据模型'] || 0)}`,
+    `- ${statusRow('LLD 详细设计', inherited.zones['04-数据流'] || 0)}`,
+    `- ${statusRow('原型参考', inherited.zones['原型参考'] || 0)}`,
+    '',
+    inherited.missing.length > 0
+      ? `> ⚠️ 缺失已标记（不阻塞建项）：${inherited.missing.join('、')}。研发开工七项门禁见 §八——缺失项须在开工前补齐。`
+      : '> ✅ 全部继承成功。',
+    '',
+    '---',
+    '',
+  ].join('\n');
+  const docsDir = path.join(dst, 'docs');
+  fs.mkdirSync(docsDir, { recursive: true });
+  const filled = (tpl
+    ? tpl
+      .replace('{填写}', '') // 基本信息占位兜底
+    : '# 研发基线交接清单\n\n（模板缺失，面板生成最小骨架）\n')
+    ;
+  const header = filled.startsWith('# ') ? filled : `# 研发基线交接清单\n\n${filled}`;
+  // 交接清单 = 继承记录 + 模板正文（模板已含七项门禁）
+  fs.writeFileSync(path.join(docsDir, '交接清单.md'), inheritBlock + header, 'utf8');
+  return inherited;
+}
+
+// 可作上游的 React 原型项目列表（过滤条件：目录存在 src/prototypes/，非 framework 标记）
+function listUpstreams() {
+  const projects = listProjects();
+  const out = [];
+  for (const p of projects) {
+    if (p.isTemplate) continue;
+    const protos = path.join(p.path, 'src', 'prototypes');
+    if (!fs.existsSync(protos)) continue;
+    const docs = path.join(p.path, 'docs');
+    const has = (sub) => {
+      if (!fs.existsSync(docs)) return false;
+      let found = false;
+      const walk = (d) => { if (found) return; let ents = []; try { ents = fs.readdirSync(d, { withFileTypes: true }); } catch { return; } for (const en of ents) { const full = path.join(d, en.name); if (en.isDirectory()) walk(full); else if (en.name.includes(sub)) { found = true; return; } } };
+      walk(docs);
+      return found;
+    };
+    out.push({
+      name: p.name,
+      relative: p.relative.replace(/^01-项目\//, ''),
+      hasSRS: has('SRS'),
+      hasHLD: has('概要设计'),
+      hasLLD: has('详细设计'),
+      hasDocs: fs.existsSync(docs),
+      hasPrototypes: true,
+    });
+  }
+  return out;
+}
+
 
 // 演示项目只读保护：禁止复制 / 删除 / 任何 Git 写操作
 function isDemoRelative(relative) {
@@ -949,6 +1108,12 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true, projects });
   }
 
+  // ===== 上游 React 原型项目列表（Vue编码工程建项时选择）=====
+  // 过滤条件：目录存在 src/prototypes/（非 .axhub/framework 标记——崂山/结构监测无标记但有原型）
+  if (p === '/api/projects/upstreams' && method === 'GET') {
+    return send(res, 200, { ok: true, upstreams: listUpstreams() });
+  }
+
   // ===== 回收站（C1：有进有出）=====
   if (p === '/api/trash' && method === 'GET') {
     const trashBase = path.join(AXHUB_ROOT, '05-回收站');
@@ -1116,11 +1281,21 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (p === '/api/projects' && method === 'POST') {
-    const { name, template, framework } = await readBody(req);
+    const { name, template, framework, upstream } = await readBody(req);
     const projName = safeName(name);
     if (!projName) return sendError(res, '项目名称不能为空，且不能含非法字符（* ? < > | : \\ /）');
-    // 框架选择：make（React 原型工程，默认）/ admin（Vue 管理后台工程）
+    // 框架选择：make（React 原型工程，默认）/ admin（Vue编码工程，承接上游 React 原型进入研发）
     const isAdmin = String(framework || 'make') === 'admin';
+    // Vue编码工程必选上游 React 原型项目（含 src/prototypes/ 目录，而非按 framework 标记过滤——崂山/结构监测无标记但有原型）
+    const upstreamRel = isAdmin ? String(upstream || '') : '';
+    let upstreamDir = null;
+    if (isAdmin) {
+      if (!upstreamRel) return sendError(res, 'Vue编码工程必须选择上游 React 原型项目');
+      upstreamDir = safeResolve(`01-项目/${upstreamRel}`);
+      if (!upstreamDir) return sendError(res, '非法的上游项目路径');
+      const upstreamProtos = path.join(upstreamDir, 'src', 'prototypes');
+      if (!fs.existsSync(upstreamDir) || !fs.existsSync(upstreamProtos)) return sendError(res, `上游项目无效或缺少 src/prototypes/ 原型目录：${upstreamRel}`);
+    }
     // 模板选择：默认 _project-template 骨架；make:<id> 则额外嵌入 Make-Template 页面模板
     const tplRaw = String(template || '_project-template');
     const isMakeTpl = tplRaw.startsWith('make:');
@@ -1129,9 +1304,9 @@ const server = http.createServer(async (req, res) => {
     fs.mkdirSync(projectsRoot, { recursive: true });
     const dst = path.join(projectsRoot, projName);
     if (fs.existsSync(dst)) return sendError(res, `目录已存在：${projName}`);
-    // 标准产品框架模板 = vibepm-admin 工程（02-模板/_admin-template/src/admin，Vue3+Arco 管理后台）
-    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '02-模板', '_admin-template', 'src', 'admin');
-    if (isAdmin && !fs.existsSync(path.join(ADMIN_TEMPLATE_DIR, 'package.json'))) return sendError(res, '标准产品框架模板不可用：缺少 02-模板\\_admin-template\\scr\\admin\\package.json');
+    // 研发工程包模板 = Vue 管理后台工程（02-模板/_project-development/src/admin，Vue3 + Element Plus + Pinia）
+    const ADMIN_TEMPLATE_DIR = path.join(AXHUB_ROOT, '02-模板', '_project-development', 'src', 'admin');
+    if (isAdmin && !fs.existsSync(path.join(ADMIN_TEMPLATE_DIR, 'package.json'))) return sendError(res, 'Vue编码工程模板不可用：缺少 02-模板\\_project-development\\src\\admin\\package.json');
     if (!isAdmin && !fs.existsSync(TEMPLATE_DIR)) return sendError(res, '模板目录不存在');
     if (isMakeTpl) {
       const mtRoot = path.join(MAKE_TEMPLATES_DIR, 'templates', makeTplId);
@@ -1139,7 +1314,7 @@ const server = http.createServer(async (req, res) => {
     }
     try {
       if (isAdmin) {
-        // 标准产品框架：拷贝 vibepm-admin 工程（Vue3+Arco 管理后台，首次启动自动 pnpm install + vite dev）
+        // 研发工程包：拷贝 Vue 管理后台工程骨架（Vue3 + Element Plus + Pinia，首次启动自动 pnpm install + vite dev）
         fs.cpSync(ADMIN_TEMPLATE_DIR, dst, {
           recursive: true,
           filter: (src) => {
@@ -1148,10 +1323,11 @@ const server = http.createServer(async (req, res) => {
             return path.basename(lp) !== '.git';
           },
         });
-        // 标准产品框架 = vibepm-demo-agent（AGENTS.md + .agents 技能包 + frame 母版画廊）+ admin 工程。
-        // AGENTS.md / .agents / frame 是智能体工作流核心与 prototype-demo 运行依赖，必须一并装载。
-        for (const coreItem of ['AGENTS.md', '.agents', 'frame']) {
-          // 三件套（AGENTS.md/.agents/frame）位于 _admin-template 根，admin 工程在 src/admin
+        // 研发工程包 = AGENTS.md（入口）+ .agents（技能/规则/知识库/角色）+ templates/（建项与打包规范、交接清单模板）+ src/admin（Vue 工程骨架）。
+        // frame 母版画廊已于 2026-09-29 从 _project-development 移除（其消费技能 prototype-demo 不存在，属死链）。
+        // 组件库画廊仍在 03-组件库/03-页面组件/Vibe Design Pro，由 /clib、/frame 路由服务，与本清单无关。
+        for (const coreItem of ['AGENTS.md', '.agents', 'templates']) {
+          // 工程包入口（AGENTS.md/.agents/templates）位于 _project-development 根，admin 工程在 src/admin
           const coreSrc = path.join(ADMIN_TEMPLATE_DIR, '..', '..', coreItem);
           const coreDst = path.join(dst, coreItem);
           try {
@@ -1165,17 +1341,28 @@ const server = http.createServer(async (req, res) => {
                 },
               });
             }
-          } catch (e) { console.error('[standard-framework-assemble]', coreItem, e.message); }
+          } catch (e) { console.error('[dev-framework-assemble]', coreItem, e.message); }
         }
-        // 写 framework 标记（标准产品框架 · Vue 工程）
+        // 写 framework 标记（Vue编码工程 · Vue 工程）
         try {
           fs.mkdirSync(path.join(dst, '.axhub'), { recursive: true });
           fs.writeFileSync(path.join(dst, '.axhub', 'framework'), 'admin', 'utf8');
         } catch { /* ignore */ }
+        // 上游文档继承：物理复制快照 + 缺失放行标记 + 自动生成 docs/交接清单.md
+        let inherited = null;
+        try {
+          inherited = inheritUpstreamDocs(upstreamDir, dst, upstreamRel, projName);
+        } catch (e) {
+          console.error('[inherit-docs]', e.message);
+          inherited = { upstream: upstreamRel, copied: [], missing: ['继承流程异常'], zones: {} };
+        }
         const ctx0 = readWorkspaceCtx();
         const ctxN = upsertProject(ctx0, `01-项目/${projName}`, 'active');
         writeWorkspaceCtx(ctxN);
-        return send(res, 200, { ok: true, msg: `项目已创建：${projName}（标准产品框架 · Vue 管理后台工程，启动开发栈时自动安装依赖）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin' });
+        const missNote = inherited && inherited.missing && inherited.missing.length > 0
+          ? `，缺失已标记：${inherited.missing.join('、')}`
+          : '';
+        return send(res, 200, { ok: true, msg: `项目已创建：${projName}（Vue编码工程 · Vue3 + Element Plus，已装载 AGENTS.md/.agents/templates，继承上游 ${upstreamRel}${missNote}，启动开发栈时自动安装依赖）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin', inherited });
       }
       // make 原型工程：整体拷贝 _project-template 骨架
       const copyRoot = TEMPLATE_DIR;
