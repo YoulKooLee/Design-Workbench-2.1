@@ -24,9 +24,8 @@
 | 技能 | 类别 | 完成前验证 | 审查勾选 |
 | --- | --- | --- | --- |
 | `srs-writer` | 文档 | 省略 build；禁用词 grep / 结构检查 | `req-reviewer`：快速整步跳过；标准抽检；严格全量 |
-| `feasibility-report` | 文档 | 省略 build | 按本技能已有调度；无跳过表则不新造 |
 | `hld-design` / `lld-design` | 文档 | 省略 build | `design-reviewer` 按本技能已有调度 |
 | `delivery-plan` | 文档 | 计划本身省略 build；Step D 进入 `feature-dev` 后继承代码验证 | analyzer 非审查角色；下游步骤 6 按其模式 |
 | `diagram-generator` | 文档 | 省略 build；`validate-diagram` 可作证据 | 无独立 reviewer；不因此新增 code-reviewer |
 | `feature-dev` | 代码 | 必须 verification（5.1 build/type-check；标准/严格走步骤 6 维 1） | 按已有 6.0 表：快速仅维 2 + P0 安全 |
-| `annotation` | 代码（改源码时） | 改了 `src/` 须 verification；JSON 校验保留但不够单独充当完成证据 | 改源码后按 `AGENTS.md` 勾选 `code-reviewer`；不新造快速跳过表 |
+| `test-driven-development` / `systematic-debugging` | 代码 | 必须 verification；测试/复现输出作为证据 | 按 `AGENTS.md` 勾选 `code-reviewer` |

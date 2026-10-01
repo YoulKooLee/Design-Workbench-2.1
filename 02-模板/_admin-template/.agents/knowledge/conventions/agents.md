@@ -1,4 +1,4 @@
-﻿---
+---
 updated: 2026-08-18
 version: 2.2
 scope: global
@@ -13,13 +13,8 @@ description: 角色调度规则，包含何时使用哪个角色、并行执行�
 | `req-analyzer` | 需求分析，提取功能摘要 | 生成/反向同步 SRS 前 |
 | `req-writer` | 撰写 SRS 章节内容 | srs-writer 技能调度 |
 | `req-reviewer` | 审查 SRS 质量 | 每个功能模块写完后 |
-| `annotation-prd-analyzer` | 分析需求，输出标注清单 | annotation 技能第一阶段 |
-| `annotation-code-locator` | 定位 DOM 节点，输出注入清单 | annotation 技能第二阶段 |
 | `page-spec-loader` | 加载项目规范，规划组件 | feature-dev 技能第 2 步 |
 | `page-reviewer` | 验收生成的页面代码 | feature-dev 技能验收步 |
-| `feasibility-analyzer` | 分析项目文档，提取结构化信息 | feasibility-report 技能 |
-| `feasibility-writer` | 撰写可研报告章节 | feasibility-report 技能 |
-| `feasibility-reviewer` | 审查可研报告质量 | 每章写完后 |
 | `delivery-analyzer` | 分析依赖关系，生成交付计划 | delivery-plan 技能 |
 | `diagram-drawer` | 生成 draw.io XML 图表 | diagram-generator 技能 |
 | `planner` | 功能实现规划 | 复杂功能实现前 |

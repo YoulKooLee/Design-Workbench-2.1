@@ -16,27 +16,12 @@ req-writer      → 将摘要转化为 PRD 语言的章节内容
 req-reviewer    → 四维度审查（语言规范/章节结构/三要素/提示文案）
 ```
 
-## feasibility-report 技能
-
-```
-feasibility-analyzer  → 分析项目文档，输出结构化摘要
-feasibility-writer    → 撰写可研报告章节
-feasibility-reviewer  → 审查报告质量
-```
-
 ## feature-dev 技能
 
 ```
 page-spec-loader  → 检测技术栈，加载组件库规范
 page-reviewer     → 验收（标准/严格：四维度；**快速：仅需求完整性**）
 code-reviewer     → 质量+安全（**快速：仅 P0 安全**；与 page-reviewer 并行）
-```
-
-## annotation 技能
-
-```
-annotation-prd-analyzer       → 读取需求文档，生成标注清单
-annotation-code-locator       → 读取页面代码，定位 DOM 节点，输出注入清单
 ```
 
 ## 角色定义文件位置

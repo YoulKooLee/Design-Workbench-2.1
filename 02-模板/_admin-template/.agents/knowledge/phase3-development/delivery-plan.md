@@ -31,7 +31,7 @@ docs/delivery-plan.md
 | Phase 1 | 前端原型 | feature-dev | Mock 数据驱动，无真实后端 |
 | Phase 2 | 后端开发 | backend-generator（待建） | API、数据库、业务逻辑 |
 | Phase 3 | 前后端联调 | api-connector（待建） | 替换 Mock 为真实接口 |
-| Phase 4 | 测试与上线 | pm-test-cases + test-runner（待建） | 测试执行、部署 |
+| Phase 4 | 测试与上线 | test-runner（待建） | 测试执行、部署 |
 
 **扩展规则**：新增 Phase 只需在计划文件末尾追加，不修改已有 Phase。
 

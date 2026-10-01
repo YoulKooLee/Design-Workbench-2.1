@@ -26,7 +26,7 @@ description: |
 | **`references/example-prd.md`** | 格式与粒度示例 |
 | **`references/self-check.md`** | 写后自检 |
 
-**相关技能**：用户输入为 **Axure 导出 HTML** 或 **线上站点逆向** 时，先用 `prototype-to-prd` 完成盘点，再按本技能模式 A 写概念版/落地版（模板复用本目录 `references/`）。
+**相关技能**：原型逆向盘点（Axure 导出 HTML / 线上站点）由 `prototype-to-prd` 承担，该技能已剥离至 `_project-template`，本包不含；本包 `prd-writer` 仅用于「上游只给 PRD 需转 SRS」或「研发期补一份轻量 PRD 对齐方向」两种情形。
 
 **写文档前**：按模式 `Read` 对应 `references/` 文件，再落笔。  
 **交付模式**：读取 `AGENTS.md`「交付模式」；**本技能未声明时默认「标准」**（可说「快速模式」降档或「严格模式」升档）。
@@ -195,8 +195,6 @@ PRD 已保存：{路径}
 请说「PRD 转 SRS」或「进开发」，我将执行 srs-writer Step F。
 若仅快速验证界面，可说「跳过 SRS，按 PRD 手动对齐」→ 单次 feature-dev 降级。
 ```
-
-**prototype-to-prd** 写完 PRD 后同样适用本门禁。
 
 ---
 

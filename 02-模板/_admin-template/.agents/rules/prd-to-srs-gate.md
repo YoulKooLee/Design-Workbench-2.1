@@ -1,6 +1,6 @@
 # PRD → SRS 转写门禁
 
-> **真源原则**：研发链路（`feature-dev`、`hld-design`、`lld-design`、`feature-list`、`annotation`、`delivery-plan` 生成模式）仅以 **SRS** 为规格真源。  
+> **真源原则**：研发链路（`feature-dev`、`hld-design`、`lld-design`、`feature-list`、`delivery-plan` 生成模式）仅以 **SRS** 为规格真源。  
 > PRD（`*-PRD.md`）是产品探索真源，**不可直接驱动上述技能**（除非用户显式声明降级，见 §4）。
 
 ---
@@ -33,10 +33,9 @@ PRD  ← Glob("docs/*-PRD.md") 或 Glob("docs/**/*-PRD.md")
 | `feature-dev` | 步骤 1 之前 | **禁止**读 PRD 代替 SRS；须转写或用户 §4 降级 |
 | `delivery-plan` | Step A1 | **禁止**用 PRD 生成交付计划 |
 | `hld-design` / `lld-design` | Step A1 | 已有提示；须先 Step F |
-| `feature-list` / `annotation` | Step 1 | 须 SRS 路径 |
-| `pm-product-pipeline` | 阶段 6 前 | 强制阶段 **5C**（见该技能 §5C） |
+| `feature-list` | Step 1 | 须 SRS 路径 |
 
-**不受约束**（可读 PRD）：`prd-writer`、`prototype-to-prd`、`pm-test-cases`（流水线例外见 pipeline 技能）、纯文档类 PM 技能。
+**不受约束**（可读 PRD）：`prd-writer`（产品探索真源，本包仅用于 Step F 转写输入）。
 
 ---
 
@@ -115,7 +114,7 @@ SPEC_SOURCE 已更新 → 可继续 feature-dev / delivery-plan / hld-design
 
 登记时机：
 
-- `prd-writer` / `prototype-to-prd` 落盘 PRD 后 → `PRD_SOURCE` + 临时 `SPEC_SOURCE=PRD`（若仅文档）
+- `prd-writer` 落盘 PRD 后 → `PRD_SOURCE` + 临时 `SPEC_SOURCE=PRD`（若仅文档）
 - Step F 完成 → **`SPEC_SOURCE=SRS`**（强制覆盖）
 - 用户说「进开发 / 实现 / 生成页面」且仅有 PRD → 先 Step F，再下游
 

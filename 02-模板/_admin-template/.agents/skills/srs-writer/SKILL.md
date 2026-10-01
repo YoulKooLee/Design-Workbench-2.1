@@ -744,8 +744,7 @@ ls {PROJECT_PATH}/.agents/skills/srs-writer/references/templates/*.md
 
 - 用户说「PRD 转 SRS」「进开发」「转写需求」「按 PRD 写 SRS」
 - 下游技能门禁阻断（见 `.agents/rules/prd-to-srs-gate.md` §3）
-- `pm-product-pipeline` 阶段 **5C**
-- `prd-writer` / `prototype-to-prd` 交付后用户要开发
+- `prd-writer` 交付后用户要开发
 
 **禁止**：未 Read PRD 全文就写 3.5；把 PRD 的 UI/API 术语原样抄进 SRS。
 

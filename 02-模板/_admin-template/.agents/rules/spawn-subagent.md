@@ -1,4 +1,4 @@
-﻿# 角色调度 · 独立派发前置注入（兼容入口）
+# 角色调度 · 独立派发前置注入（兼容入口）
 
 完整调度模板见 `.agents/rules/role-dispatch.md`；运行时降级见 `.agents/rules/agent-runtime.md`。
 

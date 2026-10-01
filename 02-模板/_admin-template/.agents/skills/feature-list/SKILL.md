@@ -79,7 +79,7 @@ xlsx 走服务端专用接口，不经过 `export-word.sh`（该脚本只支持 
 
 ## Step 4B：生成 Word
 
-Word 走通用导出脚本，与 srs-writer、feasibility-report 技能一致。
+Word 走通用导出脚本，与 srs-writer、prd-writer 技能一致。
 
 1. 将数据写入 Markdown 中间文件：
    `docs/01-需求与规划/{YYYY-MM-DD}-{项目名称}-功能清单-V1.0.md`
