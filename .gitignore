@@ -40,6 +40,9 @@ page-latest.yml
 dist/
 .vite/
 
+# ===== 组件框架（本机参考资产，不入库）=====
+02-模板/组件框架/
+
 # ===== 系统文件 =====
 Thumbs.db
 Desktop.ini
