@@ -237,7 +237,7 @@ async function renderProjects(search) {
     '<div><h2>项目管理</h2><div class="summary" id="projSummary">加载中…</div></div>' +
     '<div class="page-actions">' +
       '<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="projSearch" placeholder="搜索项目…" value="' + esc(kw0) + '"></div>' +
-      '<button class="btn btn-primary" id="newProjectBtn" title="快捷键 Ctrl+N"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>新建项目</button>' +
+      '<button class="btn btn-primary" id="newProjectBtn" title="快捷键 Ctrl+N"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>新建项目</button>' +
     '</div>';
   $('#main').appendChild(head);
 

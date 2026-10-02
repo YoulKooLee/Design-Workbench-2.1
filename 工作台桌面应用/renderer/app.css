@@ -105,6 +105,7 @@ button{font-family:var(--font);border:none;background:none;cursor:pointer;color:
   height:36px;padding:0 16px;border-radius:var(--radius-ctl);
   font-size:12px;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:6px;
 }
+.btn svg{width:13px;height:13px;flex-shrink:0}
 .btn-primary{background:var(--accent);color:#fff;box-shadow:0 1px 2px rgba(37,99,235,.35)}
 .btn-primary:hover{background:var(--accent-hover);box-shadow:0 4px 10px rgba(37,99,235,.3);transform:translateY(-1px)}
 .btn-primary:active{transform:translateY(0);box-shadow:0 1px 2px rgba(37,99,235,.35)}
