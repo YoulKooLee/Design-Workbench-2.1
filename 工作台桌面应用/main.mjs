@@ -1,9 +1,10 @@
 // 产品设计工作台 · Electron 主进程
 // 职责：无边框窗口 + 自定义标题栏窗口控制；代理渲染进程的 7788 面板 API 请求（规避 file:// 跨域与 CSRF）；
 //       面板未启动时自动拉起 工作台面板/server.mjs。
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, clipboard, dialog } from 'electron';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import http from 'node:http';
 
@@ -99,6 +100,62 @@ ipcMain.handle('win:control', (e, action) => {
   return true;
 });
 
+// ===== 外部打开 / 剪贴板（组件预览、复制提示词等，file:// 渲染进程受限）=====
+ipcMain.handle('open:external', async (_e, url) => {
+  if (typeof url !== 'string' || !/^https?:\/\//i.test(url.trim())) return false;
+  try {
+    await shell.openExternal(url.trim());
+    return true;
+  } catch { return false; }
+});
+ipcMain.handle('clipboard:write', (_e, text) => {
+  clipboard.writeText(String(text == null ? '' : text));
+  return true;
+});
+
+// 知识库根目录（与面板 server.mjs 推导一致：产品设计工作台/02-模板/_project-template/.agents/knowledge）
+const KNOWLEDGE_ROOT = path.resolve(app.getAppPath(), '..', '02-模板', '_project-template', '.agents', 'knowledge');
+
+// 选择知识库存放文件夹：默认定位知识库根目录，返回相对知识库根的目录（knowledge/xxx/）
+ipcMain.handle('folder:pick', async (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  let r;
+  try {
+    r = await dialog.showOpenDialog(win, {
+      title: '选择知识库存放文件夹（默认 knowledge/ 根目录）',
+      defaultPath: KNOWLEDGE_ROOT,
+      properties: ['openDirectory', 'createDirectory'],
+      buttonLabel: '选择此文件夹',
+    });
+  } catch {
+    return { ok: false, msg: '打开文件夹选择器失败' };
+  }
+  if (r.canceled || !r.filePaths || !r.filePaths.length) return { ok: false, canceled: true };
+  const picked = path.resolve(r.filePaths[0]);
+  const kb = path.resolve(KNOWLEDGE_ROOT);
+  if (picked === kb) return { ok: true, rel: '' };
+  if (picked.startsWith(kb + path.sep)) {
+    const rel = path.relative(kb, picked).split(path.sep).join('/');
+    return { ok: true, rel };
+  }
+  return { ok: false, outside: true, picked };
+});
+
+// 打开协作房间产物文件夹（09-协作/rooms/<房间名>/产物）
+ipcMain.handle('folder:open-artifacts', async (_e, roomName) => {
+  if (typeof roomName !== 'string' || !roomName || /[\\/]|\.\./.test(roomName)) {
+    return { ok: false, msg: '非法房间名' };
+  }
+  const dir = path.join(app.getAppPath(), '..', '09-协作', 'rooms', roomName, '产物');
+  try {
+    if (!fs.existsSync(dir)) return { ok: false, msg: '该房间暂无产物目录' };
+    const err = await shell.openPath(dir);
+    return err ? { ok: false, msg: String(err) } : { ok: true };
+  } catch (e) {
+    return { ok: false, msg: String(e.message || e) };
+  }
+});
+
 // ===== 创建主窗口（1440×900 无边框）=====
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -109,6 +166,7 @@ function createWindow() {
     frame: false,
     show: false,
     backgroundColor: '#F0F4F8',
+    icon: path.join(__dirname, 'renderer', 'app-logo.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
       contextIsolation: true,

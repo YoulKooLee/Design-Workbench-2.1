@@ -49,6 +49,11 @@ const notesOf = (c, id) =>
 /** 由 catalog 条目构造 registry 条目 */
 function buildItem(id, c) {
   const firstExport = (c.exports && c.exports[0]) || id;
+  // 缩略/预览 URL：必须指向单组件预览页（工作台卡片 iframe 按 1280×800 cover 缩放，
+  // 指向 gallery.html#锚点 会把整页画廊塞进缩略图，2026-10-03 修正）。
+  const compName = String(c.file || '').split('/').pop().replace(/\.tsx$/, '') || id;
+  const previewUrlOf = () =>
+    `/library/preview/${encodeURIComponent(c.categoryLabel || c.category || '')}/${encodeURIComponent(compName)}.html`;
   const item = {
     id,
     label: c.label,
@@ -59,7 +64,7 @@ function buildItem(id, c) {
     prompt:
       c.prompt ||
       `【组件引用】${c.label}（组件库 ${c.categoryLabel}）\n框架：React 18 + Tailwind v4（零第三方依赖）\n来源：03-组件库/03-页面组件/Codebuddy Design/${c.file}\n用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后\n  import { ${firstExport} } from '../component-templates/axhub';\n参数：${c.props || '-'}\n场景：${c.scene || '-'}\n规则：请使用该组件，不要自造同类样式；零第三方依赖。`,
-    previewUrl: c.previewUrl || `/library/gallery.html#${id}`,
+    previewUrl: c.previewUrl || previewUrlOf(),
     source: 'component-template',
   };
   // 依赖声明透传：目前仅 工作流/WorkflowCanvas 带 @xyflow/react。

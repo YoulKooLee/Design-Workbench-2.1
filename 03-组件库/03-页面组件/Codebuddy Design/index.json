@@ -12,11 +12,12 @@
           "capability": "source-components",
           "label": "React 原型 · Codebuddy Design",
           "status": "ready",
-          "componentCount": 79,
+          "componentCount": 133,
           "catalog": "_meta/components.catalog.json",
           "manifest": "_meta/layout.manifest.json"
         }
       }
     }
-  }
+  },
+  "syncedAt": "2026-09-25"
 }

@@ -2,7 +2,7 @@
   "libraryId": "codebuddy-design",
   "theme": "arco",
   "version": "1.7.0",
-  "syncedAt": "2026-09-22",
+  "syncedAt": "2026-09-25",
   "description": "本库 component → 源码文件映射（组件库真源）。按 category/场景 选组件，读 prompt 触发复用；路径勿写死到别处。",
   "layout": {
     "sourceCategories": "分类目录（中文名）= 组件库真源分组：基础 / 布局 / 表单 / 数据展示 / 反馈 / 业务组件 / 页面模式 / 订单 / 付款 / 触发器 / CMS / 工作流",
@@ -1559,6 +1559,204 @@
       "props": "variant(plain|header|nav|tabs)；title；navItems；tabs；activeTabKey；onTabChange；width",
       "scene": "微信小程序壳四形态（状态栏 + 胶囊按钮 + 自定义标题 / 页签 / 底部标签栏）",
       "prompt": "【组件引用】MobileFrameWechat 微信小程序壳（组件库 页面模式）\n框架：React 18 + Tailwind v4（零第三方依赖）\n用法：import { MobileFrameWechat } from \"../../component-templates/页面模式/MobileFrameWechat\"\n参数：variant（plain|header|nav|tabs）；title；navItems；tabs；width；children\n场景：把小程序页面装进微信外框做演示（含胶囊按钮与底部标签栏）。页面级组件，直接整页使用。"
+    },
+    "axhub-park-access-point-status": {
+      "label": "AccessPointStatus 门禁点状态",
+      "category": "park",
+      "categoryLabel": "园区",
+      "file": "园区/AccessPointStatus.tsx",
+      "exports": [
+        "ACCESS_POINT_STATES",
+        "AccessPointStatus"
+      ],
+      "props": "points / stateMap / onSelect / selectedId",
+      "scene": "门禁点/闸机/道闸运行状态",
+      "prompt": "【组件引用】AccessPointStatus 门禁点状态（园区）\n框架：React + Tailwind v4\n用法：import { AccessPointStatus } from \"../../component-templates/园区/AccessPointStatus\"\n参数：points（门禁点：名称/区域/状态/今日人次/异常说明）；stateMap（可选覆盖文案配色）；onSelect；selectedId\n状态含：在线 / 离线 / 常开 / 报警 / 维护。请在出入口设备状态区块使用该组件。"
+    },
+    "axhub-park-energy-panel": {
+      "label": "EnergyPanel 能耗面板",
+      "category": "park",
+      "categoryLabel": "园区",
+      "file": "园区/EnergyPanel.tsx",
+      "exports": [
+        "EnergyPanel"
+      ],
+      "props": "title / total / unit / totalYoy / items / trend / trendUnit",
+      "scene": "分项能耗统计 + 24h 趋势",
+      "prompt": "【组件引用】EnergyPanel 能耗面板（园区）\n框架：React + Tailwind v4\n用法：import { EnergyPanel } from \"../../component-templates/园区/EnergyPanel\"\n参数：total / unit / totalYoy（汇总）；items（分项：名称/数值/同比/颜色）；trend（24h 趋势：labels + data）\n请在能耗能效专题、园区总览使用该组件。"
+    },
+    "axhub-park-inspection-task-list": {
+      "label": "InspectionTaskList 巡检任务列表",
+      "category": "park",
+      "categoryLabel": "园区",
+      "file": "园区/InspectionTaskList.tsx",
+      "exports": [
+        "INSPECTION_STATES",
+        "InspectionTaskList"
+      ],
+      "props": "title / tasks / stateMap / onSelect",
+      "scene": "巡检/巡更任务执行情况（进度条 + 状态）",
+      "prompt": "【组件引用】InspectionTaskList 巡检任务列表（园区）\n框架：React + Tailwind v4\n用法：import { InspectionTaskList } from \"../../component-templates/园区/InspectionTaskList\"\n参数：tasks（线路/责任人/计划时段/状态/完成点位数与总数/异常数）；title；stateMap（可选覆盖）；onSelect\n状态含：待执行 / 进行中 / 已完成 / 已超时。请在巡检管理、安防态势场景使用该组件。"
+    },
+    "axhub-park-parking-space-grid": {
+      "label": "ParkingSpaceGrid 车位分布图",
+      "category": "park",
+      "categoryLabel": "园区",
+      "file": "园区/ParkingSpaceGrid.tsx",
+      "exports": [
+        "PARKING_STATES",
+        "ParkingSpaceGrid"
+      ],
+      "props": "area / spaces / columns / onSelect",
+      "scene": "车位状态格子图（空闲/占用/预约/无障碍/故障）",
+      "prompt": "【组件引用】ParkingSpaceGrid 车位分布图（园区）\n框架：React + Tailwind v4\n用法：import { ParkingSpaceGrid } from \"../../component-templates/园区/ParkingSpaceGrid\"\n参数：area（区域名）；spaces（车位：编号/状态/车牌/进入时间）；columns（每行列数，默认 8）；onSelect\n请在停车态势、车位管理场景使用该组件。"
+    },
+    "axhub-park-passage-record-table": {
+      "label": "PassageRecordTable 通行记录表",
+      "category": "park",
+      "categoryLabel": "园区",
+      "file": "园区/PassageRecordTable.tsx",
+      "exports": [
+        "PassageRecordTable"
+      ],
+      "props": "title / extra / records / maxCount",
+      "scene": "门禁通行流水（人/车）",
+      "prompt": "【组件引用】PassageRecordTable 通行记录表（园区）\n框架：React + Tailwind v4\n用法：import { PassageRecordTable } from \"../../component-templates/园区/PassageRecordTable\"\n参数：records（通行记录：时间/人员/类型/通道/方向/方式/结果）；title；extra（右上操作）；maxCount（默认 8，超出可展开）\n请在通行明细（人车态势、门禁流水）场景使用该组件。"
+    },
+    "axhub-park-patrol-checkpoint-timeline": {
+      "label": "PatrolCheckpointTimeline 巡更打卡轴",
+      "category": "park",
+      "categoryLabel": "园区",
+      "file": "园区/PatrolCheckpointTimeline.tsx",
+      "exports": [
+        "CHECKPOINT_STATUS",
+        "PatrolCheckpointTimeline"
+      ],
+      "props": "line / checkpoints / statusMap",
+      "scene": "巡更线路按点位的时间轴打卡记录",
+      "prompt": "【组件引用】PatrolCheckpointTimeline 巡更打卡轴（园区）\n框架：React + Tailwind v4\n用法：import { PatrolCheckpointTimeline } from \"../../component-templates/园区/PatrolCheckpointTimeline\"\n参数：checkpoints（点位/计划时间/实际时间/状态/打卡方式/备注）；line（线路名）；statusMap（可选覆盖）\n状态含：正常 / 迟到 / 漏打 / 待打。请在巡检任务详情、巡更考核场景使用该组件。"
+    },
+    "axhub-park-visitor-form": {
+      "label": "VisitorForm 访客登记表单",
+      "category": "park",
+      "categoryLabel": "园区",
+      "file": "园区/VisitorForm.tsx",
+      "exports": [
+        "VisitorForm"
+      ],
+      "props": "value / defaultValue / onSubmit / onCancel / submitText / readonly",
+      "scene": "访客预约 / 现场登记",
+      "prompt": "【组件引用】VisitorForm 访客登记表单（园区）\n框架：React + Tailwind v4\n用法：import { VisitorForm } from \"../../component-templates/园区/VisitorForm\"\n参数：defaultValue / value（姓名/手机号/单位/被访人/部门/事由/日期/随行人数/车牌）；onSubmit；onCancel；readonly（只读态）\n请在访客登记、预约审批场景使用该组件。"
+    },
+    "axhub-park-visitor-pass-card": {
+      "label": "VisitorPassCard 访客通行凭证",
+      "category": "park",
+      "categoryLabel": "园区",
+      "file": "园区/VisitorPassCard.tsx",
+      "exports": [
+        "VisitorPassCard"
+      ],
+      "props": "info / qrContent / actions",
+      "scene": "电子凭证（二维码 + 有效期 + 可通行区域）",
+      "prompt": "【组件引用】VisitorPassCard 访客通行凭证（园区）\n框架：React + Tailwind v4\n用法：import { VisitorPassCard } from \"../../component-templates/园区/VisitorPassCard\"\n参数：info（凭证号/姓名/单位/被访人/有效期起止/可通行区域/状态）；qrContent（自定义二维码区）；actions（底部操作）\n状态含：待生效 / 生效中 / 已过期 / 已注销。请在登记完成页、访客凭证场景使用该组件。"
+    },
+    "axhub-office-approval-action-bar": {
+      "label": "ApprovalActionBar 审批操作栏",
+      "category": "office",
+      "categoryLabel": "办公",
+      "file": "办公/ApprovalActionBar.tsx",
+      "exports": [
+        "ApprovalActionBar"
+      ],
+      "props": "quickComments / onSubmit / showTransfer / transferTargets / placeholder",
+      "scene": "通过 / 驳回 / 转交（意见 + 快捷意见）",
+      "prompt": "【组件引用】ApprovalActionBar 审批操作栏（办公）\n框架：React + Tailwind v4\n用法：import { ApprovalActionBar } from \"../../component-templates/办公/ApprovalActionBar\"\n参数：quickComments（快捷意见）；onSubmit(action, comment)；showTransfer + transferTargets（转交）\naction 含：approve / reject / transfer。请在审批详情页底部、审批弹窗使用该组件。"
+    },
+    "axhub-office-approval-flow-timeline": {
+      "label": "ApprovalFlowTimeline 审批流时间轴",
+      "category": "office",
+      "categoryLabel": "办公",
+      "file": "办公/ApprovalFlowTimeline.tsx",
+      "exports": [
+        "FLOW_STATES",
+        "ApprovalFlowTimeline"
+      ],
+      "props": "title / nodes / stateMap",
+      "scene": "单据审批过程可视化（含会签并列）",
+      "prompt": "【组件引用】ApprovalFlowTimeline 审批流时间轴（办公）\n框架：React + Tailwind v4\n用法：import { ApprovalFlowTimeline } from \"../../component-templates/办公/ApprovalFlowTimeline\"\n参数：nodes（节点名/处理人/状态/时间/意见）；countersign（会签子节点）；title；stateMap（可选覆盖）\n状态含：已通过 / 已驳回 / 审批中 / 未到达 / 已撤回。请在审批详情页使用该组件。"
+    },
+    "axhub-office-approval-task-list": {
+      "label": "ApprovalTaskList 审批待办列表",
+      "category": "office",
+      "categoryLabel": "办公",
+      "file": "办公/ApprovalTaskList.tsx",
+      "exports": [
+        "ApprovalTaskList"
+      ],
+      "props": "title / tabs / activeTab / onTabChange / tasks / extra / onSelect",
+      "scene": "待我审批 / 我已审批 / 抄送我",
+      "prompt": "【组件引用】ApprovalTaskList 审批待办列表（办公）\n框架：React + Tailwind v4\n用法：import { ApprovalTaskList } from \"../../component-templates/办公/ApprovalTaskList\"\n参数：tasks（标题/类型/发起人/发起时间/当前节点/紧急程度/金额）；tabs + activeTab + onTabChange；onSelect\n紧急程度：今日需办 / 加急 / 普通。请在审批中心、办公门户使用该组件。"
+    },
+    "axhub-office-attendance-calendar": {
+      "label": "AttendanceCalendar 考勤日历",
+      "category": "office",
+      "categoryLabel": "办公",
+      "file": "办公/AttendanceCalendar.tsx",
+      "exports": [
+        "ATTENDANCE_TYPES",
+        "AttendanceCalendar"
+      ],
+      "props": "year / month / days / selectedDay / onSelectDay / showLegend",
+      "scene": "月历式考勤结果（正常/迟到/缺卡/请假…）",
+      "prompt": "【组件引用】AttendanceCalendar 考勤日历（办公）\n框架：React + Tailwind v4\n用法：import { AttendanceCalendar } from \"../../component-templates/办公/AttendanceCalendar\"\n参数：year / month；days（day + type + note）；selectedDay + onSelectDay；showLegend\ntype 含：work 正常 / late 迟到 / early 早退 / missing 缺卡 / leave 请假 / trip 出差 / rest 休息。请在个人考勤页、HR 后台使用该组件。"
+    },
+    "axhub-office-clock-in-card": {
+      "label": "ClockInCard 打卡卡",
+      "category": "office",
+      "categoryLabel": "办公",
+      "file": "办公/ClockInCard.tsx",
+      "exports": [
+        "ClockInCard"
+      ],
+      "props": "now / status / onClockIn / onClockOut / rangeText",
+      "scene": "上班/下班打卡（时间 + 地点 + 状态）",
+      "prompt": "【组件引用】ClockInCard 打卡卡（办公）\n框架：React + Tailwind v4\n用法：import { ClockInCard } from \"../../component-templates/办公/ClockInCard\"\n参数：status（受控：clockIn / clockOut / place / inRange）；onClockIn / onClockOut；rangeText；now（固定展示时间）\n请在办公门户首页、移动端考勤场景使用该组件。"
+    },
+    "axhub-office-contact-directory": {
+      "label": "ContactDirectory 通讯录",
+      "category": "office",
+      "categoryLabel": "办公",
+      "file": "办公/ContactDirectory.tsx",
+      "exports": [
+        "ContactDirectory"
+      ],
+      "props": "people / groupByDept / searchable / height / renderAction / onSelect",
+      "scene": "组织分区 + 搜索 + 人员卡列表",
+      "prompt": "【组件引用】ContactDirectory 通讯录（办公）\n框架：React + Tailwind v4\n用法：import { ContactDirectory } from \"../../component-templates/办公/ContactDirectory\"\n参数：people（人员列表）；groupByDept（按部门分组，默认 true）；searchable；height；renderAction（右侧操作）；onSelect\n请在 OA 通讯录、找人场景使用该组件。"
+    },
+    "axhub-office-employee-card": {
+      "label": "EmployeeCard 人员卡",
+      "category": "office",
+      "categoryLabel": "办公",
+      "file": "办公/EmployeeCard.tsx",
+      "exports": [
+        "EmployeeCard"
+      ],
+      "props": "name / dept / title / empNo / phone / email / avatarColor / presence / actions / onClick",
+      "scene": "头像/姓名/部门/职位/联系方式/在线状态",
+      "prompt": "【组件引用】EmployeeCard 人员卡（办公）\n框架：React + Tailwind v4\n用法：import { EmployeeCard } from \"../../component-templates/办公/EmployeeCard\"\n参数：name / dept / title / empNo / phone / email；presence（online / busy / offline）；avatarColor；actions；onClick\n请在通讯录、审批人展示、团队列表场景使用该组件。"
+    },
+    "axhub-office-org-tree-select": {
+      "label": "OrgTreeSelect 组织架构选择",
+      "category": "office",
+      "categoryLabel": "办公",
+      "file": "办公/OrgTreeSelect.tsx",
+      "exports": [
+        "OrgTreeSelect"
+      ],
+      "props": "data / value / onChange / height / placeholder",
+      "scene": "树形组织 + 人员联动选择",
+      "prompt": "【组件引用】OrgTreeSelect 组织架构选择（办公）\n框架：React + Tailwind v4\n用法：import { OrgTreeSelect } from \"../../component-templates/办公/OrgTreeSelect\"\n参数：data（组织树：{ name, children }，字符串叶子 = 人员）；value + onChange（受控）；height\n请在转交人选择、权限分配、通讯录筛选场景使用该组件。"
     }
   }
 }
