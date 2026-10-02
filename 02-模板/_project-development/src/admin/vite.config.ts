@@ -9,6 +9,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import ElementPlus from 'unplugin-element-plus/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { annotationDevSavePlugin } from './vite-plugins/annotation-dev-save'
+import { writeDevServerInfoPlugin } from './vite-plugins/write-dev-server-info'
 // import { visualizer } from 'rollup-plugin-visualizer'
 
 export default ({ mode }: { mode: string }) => {
@@ -85,6 +86,7 @@ export default ({ mode }: { mode: string }) => {
     },
     plugins: [
       annotationDevSavePlugin(root),
+      writeDevServerInfoPlugin(),
       vue(),
       // 自动按需导入 API
       AutoImport({

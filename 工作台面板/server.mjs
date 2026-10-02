@@ -1618,6 +1618,11 @@ const server = http.createServer(async (req, res) => {
       if (await isPortOpen(adminPort)) {
         if (isPortOwnedByProject(adminPort, dir)) {
           fs.appendFileSync(logFile, `Vue 开发栈已在运行（${openUrl}），复用现有实例\nAXHUB_LAUNCH_STATUS: done\nAXHUB_OPEN_URL: ${openUrl}\n`, 'utf8');
+          // 复用现有实例时同步恢复上下文状态：被动降级为 stopped 的项目（心跳缺失被 reconcile 降级，
+          // 或进程存活但状态文件陈旧）在端口实存时重新置为 active，端口池/联动才能恢复显示。
+          const rcctx = readWorkspaceCtx();
+          onProjectStarted(rcctx, relative);
+          markProjectRunning(rcctx, relative);
           return send(res, 200, { ok: true, msg: 'Vue 开发栈已在运行', openUrl, hasNodeModules: true });
         }
         fs.appendFileSync(logFile, `端口 ${adminPort} 被其他进程占用（非本项目开发栈）\nAXHUB_LAUNCH_STATUS: failed\n`, 'utf8');
