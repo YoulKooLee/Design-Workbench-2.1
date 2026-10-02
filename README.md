@@ -72,7 +72,7 @@ node 06-运行脚本/smoke-test.mjs                    # 冒烟自测
 ├── 01-项目/              # 项目（每个项目独立目录）
 ├── 02-模板/              # 工程模板
 │   ├── _project-template/  # React 原型工程模板（空白页起步）
-│   └── _project-development/  # Vue编码工程模板（Vue3+Element Plus，承接原型项目进入开发）
+│   └── _project-development/  # Vue编码工程模板（Vue3+Element Plus；承接上游 React 原型项目，建项时自动继承上游原型/SRS/HLD/LLD 文档，进入开发阶段）
 ├── 03-组件库/            # 组件与页面模板（工作台组件库页签可维护）
 │   ├── 01-补丁源/          # 新建项目自动添加的应用补丁
 │   ├── 02-页面模板/        # 原型框架·页面模板
@@ -98,6 +98,16 @@ node 06-运行脚本/smoke-test.mjs                    # 冒烟自测
 | 知识库/工作规则面板为空 | 确认从 GitHub 克隆最新版 |
 | admin 项目首次启动慢 | 首次后台 `pnpm install`，日志在 `07-日志/` |
 | 智能体新会话不知从何开始 | 读 `10-智能体记忆/BOOTSTRAP.md` |
+
+---
+
+## 六、更新记录
+
+| 日期 | 内容 |
+|---|---|
+| 2026-10-02 | **Vue 编码工程心跳插件**：`_project-development` 模板新增 `write-dev-server-info` 插件（Vite 启动后每 5 秒写 `.axhub/make/.dev-server-info.json`），使面板「Vite 端口池」能正确识别运行中的 Vue 编码工程（此前仅 React 原型工程有心跳，Vue 工程启动后端口池不显示）。存量 Vue 工程需手动同步 `vite-plugins/write-dev-server-info.ts` 并注册进 `vite.config.ts`。同时修复面板 `open` 复用分支：dev server 已在运行时同步恢复项目 `active` 状态（此前被动降级为 `stopped` 后无法通过端口池恢复显示）。 |
+| 2026-10-01 | **Vue 编码工程改造完成（qwen 终验通过）**：`_admin-template` → `_project-development` 改名；工作台「新增项目」框架选项由「标准产品框架」改为「Vue编码工程」；选 Vue 编码工程须先选上游 React 原型项目，建项自动继承上游原型文档、SRS、HLD、LLD 文档（缺失文档打 `[MISS]` 标记不阻塞建项）。 |
+| 2026-09-29 | **`_admin-template` 研发化改造**：剥离 PM 类技能与原型输出类技能，`frame/` 移入回收站，技术栈校准为 Element Plus，`AGENTS.md` 瘦身至红线内。 |
 
 ---
 
