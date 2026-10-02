@@ -222,7 +222,7 @@ async function renderProjects(search) {
     '<div><h2>项目管理</h2><div class="summary" id="projSummary">加载中…</div></div>' +
     '<div class="page-actions">' +
       '<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="projSearch" placeholder="搜索项目…" value="' + esc(kw0) + '"></div>' +
-      '<button class="btn btn-primary" id="newProjectBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>新建项目</button>' +
+      '<button class="btn btn-primary" id="newProjectBtn" title="快捷键 Ctrl+N"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>新建项目</button>' +
     '</div>';
   $('#main').appendChild(head);
 
@@ -301,32 +301,89 @@ async function openNewProject() {
   const ups = (upsRes && upsRes.upstreams) || [];
   openModal(
     '<h3>新建项目</h3>' +
-    '<div class="field"><label>项目名称</label><input id="npName" placeholder="请输入项目名称"></div>' +
+    '<div class="field"><label>项目名称</label>' +
+      '<input id="npName" placeholder="请输入项目名称" maxlength="40" autofocus>' +
+      '<div class="field-err" id="npNameErr" hidden></div></div>' +
     '<div class="field"><label>框架类型</label><select id="npFrame">' +
       '<option value="make">React 原型工程</option>' +
-      '<option value="admin">Vue 编码工程（需选上游原型）</option></select></div>' +
+      '<option value="admin"' + (ups.length ? '' : ' disabled') + '>Vue 编码工程（需选上游原型）</option></select>' +
+      (ups.length ? '' : '<div class="hint">暂无可作为上游的 React 原型项目，Vue 编码工程暂不可选</div>') +
+    '</div>' +
     '<div class="field" id="npUpField" hidden><label>上游 React 原型项目</label><select id="npUpstream">' +
       '<option value="">— 请选择 —</option>' +
-      ups.map((u) => '<option value="' + esc(u.relative) + '">' + esc(u.name) + ((u.hasSRS && u.hasHLD && u.hasLLD) ? '' : '（文档不全）') + '</option>').join('') +
+      ups.map((u) => {
+        const n = (u.hasSRS ? 1 : 0) + (u.hasHLD ? 1 : 0) + (u.hasLLD ? 1 : 0);
+        const tag = n === 3 ? '（文档齐全）' : (n > 0 ? '（文档不全）' : '（无设计文档）');
+        return '<option value="' + esc(u.relative) + '">' + esc(u.name) + tag + '</option>';
+      }).join('') +
       '</select><div class="hint">Vue 编码工程将自动继承上游的原型文档、SRS、HLD、LLD 文档</div></div>' +
     '<div class="modal-ops"><button class="btn btn-ghost" onclick="window.__closeModal()">取消</button>' +
-    '<button class="btn btn-primary" id="npCreate">创建项目</button></div>'
+    '<button class="btn btn-primary" id="npCreate" disabled>创建项目</button></div>'
   );
   window.__closeModal = closeModal;
-  $('#npFrame').onchange = () => { $('#npUpField').hidden = $('#npFrame').value !== 'admin'; };
-  $('#npCreate').onclick = async () => {
-    const name = $('#npName').value.trim();
+
+  const nameInput = $('#npName');
+  const errBox = $('#npNameErr');
+  const createBtn = $('#npCreate');
+  const existing = new Set(projectsCache.map((p) => p.name));
+  nameInput.focus();
+
+  // 名称即时校验：空 / 重名
+  function validateName() {
+    const v = nameInput.value.trim();
+    if (!v) { errBox.hidden = true; nameInput.classList.remove('invalid'); createBtn.disabled = true; return; }
+    if (existing.has(v)) {
+      errBox.hidden = false;
+      errBox.textContent = '已存在同名项目「' + v + '」';
+      nameInput.classList.add('invalid');
+      createBtn.disabled = true;
+      return;
+    }
+    errBox.hidden = true;
+    nameInput.classList.remove('invalid');
+    createBtn.disabled = false;
+  }
+  nameInput.addEventListener('input', validateName);
+
+  $('#npFrame').onchange = () => {
+    $('#npUpField').hidden = $('#npFrame').value !== 'admin';
+    validateName();
+  };
+
+  // Enter 提交 · Esc 关闭
+  nameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !createBtn.disabled) createBtn.click();
+  });
+  const escClose = (e) => { if (e.key === 'Escape') { closeModal(); document.removeEventListener('keydown', escClose); } };
+  document.addEventListener('keydown', escClose);
+
+  createBtn.onclick = async () => {
+    const name = nameInput.value.trim();
     const framework = $('#npFrame').value;
     const upstream = framework === 'admin' ? $('#npUpstream').value : '';
-    if (!name) { toast('请输入项目名称', 'err'); return; }
-    if (framework === 'admin' && !upstream) { toast('请选择上游 React 原型项目', 'err'); return; }
-    $('#npCreate').disabled = true; $('#npCreate').textContent = '创建中…';
+    if (!name || (framework === 'admin' && !upstream)) return;
+    createBtn.disabled = true;
+    createBtn.innerHTML = '<span class="spinner" style="width:12px;height:12px;border-width:2px"></span>创建中…';
     const r = await api('POST', '/api/projects', { name: name, framework: framework, upstream: upstream });
-    $('#npCreate').disabled = false; $('#npCreate').textContent = '创建项目';
-    if (r.ok) { toast('项目已创建', 'ok'); closeModal(); refreshProjects(); }
-    else toast(r.msg || '创建失败', 'err');
+    if (r.ok) {
+      toast('项目「' + name + '」已创建', 'ok');
+      closeModal();
+      refreshProjects();
+    } else {
+      createBtn.disabled = false;
+      createBtn.textContent = '创建项目';
+      toast(r.msg || '创建失败', 'err');
+    }
   };
 }
+
+// Ctrl+N 快捷新建（项目管理页内）
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
+    e.preventDefault();
+    if (currentView === 'projects' && !$('#modalMask').classList.contains('show')) openNewProject();
+  }
+});
 
 // ===== 其他视图 =====
 async function renderListCard(title, items, fn) {
