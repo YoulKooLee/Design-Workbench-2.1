@@ -43,6 +43,8 @@ npm start            # 启动桌面应用（自动拉起 7788 面板）
 npm run dist         # 打包 Windows 安装包（nsis / portable）
 ```
 
+或直接双击工作台根目录的 **`启动桌面应用.cmd`**（首次会自动安装依赖）。
+
 首次启动后建议跑一遍自检：
 
 ```bash
