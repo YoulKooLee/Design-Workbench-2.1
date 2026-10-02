@@ -127,10 +127,19 @@ button{font-family:var(--font);border:none;background:none;cursor:pointer;color:
   padding:16px 16px 14px;box-shadow:var(--shadow);
 }
 .sc-top{display:flex;align-items:center;gap:8px}
-.sc-ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff}
+.sc-ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;line-height:1}
 .sc-ico svg{width:15px;height:15px}
 .sc-name{font-size:13px;font-weight:600}
-.sc-port{font-size:11px;color:var(--text-3)}
+.sc-port{font-size:11px;color:var(--text-3);margin-top:1px}
+.sc-value{font-size:22px;font-weight:700;margin-top:10px;color:var(--text);letter-spacing:-.3px}
+.sc-value small{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:0}
+.sc-portlist{margin-top:8px}
+.sc-portitem{display:flex;align-items:baseline;gap:7px;font-size:11px;color:var(--text-2);line-height:1.75}
+.sc-portitem .pnum{font-family:ui-monospace,Consolas,monospace;color:var(--accent);font-weight:700;font-size:11px}
+.sc-portitem .pname{color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-portempty{font-size:11px;color:var(--text-3);margin-top:8px}
+.sc-btn.danger{color:var(--red);border-color:#FECACA;background:var(--red-soft)}
+.sc-btn.danger:hover{background:var(--red);color:#fff;border-color:var(--red)}
 .sc-status{display:flex;align-items:center;gap:6px;margin-top:12px}
 .sc-dot{width:8px;height:8px;border-radius:50%}
 .sc-dot.on{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}

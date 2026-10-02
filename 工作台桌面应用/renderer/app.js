@@ -151,64 +151,79 @@ $$('.nav-item[data-view]').forEach((item) => {
   };
 });
 
-// ===== 服务状态卡探测 =====
-async function loadServiceCards() {
-  const cards = {
-    panel: { name: '工作台面板', port: 7788, state: 'loading', sub: '…' },
-    make: { name: 'Axhub Make', port: 53817, state: 'loading', sub: '…' },
-    acp: { name: 'ACP 共享服务', port: 32124, state: 'off', sub: '未接入' },
-    vite: { name: 'Vite 端口池', port: '', state: 'loading', sub: '…' },
-  };
+// ===== 服务状态卡（沿用浏览器版 4 卡：待办提醒 / Make管理端 / ACP共享服务 / Vite端口池）=====
+async function loadServiceCards(projOk, ctxCache) {
   const wrap = document.createElement('div');
   wrap.className = 'service-cards';
-  wrap.innerHTML = Object.keys(cards).map((k) =>
-    '<div class="service-card" id="sc-' + k + '">' +
-      '<div class="sc-top"><div class="sc-ico" id="sc-ico-' + k + '"></div><div><div class="sc-name">' + cards[k].name + '</div><div class="sc-port">' + (cards[k].port ? ':' + cards[k].port : '') + '</div></div></div>' +
-      '<div class="sc-status"><span class="sc-dot" id="sc-dot-' + k + '"></span><span class="sc-label" id="sc-label-' + k + '">检查中…</span><span class="sc-sub" id="sc-sub-' + k + '"></span></div>' +
-      '<div class="sc-detail" id="sc-detail-' + k + '"></div>' +
+  const [collab, listenRes] = await Promise.all([
+    api('GET', '/api/collab/overview').catch(() => null),
+    api('GET', '/api/listen/status').catch(() => null),
+  ]);
+  const inboxTotal = (collab && collab.messagesTotal && collab.messagesTotal.inbox) || 0;
+  const makeOk = !!projOk;
+  const ctxProjects = (ctxCache && ctxCache.projects) || [];
+  const running = ctxProjects.filter((x) => ['active', 'starting', 'editing'].indexOf(x.status) >= 0);
+  const runningPort = running.filter((x) => x.port);
+  const listening = !!(listenRes && listenRes.running);
+
+  const cardDefs = [
+    { ico: '🔔', bg: '#D97706', name: '待办提醒', value: inboxTotal, unit: '条收件消息', sub: '协作消息总量（未读数需后端接口）',
+      btn: { id: 'scListen', cls: listening ? 'danger' : '', text: listening ? '⏹ 关闭监听' : '▶ 启动监听' } },
+    { ico: '⚙', bg: '#16A34A', name: 'Make 管理端', status: makeOk, sub: '127.0.0.1 : 53817',
+      btn: { id: 'scMakeRestart', text: '⟳ 重启' } },
+    { ico: '⇄', bg: '#2563EB', name: 'ACP 共享服务', statusText: '未接入', sub: '127.0.0.1 : 32124',
+      btn: { id: 'scAcp', disabled: true, text: '未接入' } },
+    { ico: '⛁', bg: '#64748B', name: 'Vite 端口池', value: runningPort.length, unit: '个运行中', sub: '端口池 51720-51729 · strictPort',
+      portList: runningPort, btn: { id: 'scViteDetail', text: '明细' } },
+  ];
+
+  wrap.innerHTML = cardDefs.map((c) =>
+    '<div class="service-card">' +
+      '<div class="sc-top"><div class="sc-ico" style="background:' + c.bg + '">' + c.ico + '</div>' +
+        '<div><div class="sc-name">' + c.name + '</div><div class="sc-port">' + c.sub + '</div></div></div>' +
+      '<div class="sc-value">' + (c.value !== undefined ? c.value : (c.statusText || (c.status ? '运行中' : '未运行'))) + (c.unit ? ' <small>' + c.unit + '</small>' : '') + '</div>' +
+      (c.portList ? '<div class="sc-portlist">' + (c.portList.length
+        ? c.portList.map((p) => '<div class="sc-portitem"><span class="pnum">' + esc(String(p.port || '—')) + '</span><span class="pname">' + esc(p.relative || p.name || '') + '</span></div>').join('')
+        : '<div class="sc-portempty">当前无运行中的开发栈</div>') + '</div>' : '') +
+      '<div class="sc-detail">' + (c.btn ? '<button class="sc-btn' + (c.btn.cls ? ' ' + c.btn.cls : '') + '" id="' + c.btn.id + '"' + (c.btn.disabled ? ' disabled' : '') + '>' + c.btn.text + '</button>' : '') + '</div>' +
     '</div>'
   ).join('');
-  const panelHealth = (await api('GET', '/api/context/current')).ok === true;
-  const makeHealth = await WB.healthCheck(53817);
-  cards.panel.state = panelHealth ? 'on' : 'off';
-  cards.panel.sub = panelHealth ? '运行中' : '未运行';
-  cards.make.state = (makeHealth && makeHealth.ok) ? 'on' : 'off';
-  cards.make.sub = (makeHealth && makeHealth.ok) ? '运行中' : '未运行';
-  const activeWithPort = (ctxCache && ctxCache.projects || []).filter((p) => ['active', 'editing', 'starting'].indexOf(p.status) >= 0 && p.port);
-  const poolSize = 10;
-  const used = activeWithPort.length;
-  cards.vite.state = used >= poolSize ? 'off' : used > 0 ? 'warn' : 'on';
-  cards.vite.sub = '占用 ' + used + '/' + poolSize;
-  cards.vite.port = '51720–51729';
-  const icoMap = {
-    panel: '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/>',
-    make: '<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.8 2.8M16.2 16.2L19 19M19 5l-2.8 2.8M7.8 16.2L5 19"/>',
-    acp: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/>',
-    vite: '<path d="M12 2l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 17l9 5 9-5"/>',
-  };
-  const colorMap = { panel: '#2563EB', make: '#16A34A', acp: '#94A3B8', vite: '#D97706' };
-  Object.keys(cards).forEach((k) => {
-    const dot = wrap.querySelector('#sc-dot-' + k);
-    dot.className = 'sc-dot ' + cards[k].state;
-    wrap.querySelector('#sc-label-' + k).textContent = cards[k].sub;
-    wrap.querySelector('#sc-ico-' + k).innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' + icoMap[k] + '</svg>';
-    wrap.querySelector('#sc-ico-' + k).style.background = colorMap[k];
-    const detail = wrap.querySelector('#sc-detail-' + k);
-    if (k === 'panel') detail.innerHTML = '<button class="sc-btn" id="sc-openPanel">打开面板</button>';
-    else if (k === 'make') detail.innerHTML = '<button class="sc-btn" id="sc-openMake">打开 Make</button>';
-    else if (k === 'acp') detail.innerHTML = '<button class="sc-btn" disabled>未接入</button>';
-    else if (k === 'vite') detail.innerHTML = used > 0 ? '<button class="sc-btn" id="sc-openVite">查看端口</button>' : '<button class="sc-btn" disabled>无占用</button>';
-  });
-  const openPanel = wrap.querySelector('#sc-openPanel');
-  if (openPanel) openPanel.onclick = () => { window.open('http://localhost:7788/'); };
-  const openMake = wrap.querySelector('#sc-openMake');
-  if (openMake) openMake.onclick = () => { window.open('http://localhost:53817/'); };
-  const openVite = wrap.querySelector('#sc-openVite');
-  if (openVite) openVite.onclick = () => {
-    const list = activeWithPort.map((p) => esc(p.name) + ' · ' + esc(p.port)).join('<br>');
-    openModal('<h3>Vite 端口池（占用 ' + used + '/' + poolSize + '）</h3><div class="update-list">' + list + '</div><div class="modal-ops"><button class="btn btn-ghost" onclick="window.__closeModal()">关闭</button></div>');
-    window.__closeModal = closeModal;
-  };
+
+  // 智能体监听：启动/关闭 可切换
+  const listenBtn = wrap.querySelector('#scListen');
+  if (listenBtn) {
+    listenBtn.title = listening ? '关闭智能体监听（agent-hub-watcher + inbox-watcher）' : '启动所有智能体监听（09-协作/messages/tools/启动所有智能体监听.bat）';
+    listenBtn.onclick = async () => {
+      const wasRunning = listening;
+      listenBtn.disabled = true;
+      listenBtn.textContent = wasRunning ? '关闭中…' : '启动中…';
+      const r = await api('POST', wasRunning ? '/api/listen/stop' : '/api/listen/start', {});
+      toast((r && r.msg) || (wasRunning ? '关闭监听失败' : '启动监听失败'), (r && r.ok) ? 'ok' : 'err');
+      renderProjects();
+    };
+  }
+  // Make 重启
+  const restartBtn = wrap.querySelector('#scMakeRestart');
+  if (restartBtn) {
+    restartBtn.title = '状态依据 /api/projects 连通性推断；仅提供重启，停止需后端接口';
+    restartBtn.onclick = async () => {
+      restartBtn.disabled = true;
+      restartBtn.textContent = '重启中…';
+      const r = await api('POST', '/api/make/restart', {});
+      toast((r && r.msg) || (r && r.ok ? 'Make 已重启' : '重启未成功'), (r && r.ok) ? 'ok' : 'err');
+      renderProjects();
+    };
+  }
+  // Vite 端口池明细
+  const viteBtn = wrap.querySelector('#scViteDetail');
+  if (viteBtn) {
+    viteBtn.onclick = () => {
+      openModal('<h3>Vite 端口池（51720-51729 · strictPort）</h3><div class="update-list">' +
+        (runningPort.length ? runningPort.map((p) => esc(p.name || p.relative) + ' · ' + esc(String(p.port))).join('<br>') : '当前无运行中的开发栈') +
+        '</div><div class="modal-ops"><button class="btn btn-ghost" onclick="window.__closeModal()">关闭</button></div>');
+      window.__closeModal = closeModal;
+    };
+  }
   return wrap;
 }
 
@@ -235,7 +250,7 @@ async function renderProjects(search) {
   const poolUsed = running.filter((p) => p.port).length;
   $('#projSummary').textContent = '共 ' + projectsCache.length + ' 个项目 · ' + running.length + ' 个运行中 · 端口池 ' + poolUsed + '/10';
 
-  const cards = await loadServiceCards();
+  const cards = await loadServiceCards((projRes && projRes.ok !== false && Array.isArray(projRes.projects)), ctxCache);
   $('#main').appendChild(cards);
 
   const kw = kw0.trim();
@@ -317,6 +332,9 @@ async function openNewProject() {
         return '<option value="' + esc(u.relative) + '">' + esc(u.name) + tag + '</option>';
       }).join('') +
       '</select><div class="hint">Vue 编码工程将自动继承上游的原型文档、SRS、HLD、LLD 文档</div></div>' +
+    '<div class="field" id="npTplField"><label>页面模板（可选）</label><select id="npTemplate">' +
+      '<option value="">空白（仅工程骨架）</option></select>' +
+      '<div class="hint">工程骨架（Skill 库 / 知识库 / 工作规则）始终加载；页面模板会额外嵌入为项目的首个原型页</div></div>' +
     '<div class="modal-ops"><button class="btn btn-ghost" onclick="window.__closeModal()">取消</button>' +
     '<button class="btn btn-primary" id="npCreate" disabled>创建项目</button></div>'
   );
@@ -346,9 +364,21 @@ async function openNewProject() {
   nameInput.addEventListener('input', validateName);
 
   $('#npFrame').onchange = () => {
-    $('#npUpField').hidden = $('#npFrame').value !== 'admin';
+    const isAdmin = $('#npFrame').value === 'admin';
+    $('#npUpField').hidden = !isAdmin;
+    $('#npTplField').hidden = isAdmin;
     validateName();
   };
+  // 异步加载页面模板列表（仅 Make 页面模板；工程骨架为隐式基底不展示）
+  api('GET', '/api/templates').then((r) => {
+    const sel = $('#npTemplate');
+    if (!sel || !r || !r.ok || !Array.isArray(r.templates)) return;
+    const make = r.templates.filter((t) => t.source === 'make');
+    const opts = make.map((t) =>
+      '<option value="' + esc(t.id) + '">' + esc(t.title) + (t.deps ? '（' + t.deps + ' 依赖）' : '') + '</option>'
+    ).join('');
+    if (opts) sel.insertAdjacentHTML('beforeend', '<optgroup label="页面模板（' + make.length + '）">' + opts + '</optgroup>');
+  }).catch(() => { /* 模板列表加载失败时保留空白项 */ });
 
   // Enter 提交 · Esc 关闭
   nameInput.addEventListener('keydown', (e) => {
@@ -361,10 +391,11 @@ async function openNewProject() {
     const name = nameInput.value.trim();
     const framework = $('#npFrame').value;
     const upstream = framework === 'admin' ? $('#npUpstream').value : '';
+    const template = framework === 'admin' ? '' : ($('#npTemplate') ? $('#npTemplate').value : '');
     if (!name || (framework === 'admin' && !upstream)) return;
     createBtn.disabled = true;
     createBtn.innerHTML = '<span class="spinner" style="width:12px;height:12px;border-width:2px"></span>创建中…';
-    const r = await api('POST', '/api/projects', { name: name, framework: framework, upstream: upstream });
+    const r = await api('POST', '/api/projects', { name: name, framework: framework, upstream: upstream, template: template });
     if (r.ok) {
       toast('项目「' + name + '」已创建', 'ok');
       closeModal();
