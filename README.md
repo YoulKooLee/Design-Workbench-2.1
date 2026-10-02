@@ -34,6 +34,15 @@ powershell -ExecutionPolicy Bypass -File 06-运行脚本/bootstrap.ps1
 
 启动后浏览器自动打开 http://127.0.0.1:7788
 
+桌面应用（Electron，独立窗口版）：
+
+```bash
+cd 工作台桌面应用
+npm install          # 首次
+npm start            # 启动桌面应用（自动拉起 7788 面板）
+npm run dist         # 打包 Windows 安装包（nsis / portable）
+```
+
 首次启动后建议跑一遍自检：
 
 ```bash
@@ -105,6 +114,7 @@ node 06-运行脚本/smoke-test.mjs                    # 冒烟自测
 
 | 日期 | 内容 |
 |---|---|
+| 2026-10-02 | **Electron 桌面应用（按 WorkBuddy 设计稿 v4.2.0 重构）**：新增 `工作台桌面应用/` Electron 工程——1440×900 无边框窗口 + 自定义标题栏（应用图标/名称/版本徽标 v4.2.0/检查更新按钮带更新红点/最小化·最大化·关闭）；左侧 SVG 线性图标导航 6 页签（项目管理 / Skill 库 / 知识库 / 工作规则 / 组件库 / 通信看板，通信看板带真实未读徽标），底部沉底「设置」「退出工作台」（退出为红色危险态，一键停服并关闭应用）；项目管理页含页头摘要（项目数·运行中·端口池占用）、搜索框、新建项目（React 原型 / Vue 编码工程二选一，Vue 必选上游 React 原型项目并自动继承 SRS/HLD/LLD 文档）、4 张服务状态卡（工作台面板 7788 / Axhub Make 53817 / ACP 共享服务 32124 未接入禁用 / Vite 端口池占用琥珀警示）、项目表格（项目/负责人/运行状态徽标/最近编辑/打开·删除）；底部状态栏（服务健康 + 端口明细 面板:7788·Make:53817·预览:8899 + 「桌面应用模式 · Electron」）。数据经主进程 IPC 代理 7788 面板 API（规避 file:// 跨域与 CSRF），面板未启动时主进程自动拉起 server.mjs；运行 `cd 工作台桌面应用 && npm install && npm start`，打包安装包 `npm run dist`。 |
 | 2026-10-02 | **面板「检查更新」机制（多电脑 GitHub 同步）**：顶栏「刷新」改为「检查更新」，点击主动 git fetch 对比 origin/main；每天 5:00 被动检查 + 面板启动 8 秒后补查一次；有更新时按钮显示红色角标（新提交数），点击可查看提交明细并一键更新（ff-only，本地有未提交改动时自动禁用防冲突）；检查状态落盘 `.workbuddy/update-check.json`，重启不丢角标。 |
 | 2026-10-02 | **Vue 编码工程心跳插件**：`_project-development` 模板新增 `write-dev-server-info` 插件（Vite 启动后每 5 秒写 `.axhub/make/.dev-server-info.json`），使面板「Vite 端口池」能正确识别运行中的 Vue 编码工程（此前仅 React 原型工程有心跳，Vue 工程启动后端口池不显示）。存量 Vue 工程需手动同步 `vite-plugins/write-dev-server-info.ts` 并注册进 `vite.config.ts`。同时修复面板 `open` 复用分支：dev server 已在运行时同步恢复项目 `active` 状态（此前被动降级为 `stopped` 后无法通过端口池恢复显示）。 |
 | 2026-10-01 | **Vue 编码工程改造完成（qwen 终验通过）**：`_admin-template` → `_project-development` 改名；工作台「新增项目」框架选项由「标准产品框架」改为「Vue编码工程」；选 Vue 编码工程须先选上游 React 原型项目，建项自动继承上游原型文档、SRS、HLD、LLD 文档（缺失文档打 `[MISS]` 标记不阻塞建项）。 |

@@ -1,0 +1,33 @@
+{
+  "name": "workbench-desktop",
+  "productName": "产品设计工作台",
+  "version": "4.2.0",
+  "private": true,
+  "description": "产品设计工作台 · Electron 桌面应用（设计稿 v4.2.0）",
+  "main": "main.mjs",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --win --dir",
+    "dist": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.workbench.desktop",
+    "productName": "产品设计工作台",
+    "files": [
+      "main.mjs",
+      "preload.mjs",
+      "renderer/**/*"
+    ],
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
