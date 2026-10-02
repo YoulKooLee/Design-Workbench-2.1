@@ -80,6 +80,16 @@ const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench
 const WORKSPACE_DIR = path.join(AXHUB_ROOT, '.workbuddy');
 const WORKSPACE_CTX_FILE = path.join(WORKSPACE_DIR, 'workspace.json');
 
+// ===== 更新检查（多电脑 GitHub 同步）=====
+// 面板左上角「检查更新」：点击主动 git fetch 对比远端；每天 5 点 + 面板启动后各被动检查一次；
+// 检查结果落盘（.workbuddy/update-check.json），重启面板后角标状态不丢失。
+const UPDATE_STATE_FILE = path.join(WORKSPACE_DIR, 'update-check.json');
+const UPDATE_REMOTE_REF = 'origin/main';
+let updateState = {
+  lastCheckedAt: 0, hasUpdate: false, behind: 0, ahead: 0,
+  dirty: false, dirtyCount: 0, commits: [], error: null, source: null,
+};
+
 // Make Admin 全局单例端口（与 launch-project.ps1 一致），用于联动切换 active project。
 const MAKE_ADMIN_PORT = Number(process.env.AXHUB_MAKE_PORT) || Number(CFG.axhub?.makePort) || 53817;
 const MAKE_ADMIN_ORIGIN = `http://localhost:${MAKE_ADMIN_PORT}`;
@@ -1031,6 +1041,90 @@ function removeDirClean(dir) {
     }
   } catch {}
   return false;
+}
+
+// ===== 更新检查（git fetch 对比 origin/main）=====
+function runGit(args, timeout = 45000) {
+  try {
+    const r = spawnSync('git', args, {
+      cwd: AXHUB_ROOT, encoding: 'utf8', timeout,
+      env: cleanEnvForSpawn(), windowsHide: true,
+    });
+    if (r.error) return { ok: false, out: '', err: r.error.message };
+    return { ok: r.status === 0, out: (r.stdout || '').trim(), err: (r.stderr || '').trim(), status: r.status };
+  } catch (e) {
+    return { ok: false, out: '', err: String((e && e.message) || e) };
+  }
+}
+
+function loadUpdateState() {
+  try {
+    if (fs.existsSync(UPDATE_STATE_FILE)) {
+      updateState = { ...updateState, ...JSON.parse(fs.readFileSync(UPDATE_STATE_FILE, 'utf8')) };
+    }
+  } catch { /* 状态文件损坏则用内存默认值 */ }
+}
+function saveUpdateState() {
+  try {
+    fs.mkdirSync(path.dirname(UPDATE_STATE_FILE), { recursive: true });
+    fs.writeFileSync(UPDATE_STATE_FILE, JSON.stringify(updateState, null, 2), 'utf8');
+  } catch { /* 落盘失败不致命 */ }
+}
+
+async function checkForUpdates(source = 'manual') {
+  // 1. fetch 远端（网络失败不误报「有更新」）
+  const fetched = runGit(['fetch', 'origin', '--prune']);
+  if (!fetched.ok) {
+    updateState = { ...updateState, lastCheckedAt: Date.now(), hasUpdate: false, behind: 0, commits: [], source, error: '无法连接 GitHub（网络或凭证问题）' + (fetched.err ? '：' + fetched.err.split('\n').filter(Boolean).slice(0, 2).join(';') : '') };
+    saveUpdateState();
+    return updateState;
+  }
+  // 2. 本地 HEAD 与远端引用
+  const head = runGit(['rev-parse', 'HEAD']);
+  const remote = runGit(['rev-parse', UPDATE_REMOTE_REF]);
+  if (!head.ok || !remote.ok) {
+    updateState = { ...updateState, lastCheckedAt: Date.now(), hasUpdate: false, behind: 0, commits: [], source, error: `无法获取远端引用（${UPDATE_REMOTE_REF}），请确认本机已配置 GitHub 远程` };
+    saveUpdateState();
+    return updateState;
+  }
+  // 3. 落后 / 领先数量
+  const behindR = runGit(['rev-list', '--count', 'HEAD..' + UPDATE_REMOTE_REF]);
+  const aheadR = runGit(['rev-list', '--count', UPDATE_REMOTE_REF + '..HEAD']);
+  const behind = behindR.ok ? Number(behindR.out || 0) : 0;
+  const ahead = aheadR.ok ? Number(aheadR.out || 0) : 0;
+  // 4. 远端新增提交列表（最多 30 条）
+  let commits = [];
+  if (behind > 0) {
+    const logR = runGit(['log', 'HEAD..' + UPDATE_REMOTE_REF, '--pretty=format:%h%x09%an%x09%ad%x09%s', '--date=format:%Y-%m-%d %H:%M']);
+    if (logR.ok && logR.out) {
+      commits = logR.out.split('\n').filter(Boolean).slice(0, 30).map((line) => {
+        const parts = line.split('\t');
+        return { hash: parts[0] || '', author: parts[1] || '', date: parts[2] || '', subject: parts.slice(3).join('\t') || '' };
+      });
+    }
+  }
+  // 5. 本地未提交改动（用于「一键更新」冲突保护）
+  const st = runGit(['status', '--porcelain']);
+  const dirtyCount = st.ok ? st.out.split('\n').filter((l) => l.trim()).length : 0;
+  updateState = {
+    lastCheckedAt: Date.now(), hasUpdate: behind > 0, behind, ahead,
+    dirty: dirtyCount > 0, dirtyCount, commits, error: null, source,
+  };
+  saveUpdateState();
+  return updateState;
+}
+
+// 每天 5:00 被动检查一次；到点执行后重新调度下一天（面板常驻时持续生效）
+function scheduleDailyUpdateCheck() {
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(5, 0, 0, 0);
+  if (next.getTime() <= now.getTime()) next.setDate(next.getDate() + 1);
+  const delay = Math.max(1000, next.getTime() - now.getTime());
+  setTimeout(async () => {
+    try { await checkForUpdates('scheduled'); } catch { /* 定时检查失败静默，下一天重试 */ }
+    scheduleDailyUpdateCheck();
+  }, delay);
 }
 
 // ===== 路由 =====
@@ -2785,6 +2879,29 @@ const server = http.createServer(async (req, res) => {
     } catch (e) { return sendError(res, '删除失败：' + e.message, 500); }
   }
 
+  // ===== 更新检查（多电脑 GitHub 同步）=====
+  // GET /api/update/status：被动结果（前端启动恢复角标 / 轮询）
+  if (p === '/api/update/status' && method === 'GET') {
+    return send(res, 200, { ok: true, ...updateState });
+  }
+  // GET /api/update/check：点击主动检查（fetch + 对比）
+  if (p === '/api/update/check' && method === 'GET') {
+    const state = await checkForUpdates('manual');
+    return send(res, 200, { ok: true, ...state });
+  }
+  // POST /api/update/pull：一键更新（仅本地无未提交改动时允许，ff-only 防冲突）
+  if (p === '/api/update/pull' && method === 'POST') {
+    if (updateState.dirty) {
+      return send(res, 200, { ok: false, msg: `本地有 ${updateState.dirtyCount} 个未提交改动，为避免冲突已禁用一键更新；请先提交/保存本地改动后再更新` });
+    }
+    const r = runGit(['pull', '--ff-only', 'origin', 'main'], 90000);
+    if (r.ok) {
+      await checkForUpdates('manual');
+      return send(res, 200, { ok: true, msg: '更新完成，工作台已同步到最新版本' });
+    }
+    return send(res, 200, { ok: false, msg: '更新失败（可能网络中断或与本地改动冲突），请稍后重试', err: (r.err || r.out).split('\n').filter(Boolean).slice(-3).join(' | ') });
+  }
+
   // 404
   send(res, 404, { ok: false, msg: 'Not Found' });
 });
@@ -2792,6 +2909,10 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, BIND_HOST, () => {
   console.log(`产品设计工作台已启动: http://localhost:${PORT}`);
   // 浏览器标签页统一由 启动工作台.cmd 负责打开，避免重复开标签页，故此处不再自动打开
+  // 更新检查：恢复上次检查状态 → 每天 5 点定时检查 → 启动 8 秒后补查一次（覆盖 5 点未开机的情况）
+  loadUpdateState();
+  scheduleDailyUpdateCheck();
+  setTimeout(() => { checkForUpdates('startup').catch(() => {}); }, 8000);
 });
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {

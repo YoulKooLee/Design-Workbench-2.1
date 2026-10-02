@@ -105,6 +105,7 @@ node 06-运行脚本/smoke-test.mjs                    # 冒烟自测
 
 | 日期 | 内容 |
 |---|---|
+| 2026-10-02 | **面板「检查更新」机制（多电脑 GitHub 同步）**：顶栏「刷新」改为「检查更新」，点击主动 git fetch 对比 origin/main；每天 5:00 被动检查 + 面板启动 8 秒后补查一次；有更新时按钮显示红色角标（新提交数），点击可查看提交明细并一键更新（ff-only，本地有未提交改动时自动禁用防冲突）；检查状态落盘 `.workbuddy/update-check.json`，重启不丢角标。 |
 | 2026-10-02 | **Vue 编码工程心跳插件**：`_project-development` 模板新增 `write-dev-server-info` 插件（Vite 启动后每 5 秒写 `.axhub/make/.dev-server-info.json`），使面板「Vite 端口池」能正确识别运行中的 Vue 编码工程（此前仅 React 原型工程有心跳，Vue 工程启动后端口池不显示）。存量 Vue 工程需手动同步 `vite-plugins/write-dev-server-info.ts` 并注册进 `vite.config.ts`。同时修复面板 `open` 复用分支：dev server 已在运行时同步恢复项目 `active` 状态（此前被动降级为 `stopped` 后无法通过端口池恢复显示）。 |
 | 2026-10-01 | **Vue 编码工程改造完成（qwen 终验通过）**：`_admin-template` → `_project-development` 改名；工作台「新增项目」框架选项由「标准产品框架」改为「Vue编码工程」；选 Vue 编码工程须先选上游 React 原型项目，建项自动继承上游原型文档、SRS、HLD、LLD 文档（缺失文档打 `[MISS]` 标记不阻塞建项）。 |
 | 2026-09-29 | **`_admin-template` 研发化改造**：剥离 PM 类技能与原型输出类技能，`frame/` 移入回收站，技术栈校准为 Element Plus，`AGENTS.md` 瘦身至红线内。 |
