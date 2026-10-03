@@ -352,13 +352,13 @@ async function loadServiceCards(projOk, ctxCache) {
   const listening = !!(listenRes && listenRes.running);
 
   const cardDefs = [
-    { ico: '🔔', bg: '#D97706', name: '待办提醒', value: inboxTotal, unit: '条收件消息', sub: '协作消息总量（未读数需后端接口）',
+    { ico: '<img class="func-ico" src="icons/bell.png" alt="">', bg: '#D97706', name: '待办提醒', value: inboxTotal, unit: '条收件消息', sub: '协作消息总量（未读数需后端接口）',
       btn: { id: 'scListen', cls: listening ? 'danger' : '', text: listening ? '⏹ 关闭监听' : '▶ 启动监听' } },
-    { ico: '⚙', bg: '#16A34A', name: 'Make 管理端', status: makeOk, sub: '127.0.0.1 : 53817',
+    { ico: '<img class="func-ico" src="icons/make.png" alt="">', bg: '#16A34A', name: 'Make 管理端', status: makeOk, sub: '127.0.0.1 : 53817',
       btn: { id: 'scMakeRestart', text: '⟳ 重启' } },
-    { ico: '⇄', bg: '#2563EB', name: 'ACP 共享服务', statusText: '未接入', sub: '127.0.0.1 : 32124',
+    { ico: '<img class="func-ico" src="icons/acp.png" alt="">', bg: '#2563EB', name: 'ACP 共享服务', statusText: '未接入', sub: '127.0.0.1 : 32124',
       btn: { id: 'scAcp', disabled: true, text: '未接入' } },
-    { ico: '⛁', bg: '#64748B', name: 'Vite 端口池', value: runningPort.length, unit: '个运行中', sub: '端口池 51720-51729 · strictPort',
+    { ico: '<img class="func-ico" src="icons/vite.png" alt="">', bg: '#64748B', name: 'Vite 端口池', value: runningPort.length, unit: '个运行中', sub: '端口池 51720-51729 · strictPort',
       portList: runningPort, btn: { id: 'scViteDetail', text: '明细' } },
   ];
 
@@ -878,11 +878,11 @@ async function renderComponents() {
   layout.className = 'clib-layout';
   let sideHtml =
     '<aside class="clib-side"><div class="clib-side-title">模板分类</div>' +
-    '<div class="clib-group foldable" data-fold="pageFold">📄 页面模板 <span class="fold-arrow">▾</span></div>' +
+    '<div class="clib-group foldable" data-fold="pageFold"><img class="clib-ico" src="icons/pagetpl.png" alt="">页面模板 <span class="fold-arrow">▾</span></div>' +
     '<div class="clib-fold" id="pageFold">' +
       '<button class="clib-cat active" data-group="page" data-cat="all">全部 <span class="cnt">' + pageTpls.length + '</span></button>' +
     '</div>' +
-    '<div class="clib-group foldable" data-fold="compFold">🧩 组件模板 <span class="fold-arrow">▾</span></div>' +
+    '<div class="clib-group foldable" data-fold="compFold"><img class="clib-ico" src="icons/comptpl.png" alt="">组件模板 <span class="fold-arrow">▾</span></div>' +
     '<div class="clib-fold" id="compFold">' +
       '<div class="clib-sub">Vibe Design Pro · frame（' + pageEntries.length + '）</div>' +
       '<button class="clib-cat" data-group="comp" data-sub="vibe" data-cat="all">全部 <span class="cnt">' + pageEntries.length + '</span></button>';
@@ -1171,10 +1171,10 @@ async function renderCollab() {
   kpi.className = 'kpi-row';
   let agentNames = (r.agents || []).map((a) => agentLabel(a)).join(' / ');
   kpi.innerHTML =
-    '<div class="kpi"><div class="kpi-head"><span class="ico ico-blue">▦</span>协作房间</div><div class="kpi-value">' + (r.roomsTotal || 0) + ' <small>个</small></div><div class="kpi-sub">其中 ' + withArtifacts + ' 个房间有产物</div></div>' +
-    '<div class="kpi"><div class="kpi-head"><span class="ico ico-green">⚇</span>智能体</div><div class="kpi-value">' + (r.agents ? r.agents.length : 0) + ' <small>个在线</small></div><div class="kpi-sub">' + esc(agentNames) + '</div></div>' +
-    '<div class="kpi"><div class="kpi-head"><span class="ico ico-blue">✉</span>收件消息</div><div class="kpi-value">' + (r.messagesTotal ? r.messagesTotal.inbox : 0) + ' <small>条</small></div><div class="kpi-sub">未读数需后端接口</div></div>' +
-    '<div class="kpi"><div class="kpi-head"><span class="ico ico-amber">↗</span>发件消息</div><div class="kpi-value">' + (r.messagesTotal ? r.messagesTotal.outbox : 0) + ' <small>条</small></div><div class="kpi-sub">inbox / outbox 按智能体分目录统计</div></div>';
+    '<div class="kpi"><div class="kpi-head"><span class="ico ico-blue"><img class="func-ico" src="icons/room.png" alt=""></span>协作房间</div><div class="kpi-value">' + (r.roomsTotal || 0) + ' <small>个</small></div><div class="kpi-sub">其中 ' + withArtifacts + ' 个房间有产物</div></div>' +
+    '<div class="kpi"><div class="kpi-head"><span class="ico ico-green"><img class="func-ico" src="icons/robot.png" alt=""></span>智能体</div><div class="kpi-value">' + (r.agents ? r.agents.length : 0) + ' <small>个在线</small></div><div class="kpi-sub">' + esc(agentNames) + '</div></div>' +
+    '<div class="kpi"><div class="kpi-head"><span class="ico ico-blue"><img class="func-ico" src="icons/inbox.png" alt=""></span>收件消息</div><div class="kpi-value">' + (r.messagesTotal ? r.messagesTotal.inbox : 0) + ' <small>条</small></div><div class="kpi-sub">未读数需后端接口</div></div>' +
+    '<div class="kpi"><div class="kpi-head"><span class="ico ico-amber"><img class="func-ico" src="icons/send.png" alt=""></span>发件消息</div><div class="kpi-value">' + (r.messagesTotal ? r.messagesTotal.outbox : 0) + ' <small>条</small></div><div class="kpi-sub">inbox / outbox 按智能体分目录统计</div></div>';
   $('#main').appendChild(kpi);
 
   // 智能体条（渐变头像 chip，显示各智能体收/发数）
