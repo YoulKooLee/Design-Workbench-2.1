@@ -9,9 +9,15 @@ import { fileURLToPath } from 'node:url';
 import http from 'node:http';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const AXHUB_ROOT = path.resolve(__dirname, '..');
+// 工作台根：开发模式 = 项目根（工作台桌面应用/..）；打包模式 = 安装目录 resources/workbench（安装包 extraResources 内置）
+const WORKBENCH_ROOT = app.isPackaged
+  ? path.join(process.resourcesPath, 'workbench')
+  : path.resolve(__dirname, '..');
+// Node 运行时：打包模式优先用内置 portable node（零依赖部署）；开发模式用系统 node
+const BUNDLED_NODE_DIR = app.isPackaged ? path.join(process.resourcesPath, 'tools', 'node') : '';
+const NODE_BIN = BUNDLED_NODE_DIR ? path.join(BUNDLED_NODE_DIR, 'node.exe') : 'node';
 const PANEL_URL = 'http://localhost:7788';
-const PANEL_SCRIPT = path.join(AXHUB_ROOT, '工作台面板', 'server.mjs');
+const PANEL_SCRIPT = path.join(WORKBENCH_ROOT, '工作台面板', 'server.mjs');
 
 let mainWindow = null;
 let panelProc = null;
@@ -32,11 +38,15 @@ async function ensurePanel() {
   if (await isPanelAlive()) return true;
   console.log('[main] 面板 7788 未运行，自动拉起 server.mjs …');
   try {
-    panelProc = spawn('node', [PANEL_SCRIPT], {
+    // 把内置 node 目录注入 PATH，面板内 spawn node/npx/pnpm 均可命中；NODE_BIN 供面板显式取用
+    const env = { ...process.env, NODE_BIN };
+    if (BUNDLED_NODE_DIR) env.PATH = BUNDLED_NODE_DIR + path.delimiter + (process.env.PATH || '');
+    panelProc = spawn(NODE_BIN, [PANEL_SCRIPT], {
       cwd: path.dirname(PANEL_SCRIPT),
       detached: true,
       stdio: 'ignore',
       windowsHide: true,
+      env,
     });
     panelProc.unref();
   } catch (e) {
@@ -114,7 +124,7 @@ ipcMain.handle('clipboard:write', (_e, text) => {
 });
 
 // 知识库根目录（与面板 server.mjs 推导一致：产品设计工作台/02-模板/_project-template/.agents/knowledge）
-const KNOWLEDGE_ROOT = path.resolve(app.getAppPath(), '..', '02-模板', '_project-template', '.agents', 'knowledge');
+const KNOWLEDGE_ROOT = path.resolve(WORKBENCH_ROOT, '02-模板', '_project-template', '.agents', 'knowledge');
 
 // 选择知识库存放文件夹：默认定位知识库根目录，返回相对知识库根的目录（knowledge/xxx/）
 ipcMain.handle('folder:pick', async (event) => {
@@ -146,7 +156,7 @@ ipcMain.handle('folder:open-artifacts', async (_e, roomName) => {
   if (typeof roomName !== 'string' || !roomName || /[\\/]|\.\./.test(roomName)) {
     return { ok: false, msg: '非法房间名' };
   }
-  const dir = path.join(app.getAppPath(), '..', '09-协作', 'rooms', roomName, '产物');
+  const dir = path.join(WORKBENCH_ROOT, '09-协作', 'rooms', roomName, '产物');
   try {
     if (!fs.existsSync(dir)) return { ok: false, msg: '该房间暂无产物目录' };
     const err = await shell.openPath(dir);

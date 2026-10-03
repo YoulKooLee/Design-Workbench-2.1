@@ -84,7 +84,31 @@ const WORKSPACE_CTX_FILE = path.join(WORKSPACE_DIR, 'workspace.json');
 // 面板左上角「检查更新」：点击主动 git fetch 对比远端；每天 5 点 + 面板启动后各被动检查一次；
 // 检查结果落盘（.workbuddy/update-check.json），重启面板后角标状态不丢失。
 const UPDATE_STATE_FILE = path.join(WORKSPACE_DIR, 'update-check.json');
+const UPDATE_CONFIG_FILE = path.join(WORKSPACE_DIR, 'update-config.json');
 const UPDATE_REMOTE_REF = 'origin/main';
+// 更新检查远端配置：githubUrl（可选）+ branch（默认 main）；配置了 githubUrl 时不再依赖本机 git remote origin
+const UPDATE_CFG_REF = 'refs/remotes/update/main';
+let updateConfig = { githubUrl: '', branch: 'main' };
+function loadUpdateConfig() {
+  try {
+    if (fs.existsSync(UPDATE_CONFIG_FILE)) {
+      const raw = JSON.parse(fs.readFileSync(UPDATE_CONFIG_FILE, 'utf8'));
+      updateConfig = {
+        githubUrl: (typeof raw.githubUrl === 'string' ? raw.githubUrl : '').trim(),
+        branch: (typeof raw.branch === 'string' && raw.branch.trim()) ? raw.branch.trim() : 'main',
+      };
+    } else {
+      updateConfig = { githubUrl: '', branch: 'main' };
+    }
+  } catch { updateConfig = { githubUrl: '', branch: 'main' }; }
+  return updateConfig;
+}
+function saveUpdateConfig(cfg) {
+  try {
+    fs.mkdirSync(path.dirname(UPDATE_CONFIG_FILE), { recursive: true });
+    fs.writeFileSync(UPDATE_CONFIG_FILE, JSON.stringify(cfg, null, 2), 'utf8');
+  } catch { /* 落盘失败不致命 */ }
+}
 let updateState = {
   lastCheckedAt: 0, hasUpdate: false, behind: 0, ahead: 0,
   dirty: false, dirtyCount: 0, commits: [], error: null, source: null,
@@ -1072,30 +1096,36 @@ function saveUpdateState() {
 }
 
 async function checkForUpdates(source = 'manual') {
-  // 1. fetch 远端（网络失败不误报「有更新」）
-  const fetched = runGit(['fetch', 'origin', '--prune']);
+  const cfg = loadUpdateConfig();
+  const useUrl = !!(cfg.githubUrl);
+  const branch = cfg.branch || 'main';
+  // 1. fetch 远端（配置了 githubUrl 则用配置地址 fetch 到 update/main；否则 fetch origin --prune）
+  const fetched = useUrl
+    ? runGit(['fetch', cfg.githubUrl, branch + ':' + UPDATE_CFG_REF], 60000)
+    : runGit(['fetch', 'origin', '--prune']);
   if (!fetched.ok) {
     updateState = { ...updateState, lastCheckedAt: Date.now(), hasUpdate: false, behind: 0, commits: [], source, error: '无法连接 GitHub（网络或凭证问题）' + (fetched.err ? '：' + fetched.err.split('\n').filter(Boolean).slice(0, 2).join(';') : '') };
     saveUpdateState();
     return updateState;
   }
   // 2. 本地 HEAD 与远端引用
+  const remoteRef = useUrl ? UPDATE_CFG_REF : UPDATE_REMOTE_REF;
   const head = runGit(['rev-parse', 'HEAD']);
-  const remote = runGit(['rev-parse', UPDATE_REMOTE_REF]);
+  const remote = runGit(['rev-parse', remoteRef]);
   if (!head.ok || !remote.ok) {
-    updateState = { ...updateState, lastCheckedAt: Date.now(), hasUpdate: false, behind: 0, commits: [], source, error: `无法获取远端引用（${UPDATE_REMOTE_REF}），请确认本机已配置 GitHub 远程` };
+    updateState = { ...updateState, lastCheckedAt: Date.now(), hasUpdate: false, behind: 0, commits: [], source, error: `无法获取远端引用（${remoteRef}），请确认已配置 GitHub 远程（可在「设置 → 更新检查 · GitHub 仓库」填写仓库地址）` };
     saveUpdateState();
     return updateState;
   }
   // 3. 落后 / 领先数量
-  const behindR = runGit(['rev-list', '--count', 'HEAD..' + UPDATE_REMOTE_REF]);
-  const aheadR = runGit(['rev-list', '--count', UPDATE_REMOTE_REF + '..HEAD']);
+  const behindR = runGit(['rev-list', '--count', 'HEAD..' + remoteRef]);
+  const aheadR = runGit(['rev-list', '--count', remoteRef + '..HEAD']);
   const behind = behindR.ok ? Number(behindR.out || 0) : 0;
   const ahead = aheadR.ok ? Number(aheadR.out || 0) : 0;
   // 4. 远端新增提交列表（最多 30 条）
   let commits = [];
   if (behind > 0) {
-    const logR = runGit(['log', 'HEAD..' + UPDATE_REMOTE_REF, '--pretty=format:%h%x09%an%x09%ad%x09%s', '--date=format:%Y-%m-%d %H:%M']);
+    const logR = runGit(['log', 'HEAD..' + remoteRef, '--pretty=format:%h%x09%an%x09%ad%x09%s', '--date=format:%Y-%m-%d %H:%M']);
     if (logR.ok && logR.out) {
       commits = logR.out.split('\n').filter(Boolean).slice(0, 30).map((line) => {
         const parts = line.split('\t');
@@ -1109,6 +1139,7 @@ async function checkForUpdates(source = 'manual') {
   updateState = {
     lastCheckedAt: Date.now(), hasUpdate: behind > 0, behind, ahead,
     dirty: dirtyCount > 0, dirtyCount, commits, error: null, source,
+    remote: useUrl ? cfg.githubUrl : '',
   };
   saveUpdateState();
   return updateState;
@@ -1939,7 +1970,7 @@ const server = http.createServer(async (req, res) => {
   // 启动所有智能体监听（等价于 09-协作/messages/tools/启动所有智能体监听.bat，直接 spawn node 避免 bat 编码问题）
   if (p === '/api/listen/start' && method === 'POST') {
     const toolsDir = path.join(AXHUB_ROOT, '09-协作', 'messages', 'tools');
-    const node = 'C:\\Program Files\\nodejs\\node.exe';
+    const node = process.env.NODE_BIN || 'C:\\Program Files\\nodejs\\node.exe';
     const started = [];
     for (const m of ['agent-hub-watcher.mjs', 'inbox-watcher.mjs']) {
       const script = path.join(toolsDir, m);
@@ -2033,7 +2064,7 @@ const server = http.createServer(async (req, res) => {
       }
       if (!makeCli) return sendError(res, '未找到 @axhub/make，请先在任一项目执行 npm install / pnpm install', 500);
 
-      let nodeBin = process.execPath;
+      let nodeBin = process.env.NODE_BIN || process.execPath;
       const versionsDir = path.join(process.env.USERPROFILE || '', '.workbuddy', 'binaries', 'node', 'versions');
       if (fs.existsSync(versionsDir)) {
         for (const d of fs.readdirSync(versionsDir)) {
@@ -2894,12 +2925,43 @@ const server = http.createServer(async (req, res) => {
     if (updateState.dirty) {
       return send(res, 200, { ok: false, msg: `本地有 ${updateState.dirtyCount} 个未提交改动，为避免冲突已禁用一键更新；请先提交/保存本地改动后再更新` });
     }
-    const r = runGit(['pull', '--ff-only', 'origin', 'main'], 90000);
+    const cfg = loadUpdateConfig();
+    const r = cfg.githubUrl
+      ? runGit(['pull', '--ff-only', cfg.githubUrl, cfg.branch || 'main'], 90000)
+      : runGit(['pull', '--ff-only', 'origin', 'main'], 90000);
     if (r.ok) {
       await checkForUpdates('manual');
       return send(res, 200, { ok: true, msg: '更新完成，工作台已同步到最新版本' });
     }
     return send(res, 200, { ok: false, msg: '更新失败（可能网络中断或与本地改动冲突），请稍后重试', err: (r.err || r.out).split('\n').filter(Boolean).slice(-3).join(' | ') });
+  }
+
+  // ===== 更新检查 · GitHub 仓库配置 =====
+  // GET /api/update/config：读取当前配置（含本机 origin 地址）
+  if (p === '/api/update/config' && method === 'GET') {
+    const cfg = loadUpdateConfig();
+    const originUrl = runGit(['config', '--get', 'remote.origin.url']);
+    return send(res, 200, { ok: true, githubUrl: cfg.githubUrl, branch: cfg.branch, remoteUrl: originUrl.ok ? originUrl.out : '' });
+  }
+  // POST /api/update/config：保存配置（githubUrl 留空则恢复使用本机 origin）
+  if (p === '/api/update/config' && method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const githubUrl = (typeof body.githubUrl === 'string' ? body.githubUrl : '').trim();
+      if (githubUrl && !/^(https?:\/\/|git@|ssh:\/\/)/i.test(githubUrl)) {
+        return send(res, 200, { ok: false, msg: 'GitHub 地址格式不正确（需 https:// 或 git@ssh 形式）' });
+      }
+      const branch = (typeof body.branch === 'string' && body.branch.trim()) ? body.branch.trim() : 'main';
+      if (!/^[A-Za-z0-9._\/-]+$/.test(branch)) {
+        return send(res, 200, { ok: false, msg: '分支名包含非法字符' });
+      }
+      const cfg = { githubUrl, branch };
+      updateConfig = cfg;
+      saveUpdateConfig(cfg);
+      return send(res, 200, { ok: true, msg: githubUrl ? `已保存 GitHub 仓库：${githubUrl}（分支 ${branch}），下次检查更新将同步该仓库` : '已清空配置，恢复使用本机 git remote origin' });
+    } catch (e) {
+      return send(res, 200, { ok: false, msg: '配置解析失败：' + (e.message || e) });
+    }
   }
 
   // 404
@@ -2911,6 +2973,7 @@ server.listen(PORT, BIND_HOST, () => {
   // 浏览器标签页统一由 启动工作台.cmd 负责打开，避免重复开标签页，故此处不再自动打开
   // 更新检查：恢复上次检查状态 → 每天 5 点定时检查 → 启动 8 秒后补查一次（覆盖 5 点未开机的情况）
   loadUpdateState();
+  loadUpdateConfig();
   scheduleDailyUpdateCheck();
   setTimeout(() => { checkForUpdates('startup').catch(() => {}); }, 8000);
 });

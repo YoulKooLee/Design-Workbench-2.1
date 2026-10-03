@@ -1,6 +1,6 @@
-// 产品设计工作台 · 桌面应用渲染逻辑（v4.2.0）
+// 产品设计工作台 · 桌面应用渲染逻辑（v3.1）
 // 数据全部经 window.workbench.api 代理到 7788 面板（规避 file:// 跨域与 CSRF）
-// 6 个页面内容与交互均对齐浏览器面板 v4，UI 按 workbuddy 桌面界面设计稿（1440×900 外壳）
+// 6 个页面内容与交互均对齐浏览器面板，UI 按 workbuddy 桌面界面设计稿（1440×900 外壳）
 'use strict';
 
 const $ = (s, r) => (r || document).querySelector(s);
@@ -273,6 +273,36 @@ function showUpdateModal(r) {
   };
 }
 $('#updateBtn').onclick = () => refreshUpdateStatus(true);
+
+// ===== 设置页 · 更新检查 GitHub 仓库配置 =====
+async function loadUpdateConfigUI() {
+  const urlInput = $('#cfgGitUrl');
+  const branchInput = $('#cfgBranch');
+  const hint = $('#cfgHint');
+  if (!urlInput) return;
+  const r = await api('GET', '/api/update/config');
+  if (r && r.ok) {
+    urlInput.value = r.githubUrl || '';
+    branchInput.value = (r.branch && r.branch.trim()) || 'main';
+    hint.textContent = r.remoteUrl
+      ? '当前使用：本机 git remote origin → ' + r.remoteUrl + (r.githubUrl ? '（已配置覆盖，留空可恢复 origin）' : '')
+      : '本机未配置 git remote origin，填写上方地址后即可检查更新';
+  }
+  const saveBtn = $('#cfgSave');
+  if (saveBtn) saveBtn.onclick = async () => {
+    const githubUrl = urlInput.value.trim();
+    const branch = branchInput.value.trim() || 'main';
+    if (githubUrl && !/^(https?:\/\/|git@|ssh:\/\/)/i.test(githubUrl)) {
+      toast('GitHub 地址格式不正确（需 https:// 或 git@ssh 形式）', 'err');
+      return;
+    }
+    saveBtn.disabled = true;
+    const pr = await api('POST', '/api/update/config', { githubUrl, branch });
+    saveBtn.disabled = false;
+    toast(pr.msg, pr.ok ? 'ok' : 'err');
+    if (pr.ok) { updateInfo = null; applyUpdateBadge(); loadUpdateConfigUI(); }
+  };
+}
 
 // ===== 导航 =====
 const VIEW_TITLES = {
@@ -1239,31 +1269,43 @@ async function showRoomDialog(name) {
 
 // ===== 视图分发 =====
 async function renderView(view) {
+  const token = ++renderToken;
   $('#main').innerHTML = '';
   const loader = document.createElement('div');
   loader.className = 'empty';
   loader.innerHTML = '<span class="spinner"></span>加载中…';
   $('#main').appendChild(loader);
   try {
-    if (view === 'projects') { await renderProjects(''); return; }
-    if (view === 'skills') { await renderSkills(); return; }
-    if (view === 'knowledge') { await renderKnowledge(); return; }
-    if (view === 'rules') { await renderRules(); return; }
-    if (view === 'components') { await renderComponents(); return; }
-    if (view === 'collab') { await renderCollab(); return; }
-    if (view === 'settings') {
+    if (view === 'projects') { await renderProjects(''); }
+    else if (view === 'skills') { await renderSkills(); }
+    else if (view === 'knowledge') { await renderKnowledge(); }
+    else if (view === 'rules') { await renderRules(); }
+    else if (view === 'components') { await renderComponents(); }
+    else if (view === 'collab') { await renderCollab(); }
+    else if (view === 'settings') {
       $('#main').innerHTML = '';
       $('#main').appendChild(pageHead('设置', VIEW_TITLES.settings[1]));
       const card = document.createElement('div');
       card.className = 'list-card';
       card.innerHTML =
         '<div class="list-item"><div class="item-body"><div class="item-title">服务地址</div><div class="item-desc">面板 http://localhost:7788 · Make http://localhost:53817</div></div></div>' +
+        '<div class="list-item"><div class="item-body"><div class="item-title">更新检查 · GitHub 仓库</div>' +
+        '<div class="item-desc">配置后「检查更新」将同步该仓库；留空则使用本机 git remote origin 的配置</div>' +
+        '<div class="kb-dir-row" style="margin-top:10px">' +
+        '<div class="kb-dir" style="flex:1"><input id="cfgGitUrl" placeholder="https://github.com/用户/仓库.git 或 git@github.com:用户/仓库.git" style="width:100%"></div>' +
+        '<div class="kb-dir" style="flex:0 0 110px"><input id="cfgBranch" placeholder="分支 main" value="main" style="width:100%"></div>' +
+        '<button class="btn btn-primary" id="cfgSave" style="flex:0 0 auto">保存</button>' +
+        '</div>' +
+        '<div class="item-desc" id="cfgHint" style="margin-top:8px"></div>' +
+        '</div></div>' +
         '<div class="list-item"><div class="item-body"><div class="item-title">更新检查</div><div class="item-desc">每天 5:00 自动检查 GitHub 更新，启动时补查一次</div></div></div>' +
-        '<div class="list-item"><div class="item-body"><div class="item-title">版本</div><div class="item-desc">产品设计工作台 v4.2.0 · Electron 桌面应用</div></div></div>';
+        '<div class="list-item"><div class="item-body"><div class="item-title">版本</div><div class="item-desc">产品设计工作台 v3.1 · Electron 桌面应用</div></div></div>';
       $('#main').appendChild(card);
-      return;
+      loadUpdateConfigUI();
     }
+    if (token !== renderToken) return; // 已被更新的渲染取代（快速切换 / 双击防覆盖）
   } catch (e) {
+    if (token !== renderToken) return;
     $('#main').innerHTML = '<div class="empty">加载失败：' + esc(e.message || e) + '</div>';
   }
 }
