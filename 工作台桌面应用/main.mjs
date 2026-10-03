@@ -2,7 +2,7 @@
 // 职责：无边框窗口 + 自定义标题栏窗口控制；代理渲染进程的 7788 面板 API 请求（规避 file:// 跨域与 CSRF）；
 //       面板未启动时自动拉起 工作台面板/server.mjs。
 import { app, BrowserWindow, ipcMain, shell, clipboard, dialog } from 'electron';
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -22,20 +22,47 @@ const PANEL_SCRIPT = path.join(WORKBENCH_ROOT, '工作台面板', 'server.mjs');
 let mainWindow = null;
 let panelProc = null;
 
-// ===== 面板可用性探测 =====
-function isPanelAlive() {
+// ===== 面板可用性探测（校验工作台身份，防止连到其他实例的残留面板）=====
+function probePanel() {
   return new Promise((resolve) => {
-    const req = http.get(PANEL_URL + '/api/context/current', { timeout: 2500 }, (res) => {
+    const req = http.get(PANEL_URL + '/api/ping', { timeout: 2500 }, (res) => {
       res.resume();
-      resolve(res.statusCode === 200);
+      const raw = res.headers['x-axhub-root'];
+      let root = '';
+      if (raw) { try { root = decodeURIComponent(raw); } catch { root = raw; } }
+      resolve({ alive: res.statusCode === 200, owned: !!root && root === WORKBENCH_ROOT });
     });
-    req.on('error', () => resolve(false));
-    req.on('timeout', () => { req.destroy(); resolve(false); });
+    req.on('error', () => resolve({ alive: false, owned: false }));
+    req.on('timeout', () => { req.destroy(); resolve({ alive: false, owned: false }); });
   });
+}
+// 结束占用 7788 的进程（其他工作台实例/残留面板），Windows 用 netstat+taskkill
+function killPortOwner(port) {
+  try {
+    const out = execFileSync('netstat', ['-ano'], { encoding: 'utf8', timeout: 10000 });
+    const pids = new Set();
+    for (const line of out.split('\n')) {
+      const m = line.match(new RegExp(`\\s*TCP\\s+[\\d.]+:${port}\\s+[\\d.:]+\\s+LISTENING\\s+(\\d+)`));
+      if (m) pids.add(m[1]);
+    }
+    for (const pid of pids) {
+      try { execFileSync('taskkill', ['/PID', pid, '/F'], { encoding: 'utf8', timeout: 10000, windowsHide: true }); }
+      catch { /* 可能已退出 */ }
+      console.log('[main] 已结束占用 ' + port + ' 的进程 PID=' + pid);
+    }
+  } catch (e) {
+    console.error('[main] 结束端口占用进程失败:', e.message);
+  }
 }
 
 async function ensurePanel() {
-  if (await isPanelAlive()) return true;
+  const st = await probePanel();
+  if (st.alive && st.owned) return true;
+  if (st.alive && !st.owned) {
+    console.log('[main] 7788 被其他工作台实例占用（root=' + (st.root || '?') + '），先终止占用进程再拉起本实例面板 …');
+    killPortOwner(7788);
+    await new Promise((r) => setTimeout(r, 1500));
+  }
   console.log('[main] 面板 7788 未运行，自动拉起 server.mjs …');
   try {
     // 把内置 node 目录注入 PATH，面板内 spawn node/npx/pnpm 均可命中；NODE_BIN 供面板显式取用

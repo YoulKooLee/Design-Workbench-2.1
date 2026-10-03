@@ -2174,6 +2174,8 @@ const server = http.createServer(async (req, res) => {
   // GET：返回全部项目状态 + 各智能体编辑焦点（codebuddy / workbuddy 读取用）。
   // 读取前先做活体检测，把已死的 editing/active 项目降级为 stopped（被动停止，保留展示）。
   if (p === '/api/context/current' && method === 'GET') {
+    // 身份标识：供桌面应用探测端口归属（防连到其他实例/残留面板）
+    res.setHeader('x-axhub-root', encodeURIComponent(AXHUB_ROOT));
     const ctx = await reconcileWorkspaceCtx();
     // 为运行中项目补充 Vite 端口（从 .dev-server-info.json 心跳读取），供面板显示真实端口
     for (const proj of ctx.projects) {
@@ -2990,6 +2992,13 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {
       return send(res, 200, { ok: false, msg: '配置解析失败：' + (e.message || e) });
     }
+  }
+
+  // 轻量探测端点：桌面应用据此判断 7788 归属（快速响应，不做磁盘/端口探测）
+  if (p === '/api/ping' && method === 'GET') {
+    // header 值必须为 ASCII：中文绝对路径做 URL 编码
+    res.setHeader('x-axhub-root', encodeURIComponent(AXHUB_ROOT));
+    return send(res, 200, { ok: true });
   }
 
   // 404
