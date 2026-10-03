@@ -23,8 +23,8 @@
       "renderer/**/*"
     ],
     "extraResources": [
-      { "from": "../打包输出/workbench", "to": "workbench" },
-      { "from": "../打包输出/tools", "to": "tools" }
+      { "from": "../08-文档/打包输出/workbench", "to": "workbench" },
+      { "from": "../08-文档/打包输出/tools", "to": "tools" }
     ],
     "win": {
       "target": ["nsis"],
