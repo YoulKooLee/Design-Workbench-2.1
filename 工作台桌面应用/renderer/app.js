@@ -1297,16 +1297,17 @@ async function renderView(view) {
       card.className = 'list-card';
       card.innerHTML =
         '<div class="list-item"><div class="item-body"><div class="item-title">服务地址</div><div class="item-desc">面板 http://localhost:7788 · Make http://localhost:53817</div></div></div>' +
-        '<div class="list-item"><div class="item-body"><div class="item-title">更新检查 · GitHub 仓库</div>' +
-        '<div class="kb-dir-row" style="margin-top:10px">' +
-        '<div class="kb-dir" style="flex:1"><input id="cfgGitUrl" placeholder="https://github.com/用户/仓库.git 或 git@github.com:用户/仓库.git" style="width:100%"></div>' +
-        '<div class="kb-dir" style="flex:0 0 90px"><input id="cfgBranch" placeholder="分支" value="main" style="width:100%"></div>' +
-        '<div class="kb-dir" style="flex:0 0 80px"><input id="cfgTime" placeholder="检查时间" value="05:00" style="width:100%"></div>' +
-        '<label class="kb-dir" style="flex:0 0 auto;display:flex;align-items:center;gap:5px;white-space:nowrap"><input type="checkbox" id="cfgStartup" style="width:auto">启动时检查</label>' +
-        '<button class="btn btn-primary" id="cfgSave" style="flex:0 0 auto">保存</button>' +
-        '</div>' +
-        '</div></div>' +
-        '<div class="list-item"><div class="item-body"><div class="item-title">更新检查</div><div class="item-desc">按上方配置的时间自动检查更新，启动时是否检查可开关</div></div></div>' +
+        '<div class="list-item"><div class="item-body"><div class="item-title">GitHub 仓库</div>' +
+        '<div class="cfg-group">' +
+        '<div class="cfg-row"><span class="cfg-label">仓库地址</span><div class="cfg-ctl"><input id="cfgGitUrl" placeholder="https://github.com/用户/仓库.git 或 git@github.com:用户/仓库.git"></div></div>' +
+        '<div class="cfg-row"><span class="cfg-label">分支</span><div class="cfg-ctl"><input id="cfgBranch" placeholder="main" value="main" style="max-width:180px"></div></div>' +
+        '</div></div></div>' +
+        '<div class="list-item"><div class="item-body"><div class="item-title">更新检查设置</div>' +
+        '<div class="cfg-group">' +
+        '<div class="cfg-row"><span class="cfg-label">检查时间</span><div class="cfg-ctl"><input id="cfgTime" placeholder="05:00" value="05:00" style="max-width:120px"></div></div>' +
+        '<div class="cfg-row"><span class="cfg-label">启动时检查</span><label class="chk" style="margin:0"><input type="checkbox" id="cfgStartup">应用启动时自动检查更新</label></div>' +
+        '</div></div></div>' +
+        '<div class="list-item"><div class="item-body" style="display:flex;justify-content:flex-end;padding:6px 0"><button class="btn btn-primary" id="cfgSave">保存配置</button></div></div>' +
         '<div class="list-item"><div class="item-body"><div class="item-title">版本</div><div class="item-desc">产品设计工作台 v3.1 · Electron 桌面应用</div></div></div>';
       $('#main').appendChild(card);
       loadUpdateConfigUI();
