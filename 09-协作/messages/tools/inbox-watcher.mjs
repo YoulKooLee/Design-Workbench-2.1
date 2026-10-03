@@ -59,6 +59,17 @@ function log(msg) {
   console.log(line);
 }
 
+// DeepSeek 活跃心跳：watcher 运行即代表 deepseek 在线处理中，供面板在线判定
+function writeHeartbeat() {
+  try {
+    const dir = path.join(SHARE, 'agents', 'deepseek');
+    if (!fs.existsSync(dir)) return;
+    const tmp = path.join(dir, 'heartbeat.json.tmp');
+    fs.writeFileSync(tmp, JSON.stringify({ at: new Date().toISOString(), pid: process.pid || null, host: os.hostname() || '' }, null, 2), 'utf8');
+    fs.renameSync(tmp, path.join(dir, 'heartbeat.json'));
+  } catch { /* 心跳写失败不阻断 */ }
+}
+
 function loadState() {
   try { return JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')); }
   catch { return { processed: [], failures: {} }; }
@@ -151,6 +162,7 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 while (true) {
+  writeHeartbeat(); // 心跳：watcher 存活即 deepseek 在线
   const files = inboxFiles();
   const fresh = files.filter((f) => !state.processed.includes(f));
   if (fresh.length > 0) {

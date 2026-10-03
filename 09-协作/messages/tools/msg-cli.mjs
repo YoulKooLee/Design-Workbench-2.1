@@ -18,6 +18,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,6 +32,22 @@ const ARCHIVE = path.join(MESSAGES_DIR, 'archive');
 const AGENTS = ['codebuddy', 'workbuddy', 'deepseek', 'doubao', 'qwen'];
 const TYPES = ['question', 'task', 'handoff', 'info', 'ack', 'request_review', 'correction'];
 const PRIORITIES = ['low', 'normal', 'high'];
+
+// 动态智能体：静态列表之外，09-协作/agents/<id> 目录存在的智能体同样合法（onboard-agent 入网即生效）
+function isKnownAgent(id) {
+  if (AGENTS.includes(id)) return true;
+  try { return fs.existsSync(path.join(SHARE_DIR, 'agents', id)); } catch { return false; }
+}
+// 智能体活跃心跳：写入 09-协作/agents/<id>/heartbeat.json（在线判定依据，面板按新鲜度判在线）
+function writeHeartbeat(agentId) {
+  try {
+    const dir = path.join(SHARE_DIR, 'agents', agentId);
+    if (!fs.existsSync(dir)) return;
+    const tmp = path.join(dir, 'heartbeat.json.tmp');
+    fs.writeFileSync(tmp, JSON.stringify({ at: new Date().toISOString(), pid: process.pid || null, host: os.hostname() || '' }, null, 2), 'utf-8');
+    fs.renameSync(tmp, path.join(dir, 'heartbeat.json'));
+  } catch { /* 心跳写失败不阻断发送 */ }
+}
 
 function nowUTC() {
   return new Date().toISOString();
@@ -124,8 +141,8 @@ function send(args) {
   const senderNote = arg(args, '--sender-note') || `msg-cli/${AGENTS.indexOf(from) >= 0 ? 'agent' : 'unknown'}`;
 
   if (!from || !to) fail('需 --from 和 --to');
-  if (!AGENTS.includes(from)) fail(`from 必须是 ${AGENTS.join('/')}`);
-  if (!AGENTS.includes(to)) fail(`to 必须是 ${AGENTS.join('/')}`);
+  if (!isKnownAgent(from)) fail(`from 必须是 ${AGENTS.join('/')} 或已入网智能体（09-协作/agents/<id> 存在）`);
+  if (!isKnownAgent(to)) fail(`to 必须是 ${AGENTS.join('/')} 或已入网智能体（09-协作/agents/<id> 存在）`);
   if (!TYPES.includes(type)) fail(`type 必须是 ${TYPES.join('/')}`);
 
   const ts = nowUTC();
@@ -162,6 +179,8 @@ function send(args) {
   const outboxDir = path.join(OUTBOX, from);
   fs.mkdirSync(outboxDir, { recursive: true });
   writeMsgAtomic(path.join(outboxDir, mid + '.json'), msg);
+  // 发送方活跃心跳（在线判定）
+  writeHeartbeat(from);
 
   console.log(`[sent] -> inbox/${recipients.join(', ')}/${mid}.json`);
   console.log(`[copy] -> outbox/${from}/${mid}.json`);

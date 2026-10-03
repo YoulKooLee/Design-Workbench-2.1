@@ -9,13 +9,26 @@
 // ============================================================
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
+const SHARE = path.resolve(ROOT, '..'); // 09-协作
 const INBOX = path.join(ROOT, 'inbox');
 const AGENTS = ['codebuddy', 'workbuddy', 'deepseek', 'doubao', 'user', 'qwen'];
+
+// 智能体活跃心跳：消息发送方（from）在 09-协作/agents/<id>/ 写 heartbeat.json，供面板在线判定
+function writeHeartbeat(agentId) {
+  try {
+    const dir = path.join(SHARE, 'agents', agentId);
+    if (!fs.existsSync(dir)) return;
+    const tmp = path.join(dir, 'heartbeat.json.tmp');
+    fs.writeFileSync(tmp, JSON.stringify({ at: new Date().toISOString(), pid: process.pid || null, host: os.hostname() || '' }, null, 2), 'utf-8');
+    fs.renameSync(tmp, path.join(dir, 'heartbeat.json'));
+  } catch { /* 心跳写失败不阻断通知 */ }
+}
 
 const CONFIG_FILE = path.join(__dirname, 'agent-hub-config.json');
 const STATE_FILE = path.join(__dirname, 'agent-hub-state.json');
@@ -125,6 +138,8 @@ function scan() {
       const id = a + '/' + (m.message_id || f);
       if (state.seen[id]) continue;
       state.seen[id] = new Date().toISOString();
+      // 发送方活跃心跳（在线判定）：观察到新消息 → 发送方智能体视为活跃
+      if (m && m.from) writeHeartbeat(String(m.from).toLowerCase());
       // 协作去重：DeepSeek watcher 已处理的消息（仅其 inbox 副本）→ 只记日志不弹窗
       if (a === 'deepseek' && dsAlreadyProcessed(f)) {
         newMsgs.push({ agent: a, msg: m, dsHandled: true });

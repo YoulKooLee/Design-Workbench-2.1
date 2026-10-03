@@ -121,6 +121,19 @@ let updateState = {
 const MAKE_ADMIN_PORT = Number(process.env.AXHUB_MAKE_PORT) || Number(CFG.axhub?.makePort) || 53817;
 const MAKE_ADMIN_ORIGIN = `http://localhost:${MAKE_ADMIN_PORT}`;
 
+// ===== 智能体在线判定（心跳机制，支持任意智能体）=====
+// 约定：智能体活跃时向 09-协作/agents/<id>/heartbeat.json 写 { at, pid, host }；
+// 面板按心跳新鲜度判定在线（TTL 内视为在线）。任何 agents 目录下的智能体均适用。
+const HEARTBEAT_TTL_MS = 5 * 60 * 1000; // 心跳有效期：5 分钟
+function readAgentHeartbeat(agentDir) {
+  try {
+    const raw = JSON.parse(fs.readFileSync(path.join(agentDir, 'heartbeat.json'), 'utf-8'));
+    const at = raw && raw.at ? Date.parse(raw.at) : NaN;
+    if (!Number.isFinite(at)) return null;
+    return { at, online: (Date.now() - at) <= HEARTBEAT_TTL_MS };
+  } catch { return null; }
+}
+
 // CodeBuddy IDE 会注入 NODE_OPTIONS=--require=...node-language-shim.cjs 和 CODEBUDDY_SAFE_DELETE_*，
 // 导致子进程（PowerShell / Make / Vite）的 fs.unlink/rm 被 shim 劫持，报 SAFE_DELETE_BULK_CONFIRM_REQUIRED，
 // 表现为 Make 写 projects.json 报 MAKE_STATE_DIR_NOT_WRITABLE。
@@ -2434,10 +2447,13 @@ const server = http.createServer(async (req, res) => {
           out.rooms.push(info);
         }
       }
-      // 智能体目录
+      // 智能体目录（名称 + 心跳在线状态；任何入网智能体均支持）
       const agDir = path.join(colRoot, 'agents');
       if (fs.existsSync(agDir)) {
-        out.agents = fs.readdirSync(agDir, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name);
+        out.agents = fs.readdirSync(agDir, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => {
+          const hb = readAgentHeartbeat(path.join(agDir, d.name));
+          return { name: d.name, online: !!(hb && hb.online), lastSeen: hb ? new Date(hb.at).toISOString() : null };
+        });
       }
       // 消息统计（inbox/outbox 按智能体子目录计 json 数）
       for (const box of ['inbox', 'outbox']) {

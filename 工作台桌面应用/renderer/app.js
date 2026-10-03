@@ -1169,26 +1169,31 @@ async function renderCollab() {
   // 4 张概览 KPI 卡
   const kpi = document.createElement('div');
   kpi.className = 'kpi-row';
-  let agentNames = (r.agents || []).map((a) => agentLabel(a)).join(' / ');
+  const agents = r.agents || [];
+  const onlineAgents = agents.filter((x) => x.online);
+  let agentNames = onlineAgents.length ? onlineAgents.map((x) => agentLabel(x.name)).join(' / ') : '暂无在线智能体';
   kpi.innerHTML =
     '<div class="kpi"><div class="kpi-head"><span class="ico ico-blue"><img class="func-ico" src="icons/room.png" alt=""></span>协作房间</div><div class="kpi-value">' + (r.roomsTotal || 0) + ' <small>个</small></div><div class="kpi-sub">其中 ' + withArtifacts + ' 个房间有产物</div></div>' +
-    '<div class="kpi"><div class="kpi-head"><span class="ico ico-green"><img class="func-ico" src="icons/robot.png" alt=""></span>智能体</div><div class="kpi-value">' + (r.agents ? r.agents.length : 0) + ' <small>个在线</small></div><div class="kpi-sub">' + esc(agentNames) + '</div></div>' +
+    '<div class="kpi"><div class="kpi-head"><span class="ico ico-green"><img class="func-ico" src="icons/robot.png" alt=""></span>智能体</div><div class="kpi-value">' + onlineAgents.length + ' <small>个在线</small></div><div class="kpi-sub">' + esc(agentNames) + '</div></div>' +
     '<div class="kpi"><div class="kpi-head"><span class="ico ico-blue"><img class="func-ico" src="icons/inbox.png" alt=""></span>收件消息</div><div class="kpi-value">' + (r.messagesTotal ? r.messagesTotal.inbox : 0) + ' <small>条</small></div><div class="kpi-sub">未读数需后端接口</div></div>' +
     '<div class="kpi"><div class="kpi-head"><span class="ico ico-amber"><img class="func-ico" src="icons/send.png" alt=""></span>发件消息</div><div class="kpi-value">' + (r.messagesTotal ? r.messagesTotal.outbox : 0) + ' <small>条</small></div><div class="kpi-sub">inbox / outbox 按智能体分目录统计</div></div>';
   $('#main').appendChild(kpi);
 
-  // 智能体条（渐变头像 chip，显示各智能体收/发数）
+  // 智能体条（头像 chip，显示在线状态 + 各智能体收/发数）
   let agentChips = '';
-  if (r.agents && r.agents.length) {
-    for (const a of r.agents) {
+  if (agents.length) {
+    for (const x of agents) {
+      const a = x.name;
+      const online = !!x.online;
       const inbox = (r.messages && r.messages.inbox && r.messages.inbox[a]) || 0;
       const outbox = (r.messages && r.messages.outbox && r.messages.outbox[a]) || 0;
       const av = agentAvatar(a);
       const label = agentLabel(a);
-      agentChips += '<div class="agent-chip" title="' + esc(label) + '（' + esc(a) + '）收件/发件消息数">' +
+      agentChips += '<div class="agent-chip' + (online ? '' : ' offline') + '" title="' + esc(label) + '（' + esc(a) + '）' + (online ? '在线' : '离线') + ' · 收件/发件消息数">' +
         (av ? '<img class="av-img" src="' + av + '" alt="" onerror="this.style.display=\'none\'">' :
               '<span class="av" style="background:' + (AGENT_AV[a] || 'linear-gradient(135deg,#94a3b8,#cbd5e1)') + '">' + esc(String(label).charAt(0)) + '</span>') +
         '<b>' + esc(label) + '</b>' +
+        '<span class="dot' + (online ? '' : ' off') + '"></span>' +
         '<span class="io">收 <b>' + inbox + '</b> · 发 <b>' + outbox + '</b></span></div>';
     }
   }

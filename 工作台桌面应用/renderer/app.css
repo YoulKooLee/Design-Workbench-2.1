@@ -364,6 +364,9 @@ td .muted,span.muted{color:var(--placeholder)}
 .kpi-sub{font-size:11px;color:var(--text-3);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .agent-strip{display:flex;gap:10px;flex-wrap:wrap}
 .agent-chip{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:12px;box-shadow:var(--shadow)}
+.agent-chip.offline{opacity:.55;filter:grayscale(.6)}
+.agent-chip .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 0 2px rgba(34,197,94,.18)}
+.agent-chip .dot.off{background:#cbd5e1;box-shadow:none}
 .agent-chip .av{width:26px;height:26px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
 .agent-chip .av-img{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}
 .agent-chip b{font-weight:600;color:var(--text)}
