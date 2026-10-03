@@ -155,6 +155,8 @@ button{font-family:var(--font);border:none;background:none;cursor:pointer;color:
 .panel-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-card);box-shadow:var(--shadow);overflow:hidden}
 /* 长表格滚动容器：列表超高时在卡片内滚动，内容完整可访问 */
 .table-scroll{max-height:calc(100vh - 330px);overflow-y:auto}
+/* 通信看板房间列表：页面上方还有 KPI 卡与智能体条带，收紧高度让卡片内滚动优先 */
+.table-scroll.collab-rooms{max-height:calc(100vh - 380px)}
 /* 滚动条样式（主区 + 表格容器 + 弹窗）：更宽更明显，便于发现可滚动 */
 .main::-webkit-scrollbar,.table-scroll::-webkit-scrollbar,.modal-body::-webkit-scrollbar{width:10px;height:10px}
 .main::-webkit-scrollbar-thumb,.table-scroll::-webkit-scrollbar-thumb,.modal-body::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:5px;border:2px solid transparent;background-clip:content-box}

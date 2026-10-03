@@ -1209,7 +1209,7 @@ async function renderCollab() {
   card.className = 'panel-card';
   card.innerHTML =
     '<div class="card-head"><h3>协作房间</h3><span class="count">' + rooms.length + ' 个</span></div>' +
-    '<table><thead><tr><th>房间</th><th style="width:80px">消息数</th><th>任务说明</th><th style="width:90px">产物</th><th style="width:110px;text-align:right">操作</th></tr></thead>' +
+    '<div class="table-scroll collab-rooms"><table><thead><tr><th>房间</th><th style="width:80px">消息数</th><th>任务说明</th><th style="width:90px">产物</th><th style="width:110px;text-align:right">操作</th></tr></thead>' +
     '<tbody>' + (rooms.length ? rooms.map((rm) =>
       '<tr>' +
         '<td><span class="t-name">' + esc(rm.name) + '</span></td>' +
@@ -1218,7 +1218,7 @@ async function renderCollab() {
         '<td>' + (rm.hasArtifacts ? '<button class="op-btn accent" data-act="artifacts" data-name="' + esc(encodeURIComponent(rm.name)) + '" title="打开该房间产物文件夹">有产物</button>' : '<span class="muted">—</span>') + '</td>' +
         '<td><div class="t-ops"><button class="op-btn" data-act="room" data-name="' + esc(encodeURIComponent(rm.name)) + '">查看对话</button></div></td>' +
       '</tr>'
-    ).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--placeholder);padding:30px 0">暂无协作房间</td></tr>') + '</tbody></table>';
+    ).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--placeholder);padding:30px 0">暂无协作房间</td></tr>') + '</tbody></table></div>';
   $('#main').appendChild(card);
 
   // 查看对话
