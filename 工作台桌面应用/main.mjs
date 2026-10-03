@@ -81,7 +81,8 @@ async function ensurePanel() {
   }
   for (let i = 0; i < 15; i++) {
     await new Promise((r) => setTimeout(r, 1000));
-    if (await isPanelAlive()) return true;
+    const st = await probePanel();
+    if (st.alive && st.owned) return true;
   }
   return false;
 }

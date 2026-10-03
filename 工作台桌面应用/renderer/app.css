@@ -153,6 +153,13 @@ button{font-family:var(--font);border:none;background:none;cursor:pointer;color:
 
 /* 项目表格 */
 .panel-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-card);box-shadow:var(--shadow);overflow:hidden}
+/* 长表格滚动容器：列表超高时在卡片内滚动，内容完整可访问 */
+.table-scroll{max-height:calc(100vh - 330px);overflow-y:auto}
+/* 滚动条样式（主区 + 表格容器 + 弹窗）：更宽更明显，便于发现可滚动 */
+.main::-webkit-scrollbar,.table-scroll::-webkit-scrollbar,.modal-body::-webkit-scrollbar{width:10px;height:10px}
+.main::-webkit-scrollbar-thumb,.table-scroll::-webkit-scrollbar-thumb,.modal-body::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:5px;border:2px solid transparent;background-clip:content-box}
+.main::-webkit-scrollbar-thumb:hover,.table-scroll::-webkit-scrollbar-thumb:hover{background:#94A3B8;background-clip:content-box}
+.main::-webkit-scrollbar-track,.table-scroll::-webkit-scrollbar-track{background:transparent}
 .panel-card .card-head{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line-inner)}
 .panel-card .card-head h3{font-size:14px;font-weight:700}
 .panel-card .card-head .count{font-size:11px;color:var(--text-3);margin-left:8px}

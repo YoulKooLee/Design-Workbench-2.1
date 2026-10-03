@@ -627,8 +627,8 @@ async function renderSkills() {
   const card = document.createElement('div');
   card.className = 'panel-card';
   card.innerHTML =
-    '<table><thead><tr><th style="width:15%">Skill 名称</th><th style="width:24%">文件路径</th><th>功能说明</th><th>适用场景</th><th style="width:132px;text-align:right">操作</th></tr></thead>' +
-    '<tbody id="skillRows"></tbody></table>';
+    '<div class="table-scroll"><table><thead><tr><th style="width:15%">Skill 名称</th><th style="width:24%">文件路径</th><th>功能说明</th><th>适用场景</th><th style="width:132px;text-align:right">操作</th></tr></thead>' +
+    '<tbody id="skillRows"></tbody></table></div>';
   const tb = $('#skillRows', card);
   if (!skills.length) tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--placeholder);padding:30px 0">暂无 Skill</td></tr>';
   else tb.innerHTML = skills.map((s) =>
@@ -716,7 +716,7 @@ async function renderKnowledge() {
   const card = document.createElement('div');
   card.className = 'panel-card';
   card.innerHTML =
-    '<table><thead><tr><th style="width:22%">名称</th><th style="width:30%">文件路径</th><th>适用场景</th><th style="width:132px;text-align:right">操作</th></tr></thead>' +
+    '<div class="table-scroll"><table><thead><tr><th style="width:22%">名称</th><th style="width:30%">文件路径</th><th>适用场景</th><th style="width:132px;text-align:right">操作</th></tr></thead>' +
     '<tbody>' + (items.length ? items.map((it) =>
       '<tr>' +
         '<td><span class="t-name">' + esc(it.name) + '</span></td>' +
@@ -725,7 +725,7 @@ async function renderKnowledge() {
         '<td><div class="t-ops"><button class="op-btn" data-edit="' + esc(encodeURIComponent(it.path)) + '">编辑</button>' +
         '<button class="op-btn danger" data-rel="' + esc(encodeURIComponent(it.path)) + '">删除</button></div></td>' +
       '</tr>'
-    ).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--placeholder);padding:30px 0">暂无知识文档</td></tr>') + '</tbody></table>';
+    ).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--placeholder);padding:30px 0">暂无知识文档</td></tr>') + '</tbody></table></div>';
   $('#main').appendChild(card);
 
   let kbDir = 'knowledge/';
