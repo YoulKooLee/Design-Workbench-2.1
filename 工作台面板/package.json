@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Axhub 工作台 —— 项目管理与 Skill/知识库/工作规则 资产管理面板",
+  "engines": {
+    "node": ">=18"
+  },
+  "description": "Axhub 工作台 —— 项目管理与 Skill/知识库/工作规则 资产管理面板（启动：启动工作台.cmd）",
   "scripts": {
     "start": "node server.mjs"
   }

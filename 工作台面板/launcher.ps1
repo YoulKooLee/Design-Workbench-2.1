@@ -6,7 +6,7 @@
 $ErrorActionPreference = 'Continue'
 $OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-$root = $PSScriptRoot                    # launcher.ps1 位于工作台根目录
+$root = Split-Path $PSScriptRoot -Parent       # launcher.ps1 位于 工作台面板/，工作台根为上一级
 # 端口监听查询（netstat 解析：部分环境 NetTCPIP 模块异常导致 Get-NetTCPConnection 失效，改用系统自带 netstat，跨机器稳定）
 function Get-ListenPids([int]$Port) {
     $pids = @()

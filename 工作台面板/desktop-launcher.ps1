@@ -1,6 +1,6 @@
 ﻿# 产品设计工作台 · 桌面应用启动器（UTF-8 BOM，PowerShell 5.1 正确解析中文）
 $ErrorActionPreference = 'Stop'
-$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)   # 位于 工作台面板/，工作台根为上两级
 $appDir = Join-Path $root '工作台桌面应用'
 $exe = Join-Path $appDir 'node_modules\electron\dist\electron.exe'
 if (-not (Test-Path $exe)) {

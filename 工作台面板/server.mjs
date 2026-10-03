@@ -44,7 +44,7 @@ const RULES_DIR = path.join(LIBRARY_DIR, 'rules');
 // 取值优先级：环境变量 > config > 硬编码兜底。
 const CFG = (() => {
   try {
-    return JSON.parse(fs.readFileSync(path.join(AXHUB_ROOT, 'workbench.config.json'), 'utf-8'));
+    return JSON.parse(fs.readFileSync(path.join(__dirname, 'workbench.config.json'), 'utf-8'));
   } catch (e) {
     // 千问 P2-13：配置缺失显式告警，不静默降级
     console.error(`[config] 警告：无法读取 workbench.config.json（${e.message}），使用内置兜底值`);
@@ -88,7 +88,8 @@ const UPDATE_CONFIG_FILE = path.join(WORKSPACE_DIR, 'update-config.json');
 const UPDATE_REMOTE_REF = 'origin/main';
 // 更新检查远端配置：githubUrl（可选）+ branch（默认 main）；配置了 githubUrl 时不再依赖本机 git remote origin
 const UPDATE_CFG_REF = 'refs/remotes/update/main';
-let updateConfig = { githubUrl: '', branch: 'main' };
+// 更新配置：githubUrl（可选）+ branch（默认 main）+ checkTime（每天检查时间 HH:mm）+ checkOnStartup（启动时是否检查）
+let updateConfig = { githubUrl: '', branch: 'main', checkTime: '05:00', checkOnStartup: true };
 function loadUpdateConfig() {
   try {
     if (fs.existsSync(UPDATE_CONFIG_FILE)) {
@@ -96,11 +97,13 @@ function loadUpdateConfig() {
       updateConfig = {
         githubUrl: (typeof raw.githubUrl === 'string' ? raw.githubUrl : '').trim(),
         branch: (typeof raw.branch === 'string' && raw.branch.trim()) ? raw.branch.trim() : 'main',
+        checkTime: (typeof raw.checkTime === 'string' && /^\d{2}:\d{2}$/.test(raw.checkTime)) ? raw.checkTime : '05:00',
+        checkOnStartup: raw.checkOnStartup !== false,
       };
     } else {
-      updateConfig = { githubUrl: '', branch: 'main' };
+      updateConfig = { githubUrl: '', branch: 'main', checkTime: '05:00', checkOnStartup: true };
     }
-  } catch { updateConfig = { githubUrl: '', branch: 'main' }; }
+  } catch { updateConfig = { githubUrl: '', branch: 'main', checkTime: '05:00', checkOnStartup: true }; }
   return updateConfig;
 }
 function saveUpdateConfig(cfg) {
@@ -1145,14 +1148,20 @@ async function checkForUpdates(source = 'manual') {
   return updateState;
 }
 
-// 每天 5:00 被动检查一次；到点执行后重新调度下一天（面板常驻时持续生效）
+// 每天按配置时间（checkTime，默认 05:00）被动检查一次；到点执行后重新调度下一天（面板常驻时持续生效）
+let dailyUpdateTimer = null;
 function scheduleDailyUpdateCheck() {
+  if (dailyUpdateTimer) { clearTimeout(dailyUpdateTimer); dailyUpdateTimer = null; }
+  const cfg = loadUpdateConfig();
+  const parts = (cfg.checkTime || '05:00').split(':').map(Number);
+  const h = Number.isFinite(parts[0]) ? parts[0] : 5;
+  const m = Number.isFinite(parts[1]) ? parts[1] : 0;
   const now = new Date();
   const next = new Date(now);
-  next.setHours(5, 0, 0, 0);
+  next.setHours(h, m, 0, 0);
   if (next.getTime() <= now.getTime()) next.setDate(next.getDate() + 1);
   const delay = Math.max(1000, next.getTime() - now.getTime());
-  setTimeout(async () => {
+  dailyUpdateTimer = setTimeout(async () => {
     try { await checkForUpdates('scheduled'); } catch { /* 定时检查失败静默，下一天重试 */ }
     scheduleDailyUpdateCheck();
   }, delay);
@@ -1955,7 +1964,7 @@ const server = http.createServer(async (req, res) => {
   // 重启 Make 管理端（全局单例 53817）
   // 退出工作台：等价于运行「停止工作台.cmd」（停 7788 / 53817 / 32124 / Vite / 8899 + 清理状态）
   if (p === '/api/shutdown' && method === 'POST') {
-    const script = path.join(AXHUB_ROOT, '停止工作台.cmd');
+    const script = path.join(__dirname, '停止工作台.cmd');
     if (!fs.existsSync(script)) return sendError(res, '未找到 停止工作台.cmd');
     try {
       // 1) 独立进程运行停止脚本（detached + unref），随后本服务自行退出
@@ -2941,9 +2950,9 @@ const server = http.createServer(async (req, res) => {
   if (p === '/api/update/config' && method === 'GET') {
     const cfg = loadUpdateConfig();
     const originUrl = runGit(['config', '--get', 'remote.origin.url']);
-    return send(res, 200, { ok: true, githubUrl: cfg.githubUrl, branch: cfg.branch, remoteUrl: originUrl.ok ? originUrl.out : '' });
+    return send(res, 200, { ok: true, githubUrl: cfg.githubUrl, branch: cfg.branch, checkTime: cfg.checkTime, checkOnStartup: cfg.checkOnStartup, remoteUrl: originUrl.ok ? originUrl.out : '' });
   }
-  // POST /api/update/config：保存配置（githubUrl 留空则恢复使用本机 origin）
+  // POST /api/update/config：保存配置（githubUrl 留空则恢复使用本机 origin；checkTime/checkOnStartup 控制自动检查）
   if (p === '/api/update/config' && method === 'POST') {
     try {
       const body = await readBody(req);
@@ -2955,10 +2964,13 @@ const server = http.createServer(async (req, res) => {
       if (!/^[A-Za-z0-9._\/-]+$/.test(branch)) {
         return send(res, 200, { ok: false, msg: '分支名包含非法字符' });
       }
-      const cfg = { githubUrl, branch };
+      const checkTime = (typeof body.checkTime === 'string' && /^\d{2}:\d{2}$/.test(body.checkTime.trim())) ? body.checkTime.trim() : '05:00';
+      const checkOnStartup = body.checkOnStartup !== false;
+      const cfg = { githubUrl, branch, checkTime, checkOnStartup };
       updateConfig = cfg;
       saveUpdateConfig(cfg);
-      return send(res, 200, { ok: true, msg: githubUrl ? `已保存 GitHub 仓库：${githubUrl}（分支 ${branch}），下次检查更新将同步该仓库` : '已清空配置，恢复使用本机 git remote origin' });
+      scheduleDailyUpdateCheck(); // 检查时间变更后立即重排定时
+      return send(res, 200, { ok: true, msg: '更新检查配置已保存' });
     } catch (e) {
       return send(res, 200, { ok: false, msg: '配置解析失败：' + (e.message || e) });
     }
@@ -2971,11 +2983,11 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, BIND_HOST, () => {
   console.log(`产品设计工作台已启动: http://localhost:${PORT}`);
   // 浏览器标签页统一由 启动工作台.cmd 负责打开，避免重复开标签页，故此处不再自动打开
-  // 更新检查：恢复上次检查状态 → 每天 5 点定时检查 → 启动 8 秒后补查一次（覆盖 5 点未开机的情况）
+  // 更新检查：恢复上次检查状态 → 按配置时间定时检查 → 启动补查（可在设置页关闭）
   loadUpdateState();
   loadUpdateConfig();
   scheduleDailyUpdateCheck();
-  setTimeout(() => { checkForUpdates('startup').catch(() => {}); }, 8000);
+  if (updateConfig.checkOnStartup) setTimeout(() => { checkForUpdates('startup').catch(() => {}); }, 8000);
 });
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {

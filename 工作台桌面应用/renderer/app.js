@@ -274,30 +274,36 @@ function showUpdateModal(r) {
 }
 $('#updateBtn').onclick = () => refreshUpdateStatus(true);
 
-// ===== 设置页 · 更新检查 GitHub 仓库配置 =====
+// ===== 设置页 · 更新检查配置 =====
 async function loadUpdateConfigUI() {
   const urlInput = $('#cfgGitUrl');
-  const branchInput = $('#cfgBranch');
-  const hint = $('#cfgHint');
   if (!urlInput) return;
+  const branchInput = $('#cfgBranch');
+  const timeInput = $('#cfgTime');
+  const startupChk = $('#cfgStartup');
   const r = await api('GET', '/api/update/config');
   if (r && r.ok) {
     urlInput.value = r.githubUrl || '';
     branchInput.value = (r.branch && r.branch.trim()) || 'main';
-    hint.textContent = r.remoteUrl
-      ? '当前使用：本机 git remote origin → ' + r.remoteUrl + (r.githubUrl ? '（已配置覆盖，留空可恢复 origin）' : '')
-      : '本机未配置 git remote origin，填写上方地址后即可检查更新';
+    if (timeInput) timeInput.value = r.checkTime || '05:00';
+    if (startupChk) startupChk.checked = r.checkOnStartup !== false;
   }
   const saveBtn = $('#cfgSave');
   if (saveBtn) saveBtn.onclick = async () => {
     const githubUrl = urlInput.value.trim();
     const branch = branchInput.value.trim() || 'main';
+    const checkTime = (timeInput.value || '').trim() || '05:00';
+    const checkOnStartup = startupChk.checked;
     if (githubUrl && !/^(https?:\/\/|git@|ssh:\/\/)/i.test(githubUrl)) {
       toast('GitHub 地址格式不正确（需 https:// 或 git@ssh 形式）', 'err');
       return;
     }
+    if (!/^\d{2}:\d{2}$/.test(checkTime)) {
+      toast('检查时间格式不正确（需 HH:mm，如 05:00）', 'err');
+      return;
+    }
     saveBtn.disabled = true;
-    const pr = await api('POST', '/api/update/config', { githubUrl, branch });
+    const pr = await api('POST', '/api/update/config', { githubUrl, branch, checkTime, checkOnStartup });
     saveBtn.disabled = false;
     toast(pr.msg, pr.ok ? 'ok' : 'err');
     if (pr.ok) { updateInfo = null; applyUpdateBadge(); loadUpdateConfigUI(); }
@@ -417,6 +423,7 @@ async function renderProjects(search) {
     '<div><h2>项目管理</h2><div class="summary" id="projSummary">加载中…</div></div>' +
     '<div class="page-actions">' +
       '<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="projSearch" placeholder="搜索项目…" value="' + esc(kw0) + '"></div>' +
+      '<button class="btn" id="trashBtn" title="查看 05-回收站 中已删除的项目并还原">回收站</button>' +
       '<button class="btn btn-primary" id="newProjectBtn" title="快捷键 Ctrl+N"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>新建项目</button>' +
     '</div>';
   $('#main').appendChild(head);
@@ -473,6 +480,7 @@ async function renderProjects(search) {
     window.__searchT = setTimeout(() => { $('#main').innerHTML = ''; renderProjects(e.target.value); }, 350);
   });
   $('#newProjectBtn').onclick = openNewProject;
+  $('#trashBtn').onclick = showTrash;
   $$('[data-op]', card).forEach((btn) => {
     btn.onclick = async () => {
       const rel = btn.dataset.rel;
@@ -1290,15 +1298,15 @@ async function renderView(view) {
       card.innerHTML =
         '<div class="list-item"><div class="item-body"><div class="item-title">服务地址</div><div class="item-desc">面板 http://localhost:7788 · Make http://localhost:53817</div></div></div>' +
         '<div class="list-item"><div class="item-body"><div class="item-title">更新检查 · GitHub 仓库</div>' +
-        '<div class="item-desc">配置后「检查更新」将同步该仓库；留空则使用本机 git remote origin 的配置</div>' +
         '<div class="kb-dir-row" style="margin-top:10px">' +
         '<div class="kb-dir" style="flex:1"><input id="cfgGitUrl" placeholder="https://github.com/用户/仓库.git 或 git@github.com:用户/仓库.git" style="width:100%"></div>' +
-        '<div class="kb-dir" style="flex:0 0 110px"><input id="cfgBranch" placeholder="分支 main" value="main" style="width:100%"></div>' +
+        '<div class="kb-dir" style="flex:0 0 90px"><input id="cfgBranch" placeholder="分支" value="main" style="width:100%"></div>' +
+        '<div class="kb-dir" style="flex:0 0 80px"><input id="cfgTime" placeholder="检查时间" value="05:00" style="width:100%"></div>' +
+        '<label class="kb-dir" style="flex:0 0 auto;display:flex;align-items:center;gap:5px;white-space:nowrap"><input type="checkbox" id="cfgStartup" style="width:auto">启动时检查</label>' +
         '<button class="btn btn-primary" id="cfgSave" style="flex:0 0 auto">保存</button>' +
         '</div>' +
-        '<div class="item-desc" id="cfgHint" style="margin-top:8px"></div>' +
         '</div></div>' +
-        '<div class="list-item"><div class="item-body"><div class="item-title">更新检查</div><div class="item-desc">每天 5:00 自动检查 GitHub 更新，启动时补查一次</div></div></div>' +
+        '<div class="list-item"><div class="item-body"><div class="item-title">更新检查</div><div class="item-desc">按上方配置的时间自动检查更新，启动时是否检查可开关</div></div></div>' +
         '<div class="list-item"><div class="item-body"><div class="item-title">版本</div><div class="item-desc">产品设计工作台 v3.1 · Electron 桌面应用</div></div></div>';
       $('#main').appendChild(card);
       loadUpdateConfigUI();
@@ -1317,6 +1325,45 @@ async function refreshStatusbar() {
   const dot = $('#healthDot');
   dot.className = 'health-dot' + (ok ? '' : ' off');
   $('#healthText').textContent = ok ? '服务健康 · 面板运行中' : '面板未连接';
+}
+
+// ===== 回收站（列出已删除项目 + 还原 + 清空）=====
+async function showTrash() {
+  openModal('<h3>回收站</h3><div id="trashBody" style="min-height:90px"><span class="spinner"></span>读取中…</div>' +
+    '<div class="modal-ops"><button class="btn btn-danger" id="trashClearBtn" disabled>清空回收站</button>' +
+    '<button class="btn btn-ghost" onclick="window.__closeModal()">关闭</button></div>', true);
+  window.__closeModal = closeModal;
+  const r = await api('GET', '/api/trash');
+  if (!r || !r.ok) { $('#trashBody').innerHTML = '<div class="empty">读取回收站失败</div>'; return; }
+  const items = r.items || [];
+  const clearBtn = $('#trashClearBtn');
+  clearBtn.disabled = items.length === 0;
+  if (items.length === 0) {
+    $('#trashBody').innerHTML = '<div class="empty">回收站为空</div><div style="text-align:center;color:var(--text-3);font-size:12px;margin-top:6px">删除项目会移入 05-回收站（非彻底删除），可在此还原</div>';
+    return;
+  }
+  const rows = items.map((it) => {
+    const delTxt = it.deletedAt ? new Date(it.deletedAt).toLocaleString('zh-CN', { hour12: false }) : '';
+    return '<tr><td><b>' + esc(it.name) + '</b></td><td style="color:var(--text-3)">' + delTxt + '</td>' +
+      '<td style="text-align:right"><button class="op-btn" data-restore="' + esc(it.id) + '">还原</button></td></tr>';
+  }).join('');
+  $('#trashBody').innerHTML = '<div style="color:var(--text-3);font-size:12px;margin:2px 0 10px">已删除项目（05-回收站），点击「还原」移回 01-项目；若已有同名目录将拒绝还原。清空将彻底删除，不可恢复。</div>' +
+    '<table><thead><tr><th>项目</th><th>删除时间</th><th style="text-align:right">操作</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  clearBtn.onclick = () => {
+    confirmModal('清空回收站', '将彻底删除回收站中全部 <b>' + items.length + '</b> 个回收项，此操作不可恢复。确定清空吗？', async () => {
+      const rr = await api('POST', '/api/trash/clear');
+      toast(rr.msg, rr.ok ? 'ok' : 'err');
+      if (rr.ok) setTimeout(showTrash, 5000);
+    }, '确认清空', true);
+  };
+  $$('[data-restore]', $('#trashBody')).forEach((btn) => {
+    btn.onclick = async () => {
+      btn.disabled = true;
+      const r2 = await api('POST', '/api/trash/restore', { id: btn.dataset.restore });
+      toast(r2.msg, r2.ok ? 'ok' : 'err');
+      if (r2.ok) { showTrash(); refreshProjects(); } else { btn.disabled = false; }
+    };
+  });
 }
 
 // ===== 刷新与轮询 =====
