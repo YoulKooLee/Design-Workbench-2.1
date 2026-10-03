@@ -63,6 +63,8 @@ function appendLogRotate(file, text) {
   } catch { /* 日志失败不致命 */ }
 }
 const BIND_HOST = CFG.workbench?.bindHost || '127.0.0.1';
+// 智能体监听禁用标记：用户显式「关闭监听」后，自动保活不再拉起（本机 07-日志，非共享目录）
+const LISTEN_DISABLED_FLAG = path.join(AXHUB_ROOT, '07-日志', 'listen-disabled.flag');
 // Make-Template 页面模板目录（新增项目可选模板；可经 workbench.config.json 的 workbench.makeTemplatesDir 覆盖）
 const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench?.makeTemplatesDir || path.join(AXHUB_ROOT, '03-组件库', '02-页面模板');
 
@@ -1991,6 +1993,7 @@ const server = http.createServer(async (req, res) => {
 
   // 启动所有智能体监听（等价于 09-协作/messages/tools/启动所有智能体监听.bat，直接 spawn node 避免 bat 编码问题）
   if (p === '/api/listen/start' && method === 'POST') {
+    try { fs.rmSync(LISTEN_DISABLED_FLAG, { force: true }); } catch {}
     const toolsDir = path.join(AXHUB_ROOT, '09-协作', 'messages', 'tools');
     const node = process.env.NODE_BIN || 'C:\\Program Files\\nodejs\\node.exe';
     const started = [];
@@ -2024,6 +2027,8 @@ const server = http.createServer(async (req, res) => {
   // 关闭所有智能体监听
   if (p === '/api/listen/stop' && method === 'POST') {
     try {
+      // 写禁用标记：关闭后自动保活不再拉起（手动「启动监听」时清除）
+      try { fs.mkdirSync(path.dirname(LISTEN_DISABLED_FLAG), { recursive: true }); fs.writeFileSync(LISTEN_DISABLED_FLAG, String(Date.now()), 'utf8'); } catch {}
       spawnSync('powershell', ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"], { encoding: 'utf8', windowsHide: true, timeout: 10000 });
       const st = spawnSync('powershell', ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | Select-Object -ExpandProperty ProcessId"], { encoding: 'utf8', windowsHide: true, timeout: 8000 });
       const left = String(st.stdout || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
@@ -3005,8 +3010,9 @@ const server = http.createServer(async (req, res) => {
   send(res, 404, { ok: false, msg: 'Not Found' });
 });
 
-// 智能体监听常驻保活：面板运行期间保证两个 watcher 在跑（缺失即拉起，供心跳写入与在线判定）
+// 智能体监听常驻保活：面板运行期间保证 watcher 在跑（缺失即拉起）；用户显式「关闭监听」后不拉起
 function ensureAgentWatchers() {
+  if (fs.existsSync(LISTEN_DISABLED_FLAG)) return; // 用户已手动关闭，尊重关闭意图
   try {
     const toolsDir = path.join(AXHUB_ROOT, '09-协作', 'messages', 'tools');
     const node = process.env.NODE_BIN || process.execPath || 'C:\\Program Files\\nodejs\\node.exe';
