@@ -3005,6 +3005,32 @@ const server = http.createServer(async (req, res) => {
   send(res, 404, { ok: false, msg: 'Not Found' });
 });
 
+// 智能体监听常驻保活：面板运行期间保证两个 watcher 在跑（缺失即拉起，供心跳写入与在线判定）
+function ensureAgentWatchers() {
+  try {
+    const toolsDir = path.join(AXHUB_ROOT, '09-协作', 'messages', 'tools');
+    const node = process.env.NODE_BIN || process.execPath || 'C:\\Program Files\\nodejs\\node.exe';
+    const ps = (cmd) => spawnSync('powershell', ['-NoProfile', '-Command', cmd], { encoding: 'utf8', windowsHide: true, timeout: 8000 }).stdout || '';
+    const pids = ps("Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | Select-Object -ExpandProperty ProcessId").split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    const need = new Set(['agent-hub-watcher.mjs']); // 心跳/在线判定只需 hub-watcher；inbox-watcher 依赖 dsh 引擎，缺失时不自动拉起（可手动 /api/listen/start）
+    for (const pid of pids) {
+      const detail = ps(`(Get-CimInstance Win32_Process -Filter 'ProcessId=${pid}').CommandLine`) || '';
+      if (/agent-hub-watcher\.mjs/.test(detail)) need.delete('agent-hub-watcher.mjs');
+      if (/inbox-watcher\.mjs/.test(detail)) need.delete('inbox-watcher.mjs');
+    }
+    for (const m of [...need]) {
+      const script = path.join(toolsDir, m);
+      if (!fs.existsSync(script)) { continue; }
+      const child = spawn(node, [m], { cwd: toolsDir, detached: true, stdio: 'ignore', windowsHide: true });
+      child.on('error', (e) => { try { console.error('[spawn] 监听拉起失败:', m, e.message); } catch {} });
+      child.unref();
+      try { console.log('[watcher] 已拉起缺失监听:', m); } catch {}
+    }
+  } catch (e) {
+    try { console.error('[watcher] 保活检查失败:', e.message); } catch {}
+  }
+}
+
 server.listen(PORT, BIND_HOST, () => {
   console.log(`产品设计工作台已启动: http://localhost:${PORT}`);
   // 浏览器标签页统一由 启动工作台.cmd 负责打开，避免重复开标签页，故此处不再自动打开
@@ -3013,6 +3039,9 @@ server.listen(PORT, BIND_HOST, () => {
   loadUpdateConfig();
   scheduleDailyUpdateCheck();
   if (updateConfig.checkOnStartup) setTimeout(() => { checkForUpdates('startup').catch(() => {}); }, 8000);
+  // 智能体监听自动拉起 + 保活：工作台运行期间 watcher 常驻，心跳持续写入，看板在线判定真实可用
+  ensureAgentWatchers();
+  setInterval(ensureAgentWatchers, 60000);
 });
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {

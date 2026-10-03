@@ -163,6 +163,11 @@ function main() {
 
   setInterval(() => {
     if (!config.enabled) return;
+    // 周期心跳：监听常驻期间，所有启用智能体视为协作网内在线（供面板在线判定，心跳常新不过期）
+    for (const a of AGENTS) {
+      if (config.agents[a] === false) continue;
+      writeHeartbeat(a);
+    }
     const found = scan();
     for (const { msg, agent, dsHandled } of found) {
       if (dsHandled) { log(`已由 DeepSeek watcher 处理，跳过弹窗: ${msg.message_id}`); continue; }
