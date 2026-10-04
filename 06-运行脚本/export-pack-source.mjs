@@ -15,10 +15,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 
 // ---- 白名单（只导出这些顶层条目；源中不存在的自动跳过并提示）----
+// 打包范围（用户 2026-10-04 指令）：除 03-组件库 组件外，其他输出文档不纳入打包。
+// 保留：组件库（核心资产）+ 运行必需（模板/脚本/面板/桌面应用源码）；排除：04-维护台账 等文档类。
 const WHITELIST = [
-  '02-模板',          // 模板中央库（含 _project-template 知识库/规则）
-  '03-组件库',        // 组件库（页面模板/补丁源）
-  '04-维护台账',      // 维护台账
+  '02-模板',          // 模板中央库（含 _project-template 知识库/规则/skills，功能必需）
+  '03-组件库',        // 组件库（页面模板/组件资产，用户点名必须打包）
   '06-运行脚本',      // 运行脚本
   '工作台面板',       // 面板 server/renderer
   '工作台桌面应用',   // Electron 源码（不含 node_modules/dist，由 git 跟踪状态保证）
@@ -27,8 +28,8 @@ const WHITELIST = [
 const WHITELIST_ABSENT = ['00-工作台', 'README.md'];
 
 // ---- 明确排除（路径段命中任一即报错；.git 指目录段，不含 .gitignore/.gitkeep 文件名）----
-const EXCLUDE_SEGMENTS = new Set(['08-文档', '09-协作', '10-智能体记忆', 'node_modules', '.git']);
-const EXCLUDE_PREFIX = ['08-文档/', '09-协作/', '10-智能体记忆/', '.git/', '工作台桌面应用/dist/'];
+const EXCLUDE_SEGMENTS = new Set(['08-文档', '09-协作', '10-智能体记忆', '04-维护台账', 'node_modules', '.git']);
+const EXCLUDE_PREFIX = ['08-文档/', '09-协作/', '10-智能体记忆/', '04-维护台账/', '.git/', '工作台桌面应用/dist/'];
 
 // ---- 导出后必须创建的空目录（用户数据/运行时目录，分发版留空）----
 const EMPTY_DIRS = [
@@ -67,7 +68,7 @@ function main() {
     }
   }
   // 提示被排除的顶层目录是否有跟踪文件（应全部排除）
-  for (const x of ['08-文档', '09-协作', '10-智能体记忆']) {
+  for (const x of ['08-文档', '09-协作', '10-智能体记忆', '04-维护台账']) {
     const n = tracked.filter((f) => f.startsWith(x + '/')).length;
     console.log(`[export] 排除检查：${x}/ 跟踪文件 ${n} 个（应全部排除）`);
   }
@@ -123,13 +124,28 @@ function main() {
     for (const b of bad.slice(0, 30)) console.error('  HIT:', b);
     process.exit(1);
   }
-  console.log('[export] 自检通过：导出目录中 08-文档/09-协作/10-智能体记忆/node_modules/.git 目录段零命中（共扫描', selfCheck.length, '个文件）');
+  console.log('[export] 自检通过：导出目录中 08-文档/09-协作/10-智能体记忆/04-维护台账/node_modules/.git 目录段零命中（共扫描', selfCheck.length, '个文件）');
 
   // ---- 版本记录 ----
   const head = sh(['rev-parse', 'HEAD']).trim();
   const tag = (() => { try { return sh(['describe', '--tags', '--always', 'HEAD']).trim(); } catch { return '(无 tag)'; } })();
   fs.writeFileSync(path.join(DEST, 'EXPORT-MANIFEST.txt'),
     `导出来源: git HEAD ${head}\n导出时标签: ${tag}\n导出时间: ${new Date().toISOString()}\n白名单: ${WHITELIST.join(', ')}\n排除: ${[...EXCLUDE_SEGMENTS].join(', ')}\n`, 'utf8');
+  // BUILD.md：重打包指引（自动生成，防止清空重建后丢失）
+  fs.writeFileSync(path.join(DEST, 'BUILD.md'),
+    `# 发布版 Workbench 源（打包输出-v2）\n\n` +
+    `> 本目录由 \`06-运行脚本/export-pack-source.mjs\` 从 **git HEAD** 白名单导出（HEAD=${head}）。\n` +
+    `> 打包范围（2026-10-04 用户指令）：**除 03-组件库 组件外，其他输出文档不纳入打包**。\n\n` +
+    `## 包含\n- 组件：\`03-组件库/\`（4352 文件，核心资产，必须打包）\n` +
+    `- 运行必需：\`02-模板/\`（项目/知识库/规则/Skill 依赖）、\`06-运行脚本/\`、\`工作台面板/\`、\`工作台桌面应用/\`（源码，不含 node_modules/dist）\n` +
+    `- 空目录：\`01-项目/\`、\`07-日志/\`（含 .gitkeep，运行时生成）\n\n` +
+    `## 排除（零命中自检）\n\`08-文档\` \`09-协作\` \`10-智能体记忆\` \`04-维护台账\` \`node_modules\` \`.git\` \`工作台桌面应用/dist\`\n\n` +
+    `## 内置 tools（portable 运行时）\n- portable node：node-v22.23.2-win-x64（约 94.9MB），来源 \`08-文档/打包输出/tools/node\`（旧产物，勿删勿改）\n` +
+    `- 引用：\`工作台桌面应用/package.json\` → \`build.extraResources\`\n\n` +
+    `## 重打包步骤（详见 \`工作台桌面应用/BUILD-v2.md\`）\n` +
+    `1. \`node 06-运行脚本/export-pack-source.mjs\`（刷新本目录为最新 HEAD）\n` +
+    `2. \`工作台桌面应用/package.json\` extraResources 指向 \`../08-文档/打包输出-v2/workbench\` 与 \`../08-文档/打包输出/tools\`\n` +
+    `3. \`工作台桌面应用\` 下 \`npm run dist\`（electron-builder 产出安装包）\n`, 'utf8');
   console.log('[export] 完成 →', DEST);
   console.log('[export] HEAD:', head, `(${tag})`);
 }

@@ -413,9 +413,14 @@ function pageHead(title, summary) {
 async function loadServiceCards(projOk, ctxCache) {
   const wrap = document.createElement('div');
   wrap.className = 'service-cards';
+  // 服务卡片请求加超时兜底：collab/overview 或 listen/status 慢/挂起时 5s 降级，避免项目管理页长期停在「加载中」
+  const withTimeout = (p, ms) => Promise.race([
+    p,
+    new Promise((res) => setTimeout(() => res({ ok: false, msg: 'timeout' }), ms)),
+  ]);
   const [collab, listenRes] = await Promise.all([
-    api('GET', '/api/collab/overview').catch(() => null),
-    api('GET', '/api/listen/status').catch(() => null),
+    withTimeout(api('GET', '/api/collab/overview'), 5000).catch(() => null),
+    withTimeout(api('GET', '/api/listen/status'), 5000).catch(() => null),
   ]);
   const inboxTotal = (collab && collab.messagesTotal && collab.messagesTotal.inbox) || 0;
   const makeOk = !!projOk;

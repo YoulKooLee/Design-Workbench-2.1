@@ -36,7 +36,7 @@
     },
     "extraResources": [
       {
-        "from": "../08-文档/打包输出/workbench",
+        "from": "../08-文档/打包输出-v2/workbench",
         "to": "workbench"
       },
       {
@@ -56,7 +56,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "产品工作台",
-      "artifactName": "产品工作台安装包-${version}.${ext}",
+      "artifactName": "工作台安装包.${ext}",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false
     }
