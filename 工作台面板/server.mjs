@@ -1648,7 +1648,7 @@ const server = http.createServer(async (req, res) => {
           const pnpmCjs = path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'pnpm', 'bin', 'pnpm.cjs');
           const useLocalPnpm = fs.existsSync(pnpmCjs);
           fs.appendFileSync(logFile, useLocalPnpm ? `后台开始 pnpm install...\n` : '后台开始 npx pnpm install...\n', 'utf8');
-          const instArgs = useLocalPnpm ? [process.execPath, [pnpmCjs, 'install']] : ['cmd.exe', ['/c', 'npx -y pnpm@10 install']];
+          const instArgs = useLocalPnpm ? [process.execPath, [pnpmCjs, 'install']] : ['cmd.exe', ['/c', 'npx -y pnpm@10 install --registry=https://registry.npmmirror.com']];
           const inst = spawn(instArgs[0], instArgs[1], { cwd: dst, detached: true, stdio: ['ignore','pipe','pipe'], env: cleanEnvForSpawn() });
           inst.stdout.on('data', d => fs.appendFileSync(logFile, d, 'utf8'));
           inst.stderr.on('data', d => fs.appendFileSync(logFile, `STDERR: ` + d, 'utf8'));
@@ -1812,7 +1812,7 @@ const server = http.createServer(async (req, res) => {
         try {
           const instArgs = useLocalPnpm
             ? [process.execPath, [pnpmCjs, 'install']]
-            : ['cmd.exe', ['/c', 'npx -y pnpm@10 install']];
+            : ['cmd.exe', ['/c', 'npx -y pnpm@10 install --registry=https://registry.npmmirror.com']];
           const inst = spawn(instArgs[0], instArgs[1], { cwd: dir, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: cleanEnvForSpawn() });
           inst.stdout.on('data', (d) => fs.appendFileSync(logFile, d, 'utf8'));
           inst.stderr.on('data', (d) => fs.appendFileSync(logFile, `STDERR: ${d}`, 'utf8'));

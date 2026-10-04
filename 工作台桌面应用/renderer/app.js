@@ -219,19 +219,92 @@ function clientTriggers(desc) {
   return m ? m[2].trim().slice(0, 200) : '';
 }
 
-// ===== 检查更新（复用面板更新 API）=====
+// ===== 检查更新（双通道：打包版 electron-updater / 开发版面板 git API）=====
+const IS_PACKAGED = !!(WB && WB.isPackaged);
 function applyUpdateBadge() {
   const badge = $('#updateBadge');
   if (updateInfo && updateInfo.hasUpdate) {
     badge.hidden = false;
-    $('#updateBtn').title = 'GitHub 有 ' + updateInfo.behind + ' 个新提交';
+    $('#updateBtn').title = IS_PACKAGED
+      ? '发现新版本 v' + updateInfo.latestVersion
+      : 'GitHub 有 ' + updateInfo.behind + ' 个新提交';
   } else {
     badge.hidden = true;
-    $('#updateBtn').title = '从 GitHub 检查工作台更新';
+    $('#updateBtn').title = IS_PACKAGED ? '检查工作台更新（GitHub Releases）' : '从 GitHub 检查工作台更新';
   }
+}
+// —— 打包版：electron-updater 流程（检查 → 下载(进度) → 安装并重启）——
+function showPackagedUpdateModal(r) {
+  openModal('<h3>发现新版本 · v' + esc(r.latestVersion) + '</h3>' +
+    '<div class="alert alert-ok">当前版本 <b>v' + esc(r.currentVersion) + '</b>，GitHub Releases 已发布 <b>v' + esc(r.latestVersion) + '</b>。</div>' +
+    '<div class="update-pct" id="updPct">0%</div>' +
+    '<div class="update-progress" id="updProgress" hidden><div class="update-progress-bar" id="updBar"></div></div>' +
+    '<div class="modal-ops"><button class="btn btn-ghost" onclick="window.__closeModal()">关闭</button>' +
+    '<button class="btn btn-primary" id="updDownloadBtn">下载更新</button></div>', true);
+  window.__closeModal = closeModal;
+  const dlBtn = $('#updDownloadBtn');
+  dlBtn.onclick = async () => {
+    dlBtn.disabled = true; dlBtn.textContent = '下载中…';
+    const prog = $('#updProgress');
+    if (prog) prog.hidden = false;
+    const d = await WB.downloadUpdate();
+    if (!d || !d.ok) { toast((d && d.msg) || '下载失败', 'err'); dlBtn.disabled = false; dlBtn.textContent = '下载更新'; }
+    // 下载完成后由 update:downloaded 事件切换按钮为「安装并重启」
+  };
+}
+// —— 打包版更新事件监听（全局注册一次）——
+if (IS_PACKAGED && WB.onUpdateEvent) {
+  WB.onUpdateEvent((channel, payload) => {
+    if (channel === 'update:download-progress' && payload) {
+      const pct = Math.round(payload.percent || 0);
+      const bar = $('#updBar'); const pctEl = $('#updPct');
+      if (bar) { bar.style.width = Math.min(100, pct) + '%'; if (pctEl) pctEl.textContent = pct + '%'; }
+      const dlBtn = $('#updDownloadBtn');
+      if (dlBtn && !dlBtn.disabled && dlBtn.textContent.indexOf('下载中') === 0) dlBtn.textContent = '下载中… ' + pct + '%';
+    } else if (channel === 'update:downloaded') {
+      const bar = $('#updBar'); const pctEl = $('#updPct');
+      if (bar) bar.style.width = '100%';
+      if (pctEl) pctEl.textContent = '100%';
+      const dlBtn = $('#updDownloadBtn');
+      if (dlBtn) {
+        dlBtn.disabled = false;
+        dlBtn.textContent = '安装并重启';
+        dlBtn.onclick = () => { WB.installUpdate(); };
+      }
+      toast('更新已下载完成，可点击「安装并重启」', 'ok');
+    } else if (channel === 'update:error') {
+      const dlBtn = $('#updDownloadBtn');
+      if (dlBtn) { dlBtn.disabled = false; dlBtn.textContent = '下载更新'; }
+      toast('更新出错：' + String(payload || '未知错误'), 'err');
+    }
+  });
 }
 async function refreshUpdateStatus(manual) {
   const btn = $('#updateBtn');
+  if (IS_PACKAGED) {
+    // 打包版：仅手动检查（启动检查由 electron-updater 发布配置控制，不做自动轮询）
+    if (!manual) return;
+    btn.disabled = true; btn.querySelector('span').textContent = '检查中…';
+    try {
+      const r = await WB.checkUpdate();
+      if (r && r.ok) {
+        updateInfo = r.updateAvailable
+          ? { hasUpdate: true, latestVersion: r.latestVersion, currentVersion: r.currentVersion }
+          : { hasUpdate: false };
+        applyUpdateBadge();
+        if (r.updateAvailable) showPackagedUpdateModal(r);
+        else toast('当前已是最新版本 v' + r.currentVersion, 'ok');
+      } else {
+        toast((r && r.msg) || '检查更新失败', 'err');
+      }
+    } catch (e) {
+      toast('检查更新失败：' + String(e.message || e), 'err');
+    } finally {
+      btn.disabled = false; btn.querySelector('span').textContent = '检查更新';
+    }
+    return;
+  }
+  // 开发版：面板 git 通道（原逻辑）
   try {
     if (manual) { btn.disabled = true; btn.querySelector('span').textContent = '检查中…'; }
     const r = await api('GET', manual ? '/api/update/check' : '/api/update/status');
@@ -277,7 +350,7 @@ $('#updateBtn').onclick = () => refreshUpdateStatus(true);
 // ===== 设置页 · 更新检查配置 =====
 async function loadUpdateConfigUI() {
   const urlInput = $('#cfgGitUrl');
-  if (!urlInput) return;
+  if (!urlInput) return; // 打包版无 git 更新配置块
   const branchInput = $('#cfgBranch');
   const timeInput = $('#cfgTime');
   const startupChk = $('#cfgStartup');
@@ -1302,17 +1375,19 @@ async function renderView(view) {
       card.className = 'list-card';
       card.innerHTML =
         '<div class="list-item"><div class="item-body"><div class="item-title">服务地址</div><div class="item-desc">面板 http://localhost:7788 · Make http://localhost:53817</div></div></div>' +
-        '<div class="list-item"><div class="item-body"><div class="item-title">GitHub 仓库</div>' +
-        '<div class="cfg-group">' +
-        '<div class="cfg-row"><span class="cfg-label">仓库地址</span><div class="cfg-ctl"><input id="cfgGitUrl" placeholder="https://github.com/用户/仓库.git 或 git@github.com:用户/仓库.git"></div></div>' +
-        '<div class="cfg-row"><span class="cfg-label">分支</span><div class="cfg-ctl"><input id="cfgBranch" placeholder="main" value="main" style="max-width:180px"></div></div>' +
-        '</div></div></div>' +
-        '<div class="list-item"><div class="item-body"><div class="item-title">更新检查设置</div>' +
-        '<div class="cfg-group">' +
-        '<div class="cfg-row"><span class="cfg-label">检查时间</span><div class="cfg-ctl"><input id="cfgTime" placeholder="05:00" value="05:00" style="max-width:120px"></div></div>' +
-        '<div class="cfg-row"><span class="cfg-label">启动时检查</span><label class="chk" style="margin:0"><input type="checkbox" id="cfgStartup">应用启动时自动检查更新</label></div>' +
-        '</div></div></div>' +
-        '<div class="list-item"><div class="item-body" style="display:flex;justify-content:flex-end;padding:6px 0"><button class="btn btn-primary" id="cfgSave">保存配置</button></div></div>' +
+        (IS_PACKAGED
+          ? '<div class="list-item"><div class="item-body"><div class="item-title">更新检查</div><div class="item-desc">安装包更新由 GitHub Releases 自动管理（检查→下载→安装重启），点击右上角「检查更新」触发。</div></div></div>'
+          : '<div class="list-item"><div class="item-body"><div class="item-title">GitHub 仓库</div>' +
+            '<div class="cfg-group">' +
+            '<div class="cfg-row"><span class="cfg-label">仓库地址</span><div class="cfg-ctl"><input id="cfgGitUrl" placeholder="https://github.com/用户/仓库.git 或 git@github.com:用户/仓库.git"></div></div>' +
+            '<div class="cfg-row"><span class="cfg-label">分支</span><div class="cfg-ctl"><input id="cfgBranch" placeholder="main" value="main" style="max-width:180px"></div></div>' +
+            '</div></div></div>' +
+            '<div class="list-item"><div class="item-body"><div class="item-title">更新检查设置</div>' +
+            '<div class="cfg-group">' +
+            '<div class="cfg-row"><span class="cfg-label">检查时间</span><div class="cfg-ctl"><input id="cfgTime" placeholder="05:00" value="05:00" style="max-width:120px"></div></div>' +
+            '<div class="cfg-row"><span class="cfg-label">启动时检查</span><label class="chk" style="margin:0"><input type="checkbox" id="cfgStartup">应用启动时自动检查更新</label></div>' +
+            '</div></div></div>' +
+            '<div class="list-item"><div class="item-body" style="display:flex;justify-content:flex-end;padding:6px 0"><button class="btn btn-primary" id="cfgSave">保存配置</button></div></div>') +
         '<div class="list-item"><div class="item-body"><div class="item-title">版本</div><div class="item-desc">产品设计工作台 v3.1 · Electron 桌面应用</div></div></div>';
       $('#main').appendChild(card);
       loadUpdateConfigUI();

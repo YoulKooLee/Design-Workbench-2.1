@@ -85,3 +85,6 @@ _theme-refs.txt
 09-协作/messages/tools/*.pid
 09-协作/messages/tools/*.lock
 
+
+# ===== 打包输出产物（不入库；v2 亦覆盖）=====
+08-文档/打包输出*/

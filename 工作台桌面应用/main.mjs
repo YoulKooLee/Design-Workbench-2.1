@@ -22,6 +22,39 @@ const PANEL_SCRIPT = path.join(WORKBENCH_ROOT, '工作台面板', 'server.mjs');
 let mainWindow = null;
 let panelProc = null;
 
+// ===== 更新通道（T2）：打包版 electron-updater（GitHub Releases）；开发版保留面板 git 通道 =====
+let autoUpdater = null;
+let updaterReady = false;
+function broadcast(ch, payload) {
+  for (const w of BrowserWindow.getAllWindows()) {
+    if (!w.isDestroyed()) w.webContents.send(ch, payload);
+  }
+}
+async function initUpdater() {
+  if (!app.isPackaged) return; // 开发版继续走面板 /api/update/* 的 git 通道
+  try {
+    const mod = await import('electron-updater');
+    autoUpdater = mod.autoUpdater;
+    autoUpdater.autoDownload = false; // 下载由用户显式触发（download-update）
+    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.on('error', (err) => broadcast('update:error', String((err && err.message) || err)));
+    autoUpdater.on('checking-for-update', () => broadcast('update:status', 'checking'));
+    autoUpdater.on('update-available', () => broadcast('update:status', 'available'));
+    autoUpdater.on('update-not-available', () => broadcast('update:status', 'not-available'));
+    autoUpdater.on('download-progress', (p) => broadcast('update:download-progress', {
+      percent: Math.round(p.percent * 100) / 100,
+      transferred: p.transferred,
+      total: p.total,
+      bytesPerSecond: p.bytesPerSecond,
+    }));
+    autoUpdater.on('update-downloaded', (info) => broadcast('update:downloaded', { version: info && info.version }));
+    updaterReady = true;
+    console.log('[main] electron-updater 就绪（打包版更新通道）');
+  } catch (e) {
+    console.error('[main] electron-updater 初始化失败:', e.message);
+  }
+}
+
 // ===== 面板可用性探测（校验工作台身份，防止连到其他实例的残留面板）=====
 function probePanel() {
   return new Promise((resolve) => {
@@ -89,6 +122,10 @@ async function ensurePanel() {
 
 // ===== API 代理（渲染进程 -> 7788 面板）=====
 ipcMain.handle('api:request', async (_e, { method = 'GET', path: p = '', body = null }) => {
+  // T3：路径校验，仅接受以单个 / 开头的面板路径，拒绝 //、协议注入与空值
+  if (typeof p !== 'string' || !p.startsWith('/') || p.startsWith('//')) {
+    return { status: 400, data: { ok: false, msg: '非法请求路径' } };
+  }
   const url = PANEL_URL + p;
   return new Promise((resolve) => {
     const data = body !== null && body !== undefined ? JSON.stringify(body) : null;
@@ -194,6 +231,49 @@ ipcMain.handle('folder:open-artifacts', async (_e, roomName) => {
   }
 });
 
+// ===== 更新 IPC（T2）：打包版 electron-updater 三件套 =====
+// update:check —— 检查更新（无网络 / 无 publish 配置时返回明确错误对象，不抛错）
+ipcMain.handle('update:check', async () => {
+  if (!app.isPackaged) {
+    return { ok: false, devMode: true, msg: '开发模式使用面板 git 更新通道（/api/update/check）' };
+  }
+  if (!updaterReady || !autoUpdater) return { ok: false, msg: '更新模块未初始化' };
+  try {
+    const r = await autoUpdater.checkForUpdates();
+    const info = r && r.updateInfo;
+    const current = app.getVersion();
+    const latest = info ? info.version : null;
+    const hasUpdate = !!(latest && latest !== current);
+    return { ok: true, currentVersion: current, latestVersion: latest, updateAvailable: hasUpdate };
+  } catch (e) {
+    return { ok: false, msg: '检查更新失败：' + String((e && e.message) || e) };
+  }
+});
+// download-update —— 下载更新（进度经 update:download-progress 事件转发到 renderer）
+ipcMain.handle('download-update', async () => {
+  if (!app.isPackaged) return { ok: false, devMode: true, msg: '开发模式无此功能' };
+  if (!updaterReady || !autoUpdater) return { ok: false, msg: '更新模块未初始化' };
+  try {
+    await autoUpdater.downloadUpdate();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, msg: '下载更新失败：' + String((e && e.message) || e) };
+  }
+});
+// install-update —— 下载完成后安装并重启
+ipcMain.handle('install-update', () => {
+  if (!app.isPackaged) return { ok: false, devMode: true, msg: '开发模式无此功能' };
+  if (!updaterReady || !autoUpdater) return { ok: false, msg: '更新模块未初始化' };
+  try {
+    setImmediate(() => {
+      try { autoUpdater.quitAndInstall(); } catch (e) { console.error('[main] quitAndInstall 失败:', e.message); }
+    });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, msg: String((e && e.message) || e) };
+  }
+});
+
 // ===== 创建主窗口（1440×900 无边框）=====
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -210,6 +290,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
+      additionalArguments: ['--wb-is-packaged=' + app.isPackaged],
     },
   });
   mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
@@ -219,10 +300,24 @@ function createWindow() {
   mainWindow.on('closed', () => { mainWindow = null; });
 }
 
-app.whenReady().then(async () => {
-  await ensurePanel();
-  createWindow();
-});
+// ===== 单实例锁（T3）：抢不到锁说明已有实例，直接退出（防双实例互杀 7788）=====
+const gotSingleLock = app.requestSingleInstanceLock();
+if (!gotSingleLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+
+  app.whenReady().then(async () => {
+    await initUpdater();
+    await ensurePanel();
+    createWindow();
+  });
+}
 
 app.on('window-all-closed', () => {
   app.quit();
