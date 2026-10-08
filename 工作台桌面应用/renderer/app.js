@@ -565,9 +565,10 @@ async function renderProjects(search) {
       if (btn.dataset.op === 'open') {
         btn.disabled = true; btn.textContent = '启动中…';
         const r = await api('POST', '/api/projects/open', { relative: rel });
-        btn.disabled = false; btn.textContent = '打开';
-        toast(r.ok ? '启动成功' : (r.msg || '启动失败'), r.ok ? 'ok' : 'err');
-        refreshProjects();
+        if (!r.ok) { btn.disabled = false; btn.textContent = '打开'; toast(r.msg || '启动失败', 'err'); refreshProjects(); return; }
+        toast('已启动，等待浏览器打开…', 'ok');
+        // 与网页版一致：轮询 launch-log 等 done 后打开浏览器（Make 管理端）
+        pollProjectLaunch(rel, btn);
       } else if (btn.dataset.op === 'delete') {
         confirmModal('删除项目', '确定删除 <b>' + esc(rel) + '</b> 吗？项目将移入回收站。', async () => {
           const r = await api('DELETE', '/api/projects', { relative: rel });
@@ -577,6 +578,37 @@ async function renderProjects(search) {
       }
     };
   });
+}
+
+// 轮询启动进度：done 后用系统浏览器打开项目（与网页版 pollLaunch 行为一致）
+function pollProjectLaunch(rel, btn) {
+  let tried = 0;
+  const iv = setInterval(async () => {
+    try {
+      const s = await api('GET', '/api/projects/launch-log?relative=' + encodeURIComponent(rel));
+      tried++;
+      if (s && s.status === 'done') {
+        clearInterval(iv);
+        if (s.openUrl) { WB.openExternal(s.openUrl).catch(() => {}); }
+        toast('开发栈已启动，已在浏览器打开', 'ok');
+        btn.disabled = false; btn.textContent = '打开';
+        refreshProjects();
+      } else if (s && s.status === 'failed') {
+        clearInterval(iv);
+        toast('启动失败，请查看日志', 'err');
+        btn.disabled = false; btn.textContent = '打开';
+        refreshProjects();
+      } else if (tried > 60) {
+        // 60 秒兜底，避免按钮永久禁用
+        clearInterval(iv);
+        btn.disabled = false; btn.textContent = '打开';
+        refreshProjects();
+      }
+    } catch (e) {
+      tried++;
+      if (tried > 60) { clearInterval(iv); btn.disabled = false; btn.textContent = '打开'; }
+    }
+  }, 1000);
 }
 
 // ===== 新建项目 =====
