@@ -391,7 +391,7 @@ try {
             [Environment]::SetEnvironmentVariable('PATH', "$nodeDir;$currentPath", 'Process')
         }
     }
-    Write-Host "  使用 Node: $NodePath (arch=$(& node -e 'console.log(process.arch)'))" -ForegroundColor DarkGray
+    Write-Host "  使用 Node: $NodePath (arch=$(& $NodePath -e 'console.log(process.arch)' 2>$null))" -ForegroundColor DarkGray
 
     Write-Host "============================================" -ForegroundColor Green
     Write-Host "  启动项目: $ProjectName" -ForegroundColor Green
@@ -548,7 +548,8 @@ try {
     if ($reuseVite) {
         Write-Info '已复用运行中的 Vite，跳过校验'
     } else {
-        $nodeArch = (& node -e 'console.log(process.arch)') -replace '[^a-z0-9]'
+        # 用实际启动的 node（$NodePath）检测架构，保证检测目标与运行架构一致
+        $nodeArch = (& $NodePath -e 'console.log(process.arch)' 2>$null) -replace '[^a-z0-9]'
         if (-not $nodeArch) { $nodeArch = 'x64' }
         # 原生模块可能位于 node_modules 顶层（npm 风格）或 node_modules/.pnpm 下（pnpm 风格），
         # 两种布局都要命中，避免误判“缺失”而触发无谓的重装。
@@ -572,17 +573,22 @@ try {
         }
         $needNative = Get-MissingNatives $nodeModules $nodeArch
         if ($needNative.Count -gt 0) {
-            Write-Warn "缺少原生模块 $($needNative -join ', ')，正在自动补齐（pnpm 安装，可能需数十秒）…"
+            Write-Warn "缺少原生模块 $($needNative -join ', ')，正在自动补齐（按项目包管理器安装，可能需数十秒）…"
+            # 安装命令与项目锁文件匹配：pnpm 项目用 pnpm，npm 项目（package-lock.json）用 npm，
+            # 避免在 npm 项目上跑 pnpm 导致装不上/锁文件被改写（2026-10-08 架构不匹配根因修复）
+            $usePnpmInstall = (Test-Path (Join-Path $projDir 'pnpm-lock.yaml'))
+            $instCmd  = if ($usePnpmInstall) { 'npx -y pnpm@10 install' } else { 'npm install --no-audit --no-fund' }
+            $forceCmd = if ($usePnpmInstall) { 'npx -y pnpm@10 install --force' } else { 'npm install --force --no-audit --no-fund' }
             Start-Process -NoNewWindow -Wait -FilePath 'cmd.exe' `
-                -ArgumentList '/c', 'npx -y pnpm@10 install' -WorkingDirectory $projDir
+                -ArgumentList '/c', $instCmd -WorkingDirectory $projDir
             $needNative = Get-MissingNatives $nodeModules $nodeArch
             if ($needNative.Count -gt 0) {
-                Write-Warn "常规安装未补齐，正在强制重装（pnpm install --force）…"
+                Write-Warn "常规安装未补齐，正在强制重装（$forceCmd）…"
                 Start-Process -NoNewWindow -Wait -FilePath 'cmd.exe' `
-                    -ArgumentList '/c', 'npx -y pnpm@10 install --force' -WorkingDirectory $projDir
+                    -ArgumentList '/c', $forceCmd -WorkingDirectory $projDir
                 $needNative = Get-MissingNatives $nodeModules $nodeArch
                 if ($needNative.Count -gt 0) {
-                    Write-Warn "强制重装后仍缺少 $($needNative -join ', ')，Vite 可能启动失败，请检查网络或手动执行 pnpm install"
+                    Write-Warn "强制重装后仍缺少 $($needNative -join ', ')，Vite 可能启动失败，请检查网络或手动执行 $instCmd"
                 } else {
                     Write-Good "原生模块已补齐 (arch=$nodeArch)"
                 }
