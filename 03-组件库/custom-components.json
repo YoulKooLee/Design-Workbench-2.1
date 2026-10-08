@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-02T17:58:37.715Z",
+  "updatedAt": "2026-10-08T07:16:01.449Z",
   "items": [
     {
       "id": "axhub-base-button",
@@ -397,16 +397,6 @@
       "previewUrl": "/library/preview/%E4%B8%9A%E5%8A%A1%E7%BB%84%E4%BB%B6/StatusTag.html",
       "source": "component-template",
       "categoryLabel": "业务组件"
-    },
-    {
-      "id": "project-side-menu",
-      "label": "SideMenu 侧边菜单（规范组件）",
-      "category": "layout",
-      "framework": "react-tailwind (工程侧)",
-      "notes": "⚠ 工程侧规范组件（不属 Codebuddy Design 组件库）：真源在各原型工程 `src/common/side-menu/`（结构监测 / 测试 / 指标管理平台 / 崂山 / _project-template）。由豆包在工程侧维护；本条目仅为面板保留提示词供引用。原型壳左菜单规范组件：展开 240 / 折叠 64、五态、items 契约；sub 不进菜单层级。依赖 lucide-react。由豆包在工程侧维护，组件库仅保留提示词供引用。",
-      "prompt": "【组件引用】SideMenu 侧边菜单（工程内规范组件，非组件库真源）\n框架：React 18 + Tailwind v4（依赖 lucide-react）\n来源：工程内 `src/common/side-menu/`（如 结构监测 / 测试 / 指标管理平台）；组件库内已无此目录\n用法：import SideMenu from './side-menu'（工程内相对路径）\n参数：title；items=[{key,label,icon?,disabled?,children?}]；defaultSelectedKey；onMenuSelect(key)；onCollapseChange；collapsible(默认true)；width(默认240)；defaultCollapsed\n场景：原型壳左侧功能目录（数据看板/预警/设备/诊断/报告等模块导航）\n规则：二级 sub 用页内 Tab 不进菜单；选中态随 current 同步；折叠按钮组件自带。",
-      "previewUrl": "",
-      "source": "project"
     },
     {
       "id": "axhub-data-chart",

@@ -258331,29 +258331,29 @@ async function startMakeServer(options) {
         getConfig: () => serverConfigStore.getConfig({ activeProjectRoot: activeProjectRoot || startupProjectRoot }),
         saveConfig: serverConfigStore.saveConfig
       };
-      if (await handleLanAccessApi(req, res, accessConfigOptions)) {
+if (await handleLanAccessApi(req, res, accessConfigOptions)) {
         return;
       }
-      if (handleLanAccessGate(req, res, accessConfigOptions)) {
+if (handleLanAccessGate(req, res, accessConfigOptions)) {
         return;
       }
-      if (redirectMissingPlaceholderPrototypeShortLink(req, res, adminStaticOptions)) {
+if (redirectMissingPlaceholderPrototypeShortLink(req, res, adminStaticOptions)) {
         return;
       }
-      if (await handleAxhubCanvasMcp(req, res, {
+if (await handleAxhubCanvasMcp(req, res, {
         token: axhubCanvasMcpToken,
         bridgeHub: canvasBridgeHub
       })) {
         return;
       }
-      if (await handleAxhubPreviewMcp(req, res, {
+if (await handleAxhubPreviewMcp(req, res, {
         token: axhubPreviewMcpToken,
         bridgeHub: previewBridgeHub,
         captureOutputRoot: path82.join(activeProjectRoot || projectRoot, ".local", "preview-captures")
       })) {
         return;
       }
-      if (await handleManagementApi(req, res, {
+if (await handleManagementApi(req, res, {
         projectRoot,
         startupProjectRoot,
         adminRoot,
@@ -258375,7 +258375,22 @@ async function startMakeServer(options) {
       })) {
         return;
       }
-      if (devMode) {
+        const ctRelPath = decodeURIComponent(pathname.slice("/component-templates/".length));
+        const isCtModule = pathname.startsWith("/component-templates/");
+        const ctRef = String(getHeaderValue3(req.headers.referer || req.headers.referrer) || "").includes("/component-templates/");
+        const isRuntimeModuleAsset = (ctRef || isCtModule) && (pathname === "/@vite/client" || pathname === "/@react-refresh" || pathname.startsWith("/@fs/") || pathname.startsWith("/_kit/"));
+        if (isCtModule || isRuntimeModuleAsset) {
+          try {
+            const ctProjRoot = requestProjectId ? resolveRequestProject(options.registryPath, requestProjectId)?.root : activeProjectRoot;
+            const ctDev = ctProjRoot ? readServerInfo(ctProjRoot, "runtime") : null;
+            const rtO = ctDev?.origin ? String(ctDev.origin).trim().replace(/\/+$/u, "") : null;
+            if (rtO) { proxyToRuntime(req, res, rtO); return; }
+          } catch (e) {}
+        }
+        if (pathname.startsWith("/assets/") && handleAdminStatic(req, res, adminStaticOptions)) {
+          return;
+        }
+if (devMode) {
         if (isRuntimeDevModuleRequest(requestUrl, req.headers, { runtimeProjectRoot, adminViteClientEnvPath })) {
           requestRuntimeOrigin = await resolveRuntimeOriginForProxy({
             registryPath: options.registryPath,
@@ -258402,6 +258417,16 @@ async function startMakeServer(options) {
           if (!(target === ctRoot || target.startsWith(ctRoot + path82.sep))) {
             sendJson(res, { error: "Not found" }, { status: 404 });
             return;
+          }
+          if (/\.tsx?$/i.test(relPath)) {
+
+            const ctProjectRoot = requestProjectId ? resolveRequestProject(options.registryPath, requestProjectId)?.root : activeProjectRoot;
+            const ctDevInfo = ctProjectRoot ? readServerInfo(ctProjectRoot, "runtime") : null;
+            const rtOrigin = ctDevInfo?.origin ? String(ctDevInfo.origin).trim().replace(/\/+$/u, "") : null;
+            if (rtOrigin) {
+              proxyToRuntime(req, res, rtOrigin);
+              return;
+            }
           }
           if (sendFile(res, target)) {
             return;
