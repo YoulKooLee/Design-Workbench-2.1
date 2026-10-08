@@ -218,6 +218,8 @@ function main() {
     // 串行处理：避免自动执行并发（CodeBuddy CLI 同一时间只跑一个实例）
     for (const { msg, agent, dsHandled } of found) {
       if (dsHandled) { log(`已由 DeepSeek watcher 处理，跳过: ${msg.message_id}`); continue; }
+      // 豆包收件箱由定时任务「协作消息自动巡检」自动处理，无需弹窗打扰用户
+      if (agent === 'doubao') { log(`豆包收件箱消息由定时任务自动处理，跳过弹窗: ${msg.message_id}「${msg.subject || ''}」`); continue; }
       // v0.3 直连：发给 CodeBuddy 的动作型消息 → 自动调 CLI 处理，成功则不打扰用户
       if (agent === 'codebuddy' && config.auto_exec && config.auto_exec.codebuddy !== false
           && AUTO_EXEC_TYPES.includes(msg.type)) {

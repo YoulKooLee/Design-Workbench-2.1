@@ -1,8 +1,16 @@
-# 智能体监听中枢（Agent Hub Watcher）方案 v0.2
+# 智能体监听中枢（Agent Hub Watcher）方案 v0.3
 
-> 状态：DeepSeek 已评审通过（2026-08-26）；CodeBuddy/WorkBuddy 待评审；落地前由用户拍板
+> 状态：v0.2 已落地（通知层）；**v0.3（2026-10-08）直连落地：CodeBuddy 自动执行 + 豆包定时巡检，免人工传话筒**
 > 牵头：豆包（doubao）｜协议：v0.2.1
 > 提出背景：多智能体消息总线已就绪，但仅 DeepSeek 有常驻收件箱监听；CodeBuddy/WorkBuddy 为会话制，消息到了需用户开会话才发现，用户被迫当"传话筒"。
+
+---
+
+## v0.3 直连（已落地，2026-10-08）
+
+- **CodeBuddy 侧免人工**：agent-hub-watcher 新增 `auto_exec.codebuddy`——发现发给 CodeBuddy 的动作型新消息（task/handoff/question/request_review/correction）→ 自动调本机 `codebuddy -p` CLI 处理 → 用 msg-cli reply 以 CodeBuddy 身份写回原发件人；执行失败自动回退弹窗通知用户。已实测：codebuddy CLI 18.6s 返回。
+- **豆包侧免人工**：创建定时任务「协作消息自动巡检」（每小时整点，本地电脑环境）——自动 check/read 豆包收件箱未读消息，按类型 ack/reply 处理，涉及用户拍板的消息在巡检汇报中列出。
+- **常驻保障**：桌面应用（main.mjs）启动时自动拉起 agent-hub-watcher（未运行才启动，随应用常驻），无需用户双击启动脚本；停止监听仍可用「停止所有智能体监听」脚本。
 
 ---
 
