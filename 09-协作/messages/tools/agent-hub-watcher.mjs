@@ -44,8 +44,15 @@ const DEFAULT_CONFIG = {
   high_priority_types: ['question', 'task', 'handoff', 'request_review', 'correction'],
   // WorkBuddy 评审建议：高优弹窗（醒目）、低优默认静默入日志（可配置开启气泡）
   popup_high: true,
-  popup_low: false
+  popup_low: false,
+  // v0.3 直连：发现发给 CodeBuddy 的动作型新消息 → 自动调 codebuddy CLI 处理并回复（免人工开会话）
+  // 仅对动作型消息自动执行；info/ack 仍走通知；执行失败自动回退为弹窗通知用户
+  auto_exec: { codebuddy: true },
+  auto_exec_timeout_ms: 120000
 };
+
+// 动作型消息类型（自动直连执行）；info/ack 不需要 CodeBuddy 执行动作
+const AUTO_EXEC_TYPES = ['task', 'handoff', 'question', 'request_review', 'correction'];
 
 // ---------- 配置 / 状态 / 日志 ----------
 function loadJSON(file, fallback) {
@@ -107,6 +114,45 @@ function notifyMsg(m, agent, isHigh) {
   log(`通知[${isHigh ? '高优' : '普通'}] ${m.from}->${agent} 「${m.subject || ''}」 thread=${m.thread_id || '-'} 弹窗=${ok ? 'OK' : 'FAIL'}`);
 }
 
+// ---------- v0.3 直连：自动唤醒 CodeBuddy 处理（免人工开会话）----------
+// 发现发给 CodeBuddy 的动作型新消息 → 调本机 codebuddy CLI 执行 → msg-cli reply 写回
+// 安全：仅处理 to=codebuddy 消息；消息内容按协作任务执行；不越权改其他文件
+function autoExecCodeBuddy(msg) {
+  return new Promise((resolve) => {
+    const prompt = [
+      '你是 CodeBuddy（产品设计工作台协作智能体）。收到协作总线转来的任务消息，请处理并回复。',
+      `【消息】from: ${msg.from || '?'} | to: ${msg.to || '?'} | type: ${msg.type || '?'} | subject: ${msg.subject || '(无主题)'}`,
+      `${msg.body || ''}`,
+      '【要求】直接输出你的处理结论/回复正文，简洁明了，不要输出多余解释。'
+    ].join('\n');
+    const tmpIn = path.join(os.tmpdir(), `cb-in-${Date.now()}.txt`);
+    const tmpOut = path.join(os.tmpdir(), `cb-out-${Date.now()}.txt`);
+    try { fs.writeFileSync(tmpIn, prompt, 'utf-8'); } catch (e) { log('[auto-exec] 写 prompt 失败: ' + e.message); return resolve(false); }
+    log(`[auto-exec] 唤醒 CodeBuddy 处理: ${msg.message_id} 「${msg.subject || ''}」`);
+    try {
+      const out = execSync(`codebuddy -p --output-format text < "${tmpIn}"`, {
+        encoding: 'utf-8', timeout: config.auto_exec_timeout_ms || 120000,
+        shell: 'cmd.exe', maxBuffer: 8 * 1024 * 1024
+      });
+      const body = String(out || '').trim();
+      if (!body) { log('[auto-exec] CodeBuddy 空输出，回退通知'); return resolve(false); }
+      fs.writeFileSync(tmpOut, body, 'utf-8');
+      const subj = ('Re: ' + (msg.subject || '')).slice(0, 80);
+      const r = execSync(`node "${path.join(__dirname, 'msg-cli.mjs')}" reply --from codebuddy --to ${msg.from || 'user'} --reply-to ${msg.message_id} --subject "${subj}" --body-file "${tmpOut}"`, {
+        encoding: 'utf-8', timeout: 30000, shell: 'cmd.exe', cwd: __dirname
+      });
+      log(`[auto-exec] CodeBuddy 已自动回复 ${msg.from} thread=${msg.thread_id || '-'} | ${String(r).split('\n').filter(Boolean).slice(-2).join(' ')}`);
+      writeHeartbeat('codebuddy');
+      resolve(true);
+    } catch (e) {
+      log('[auto-exec] CodeBuddy 调用失败，回退通知: ' + (e.message || '').slice(0, 200));
+      resolve(false);
+    } finally {
+      try { fs.unlinkSync(tmpIn); fs.unlinkSync(tmpOut); } catch {}
+    }
+  });
+}
+
 // DeepSeek watcher 已处理的消息（文件名在 watcher-state.processed 中）→ 不重复弹窗
 function dsAlreadyProcessed(fileName) {
   try {
@@ -161,7 +207,7 @@ function main() {
   const existing = scan();
   log(`首次扫描：已有 ${existing.length} 条历史消息（已标记，不重复通知）`);
 
-  setInterval(() => {
+  setInterval(async () => {
     if (!config.enabled) return;
     // 周期心跳：监听常驻期间，所有启用智能体视为协作网内在线（供面板在线判定，心跳常新不过期）
     for (const a of AGENTS) {
@@ -169,8 +215,16 @@ function main() {
       writeHeartbeat(a);
     }
     const found = scan();
+    // 串行处理：避免自动执行并发（CodeBuddy CLI 同一时间只跑一个实例）
     for (const { msg, agent, dsHandled } of found) {
-      if (dsHandled) { log(`已由 DeepSeek watcher 处理，跳过弹窗: ${msg.message_id}`); continue; }
+      if (dsHandled) { log(`已由 DeepSeek watcher 处理，跳过: ${msg.message_id}`); continue; }
+      // v0.3 直连：发给 CodeBuddy 的动作型消息 → 自动调 CLI 处理，成功则不打扰用户
+      if (agent === 'codebuddy' && config.auto_exec && config.auto_exec.codebuddy !== false
+          && AUTO_EXEC_TYPES.includes(msg.type)) {
+        const ok = await autoExecCodeBuddy(msg);
+        if (ok) continue;
+        // 失败 → 回退为普通通知（用户人工兜底）
+      }
       const isHigh = isHighPriority(msg);
       if (isHigh && !config.popup_high) { log(`高优通知被配置关闭，跳过: ${msg.message_id}`); continue; }
       if (!isHigh && !config.popup_low) { log(`普通通知被配置关闭（仅日志）: ${msg.message_id}`); continue; }

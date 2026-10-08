@@ -22,6 +22,47 @@ const PANEL_SCRIPT = path.join(WORKBENCH_ROOT, '工作台面板', 'server.mjs');
 let mainWindow = null;
 let panelProc = null;
 
+// ===== 协作直连（v0.3）：随桌面应用常驻 agent-hub-watcher，智能体消息免人工自动处理 =====
+const WATCHER_DIR = path.join(WORKBENCH_ROOT, '09-协作', 'messages', 'tools');
+const WATCHER_SCRIPT = path.join(WATCHER_DIR, 'agent-hub-watcher.mjs');
+const WATCHER_PID_FILE = path.join(WATCHER_DIR, 'agent-hub-watcher.pid');
+let watcherProc = null;
+
+// Windows 上按 PID 精确判断 watcher 是否存活（tasklist 未命中即已退出）
+function isWatcherAlive() {
+  try {
+    if (!fs.existsSync(WATCHER_PID_FILE)) return false;
+    const pid = Number(String(fs.readFileSync(WATCHER_PID_FILE, 'utf-8')).trim());
+    if (!pid) return false;
+    const out = execFileSync('tasklist', ['/fi', `PID eq ${pid}`, '/fo', 'csv', '/nh'], { encoding: 'utf8', timeout: 8000, windowsHide: true });
+    return new RegExp(`\\b${pid}\\b`).test(out);
+  } catch { return false; }
+}
+
+// 桌面应用启动时自动拉起协作监听（未运行才启动；随应用常驻，免用户手动双击启动脚本）
+function ensureWatcher() {
+  try {
+    if (!fs.existsSync(WATCHER_SCRIPT)) {
+      console.log('[main] 未找到 watcher 脚本，跳过自动拉起:', WATCHER_SCRIPT);
+      return;
+    }
+    if (isWatcherAlive()) { console.log('[main] agent-hub-watcher 已在运行，跳过拉起'); return; }
+    const env = { ...process.env };
+    if (BUNDLED_NODE_DIR) env.PATH = BUNDLED_NODE_DIR + path.delimiter + (process.env.PATH || '');
+    watcherProc = spawn(NODE_BIN, [WATCHER_SCRIPT], {
+      cwd: WATCHER_DIR,
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: true,
+      env,
+    });
+    watcherProc.unref();
+    console.log('[main] 已自动拉起 agent-hub-watcher（协作直连监听）');
+  } catch (e) {
+    console.error('[main] 拉起 watcher 失败:', e.message);
+  }
+}
+
 // ===== 更新通道（T2）：打包版 electron-updater（GitHub Releases）；开发版保留面板 git 通道 =====
 let autoUpdater = null;
 let updaterReady = false;
@@ -315,6 +356,7 @@ if (!gotSingleLock) {
   app.whenReady().then(async () => {
     await initUpdater();
     await ensurePanel();
+    ensureWatcher();
     createWindow();
   });
 }
