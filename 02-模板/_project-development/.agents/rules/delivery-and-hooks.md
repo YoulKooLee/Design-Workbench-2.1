@@ -60,7 +60,7 @@ IDE **不会**自动读 `.agents/settings.json`，须把薄接线复制到它认
 
 | Hook | 事件 | 作用 |
 | --- | --- | --- |
-| `session-start` | SessionStart | 注入强制执行清单 + 技能索引 `INDEX.md` |
+| `session-start` | SessionStart | **（仅接线后生效）**注入强制执行清单 + 技能索引 `INDEX.md`；未接线时须手动 Read（见 §2.3） |
 | `context-budget` | PreToolUse（Read\|Glob\|Grep） | 拦截命中高危目录（skills / knowledge / rules / vendor / `03-组件库`）的递归·通配读取 |
 | `gateguard` | PreToolUse（Edit\|Write） | 编辑文件前须先 Read，避免盲改 |
 | `config-protection` | PreToolUse（Edit\|Write） | 阻止修改 eslint、tsconfig 等配置来消除报错 |

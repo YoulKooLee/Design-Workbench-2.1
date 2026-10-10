@@ -55,3 +55,21 @@
 - 角色执行 prompt **首行**传入 `交付模式：{DELIVERY_MODE}`。
 - 输出四状态：`DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`。
 - 无独立派发时，原并行组改为串行扮演，审查范围不变。
+
+---
+
+## 调度触发条件（自 AGENTS.md 「角色调度」外迁，v2.1 瘦身 2026-10-10）
+
+角色定义位于 `.agents/agents/`。以下场景**必须**执行（派发或扮演），无「这次可跳过」的例外：
+
+- **写完/改代码后**（含认证/权限/加密重点审安全）→ `code-reviewer`；`feature-dev` 步骤 6 已审的同功能不重复调度。
+- **实现页面前 → 后** → `page-spec-loader`（检测栈、按需加载 UI 库规范、规划组件）→ 编码 → `page-reviewer`（还原度 + 规范）。
+- **需求文档产出（SRS）** → `req-analyzer` → `req-writer` → `req-reviewer`；改 SRS 前先 Read `phase1-requirements/prd-language.md`+`section-format.md`，改后过 SRS 规范扫描。
+- **设计文档产出（HLD/LLD）** → `design-analyzer` → `design-writer` → `design-reviewer`。
+- **仅有 PRD 却要研发类技能** → 转写门禁：Read `rules/prd-to-srs-gate.md`，路由 `srs-writer` Step F。
+- **从零生成 SRS 且信息不足** → 先 `brainstorming`，禁止直接 A4。
+- **多文件变更/架构决策前 · 交付计划编排 · 图表绘制** → `planner` · `delivery-analyzer` · `diagram-drawer`。
+- **无依赖关系的独立操作** → 并行执行，不要无谓串行等待。
+
+**技能内流水线**：`srs-writer` → req-analyzer/writer/reviewer + template-analyzer（Word 模板提炼）；`hld-design`/`lld-design` → design-analyzer/writer/reviewer；`feature-dev` → page-spec-loader → 编码 → page-reviewer + code-reviewer 并行。
+

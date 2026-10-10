@@ -1,6 +1,6 @@
 # 技能索引（自动生成）
 
-> 共 15 个技能。本文件由 `.agents/scripts/build-skills-index.mjs` 自动生成，由 `session-start.cjs` 在会话启动时注入上下文。**请勿手改**；更新技能后重新运行生成脚本。
+> 共 15 个技能。本文件由 `.agents/scripts/build-skills-index.mjs` 自动生成，由 `session-start.cjs` 负责注入本文件；⚠️ 但宿主不加载 .agents/hooks/ 时该 hook 不执行，**本文件不会被自动注入**——**会话开始请主动 Read 本文件一次**（精准单文件读，不受预算拦截）。**请勿手改**；更新技能后重新运行生成脚本。
 
 ## 技能速查
 

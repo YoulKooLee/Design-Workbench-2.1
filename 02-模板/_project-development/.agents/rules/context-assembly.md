@@ -1,6 +1,6 @@
 # 上下文装配协议（研发工程包）
 
-> 位置：`.agents/rules/context-assembly.md` ｜ 读取层：会话启动由 session-start 注入摘要，全文按需 Read
+> 位置：`.agents/rules/context-assembly.md` ｜ 读取层：**须主动 Read**——宿主不加载 .agents/hooks/ 时 session-start 不执行，本文件不会被自动注入；会话开始或首次装配时主动 Read 本文件一次
 > 来源：自 `AGENTS.md` v1.7「上下文装配协议」外迁（v2.0 瘦身，2026-09-29）
 > 配套技术件：`.agents/hooks/context-budget.cjs`（preToolUse 拦截高危目录递归/通配读取）
 > 相关：压缩与恢复见 `compaction-recovery.md`；接力契约门禁见 `../../templates/交接清单模板.md`

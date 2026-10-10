@@ -1,10 +1,14 @@
-# 研发工程包交付指南 · v2.0-dev
+# 研发工程包交付指南 · v2.1
 
 **本包定位：AI 研发实现（Vue 工程编码），不做产品原型输出。** 上游是 `_project-template`（React 原型 + 文档三件套），本包接手把已定稿的规格实现为可运行的 Vue 工程代码。产品管理类（`pm-*`）、原型生成类（`frontend-design` / `annotation`）、可研与原型逆向类技能已剥离，**本包内不存在，不要调用**。
 
 主会话职责：识别任务 → 过接力契约门禁 → 触发技能 → 按角色调度（能独立派发则独立上下文，不能则主会话扮演）——而非亲自撰写文档或编写代码。
 
 接入业务项目：复制 `.agents/` 与本文件到项目根，各子项目在 `{PROJECT_PATH}/README-DEV.md` 维护实现规范（模板 `templates/README-DEV.template.md`）。步骤见 `templates/project-init.md`，部署清单见 `templates/PACKAGING.md`。
+
+> ⚠️ **本文件必须整体落入宿主注入窗口（实测约 8.4K 字符）。** 新增内容前先核字符数：**`AGENTS.md` ≤8,000 字符**——超窗的尾部**不会**被模型看到（2026-09-24 实测与 10-10 复核均如此）。参考型内容一律外迁 `rules/`（见 §十）。
+>
+> ⚠️ **凡「会话启动自动注入 X」的写法都作废**：宿主不加载 `.agents/hooks/` 时没有任何自动注入。一律改写为**「会话开始主动 Read X」**。
 
 ---
 
@@ -19,7 +23,7 @@
 | **样式** | SCSS + `@styles` 别名 + CSS 变量主题层（`el-ui.scss` / `el-dark.scss`），页面样式一律 scoped |
 | **工程根** | 模板内工程骨架在 `src/admin/`；面板建项时其内容**平铺到项目根**——项目内 `package.json` / `src/` / `README-DEV.md` 都在根，**不存在 `src/admin/` 这层**，写文件按项目根定位 |
 
-> ⚠️ **本工程不使用 Arco Design Vue / Ant Design Pro / shadcn / vant**。旧文档中「Arco」表述已作废（历史误配）。`.agents/knowledge/ui-libs/` 下另有 4 套库目录，是 `page-spec-loader` 按子项目 `package.json` **检测后只加载对应一套**的多栈支持（如移动端子项目用 vant），不是本工程在用——见 `ui-libs/README.md`。
+> ⚠️ **本工程不使用 Arco Design Vue / Ant Design Pro / shadcn / vant**。旧文档中「Arco」表述已作废（历史误配）。`.agents/knowledge/ui-libs/` 下另有 4 套库目录，是 `page-spec-loader` 按子项目 `package.json` **检测后只加载对应一套**的多栈支持，不是本工程在用——见 `ui-libs/README.md`。
 >
 > 写代码前必读：`.agents/knowledge/conventions/react-to-vue.md`（原型→Vue 转换规范：语法映射、既有封装清单、七步作业流程、反面清单）。
 
@@ -60,40 +64,27 @@
 
 ---
 
-## 四、技能清单（15 技能 + common 工具库）
+## 四、技能清单
 
-> **触发条件与用途以会话启动注入的 `.agents/skills/INDEX.md` 为准**，本节只给分组速记。严禁为查触发词遍历 Read 各 `SKILL.md`（遍历击穿上下文）。INDEX 缺失或过期时运行 `node .agents/scripts/build-skills-index.mjs`。
-
-**研发主链路** `feature-dev`（核心；旧名 `page-generator`）· `delivery-plan` · `feature-list` ｜ **文档三件套** `srs-writer`（研发真源，含 Step F PRD→SRS 转写；旧名 `req-doc`）· `hld-design` · `lld-design` ｜ **需求对齐** `brainstorming` · `prd-writer`（仅上游只给 PRD 需转写、或研发期补轻量 PRD）｜ **质量与收尾** `test-driven-development` · `systematic-debugging` · `verification-before-completion` · `finishing-branch` ｜ **辅助** `diagram-generator` · `slides` · `common`（Word 导出）· `skill-creator`
-
-**已剥离，不在本包、勿调用**：原型生成类（`frontend-design`、`annotation`）、原型逆向与可研类（`prototype-to-prd`、`feasibility-report`）、产品管理类（`pm-*` 共 13 个）。归档于 `08-文档/2.1更新文档/admin剥离存档/`，需要时转 `_project-template`。
-
-**需求文档路由**（三者怎么选）：Read `.agents/rules/req-doc-routing.md`。速记：未点名文档类型的想法 → `brainstorming`；研发交付 → `srs-writer`；明确产品探索 → `prd-writer`；只有 PRD 要开发 → `srs-writer` Step F。
+> **细则已外迁**：`.agents/rules/nav-map.md` §一（15 技能分组速记、已剥离清单、需求文档路由速记）。
+>
+> **触发条件与用途以 `.agents/skills/INDEX.md` 为准**——该文件**不会被自动注入**（宿主不加载 hook），须**会话开始主动 Read 一次**（精准单文件读，不受预算拦截）。严禁为查触发词遍历 Read 各 `SKILL.md`（遍历击穿上下文）。INDEX 缺失或过期时运行 `node .agents/scripts/build-skills-index.mjs`。
 
 ---
 
 ## 五、角色调度（13 个）
 
-角色定义位于 `.agents/agents/`，调度话术见 `.agents/rules/role-dispatch.md`。以下场景**必须**执行（派发或扮演），无「这次可跳过」的例外：
+> **细则已外迁**：`.agents/rules/role-dispatch.md`（标准话术、执行细则、**调度触发条件清单**）。角色定义在 `.agents/agents/`。
 
-- **写完/改代码后**（含认证/权限/加密重点审安全）→ `code-reviewer`；`feature-dev` 步骤 6 已审的同功能不重复调度。
-- **实现页面前 → 后** → `page-spec-loader`（检测栈、按需加载 UI 库规范、规划组件）→ 编码 → `page-reviewer`（还原度 + 规范）。
-- **需求文档产出（SRS）** → `req-analyzer` → `req-writer` → `req-reviewer`；改 SRS 前先 Read `phase1-requirements/prd-language.md`+`section-format.md`，改后过 SRS 规范扫描。
-- **设计文档产出（HLD/LLD）** → `design-analyzer` → `design-writer` → `design-reviewer`。
-- **仅有 PRD 却要研发类技能** → 转写门禁：Read `rules/prd-to-srs-gate.md`，路由 `srs-writer` Step F。
-- **从零生成 SRS 且信息不足** → 先 `brainstorming`，禁止直接 A4。
-- **多文件变更/架构决策前 · 交付计划编排 · 图表绘制** → `planner` · `delivery-analyzer` · `diagram-drawer`。
-- **无依赖关系的独立操作** → 并行执行，不要无谓串行等待。
-
-**技能内流水线**：`srs-writer` → req-analyzer/writer/reviewer + template-analyzer（Word 模板提炼）；`hld-design`/`lld-design` → design-analyzer/writer/reviewer；`feature-dev` → page-spec-loader → 编码 → page-reviewer + code-reviewer 并行。
+以下场景**必须**执行（派发或扮演），无「这次可跳过」的例外：**写完/改代码后** → `code-reviewer`；**实现页面前→后** → `page-spec-loader` → 编码 → `page-reviewer`；**SRS 产出** → req-analyzer → req-writer → req-reviewer；**HLD/LLD 产出** → design-analyzer → design-writer → design-reviewer；**仅有 PRD 却要研发类技能** → 转写门禁（`rules/prd-to-srs-gate.md` → `srs-writer` Step F）。完整清单见外迁文件。
 
 ---
 
 ## 六、交付模式（三档审查强度）
 
-用户可在首句声明 **快速 / 标准 / 严格**；未声明按分技能默认——`feature-dev` 默认**快速**（步骤 6 审查降级：page-reviewer 仅维2 + code-reviewer 仅 P0 安全），其余（`srs-writer`/`hld-design`/`lld-design`/`delivery-plan`）默认**标准**（全量双审查）。**自动升档**：消息含「正式交付、验收、上线、提测、完整审查、严格模式」→ 整任务升严格；**冲突**时只认用户最新一句，优先级 自动升档 > 显式声明 > 分技能默认。**快速模式批量收口**：全部功能完成时须 `npm run build` 或等效 `type-check`（见 §七 优先级 5）。各技能步骤 1 记录 `DELIVERY_MODE`，角色 prompt 首行传入 `交付模式：{DELIVERY_MODE}`。
+> **细则已外迁**：`.agents/rules/delivery-and-hooks.md` §一（分技能默认表、三档强度表、模式规则）。
 
-SRS 三档细则见 `.agents/rules/delivery-and-hooks.md`；审查降档与运行时降级正交，见 `rules/agent-runtime.md`。
+速记：用户可在首句声明 **快速 / 标准 / 严格**；未声明按分技能默认——`feature-dev` 默认**快速**（步骤 6 审查降级：page-reviewer 仅维2 + code-reviewer 仅 P0 安全），其余（`srs-writer`/`hld-design`/`lld-design`/`delivery-plan`）默认**标准**（全量双审查）。**自动升档**：消息含「正式交付、验收、上线、提测、完整审查、严格模式」→ 整任务升严格；**冲突**时只认用户最新一句，优先级 自动升档 > 显式声明 > 分技能默认。**快速模式批量收口**：全部功能完成时须 `npm run build` 或等效 `type-check`（见 §七 优先级 5）。各技能步骤 1 记录 `DELIVERY_MODE`，角色 prompt 首行传入 `交付模式：{DELIVERY_MODE}`。
 
 ---
 
@@ -122,33 +113,29 @@ SRS 三档细则见 `.agents/rules/delivery-and-hooks.md`；审查降档与运�
 
 ## 九、上下文装配（摘要）
 
-常驻基线（本文件 + 需求清单 + 数据模型 + 总体/业务架构 + 模块间数据流 + 已完成模块快照）+ 阶段滑窗（当前 `knowledge/phaseN-*/` 1-2 文件）+ 模块滑窗（当前模块 HLD/LLD + 组件清单 + 上下游契约切片）；过程讨论、其他模块细节、组件库/vendor/skills 全量**永不常驻**。预算：常驻 ≤40KB、单次装配 ≤120KB（三件套全读会到 172KB 属必要开销，超限记账不阻断；必阻断的是组件库/vendor/skills 整目录递归读）。压缩闸门：模块数据流闭环验收通过 → 写模块快照（≤300 字）→ 才压缩 → 才进下个模块。写入侧三态门禁：`[事实]`（客户原话/已签字需求/实测数据）进三件套；`[讨论]`/`[否决]`（必带理由）进 `project-memory.md`（⚠️ 无技术强制，纯纪律）。全文：`rules/context-assembly.md`；压缩恢复：`rules/compaction-recovery.md`。
+常驻基线（本文件 + 需求清单 + 数据模型 + 总体/业务架构 + 模块间数据流 + 已完成模块快照）+ 阶段滑窗（当前 `knowledge/phaseN-*/` 1-2 文件）+ 模块滑窗（当前模块 HLD/LLD + 组件清单 + 上下游契约切片）；过程讨论、其他模块细节、组件库/vendor/skills 全量**永不常驻**。预算：常驻 ≤40KB、单次装配 ≤120KB（超限记账不阻断；必阻断的是组件库/vendor/skills 整目录递归读）。
+
+**压缩闸门**：模块数据流闭环验收通过 → 写模块快照（≤300 字）→ 才压缩 → 才进下个模块。⚠️ **该闸门无技术强制**（压缩由宿主自动触发、不等人），且 `.agents/hooks/pre-compact.cjs` 在宿主不加载时不执行——须靠纪律执行。
+
+**写入侧三态门禁**：`[事实]`（客户原话/已签字需求/实测数据）进三件套；`[讨论]`/`[否决]`（必带理由）进 `project-memory.md`（⚠️ 同样无技术强制，纯纪律）。
+
+**全文须主动 Read**：装配协议 `rules/context-assembly.md`；压缩恢复与快照模板 `rules/compaction-recovery.md`。
 
 ---
 
-## 十、知识库速查（路径省略 `.agents/` 前缀）
+## 十、知识库速查
 
-另有 `scripts/`（`build-skills-index.mjs`）、`adapters/`（Cursor / Claude Code 薄接线）、`commands/`（review / verify / finish）、`settings.json`（Hook 配置**唯一真源**）。
+> **路径全表已外迁**：`.agents/rules/nav-map.md` §二（转换与编码 / UI 库 / 文档规范 / 工作流规则 / 模板 五域的完整路径索引）。
 
-| 域 | 路径 |
-| --- | --- |
-| **转换与编码** | `knowledge/conventions/react-to-vue.md`（写页面必读）、`coding.md`、`frontend.md`、`security.md`、`testing.md`、`debugging.md`、`verification.md`、`git.md`、`mock.md`、`typescript.md` |
-| **UI 库** | `knowledge/ui-libs/README.md` → `element-plus/`（多栈按 package.json 只加载对应一套） |
-| **文档规范** | `knowledge/phase1-requirements/prd-language.md`、`section-format.md`；`phase2-design/hld-spec.md`、`lld-spec.md`；索引 `knowledge/catalog.json` |
-| **工作流规则** | `rules/req-doc-routing.md`（需求文档路由）、`context-assembly.md`（装配协议）、`compaction-recovery.md`（压缩恢复）、`prd-to-srs-gate.md`（转写门禁）、`delivery-and-hooks.md`（交付模式与 Hook）、`agent-runtime.md`、`role-dispatch.md`、`soft-gates.md`、`ade-compat.md` |
-| **模板** | `templates/交接清单模板.md`、`README-DEV.template.md`、`project-init.md`、`PACKAGING.md` |
+另有 `.agents/scripts/`（`build-skills-index.mjs`）、`adapters/`（Cursor / Claude Code 薄接线）、`commands/`（review / verify / finish）、`settings.json`（Hook 配置**唯一真源**）。
 
 ---
 
 ## 十一、Hook 门禁（可选增强）
 
-两层机制：① 按需 Read `knowledge/` `rules/`；② Hook 硬拦——**未接线 ≠ 工作流不可用**，按 `rules/soft-gates.md` 软门禁执行。8 个 Hook（均在 `.agents/hooks/`，经 `run.cjs` 分发）：`session-start`（注入强制清单 + INDEX.md）、`context-budget`（拦高危目录递归读）、`gateguard`（编辑前须先 Read）、`config-protection`（禁改配置消错）、`review-reminder`/`review-tracker`、`stop-quality-gate`（查 console.log 与审查合规）、`pre-compact`（压缩前存状态）。
+两层机制：① 按需 Read `knowledge/` `rules/`；② Hook 硬拦。8 个 Hook 均在 `.agents/hooks/`，经 `run.cjs` 分发；**接线步骤、事件表、四个历史坑**：`rules/delivery-and-hooks.md` §二。
 
-IDE **不会**自动读 `settings.json`，须复制薄接线到它认识的路径（Cursor → `.cursor/hooks.json`；Claude Code → `.claude/settings.json`；**不要拷贝** `skills/` `agents/` `knowledge/`），复制后新开对话，命令一律 `node .agents/hooks/run.cjs <hook-name>`；Cline/Roo/Copilot **不接线**（`rules/ade-compat.md`）。
-
-> ⚠️ **宿主决定 Hook 是否生效，不要假设护栏在跑**：2026-09-22 实测 WorkBuddy 不加载项目内 `.agents/hooks/`，8 个 hook 全不执行（`session-start` 不注入 INDEX → 技能路由入口整个断掉）。接线后必须验证一次最小触发；未生效按软门禁执行并在 `project-memory.md` 记「本次会话无 hook 保护」。
-
-接线步骤、事件表、四个历史坑（双配置分裂/名单与声明不符/BOM 静默失效/注册未接线）：`rules/delivery-and-hooks.md`。
+> ⚠️ **宿主决定 Hook 是否生效，不要假设护栏在跑**：2026-09-22 实测 WorkBuddy 不加载项目内 `.agents/hooks/`，8 个 hook 全不执行（`session-start` 不注入 INDEX → 技能路由入口整个断掉）。**未接线 ≠ 工作流不可用**，按 `rules/soft-gates.md` 软门禁执行，并在 `project-memory.md` 记「本次会话无 hook 保护」。IDE 不会自动读 `settings.json`，须复制薄接线到它认识的路径（Cursor → `.cursor/hooks.json`；Claude Code → `.claude/settings.json`；**不要拷贝** `skills/` `agents/` `knowledge/`）。
 
 ---
 
@@ -174,5 +161,4 @@ IDE **不会**自动读 `settings.json`，须复制薄接线到它认识的路�
 
 ---
 
-> v2.0-dev ｜ 2026-09-29 ｜ 改造依据：`08-文档/_admin-template改造任务书-给千问-2026-09-29.md`（现 `_project-development`）
-> 变更摘要：定位改为纯研发工程包（剥离 17 技能 + 5 角色）；新增接力契约门禁与 React→Vue 转换规范入口；技术栈纠正为 Element Plus（原 Arco 表述作废）；需求文档路由、上下文装配协议、交付模式与 Hook 细则外迁至 `rules/`（3 个文件）；本文件 32.68KB → 16.1KB（-51%），红线校准 ≤17KB。
+> v2.1 ｜ 2026-10-10 ｜ 变更记录见 `CHANGELOG.md`
