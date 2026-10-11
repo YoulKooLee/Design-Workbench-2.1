@@ -1391,6 +1391,396 @@ async function showRoomDialog(name) {
 }
 
 // ===== 视图分发 =====
+// ===== 日报 / 需求池（桌面版，数据经 IPC 代理到 7788 面板 API）=====
+let dailyData = { reports: [], projects: [] };
+let dailySel = '';
+let dailyWeekOffset = 0, dailyMonthOffset = 0, dailyQuarterOffset = 0;
+let dailyAllProjects = [];
+let dailyEditDate = null;
+let reqFilter = 'all';
+function ymdStr(d) { const p = (n) => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+function fmtDateCn(d) { const p = (n) => String(n).padStart(2, '0'); return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + p(d.getDate()) + '日'; }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function weekRange(off) {
+  const now = new Date(); const day = (now.getDay() + 6) % 7; const monday = addDays(now, -day + off * 7);
+  return { s: ymdStr(monday), e: ymdStr(addDays(monday, 6)) };
+}
+function monthRange(off) {
+  const now = new Date(); const d = new Date(now.getFullYear(), now.getMonth() + off, 1);
+  const s = ymdStr(d); const e = ymdStr(new Date(d.getFullYear(), d.getMonth() + 1, 0));
+  return { s, e, label: d.getFullYear() + '年' + (d.getMonth() + 1) + '月' };
+}
+function quarterRange(off) {
+  const now = new Date(); const q0 = Math.floor(now.getMonth() / 3) + off;
+  const y = now.getFullYear() + Math.floor(q0 / 4); const q = ((q0 % 4) + 4) % 4;
+  const s = ymdStr(new Date(y, q * 3, 1)); const e = ymdStr(new Date(y, q * 3 + 3, 0));
+  return { s, e, label: y + '年 Q' + (q + 1) };
+}
+function dailyInRange(s, e) { return (dailyData.reports || []).filter(r => r.date >= s && r.date <= e); }
+function dailyByProject(list) {
+  const m = {};
+  for (const r of list) for (const it of (r.items || [])) {
+    const k = it.project || '（无项目）';
+    (m[k] = m[k] || []).push(it.text);
+  }
+  return m;
+}
+async function loadAllProjects() {
+  try { const r = await api('GET', '/api/projects'); if (r && r.ok) dailyAllProjects = (r.projects || []).map(p => p.name).filter(Boolean); } catch (e) {}
+}
+function dailyProjectOpts(sel) {
+  const all = [...new Set([...dailyAllProjects, ...(dailyData.projects || [])].filter(Boolean))];
+  const opts = all.map(p => '<option value="' + esc(p) + '"' + (p === sel ? ' selected' : '') + '>' + esc(p) + '</option>').join('');
+  return opts;
+}
+function calHtml() {
+  const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
+  const off = dailyMonthOffset;
+  const d0 = new Date(y, m + off, 1); const label = d0.getFullYear() + '年' + (d0.getMonth() + 1) + '月';
+  const startDay = (d0.getDay() + 6) % 7; const days = new Date(d0.getFullYear(), d0.getMonth() + 1, 0).getDate();
+  const today = ymdStr(now); const sel = dailySel || today;
+  const PALETTE = [
+    ['#eff6ff', '#2563eb', '#bfdbfe'], ['#f0fdf4', '#16a34a', '#bbf7d0'],
+    ['#fff7ed', '#ea580c', '#fed7aa'], ['#faf5ff', '#9333ea', '#e9d5ff'],
+    ['#fdf2f8', '#db2777', '#fbcfe8'], ['#f0f9ff', '#0284c7', '#bae6fd'],
+    ['#fffbeb', '#a16207', '#fde68a'], ['#f5f5f4', '#57534e', '#d6d3d1']
+  ];
+  const HOLIDAYS_2026 = { '2026-01-01':1,'2026-01-02':1,'2026-01-03':1, '2026-02-15':1,'2026-02-16':1,'2026-02-17':1,'2026-02-18':1,'2026-02-19':1,'2026-02-20':1,'2026-02-21':1,'2026-02-22':1,'2026-02-23':1, '2026-04-04':1,'2026-04-05':1,'2026-04-06':1, '2026-05-01':1,'2026-05-02':1,'2026-05-03':1,'2026-05-04':1,'2026-05-05':1, '2026-06-19':1,'2026-06-20':1,'2026-06-21':1, '2026-09-25':1,'2026-09-26':1,'2026-09-27':1, '2026-10-01':1,'2026-10-02':1,'2026-10-03':1,'2026-10-04':1,'2026-10-05':1,'2026-10-06':1,'2026-10-07':1 };
+  const MAKEUP_2026 = { '2026-01-04':1, '2026-02-14':1, '2026-02-28':1, '2026-05-09':1, '2026-09-20':1, '2026-10-10':1 };
+  const pHash = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h % PALETTE.length; };
+  const head = '<div class="cal-head">一</div><div class="cal-head">二</div><div class="cal-head">三</div><div class="cal-head">四</div><div class="cal-head">五</div><div class="cal-head">六</div><div class="cal-head">日</div>';
+  let cells = '';
+  for (let i = 0; i < startDay; i++) cells += '<div class="cal-cell dim"></div>';
+  for (let d = 1; d <= days; d++) {
+    const cellDate = new Date(d0.getFullYear(), d0.getMonth(), d);
+    const ds = ymdStr(cellDate);
+    const rep = (dailyData.reports || []).find(r => r.date === ds);
+    const wd = cellDate.getDay();
+    const rest = !MAKEUP_2026[ds] && ((wd === 0 || wd === 6) || HOLIDAYS_2026[ds]);
+    const cls = ['cal-cell', ds === today ? 'today' : '', ds === sel ? 'selected' : '', rest ? 'weekend' : ''].filter(Boolean).join(' ');
+    const projs = rep ? [...new Set((rep.items || []).map(i => i.project).filter(Boolean))] : [];
+    const tags = projs.slice(0, 2).map(p => { const c = PALETTE[pHash(p)]; return '<span class="tag" style="background:' + c[0] + ';color:' + c[1] + ';border:1px solid ' + c[2] + '">' + esc(p) + '</span>'; }).join('');
+    const makeup = MAKEUP_2026[ds] ? '<i class="wk" title="调休上班">班</i>' : '';
+    cells += '<div class="' + cls + '" data-date="' + ds + '">' +
+      '<span class="d">' + d + '</span>' + makeup +
+      tags +
+      (rep && rep.overtime ? '<span class="ot"></span>' : '') +
+      '</div>';
+  }
+  return '<div class="cal-head-row"><b>' + label + '</b><span class="hint">点击日期写日报 · 红点=加班</span>' +
+    '<div class="cal-nav"><button class="btn btn-ghost btn-sm" data-cm="prev">‹</button><button class="btn btn-ghost btn-sm" data-cm="this">今天</button><button class="btn btn-ghost btn-sm" data-cm="next">›</button></div></div>' +
+    '<div class="cal-grid">' + head + cells + '</div>';
+}
+function editorHtml() {
+  const date = dailySel || ymdStr(new Date());
+  const r = (dailyData.reports || []).find(x => x.date === date) || { items: [], overtime: false };
+  const editing = dailyEditDate === date;
+  const all = [...new Set([...dailyAllProjects, ...(dailyData.projects || [])].filter(Boolean))];
+  const rows = (r.items && r.items.length ? r.items : [{}]).map(i => {
+    const opts = all.map(p => '<option value="' + esc(p) + '"' + (p === i.project ? ' selected' : '') + '>' + esc(p) + '</option>').join('');
+    const delBtn = editing ? '<button class="btn btn-ghost btn-sm danger-t" data-del-row title="删除本条">✕</button>' : '';
+    return '<div class="proj-row"><div class="pr-head"><select class="d-proj"' + (editing ? '' : ' disabled') + '>' + opts + '</select>' +
+      '<span style="flex:1"></span>' + delBtn + '</div>' +
+      '<textarea class="d-text" rows="1" placeholder="输入工作内容…"' + (editing ? '' : ' readonly') + '>' + esc(i.text || '') + '</textarea></div>';
+  }).join('');
+  const head = '<div class="card-head"><b>日报 · ' + fmtDateCn(new Date(date.replace(/-/g, '/'))) + '</b><span style="flex:1"></span>' +
+    '<button class="btn btn-ghost btn-sm" id="dProjMaint">项目维护</button></div>';
+  const body = '<div class="ed-scroll">' + rows + '</div>';
+  let ops;
+  if (editing) {
+    ops = '<div class="ed-ops"><label class="chk" style="margin:0"><input type="checkbox" id="dOvertime"' + (r.overtime ? ' checked' : '') + '/> 今天加班</label>' +
+      '<button class="btn btn-primary btn-sm" id="dAddRow">+ 添加条目</button><span style="flex:1"></span>' +
+      '<button class="btn btn-ghost btn-sm danger-t" id="dDel">删除当天</button>' +
+      '<button class="btn btn-primary btn-sm" id="dSave">保存日报</button></div>';
+  } else {
+    ops = '<div class="ed-ops"><label class="chk" style="margin:0;opacity:.65"><input type="checkbox" disabled' + (r.overtime ? ' checked' : '') + '/> 今天加班</label><span style="flex:1"></span>' +
+      '<button class="btn btn-ghost btn-sm danger-t" id="dDel">删除当天</button>' +
+      '<button class="btn btn-primary btn-sm" id="dEdit">修改</button></div>';
+  }
+  return head + body + ops;
+}
+function weekHtml() {
+  const wr = weekRange(dailyWeekOffset);
+  const list = dailyInRange(wr.s, wr.e); const byProj = dailyByProject(list);
+  const over = list.filter(r => r.overtime);
+  const key = 'weekly.' + wr.s + '~' + wr.e;
+  let body = localStorage.getItem(key);
+  if (body == null) {
+    body = '【周报】' + wr.s + ' ~ ' + wr.e + '\n一、本周工作（按项目）\n';
+    const ks = Object.keys(byProj);
+    if (!ks.length) body += '（本周暂无日报记录）\n';
+    for (const k of ks) { body += '· ' + k + '：\n'; byProj[k].forEach(t => body += '  - ' + t + '\n'); }
+    body += '\n二、数据统计\n· 日报 ' + list.length + ' 条，加班 ' + over.length + ' 天' + (over.length ? '（' + over.map(r => r.date.slice(5).replace('-', '月') + '日').join('、') + '）' : '') + '\n';
+    body += '\n三、下周计划\n· （待补充）';
+  }
+  return '<div class="card-head"><b>本周周报</b><span class="hint">' + wr.s + ' ~ ' + wr.e + ' · 自动生成 · 可直接编辑</span>' +
+    '<span class="ops"><button class="btn btn-ghost btn-sm" data-wk="prev">‹ 上一周</button><button class="btn btn-ghost btn-sm" data-wk="this">本周</button><button class="btn btn-ghost btn-sm" data-wk="next">下一周 ›</button></span></div>' +
+    '<div class="week-box"><textarea id="weekText">' + esc(body) + '</textarea>' +
+    '<div class="ed-ops"><button class="btn btn-ghost btn-sm" id="weekCopy">复制</button><span class="hint" style="margin-left:auto">自动暂存本周编辑</span></div></div>';
+}
+function oralText() {
+  const wr = weekRange(dailyWeekOffset);
+  const list = dailyInRange(wr.s, wr.e); const byProj = dailyByProject(list);
+  const over = list.filter(r => r.overtime);
+  const keys = Object.keys(byProj); const items = [];
+  Object.values(byProj).forEach(a => a.forEach(t => items.push(t)));
+  let txt = '本周（' + wr.s + ' ~ ' + wr.e + '）我主要完成了 ' + (keys.length ? keys.map(k => k + ' ' + byProj[k].length + ' 项工作').join('，') : '暂无日报记录') + '。';
+  if (items.length) txt += '重点包括：' + items.slice(0, 4).join('；') + (items.length > 4 ? ' 等' : '') + '。';
+  txt += '本周加班 ' + over.length + ' 天。下周计划：待补充。';
+  return txt;
+}
+function oralHtml() {
+  const wr = weekRange(dailyWeekOffset);
+  return '<div class="card-head"><b>口头汇报版</b><span class="hint">' + wr.s + ' ~ ' + wr.e + ' · 只读 · 自动生成</span><span class="ops">' +
+    '<button class="btn btn-ghost btn-sm" id="oralReGen">重新生成</button><button class="btn btn-ghost btn-sm" id="oralCopy">复制</button></span></div>' +
+    '<div class="week-box"><textarea id="oralText" readonly>' + esc(oralText()) + '</textarea></div>';
+}
+function monthHtml() {
+  const rng = monthRange(dailyMonthOffset);
+  const list = dailyInRange(rng.s, rng.e); const byProj = dailyByProject(list);
+  const over = list.filter(r => r.overtime);
+  const total = list.reduce((a, r) => a + (r.items || []).length, 0) || 1;
+  let bars = '';
+  for (const k of Object.keys(byProj)) { const n = byProj[k].length; bars += '<div class="stat-bar"><span class="nm" title="' + esc(k) + '">' + esc(k) + '</span><span class="bar"><i style="width:' + Math.round(n / total * 100) + '%"></i></span><span class="pct">' + Math.round(n / total * 100) + '%</span></div>'; }
+  const kpi =
+    '<div class="kpi">' +
+      '<div class="k"><div class="n">' + over.length + '</div><div class="l">加班天数</div></div>' +
+      '<div class="k"><div class="n">' + list.length + '</div><div class="l">日报条数</div></div>' +
+      '<div class="k"><div class="n">' + Object.keys(byProj).length + '</div><div class="l">覆盖项目</div></div>' +
+    '</div>';
+  const otRow = '<div class="ot-row"><span class="ot-label">加班日</span>' +
+    (over.length ? over.map(r => '<span class="ot-chip">' + r.date.slice(5).replace('-', '月') + '日</span>').join('') : '<span class="hint">无</span>') +
+    '<span class="hint" style="margin-left:auto">占比按工作条目数近似</span></div>';
+  return '<div class="card-head"><b>月报 · ' + rng.label + '</b><span class="ops">' +
+    '<button class="btn btn-ghost btn-sm" data-mp="prev">‹</button><button class="btn btn-ghost btn-sm" data-mp="this">本月</button><button class="btn btn-ghost btn-sm" data-mp="next">›</button></span></div>' +
+    '<div class="month-grid">' +
+      '<div><div class="month-side-h">各项目时长占比</div>' + (bars || '<div class="hint">本月暂无日报</div>') + '</div>' +
+      '<div class="month-side"><div class="month-side-h">本月统计</div>' + kpi + otRow + '</div>' +
+    '</div>';
+}
+function quarterHtml() {
+  const rng = quarterRange(dailyQuarterOffset);
+  const list = dailyInRange(rng.s, rng.e); const byProj = dailyByProject(list);
+  const over = list.filter(r => r.overtime);
+  const qKey = 'quarterly.' + rng.label;
+  let body = localStorage.getItem(qKey);
+  if (body == null) {
+    body = '【季报】' + rng.label + '\n一、本季度工作内容（按项目）\n';
+    const ks = Object.keys(byProj);
+    if (!ks.length) body += '（本季度暂无日报记录）\n';
+    for (const k of ks) { body += '· ' + k + '：\n'; byProj[k].forEach(t => body += '  - ' + t + '\n'); }
+    body += '\n二、数据统计\n· 日报 ' + list.length + ' 条，加班 ' + over.length + ' 天\n';
+    body += '\n三、季度考核\n· （待补充）';
+  }
+  return '<div class="card-head"><b>季报 · ' + rng.label + '</b><span class="ops">' +
+    '<button class="btn btn-ghost btn-sm" data-qp="prev">‹</button><button class="btn btn-ghost btn-sm" data-qp="next">›</button><button class="btn btn-ghost btn-sm" data-qp="this">本季</button>' +
+    '<button class="btn btn-ghost btn-sm" id="quarterReGen">重新生成</button><button class="btn btn-ghost btn-sm" id="quarterPolish">润色</button></span></div>' +
+    '<div class="week-box"><textarea id="quarterText" style="min-height:clamp(130px,17vh,170px)">' + esc(body) + '</textarea>' +
+    '<div class="ed-ops"><button class="btn btn-ghost btn-sm" id="quarterCopy">复制</button><span class="hint" style="margin-left:auto">可编辑补充季度考核结论</span></div></div>';
+}
+function yearHtml() {
+  const y = new Date().getFullYear();
+  const list = dailyInRange(y + '-01-01', y + '-12-31'); const byProj = dailyByProject(list);
+  const over = list.filter(r => r.overtime);
+  let txt = localStorage.getItem('yearly.' + y);
+  if (txt == null) {
+    txt = '【' + y + '年度工作总结】\n一、年度概览\n· 全年日报 ' + list.length + ' 条，加班 ' + over.length + ' 天\n· 覆盖项目：' + (Object.keys(byProj).join('、') || '暂无') + '\n二、分项目成果\n';
+    for (const k of Object.keys(byProj)) txt += '· ' + k + '：' + byProj[k].length + ' 项工作\n';
+    txt += '\n三、季度回顾\n· 各季度统计见上方统计区，可补充季度考核结论\n四、亮点与不足\n· （待补充）\n五、明年计划\n· （待补充）';
+  }
+  return '<div class="card-head"><b>年报 · 年终总结 · ' + y + '年</b><span class="ops">' +
+    '<button class="btn btn-ghost btn-sm" id="yearReGen">重新生成</button><button class="btn btn-ghost btn-sm" id="yearPolish">润色</button><button class="btn btn-ghost btn-sm" id="yearCopy">复制</button></span></div>' +
+    '<div class="week-box"><textarea id="yearText" style="min-height:clamp(150px,17vh,190px)">' + esc(txt) + '</textarea></div>';
+}
+async function renderDaily() {
+  const token = ++renderToken;
+  try {
+    const r = await api('GET', '/api/daily');
+    if (r && r.ok) dailyData = { reports: r.reports || [], projects: r.projects || [] };
+  } catch (e) {}
+  await loadAllProjects();
+  if (!dailySel) dailySel = ymdStr(new Date());
+  let remind = '';
+  try { const rm = await api('GET', '/api/daily/remind'); if (rm && rm.ok && !rm.written) remind = '<div class="alert-warn">📌 今天（' + rm.today + '）还没写日报，记得记录今日工作并勾选加班情况。</div>'; } catch (e) {}
+  if (!dailySel) dailySel = ymdStr(new Date());
+  if (dailyEditDate === null && !(dailyData.reports || []).some(x => x.date === dailySel)) dailyEditDate = dailySel;
+  $('#main').innerHTML = '';
+  $('#main').appendChild(pageHead('日报 · 周报 · 统计', '每天记录工作、关联项目与加班；每周自动生成周报，月底/季度/年底生成统计与总结'));
+  $('#main').insertAdjacentHTML('beforeend',
+    '<div class="daily-row two">' +
+      '<div class="daily-card">' + calHtml() + '</div>' +
+      '<div class="daily-card">' + editorHtml() + '</div>' +
+    '</div>' +
+    '<div class="daily-row report">' +
+      '<div class="daily-card">' + weekHtml() + '</div>' +
+      '<div class="daily-card">' + oralHtml() + '</div>' +
+    '</div>' +
+    '<div class="daily-row">' +
+      '<div class="daily-card full">' + monthHtml() + '</div>' +
+      '<div class="daily-card full">' + quarterHtml() + '</div>' +
+      '<div class="daily-card full">' + yearHtml() + '</div>' +
+    '</div>');
+  if (remind) $('#main').insertAdjacentHTML('afterbegin', remind);
+  bindDaily();
+  if (token !== renderToken) return;
+}
+function bindDaily() {
+  const m = $('#main');
+  m.querySelectorAll('.cal-cell[data-date]').forEach(c => c.addEventListener('click', () => { dailySel = c.dataset.date; dailyEditDate = (dailyData.reports || []).some(x => x.date === dailySel) ? null : dailySel; renderDaily(); }));
+  m.querySelectorAll('[data-cm]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.cm; if (v === 'prev') dailyMonthOffset--; else if (v === 'next') dailyMonthOffset++; else dailyMonthOffset = 0; renderDaily();
+  }));
+  m.querySelectorAll('[data-wk]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.wk; if (v === 'prev') dailyWeekOffset--; else if (v === 'next') dailyWeekOffset++; else dailyWeekOffset = 0; renderDaily();
+  }));
+  m.querySelectorAll('[data-mp]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.mp; if (v === 'prev') dailyMonthOffset--; else if (v === 'next') dailyMonthOffset++; else dailyMonthOffset = 0; renderDaily();
+  }));
+  m.querySelectorAll('[data-qp]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.qp; if (v === 'prev') dailyQuarterOffset--; else if (v === 'next') dailyQuarterOffset++; else dailyQuarterOffset = 0; renderDaily();
+  }));
+  const edScroll = m.querySelector('.ed-scroll');
+  if (edScroll) {
+    const fitText = t => { t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 96) + 'px'; };
+    edScroll.querySelectorAll('.d-text').forEach(fitText);
+    edScroll.addEventListener('input', e => { const t = e.target.closest('.d-text'); if (t) fitText(t); });
+    edScroll.addEventListener('click', e => {
+      const b = e.target.closest('[data-del-row]');
+      if (b) { const rows = edScroll.querySelectorAll('.proj-row'); if (rows.length > 1) b.closest('.proj-row').remove(); else toast('至少保留一条工作内容', 'err'); }
+    });
+  }
+  const add = $('#dAddRow'); if (add) add.onclick = () => { const rows = m.querySelectorAll('.proj-row'); const tpl = rows[rows.length - 1]; if (tpl) { const nn = tpl.cloneNode(true); const nt0 = nn.querySelector('.d-text'); if (nt0) { nt0.value = ''; nt0.style.height = ''; } const sp = nn.querySelector('.d-proj'); if (sp) sp.selectedIndex = 0; tpl.after(nn); const nt = nn.querySelector('.d-text'); if (nt) nt.focus(); } };
+  const save = $('#dSave'); if (save) save.onclick = async () => {
+    const date = dailySel || ymdStr(new Date());
+    const items = [];
+    for (const r of m.querySelectorAll('.proj-row')) {
+      const p = r.querySelector('.d-proj').value; const t = r.querySelector('.d-text').value.trim();
+      if (!t) continue;
+      items.push({ project: p, text: t });
+    }
+    if (!items.length) { toast('请至少填写一条工作内容', 'err'); return; }
+    const ot = $('#dOvertime') ? $('#dOvertime').checked : false;
+    const r = await api('POST', '/api/daily', { date, items, overtime: ot });
+    toast(r.msg, r.ok ? 'ok' : 'err');
+    if (r.ok) { dailyEditDate = null; renderDaily(); }
+  };
+  const editBtn = $('#dEdit'); if (editBtn) editBtn.onclick = () => { dailyEditDate = dailySel || ymdStr(new Date()); renderDaily(); };
+  const projMaint = $('#dProjMaint'); if (projMaint) projMaint.onclick = () => openProjectModal();
+  const del = $('#dDel'); if (del) del.onclick = () => {
+    const date = dailySel || ymdStr(new Date());
+    confirmModal('删除日报', '确定删除 <b>' + fmtDateCn(new Date(date.replace(/-/g, '/'))) + '</b> 的日报？', async () => { const r = await api('POST', '/api/daily/delete', { date }); toast(r.msg, r.ok ? 'ok' : 'err'); if (r.ok) { dailyEditDate = date; renderDaily(); } });
+  };
+  const wc = $('#weekCopy'); if (wc) wc.onclick = () => { const t = $('#weekText'); if (t) { copyText(t.value); toast('已复制周报文本', 'ok'); } };
+  const oc = $('#oralCopy'); if (oc) oc.onclick = () => { const t = $('#oralText'); if (t) { copyText(t.value); toast('已复制口头汇报版', 'ok'); } };
+  const og = $('#oralReGen'); if (og) og.onclick = () => { const t = $('#oralText'); if (t) { t.value = oralText(); toast('已重新生成口头汇报版', 'ok'); } };
+  const qc = $('#quarterCopy'); if (qc) qc.onclick = () => { const t = $('#quarterText'); if (t) { copyText(t.value); toast('已复制季报', 'ok'); } };
+  const qg = $('#quarterReGen'); if (qg) qg.onclick = () => { try { localStorage.removeItem('quarterly.' + quarterRange(dailyQuarterOffset).label); } catch (e) {} renderDaily(); toast('已重新生成季报', 'ok'); };
+  const qp = $('#quarterPolish'); if (qp) qp.onclick = async () => { const t = $('#quarterText'); if (!t) return; if (!t.value.trim()) { toast('季报内容为空', 'err'); return; } qp.disabled = true; const old = qp.textContent; qp.textContent = '润色中…'; try { const r = await api('POST', '/api/polish', { text: t.value }); if (r && r.ok && r.text) { t.value = r.text; try { localStorage.setItem('quarterly.' + quarterRange(dailyQuarterOffset).label, r.text); } catch (e) {} toast('已润色季报', 'ok'); } else { toast((r && r.msg) || '润色失败', 'err'); } } catch (e) { toast('润色失败（服务异常）', 'err'); } finally { qp.disabled = false; qp.textContent = old; } };
+  const yg = $('#yearReGen'); if (yg) yg.onclick = () => { try { localStorage.removeItem('yearly.' + new Date().getFullYear()); } catch (e) {} renderDaily(); toast('已重新生成年报', 'ok'); };
+  const yp = $('#yearPolish'); if (yp) yp.onclick = async () => { const t = $('#yearText'); if (!t) return; if (!t.value.trim()) { toast('年报内容为空', 'err'); return; } yp.disabled = true; const old = yp.textContent; yp.textContent = '润色中…'; try { const r = await api('POST', '/api/polish', { text: t.value }); if (r && r.ok && r.text) { t.value = r.text; try { localStorage.setItem('yearly.' + new Date().getFullYear(), r.text); } catch (e) {} toast('已润色年报', 'ok'); } else { toast((r && r.msg) || '润色失败', 'err'); } } catch (e) { toast('润色失败（服务异常）', 'err'); } finally { yp.disabled = false; yp.textContent = old; } };
+  const yc = $('#yearCopy'); if (yc) yc.onclick = () => { const t = $('#yearText'); if (t) { copyText(t.value); toast('已复制年终总结', 'ok'); } };
+  const wt = $('#weekText'); if (wt) wt.oninput = () => { const wr = weekRange(dailyWeekOffset); try { localStorage.setItem('weekly.' + wr.s + '~' + wr.e, wt.value); } catch (e) {} };
+  const qt = $('#quarterText'); if (qt) qt.oninput = () => { try { localStorage.setItem('quarterly.' + quarterRange(dailyQuarterOffset).label, qt.value); } catch (e) {} };
+  const yt = $('#yearText'); if (yt) yt.oninput = () => { try { localStorage.setItem('yearly.' + new Date().getFullYear(), yt.value); } catch (e) {} };
+}
+function projectModalHtml(list) {
+  const customHtml = list.length ? list.map((p, i) => '<span class="pm-tag"><span>' + esc(p) + '</span><button type="button" data-pm-del="' + i + '" title="移除">✕</button></span>').join('') : '<span class="pm-empty">暂无其他项目，在下方添加</span>';
+  const sysHtml = dailyAllProjects.length ? dailyAllProjects.map(p => '<span class="pm-tag sys"><span>' + esc(p) + '</span></span>').join('') : '<span class="pm-empty">项目管理模块暂无项目</span>';
+  return '<div class="modal-head"><h3>项目维护</h3><button class="modal-x" onclick="closeModal()">✕</button></div>' +
+    '<div class="modal-body pm-body">' +
+      '<div class="pm-sec"><div class="pm-label">其他项目</div><div class="pm-tags" id="pmCustom">' + customHtml + '</div></div>' +
+      '<div class="pm-add"><input type="text" id="pmInput" placeholder="输入项目名称"/><button class="btn btn-primary btn-sm" id="pmAddBtn" type="button">添加</button></div>' +
+      '<div class="pm-sec"><div class="pm-label">项目管理模块项目</div><div class="pm-tags">' + sysHtml + '</div></div>' +
+    '</div>' +
+    '<div class="modal-ops"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" id="pmSave" type="button">保存</button></div>';
+}
+function openProjectModal() {
+  let list = [...(dailyData.projects || [])];
+  const refresh = () => { const box = $('#pmCustom'); if (box) box.innerHTML = list.length ? list.map((p, i) => '<span class="pm-tag"><span>' + esc(p) + '</span><button type="button" data-pm-del="' + i + '" title="移除">✕</button></span>').join('') : '<span class="pm-empty">暂无其他项目，在下方添加</span>'; };
+  openModal(projectModalHtml(list));
+  const addOne = () => { const v = ($('#pmInput').value || '').trim(); if (!v) return; if ([...dailyAllProjects, ...list].includes(v)) { toast('该项目已存在', 'err'); return; } list.push(v); $('#pmInput').value = ''; refresh(); $('#pmInput').focus(); };
+  $('#pmAddBtn').onclick = addOne;
+  $('#pmInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addOne(); } });
+  $('#pmCustom').addEventListener('click', e => { const b = e.target.closest('[data-pm-del]'); if (b) { list.splice(Number(b.dataset.pmDel), 1); refresh(); } });
+  $('#pmSave').onclick = async () => { const r = await api('POST', '/api/daily/projects', { projects: list }); toast(r.msg, r.ok ? 'ok' : 'err'); if (r.ok) { dailyData.projects = list; closeModal(); renderDaily(); } };
+}
+async function renderRequirements() {
+  const token = ++renderToken;
+  let items = [];
+  try { const r = await api('GET', '/api/requirements'); if (r && r.ok) items = r.items || []; } catch (e) {}
+  await loadAllProjects();
+  const projs = [...new Set([...dailyAllProjects, ...items.map(i => i.project)].filter(Boolean))];
+  const shown = items.filter(i => reqFilter === 'all' || i.status === reqFilter);
+  const cnt = s => items.filter(i => i.status === s).length;
+  const card = i => {
+    const pc = i.priority === '高' ? 'p-high' : i.priority === '低' ? 'p-low' : '';
+    const st = i.status === '进行中' ? 'st-doing' : i.status === '已完成' ? 'st-done' : 'st-todo';
+    const pri = i.priority === '高' ? 'high' : i.priority === '低' ? 'low' : 'mid';
+    return '<div class="req-card ' + pc + '">' +
+      '<div class="req-title">' + esc(i.title) + '</div>' +
+      (i.description ? '<div class="req-desc">' + esc(i.description) + '</div>' : '') +
+      '<div class="req-meta">' +
+        '<span class="pill ' + pri + '">' + esc(i.priority || '中') + '</span>' +
+        '<span class="pill ' + st + '" data-status="' + i.id + '" style="cursor:pointer" title="点击切换状态">' + esc(i.status || '待处理') + '</span>' +
+        '<span>' + (i.project ? esc(i.project) + ' · ' : '') + '创建 ' + new Date(i.createdAt).toLocaleDateString('zh-CN') + '</span>' +
+        '<span class="ops"><button class="btn btn-ghost btn-sm" data-edit="' + i.id + '">编辑</button><button class="btn btn-ghost btn-sm danger-t" data-del="' + i.id + '">删除</button></span>' +
+      '</div></div>';
+  };
+  $('#main').innerHTML = '';
+  $('#main').appendChild(pageHead('需求池', '收集与管理工作需求，关联项目，跟踪处理状态'));
+  $('#main').insertAdjacentHTML('beforeend',
+    '<div class="daily-card">' +
+      '<div class="req-toolbar"><h3>需求池</h3>' +
+        '<div class="seg">' +
+          '<button class="' + (reqFilter === 'all' ? 'on' : '') + '" data-f="all">全部 <b>' + items.length + '</b></button>' +
+          '<button class="' + (reqFilter === '待处理' ? 'on' : '') + '" data-f="待处理">待处理 <b>' + cnt('待处理') + '</b></button>' +
+          '<button class="' + (reqFilter === '进行中' ? 'on' : '') + '" data-f="进行中">进行中 <b>' + cnt('进行中') + '</b></button>' +
+          '<button class="' + (reqFilter === '已完成' ? 'on' : '') + '" data-f="已完成">已完成 <b>' + cnt('已完成') + '</b></button>' +
+        '</div>' +
+        '<span style="flex:1"></span><button class="btn btn-primary btn-sm" id="reqAdd">+ 新增需求</button>' +
+      '</div>' +
+      '<div class="req-grid">' + (shown.length ? shown.map(card).join('') : '<div class="empty">暂无需求 · 点击右上角新增</div>') + '</div>' +
+    '</div>');
+  const m = $('#main');
+  m.querySelectorAll('[data-f]').forEach(b => b.addEventListener('click', () => { reqFilter = b.dataset.f; renderRequirements(); }));
+  m.querySelectorAll('[data-status]').forEach(b => b.addEventListener('click', async () => {
+    const it = items.find(x => x.id === b.dataset.status); if (!it) return;
+    const seq = ['待处理', '进行中', '已完成']; const nxt = seq[(seq.indexOf(it.status) + 1) % seq.length];
+    const r = await api('POST', '/api/requirements', { id: it.id, title: it.title, project: it.project, priority: it.priority, status: nxt, description: it.description || '' });
+    if (r.ok) renderRequirements();
+  }));
+  m.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => { const it = items.find(x => x.id === b.dataset.edit); if (it) openReqModal(it, projs); }));
+  m.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+    const it = items.find(x => x.id === b.dataset.del); if (!it) return;
+    confirmModal('删除需求', '确定删除需求「' + esc(it.title) + '」？', async () => { const r = await api('POST', '/api/requirements/delete', { id: it.id }); toast(r.msg, r.ok ? 'ok' : 'err'); if (r.ok) renderRequirements(); });
+  }));
+  const add = $('#reqAdd'); if (add) add.onclick = () => openReqModal(null, projs);
+  if (token !== renderToken) return;
+}
+function openReqModal(it, projs) {
+  const projOpts = projs.map(p => '<option value="' + esc(p) + '"' + (it && it.project === p ? ' selected' : '') + '>' + esc(p) + '</option>').join('');
+  openModal('<div class="modal-head"><h3>' + (it ? '编辑需求' : '新增需求') + '</h3><button class="modal-x" onclick="closeModal()">✕</button></div>' +
+    '<div class="field"><label>需求标题</label><input type="text" id="reqTitle" value="' + esc(it ? it.title : '') + '" placeholder="一句话描述需求"/></div>' +
+    '<div class="field"><label>需求正文</label><textarea id="reqDesc" rows="2" placeholder="补充需求细节、验收标准等">' + esc(it ? it.description || '' : '') + '</textarea></div>' +
+    '<div class="field-row">' +
+      '<div class="field"><label>关联项目</label><select id="reqProject"><option value="">（无）</option>' + projOpts + '<option value="__new__">＋ 其他项目</option></select><input type="text" id="reqOther" placeholder="输入项目名称" style="display:none;margin-top:6px"/></div>' +
+      '<div class="field"><label>优先级</label><select id="reqPriority"><option value="高"' + (it && it.priority === '高' ? ' selected' : '') + '>高</option><option value="中"' + (!it || it.priority === '中' ? ' selected' : '') + '>中</option><option value="低"' + (it && it.priority === '低' ? ' selected' : '') + '>低</option></select></div>' +
+      '<div class="field"><label>状态</label><select id="reqStatus"><option value="待处理"' + (it && it.status === '待处理' ? ' selected' : '') + '>待处理</option><option value="进行中"' + (it && it.status === '进行中' ? ' selected' : '') + '>进行中</option><option value="已完成"' + (it && it.status === '已完成' ? ' selected' : '') + '>已完成</option></select></div>' +
+    '</div>' +
+    '<div class="modal-ops"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" id="reqSave">保存</button></div>');
+  const prj = $('#reqProject'); if (prj) prj.addEventListener('change', () => { const o = $('#reqOther'); if (o) o.style.display = prj.value === '__new__' ? '' : 'none'; });
+  const save = $('#reqSave'); if (save) save.onclick = async () => {
+    let project = $('#reqProject').value;
+    if (project === '__new__') { project = ($('#reqOther').value || '').trim(); if (!project) { toast('请先填写项目名称', 'err'); return; } }
+    const body = { title: $('#reqTitle').value.trim(), project, priority: $('#reqPriority').value, status: $('#reqStatus').value, description: $('#reqDesc').value.trim() };
+    if (!body.title) { toast('请填写需求标题', 'err'); return; }
+    if (it) body.id = it.id;
+    const r = await api('POST', '/api/requirements', body);
+    toast(r.msg, r.ok ? 'ok' : 'err');
+    if (r.ok) { closeModal(); renderRequirements(); }
+  };
+}
+
 async function renderView(view) {
   const token = ++renderToken;
   $('#main').innerHTML = '';
@@ -1405,6 +1795,8 @@ async function renderView(view) {
     else if (view === 'rules') { await renderRules(); }
     else if (view === 'components') { await renderComponents(); }
     else if (view === 'collab') { await renderCollab(); }
+    else if (view === 'daily') { await renderDaily(); }
+    else if (view === 'requirements') { await renderRequirements(); }
     else if (view === 'settings') {
       $('#main').innerHTML = '';
       $('#main').appendChild(pageHead('设置', VIEW_TITLES.settings[1]));
@@ -1431,8 +1823,11 @@ async function renderView(view) {
     }
     if (token !== renderToken) return; // 已被更新的渲染取代（快速切换 / 双击防覆盖）
   } catch (e) {
-    if (token !== renderToken) return;
-    $('#main').innerHTML = '<div class="empty">加载失败：' + esc(e.message || e) + '</div>';
+    // 过期渲染也显示错误：避免“永久停在加载中”且无从排查
+    const msg = esc((e && e.message) || e || '未知错误');
+    if (token === renderToken || !$('#main').querySelector('.spinner')) {
+      $('#main').innerHTML = '<div class="empty">加载失败：' + msg + '</div>';
+    }
   }
 }
 

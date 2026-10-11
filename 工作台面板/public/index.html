@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
@@ -293,7 +293,119 @@
   .update-item code{color:var(--accent);font-size:11px;white-space:nowrap}
   .update-item b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .update-item span{white-space:nowrap;font-size:11px}
-</style>
+    /* ===== 日报 / 需求池 v1.0（按 WorkBuddy 设计稿）===== */
+  :root{--card-pad:20px;--gap:16px;--num:20px}
+  .daily-row{display:grid;gap:var(--gap);align-items:stretch;margin-bottom:var(--gap)}
+  .daily-row.two{grid-template-columns:1fr 1fr}
+  .daily-row.report{grid-template-columns:1fr 1fr}
+  .daily-card{position:relative;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:var(--card-pad);box-shadow:var(--shadow);transition:box-shadow .18s}
+  .daily-card:hover{box-shadow:var(--shadow-hover)}
+  .daily-card.full{grid-column:1/-1}
+  .daily-card h3{margin:0 0 14px;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .daily-card h3::before{content:'';width:3px;height:15px;border-radius:2px;background:linear-gradient(180deg,var(--accent),#7dd3fc);flex:none}
+  .daily-card h3 .hint{font-weight:400;font-size:11.5px;color:var(--muted)}
+  .daily-card h3 .ops{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:1fr;gap:6px;flex:1}
+  .cal-head{font-size:11px;color:var(--muted);text-align:center;padding:2px 0;font-weight:600}
+  .cal-cell{min-height:88px;overflow:hidden;border:1px solid var(--line-subtle);border-radius:8px;padding:6px 7px;cursor:pointer;position:relative;background:#fff;transition:border-color .15s,box-shadow .15s;font-size:11px}
+  .cal-cell:hover{border-color:var(--accent-border);box-shadow:0 0 0 3px var(--accent-soft)}
+  .cal-cell.today{outline:2px solid var(--accent);outline-offset:-1px;background:#f8fbff}
+  .cal-cell.selected{background:var(--accent-soft);border-color:var(--accent-border);outline:2px solid var(--accent);outline-offset:-1px}
+  .cal-cell.weekend{background:#f0fdf4}
+  .cal-cell .wk{position:absolute;top:5px;right:6px;font-style:normal;font-size:9px;line-height:1;padding:1px 4px;border-radius:4px;background:#fef3c7;color:#b45309;border:1px solid #fde68a}
+  .cal-cell.weekend.today,.cal-cell.weekend.selected{background:var(--accent-soft)}
+  .cal-head-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .cal-head-row b{font-size:14px;color:var(--ink)}
+  .cal-head-row .cal-nav{margin-left:auto;display:flex;gap:6px;align-items:center}
+  #view h3{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:15px}
+  .card-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .cal-cell.dim{opacity:.4}
+  .cal-cell .d{font-weight:700;font-size:12px}
+  .cal-cell .tag{display:block;margin-top:4px;padding:0 5px;border-radius:5px;font-size:10px;line-height:1.7;background:var(--green-soft);color:var(--green);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cal-cell .ot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px #fff}
+  .proj-row{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;transition:border-color .15s}
+  .proj-row:hover{border-color:#cbd5e1}
+  .proj-row:focus-within{border-color:var(--accent)}
+  .pr-head{display:flex;gap:8px;align-items:center}
+  .proj-row .d-proj{flex:none;width:170px;max-width:170px;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s}
+  .proj-row .d-other{flex:1;min-width:0;border:1px solid var(--line);border-radius:var(--radius-sm);padding:7px 10px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s}
+  .proj-row .d-text{width:100%;min-width:0;min-height:34px;max-height:96px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 10px;font:inherit;font-size:12.5px;line-height:1.6;resize:none;background:#fff;color:var(--ink);overflow-y:auto;transition:border-color .15s,box-shadow .15s}
+  .proj-row .d-proj:focus,.proj-row .d-other:focus,.proj-row .d-text:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .pm-body{display:flex;flex-direction:column;gap:14px}
+  .pm-label{font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px}
+  .pm-tags{display:flex;flex-wrap:wrap;gap:8px;min-height:30px;align-content:flex-start}
+  .pm-tag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:3px 5px 3px 12px;font-size:12.5px;color:var(--ink)}
+  .pm-tag.sys{background:#f1f5f9;color:#64748b}
+  .pm-tag button{border:none;background:rgba(100,116,139,.15);width:18px;height:18px;border-radius:50%;cursor:pointer;color:#64748b;font-size:11px;line-height:18px;text-align:center;padding:0}
+  .pm-tag button:hover{background:rgba(239,68,68,.18);color:#dc2626}
+  .pm-empty{font-size:12.5px;color:#94a3b8}
+  .pm-add{display:flex;gap:8px;margin-top:-4px}
+  .pm-add input{flex:1;min-width:0;border:1px solid var(--line);border-radius:var(--radius-sm);padding:7px 10px;font:inherit;font-size:12.5px;color:var(--ink);background:#fff}
+  .pm-add input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .ed-ops{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  .ed-scroll{flex:1;min-height:0;overflow-y:auto}
+  .week-box{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px;background:#fff}
+  .week-box textarea{width:100%;min-height:clamp(110px,17vh,150px);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font:inherit;font-size:12.5px;line-height:1.65;resize:vertical;transition:border-color .15s,box-shadow .15s}
+  .week-box textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .week-box textarea[readonly]{background:#f6f8fb;color:#475569;cursor:default;resize:none}
+  .stat-bar{display:flex;align-items:center;gap:10px;margin:9px 0}
+  .stat-bar .nm{width:130px;color:var(--ink);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stat-bar .bar{flex:1;height:10px;background:var(--line-subtle);border-radius:5px;overflow:hidden}
+  .stat-bar .bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),#38bdf8)}
+  .stat-bar .pct{width:52px;text-align:right;font-size:12px;font-weight:700;color:var(--accent)}
+  .month-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .month-side{flex:1;min-width:230px;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px 16px 10px;display:flex;flex-direction:column}
+  .month-side-h{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px}
+  .kpi{display:flex;flex-direction:row;align-items:stretch}
+  .kpi .k{flex:1;padding:0 16px}
+  .kpi .k:first-child{padding-left:0}
+  .kpi .k+.k{border-left:1px solid var(--line)}
+  .kpi .n{font-size:var(--num);font-weight:700;color:var(--ink);line-height:1.2}
+  .kpi .l{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .ot-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+  .ot-label{font-size:11.5px;color:var(--muted)}
+  .ot-chip{display:inline-block;padding:2px 10px;border-radius:var(--radius-pill);background:var(--red-soft);color:var(--red);font-size:11px;margin:2px;border:1px solid #fecaca}
+  .req-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .req-toolbar h3{margin:0;font-size:15px;font-weight:650}
+  .seg{display:inline-flex;background:#f6f8fb;border:1px solid var(--line);border-radius:var(--radius-pill);padding:3px;gap:2px}
+  .seg button{border:0;background:transparent;font:inherit;font-size:12.5px;color:var(--muted);padding:5px 14px;border-radius:var(--radius-pill);cursor:pointer;font-weight:550;transition:.15s}
+  .seg button b{font-weight:700;margin-left:5px;color:var(--ink)}
+  .seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 3px rgba(15,23,42,.10)}
+  .req-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+  .req-card{position:relative;border:1px solid var(--line);border-radius:12px;padding:14px 16px 12px 18px;background:#fff;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.05);transition:box-shadow .16s,transform .16s}
+  .req-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#fbbf24}
+  .req-card.p-high::before{background:linear-gradient(180deg,var(--red),#f87171)}
+  .req-card.p-low::before{background:linear-gradient(180deg,var(--green),#4ade80)}
+  .req-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
+  .req-title{font-size:13.5px;font-weight:650;word-break:break-all}
+  .req-desc{font-size:12px;color:#475569;margin-top:5px;line-height:1.6;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .req-meta{font-size:11px;color:var(--muted);margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .req-meta .ops{margin-left:auto;display:flex;gap:6px;opacity:.55;transition:opacity .15s}
+  .req-card:hover .req-meta .ops{opacity:1}
+  .pill{font-size:11px;padding:2px 9px;border-radius:var(--radius-pill);white-space:nowrap;font-weight:600;border:1px solid transparent}
+  .pill.st-todo{background:#eef1f5;color:var(--muted);border-color:var(--line)}
+  .pill.st-doing{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-border)}
+  .pill.st-done{background:var(--green-soft);color:var(--green);border-color:#bbf7d0}
+  .pill.high{background:var(--red-soft);color:var(--red);border-color:#fecaca}
+  .pill.mid{background:var(--amber-soft);color:var(--amber);border-color:#fde68a}
+  .pill.low{background:var(--green-soft);color:var(--green);border-color:#bbf7d0}
+  @media (max-width:1200px){
+    .daily-row.report{grid-template-columns:1fr 1fr}
+    .req-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+    .month-grid{gap:16px}
+  }
+  @media (max-width:960px){
+    .daily-row.two,.daily-row.report{grid-template-columns:1fr}
+    .req-grid{grid-template-columns:1fr}
+    .stat-bar .nm{width:96px}
+    .proj-row{flex-wrap:wrap}
+    .proj-row select{max-width:100%}
+  }
+  @media (max-height:820px){
+    :root{--card-pad:16px;--gap:12px}
+    .week-box textarea{min-height:110px}
+    .ed-scroll{max-height:150px}
+  }</style>
 </head>
 <body>
 <header class="topbar">
@@ -314,6 +426,8 @@
   <div class="tab" data-tab="rules">工作规则</div>
   <div class="tab" data-tab="components">组件库</div>
   <div class="tab" data-tab="collab">通信看板</div>
+  <div class="tab" data-tab="daily">日报</div>
+  <div class="tab" data-tab="requirements">需求池</div>
 </nav>
 
 <main id="view"></main>
@@ -601,7 +715,8 @@ function applyUpdateBadge(){
 }
 async function refreshUpdateStatus(manual = false){
   const btn = $('#updateBtn');
-  const labelTxt = () => { btn.textContent = ''; btn.appendChild(document.createTextNode('↻ 检查更新')); btn.appendChild($('#updateBadge')); };
+  const badge = $('#updateBadge');
+  const labelTxt = () => { btn.textContent = ''; btn.appendChild(document.createTextNode('↻ 检查更新')); if(badge) btn.appendChild(badge); };
   try{
     if(manual){
       btn.disabled = true;
@@ -714,6 +829,14 @@ async function loadCtx(){
       }
     }
   }catch(e){ /* 后端未就绪时静默 */ }
+  try{
+    const pr = await api('/api/projects');
+    if(pr && pr.ok && Array.isArray(pr.projects)){
+      ctxData.allProjects = pr.projects.map(p=>p.name).filter(Boolean);
+      const mask = $('#modalMask');
+      if(mask && !mask.classList.contains('show') && currentTab==='daily'){ render(); }
+    }
+  }catch(e){ /* 静默 */ }
 }
 loadCtx();
 setInterval(loadCtx, 5000);
@@ -728,6 +851,8 @@ async function render(){
     else if(currentTab==='rules') await renderRules();
     else if(currentTab==='components') await renderComponents();
     else if(currentTab==='collab') await renderCollab();
+    else if(currentTab==='daily') await renderDaily();
+    else if(currentTab==='requirements') await renderRequirements();
     viewLoaded = true;
   }catch(err){
     view.innerHTML = '<div class="empty">加载失败：'+err.message+'</div>';
@@ -1914,6 +2039,366 @@ async function editRule(name){
     if(r2.ok){ closeModal(); render(); }
     else{ $('#editorSave').disabled=false; $('#editorSave').textContent='保存'; }
   });
+}
+
+// ===== 日报 / 需求池模块（2026-10-10 doubao 新增）=====
+let dailyData = { reports: [], projects: [] };
+let dailySel = null, dailyEditDate = null, dailyMonth = new Date(), dailyWeekOffset = 0;
+let monthOffset = 0, quarterOffset = 0;
+let reqFilter = 'all';
+function ymdStr(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fmtDateCn(s){ if(!s) return ''; const a=s.split('-'); return a[0]+'年'+Number(a[1])+'月'+Number(a[2])+'日'; }
+function projectNames(){
+  const a = new Set(((ctxData&&ctxData.allProjects)||[]).slice());
+  (dailyData.projects||[]).forEach(x=>{ if(x) a.add(x); });
+  const arr = [...a].filter(Boolean);
+  return arr.length ? arr : ['（无项目）'];
+}
+function weekRange(offset){
+  const now=new Date(); const dow=(now.getDay()+6)%7;
+  const start=new Date(now); start.setDate(now.getDate()-dow+offset*7);
+  const end=new Date(start); end.setDate(start.getDate()+6);
+  return { s:ymdStr(start), e:ymdStr(end) };
+}
+function monthRange(offset){
+  const d=new Date(new Date().getFullYear(), new Date().getMonth()+offset, 1);
+  const last=new Date(d.getFullYear(), d.getMonth()+1, 0);
+  return { s:ymdStr(d), e:ymdStr(last), label:d.getFullYear()+'年'+String(d.getMonth()+1).padStart(2,'0')+'月' };
+}
+function quarterRange(offset){
+  const now=new Date(); const q=Math.floor(now.getMonth()/3)+offset;
+  const y=now.getFullYear()+Math.floor(q/4); const m=((q%4)+4)%4*3;
+  const s=new Date(y,m,1); const e=new Date(y,m+3,0);
+  return { s:ymdStr(s), e:ymdStr(e), label:y+'年 Q'+(m/3+1) };
+}
+function yearRange(offset){ const y=new Date().getFullYear()+offset; return { s:y+'-01-01', e:y+'-12-31', label:y+'年' }; }
+function dailyInRange(s,e){ return (dailyData.reports||[]).filter(r=>r.date>=s && r.date<=e); }
+function dailyByProject(list){
+  const m={};
+  (list||[]).forEach(r=>{ (r.items||[]).forEach(i=>{ const p=i.project||'（无项目）'; (m[p]=m[p]||[]).push(i.text); }); });
+  return m;
+}
+function calHtml(){
+  const y=dailyMonth.getFullYear(), m=dailyMonth.getMonth();
+  const days=new Date(y,m+1,0).getDate();
+  const lead=(new Date(y,m,1).getDay()+6)%7;
+  const today=ymdStr(new Date());
+  const byDate={}; (dailyData.reports||[]).forEach(r=>byDate[r.date]=r);
+  const PALETTE=[['#eff6ff','#2563eb','#bfdbfe'],['#f0fdf4','#16a34a','#bbf7d0'],['#fff7ed','#ea580c','#fed7aa'],['#faf5ff','#9333ea','#e9d5ff'],['#fdf2f8','#db2777','#fbcfe8'],['#f0f9ff','#0284c7','#bae6fd'],['#fffbeb','#a16207','#fde68a'],['#f5f5f4','#57534e','#d6d3d1']];
+  const HOLIDAYS_2026={'2026-01-01':1,'2026-01-02':1,'2026-01-03':1,'2026-02-15':1,'2026-02-16':1,'2026-02-17':1,'2026-02-18':1,'2026-02-19':1,'2026-02-20':1,'2026-02-21':1,'2026-02-22':1,'2026-02-23':1,'2026-04-04':1,'2026-04-05':1,'2026-04-06':1,'2026-05-01':1,'2026-05-02':1,'2026-05-03':1,'2026-05-04':1,'2026-05-05':1,'2026-06-19':1,'2026-06-20':1,'2026-06-21':1,'2026-09-25':1,'2026-09-26':1,'2026-09-27':1,'2026-10-01':1,'2026-10-02':1,'2026-10-03':1,'2026-10-04':1,'2026-10-05':1,'2026-10-06':1,'2026-10-07':1};
+  const MAKEUP_2026={'2026-01-04':1,'2026-02-14':1,'2026-02-28':1,'2026-05-09':1,'2026-09-20':1,'2026-10-10':1};
+  const pHash=s=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h%PALETTE.length;};
+  const heads=['一','二','三','四','五','六','日'].map(h=>'<div class="cal-head">'+h+'</div>').join('');
+  let cells='';
+  for(let i=0;i<lead;i++) cells+='<div class="cal-cell dim"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const r=byDate[ds];
+    const wd=new Date(y,m,d).getDay();
+    const rest=!MAKEUP_2026[ds] && ((wd===0||wd===6)||HOLIDAYS_2026[ds]);
+    const cls=['cal-cell', ds===today?'today':'', ds===dailySel?'selected':'', rest?'weekend':'', r?'':'dim'].filter(Boolean).join(' ');
+    const projs=r ? [...new Set((r.items||[]).map(i=>i.project).filter(Boolean))] : [];
+    const tags=projs.slice(0,2).map(p=>{const c=PALETTE[pHash(p)];return '<span class="tag" style="background:'+c[0]+';color:'+c[1]+';border:1px solid '+c[2]+'">'+escapeHtml(p)+'</span>';}).join('');
+    const ot=r&&r.overtime ? '<i class="ot" title="加班"></i>' : '';
+    const makeup=MAKEUP_2026[ds] ? '<i class="wk" title="调休上班">班</i>' : '';
+    cells+='<div class="'+cls+'" data-date="'+ds+'"><div class="d">'+d+'</div>'+makeup+tags+ot+'</div>';
+  }
+  return '<div class="cal-head-row"><b>'+y+'年'+(m+1)+'月</b>'+
+    '<span class="muted" style="font-size:12px">点击日期写日报 · 红点=加班</span>'+
+    '<div class="cal-nav"><button class="btn sm" data-cal="prev">‹</button><button class="btn sm" data-cal="today-btn">今天</button><button class="btn sm" data-cal="next">›</button></div></div>'+
+    '<div class="cal-grid">'+heads+cells+'</div>';
+}
+function editorHtml(date){
+  const r=(dailyData.reports||[]).find(x=>x.date===date) || { items:[], overtime:false };
+  const editing=dailyEditDate===date;
+  const projs=projectNames().filter(p=>p!=='（无项目）');
+  const rows=(r.items&&r.items.length?r.items:[{}]).map(i=>{
+    const opts=projs.map(p=>'<option value="'+escapeHtml(p)+'"'+(p===i.project?' selected':'')+'>'+escapeHtml(p)+'</option>').join('');
+    const delBtn=editing?'<button class="btn sm danger" data-del-row title="删除本条">✕</button>':'';
+    return '<div class="proj-row"><div class="pr-head"><select class="d-proj"'+(editing?'':' disabled')+'>'+opts+'</select>'+
+      '<span style="flex:1"></span>'+delBtn+'</div>'+
+      '<textarea class="d-text" rows="1" placeholder="输入工作内容…"'+(editing?'':' readonly')+'>'+escapeHtml(i.text||'')+'</textarea></div>';
+  }).join('');
+  const ops = editing
+    ? '<div class="ed-ops"><label class="chk" style="margin:0"><input type="checkbox" id="dOvertime"'+(r.overtime?' checked':'')+'/> 今天加班</label>'+
+      '<button class="btn sm primary" id="dAddRow">+ 添加条目</button><span style="flex:1"></span>'+
+      '<button class="btn sm danger" id="dDel">删除当天</button>'+
+      '<button class="btn sm primary" id="dSave">保存日报</button></div>'
+    : '<div class="ed-ops"><label class="chk" style="margin:0;opacity:.65"><input type="checkbox" disabled'+(r.overtime?' checked':'')+'/> 今天加班</label><span style="flex:1"></span>'+
+      '<button class="btn sm danger" id="dDel">删除当天</button>'+
+      '<button class="btn sm primary" id="dEdit">修改</button></div>';
+  return '<div class="card-head"><h3 style="margin:0">日报 · '+fmtDateCn(date)+'</h3><span style="flex:1"></span>'+
+    '<button class="btn sm" id="dProjMaint">项目维护</button></div>'+
+    '<div class="ed-scroll">'+rows+'</div>'+ops;
+}
+function weekHtml(){
+  const wr=weekRange(dailyWeekOffset);
+  const list=dailyInRange(wr.s,wr.e);
+  const byProj=dailyByProject(list);
+  const over=list.filter(r=>r.overtime);
+  const wkKey=wr.s+'~'+wr.e;
+  const saved=localStorage.getItem('weekly.'+wkKey);
+  let body=saved;
+  if(body==null){
+    body='【周报】'+wr.s+' ~ '+wr.e+'\n一、本周工作（按项目）\n';
+    const keys=Object.keys(byProj);
+    if(!keys.length) body+='（本周暂无日报记录）\n';
+    for(const k of keys){ body+='· '+k+'：\n'; byProj[k].forEach(t=>body+='  - '+t+'\n'); }
+    body+='\n二、数据统计\n· 日报 '+list.length+' 条，加班 '+over.length+' 天'+(over.length?('（'+over.map(r=>r.date.slice(5).replace('-','月')+'日').join('、')+'）'):'')+'\n';
+    body+='\n三、下周计划\n· （待补充）';
+  }
+  const oral='本周工作：'+(Object.keys(byProj).length?Object.keys(byProj).map(k=>k+' '+byProj[k].length+' 项').join('；'):'暂无')+'。加班 '+over.length+' 天。下周计划：待补充。';
+  return '<h3>本周周报 <span class="muted" style="font-weight:400;font-size:12px">'+wr.s+' ~ '+wr.e+' · 自动生成 · 可直接编辑</span><span style="flex:1"></span>'+
+    '<button class="btn sm" data-week="prev">‹ 上一周</button><button class="btn sm" data-week="this">本周</button><button class="btn sm" data-week="next">下一周 ›</button></h3>'+
+    '<div class="week-box"><textarea id="weekText">'+escapeHtml(body)+'</textarea>'+
+    '<div style="display:flex;gap:10px;margin-top:8px;align-items:center;flex-wrap:wrap">'+
+      '<button class="btn sm" id="weekCopy">复制</button>'+
+    '</div></div>';
+}
+function oralText(){
+  const wr=weekRange(dailyWeekOffset);
+  const list=dailyInRange(wr.s,wr.e);
+  const byProj=dailyByProject(list);
+  const over=list.filter(r=>r.overtime);
+  const keys=Object.keys(byProj);
+  const items=[]; Object.values(byProj).forEach(a=>a.forEach(t=>items.push(t)));
+  let txt='本周（'+wr.s+' ~ '+wr.e+'）我主要完成了 '+(keys.length?keys.map(k=>k+' '+byProj[k].length+' 项工作').join('，'):'暂无日报记录')+'。';
+  if(items.length) txt+='重点包括：'+items.slice(0,4).join('；')+(items.length>4?' 等':'')+'。';
+  txt+='本周加班 '+over.length+' 天。下周计划：待补充。';
+  return txt;
+}
+function oralHtml(){
+  const wr=weekRange(dailyWeekOffset);
+  return '<h3>口头汇报版 <span class="muted" style="font-weight:400;font-size:12px">'+wr.s+' ~ '+wr.e+' · 自动生成</span>'+
+    '<button class="btn sm" id="oralReGen">重新生成</button><button class="btn sm" id="oralCopy">复制</button></h3>'+
+    '<div class="week-box"><textarea id="oralText" readonly>'+escapeHtml(oralText())+'</textarea></div>';
+}
+function monthHtml(){
+  const rng=monthRange(monthOffset);
+  const list=dailyInRange(rng.s,rng.e);
+  const byProj=dailyByProject(list);
+  const over=list.filter(r=>r.overtime);
+  const total=list.reduce((a,r)=>a+(r.items||[]).length,0)||1;
+  let bars='';
+  for(const k of Object.keys(byProj)){ const n=byProj[k].length; bars+='<div class="stat-bar"><span class="nm" title="'+escapeHtml(k)+'">'+escapeHtml(k)+'</span><span class="bar"><i style="width:'+Math.round(n/total*100)+'%"></i></span><span class="pct">'+Math.round(n/total*100)+'%</span></div>'; }
+  const kpi=
+    '<div class="kpi">'+
+      '<div class="k"><div class="n">'+over.length+'</div><div class="l">加班天数</div></div>'+
+      '<div class="k"><div class="n">'+list.length+'</div><div class="l">日报条数</div></div>'+
+      '<div class="k"><div class="n">'+Object.keys(byProj).length+'</div><div class="l">覆盖项目</div></div>'+
+    '</div>';
+  const otRow='<div class="ot-row"><span class="ot-label">加班日</span>'+
+    (over.length?over.map(r=>'<span class="ot-chip">'+r.date.slice(5).replace('-','月')+'日</span>').join(''):'<span class="muted">无</span>')+
+    '<span class="hint" style="margin-left:auto">占比按工作条目数近似</span></div>';
+  return '<h3>月报 · '+rng.label+' <span style="flex:1"></span><span class="ops">'+
+    '<button class="btn sm" data-mp="prev">‹</button><button class="btn sm" data-mp="this">本月</button><button class="btn sm" data-mp="next">›</button></span></h3>'+
+    '<div class="month-grid">'+
+      '<div><div class="month-side-h">各项目时长占比</div>'+(bars||'<div class="muted">本月暂无日报</div>')+'</div>'+
+      '<div class="month-side"><div class="month-side-h">本月统计</div>'+kpi+otRow+'</div>'+
+    '</div>';
+}
+function quarterHtml(){
+  const rng=quarterRange(quarterOffset);
+  const list=dailyInRange(rng.s,rng.e);
+  const byProj=dailyByProject(list);
+  const over=list.filter(r=>r.overtime);
+  const qKey='quarterly.'+rng.label;
+  const saved=localStorage.getItem(qKey);
+  let body=saved;
+  if(body==null){
+    body='【季报】'+rng.label+'\n一、本季度工作内容（按项目）\n';
+    const keys=Object.keys(byProj);
+    if(!keys.length) body+='（本季度暂无日报记录）\n';
+    for(const k of keys){ body+='· '+k+'：\n'; byProj[k].forEach(t=>body+='  - '+t+'\n'); }
+    body+='\n二、数据统计\n· 日报 '+list.length+' 条，加班 '+over.length+' 天\n';
+    body+='\n三、季度考核\n· （待补充）';
+  }
+  return '<h3>季报 · '+rng.label+' '+
+    '<button class="btn sm" data-qp="prev">‹</button><button class="btn sm" data-qp="next">›</button><button class="btn sm" data-qp="this">本季</button>'+
+    '<button class="btn sm" id="quarterReGen">重新生成</button><button class="btn sm" id="quarterPolish">润色</button></h3>'+
+    '<div class="week-box"><textarea id="quarterText" style="min-height:160px">'+escapeHtml(body)+'</textarea>'+
+    '<div style="display:flex;gap:10px;margin-top:8px;align-items:center;flex-wrap:wrap">'+
+      '<button class="btn sm" id="quarterCopy">复制</button>'+
+      '<span class="hint">可编辑补充季度考核结论</span>'+
+    '</div></div>';
+}
+function yearHtml(){
+  const y=new Date().getFullYear();
+  const list=dailyInRange(y+'-01-01', y+'-12-31');
+  const byProj=dailyByProject(list);
+  const over=list.filter(r=>r.overtime);
+  const saved=localStorage.getItem('yearly.'+y);
+  let txt=saved;
+  if(txt==null){
+    txt='【'+y+'年度工作总结】\n一、年度概览\n· 全年日报 '+list.length+' 条，加班 '+over.length+' 天\n· 覆盖项目：'+(Object.keys(byProj).join('、')||'暂无')+'\n二、分项目成果\n';
+    for(const k of Object.keys(byProj)) txt+='· '+k+'：'+byProj[k].length+' 项工作\n';
+    txt+='\n三、季度回顾\n· 各季度统计见上方统计区，可补充季度考核结论\n四、亮点与不足\n· （待补充）\n五、明年计划\n· （待补充）';
+  }
+  return '<h3>年报 · 年终总结 · '+y+'年 <button class="btn sm" id="yearReGen">重新生成</button><button class="btn sm" id="yearPolish">润色</button><button class="btn sm" id="yearCopy">复制</button></h3>'+
+    '<div class="week-box"><textarea id="yearText" style="min-height:180px">'+escapeHtml(txt)+'</textarea></div>';
+}
+async function renderDaily(){
+  try{ const r=await api('/api/daily'); if(r.ok){ dailyData={ reports:r.reports||[], projects:r.projects||[] }; } }catch(e){}
+  let remind='';
+  try{ const rm=await api('/api/daily/remind'); if(rm.ok && !rm.written) remind='<div class="alert alert-warn" style="margin-bottom:12px">📌 今天（'+rm.today+'）还没写日报，记得记录今日工作并勾选加班情况。</div>'; }catch(e){}
+  if (!dailySel) dailySel = ymdStr(new Date());
+  const sel = dailySel;
+  if (dailyEditDate===null && !(dailyData.reports||[]).some(x=>x.date===sel)) dailyEditDate=sel;
+  view.innerHTML = remind +
+    '<div class="daily-row two">' +
+      '<div class="daily-card">'+calHtml()+'</div>' +
+      '<div class="daily-card daily-editor">'+editorHtml(sel)+'</div>' +
+    '</div>' +
+    '<div class="daily-row report">' +
+      '<div class="daily-card">'+weekHtml()+'</div>' +
+      '<div class="daily-card">'+oralHtml()+'</div>' +
+    '</div>' +
+    '<div class="daily-row">' +
+      '<div class="daily-card full">'+monthHtml()+'</div>' +
+      '<div class="daily-card full">'+quarterHtml()+'</div>' +
+      '<div class="daily-card full">'+yearHtml()+'</div>' +
+    '</div>';
+  bindDaily();
+}
+function polishText(txt){
+  if(!txt) return txt;
+  let t=String(txt).replace(/\r\n/g,'\n');
+  t=t.replace(/[ \t]+$/gm,'');
+  t=t.replace(/[ \t]+([，。；：！？）】」、])/g,'$1');
+  t=t.replace(/([（【『「])\s+/g,'$1');
+  t=t.replace(/\n{3,}/g,'\n\n');
+  t=t.replace(/^\s*[-*]\s+/gm,'· ');
+  const ph='（待补充）';
+  const idx=t.indexOf(ph);
+  if(idx>=0){ t=t.slice(0,idx+ph.length)+t.slice(idx+ph.length).split(ph).join(''); }
+  return t;
+}
+function bindDaily(){
+  view.querySelectorAll('[data-date]').forEach(c=>{ c.addEventListener('click', ()=>{ dailySel=c.dataset.date; dailyEditDate=(dailyData.reports||[]).some(x=>x.date===dailySel)?null:dailySel; renderDaily(); }); });
+  view.querySelectorAll('[data-cal]').forEach(b=>{ b.addEventListener('click', ()=>{ const k=b.dataset.cal; if(k==='prev')dailyMonth.setMonth(dailyMonth.getMonth()-1); else if(k==='next')dailyMonth.setMonth(dailyMonth.getMonth()+1); else dailyMonth=new Date(); dailySel=null; renderDaily(); }); });
+  view.querySelectorAll('[data-week]').forEach(b=>{ b.addEventListener('click', ()=>{ const k=b.dataset.week; if(k==='prev')dailyWeekOffset--; else if(k==='next')dailyWeekOffset++; else dailyWeekOffset=0; renderDaily(); }); });
+  view.querySelectorAll('[data-mp]').forEach(b=>{ b.addEventListener('click', ()=>{ const k=b.dataset.mp; if(k==='prev')monthOffset--; else if(k==='next')monthOffset++; else monthOffset=0; renderDaily(); }); });
+  view.querySelectorAll('[data-qp]').forEach(b=>{ b.addEventListener('click', ()=>{ const k=b.dataset.qp; if(k==='prev')quarterOffset--; else if(k==='next')quarterOffset++; else quarterOffset=0; renderDaily(); }); });
+  const edScroll=view.querySelector('.ed-scroll');
+  if(edScroll){
+    const fitText=t=>{ t.style.height='auto'; t.style.height=Math.min(t.scrollHeight,96)+'px'; };
+    edScroll.querySelectorAll('.d-text').forEach(fitText);
+    edScroll.addEventListener('input',e=>{ const t=e.target.closest('.d-text'); if(t) fitText(t); });
+    edScroll.addEventListener('click',e=>{ const b=e.target.closest('[data-del-row]'); if(b){ const rows=edScroll.querySelectorAll('.proj-row'); if(rows.length>1) b.closest('.proj-row').remove(); else toast('至少保留一条工作内容','err'); } });
+  }
+  const addBtn=$('#dAddRow'); if(addBtn) addBtn.onclick=()=>{ const rows=view.querySelectorAll('.proj-row'); const tpl=rows[rows.length-1]; if(tpl){ const nn=tpl.cloneNode(true); const nt0=nn.querySelector('.d-text'); if(nt0){ nt0.value=''; nt0.style.height=''; } const sp=nn.querySelector('.d-proj'); if(sp) sp.selectedIndex=0; tpl.after(nn); const nt=nn.querySelector('.d-text'); if(nt) nt.focus(); } };
+  const saveBtn=$('#dSave'); if(saveBtn) saveBtn.onclick=async ()=>{
+    const date=dailySel||ymdStr(new Date());
+    const items=[];
+    view.querySelectorAll('.proj-row').forEach(r=>{
+      const p=r.querySelector('.d-proj').value;
+      const t=r.querySelector('.d-text').value.trim();
+      if(!t) return;
+      items.push({ project:p, text:t });
+    });
+    if(!items.length){ toast('请至少填写一条工作内容','err'); return; }
+    const ot=$('#dOvertime').checked;
+    const r=await api('/api/daily',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date,items,overtime:ot})});
+    toast(r.msg,r.ok?'ok':'err');
+    if(r.ok){ dailyData.reports=dailyData.reports.filter(x=>x.date!==date); dailyData.reports.push({date,items,overtime:ot}); dailyData.reports.sort((a,b)=>a.date<b.date?-1:1); dailyEditDate=null; renderDaily(); }
+  };
+  const editBtn=$('#dEdit'); if(editBtn) editBtn.onclick=()=>{ dailyEditDate=dailySel||ymdStr(new Date()); renderDaily(); };
+  const projMaintBtn=$('#dProjMaint'); if(projMaintBtn) projMaintBtn.onclick=()=>openProjectModal();
+  const delBtn=$('#dDel'); if(delBtn) delBtn.onclick=async ()=>{
+    const date=dailySel||ymdStr(new Date());
+    confirmModal('删除日报','确定删除 <b>'+fmtDateCn(date)+'</b> 的日报？', async ()=>{ const r=await api('/api/daily/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date})}); toast(r.msg,r.ok?'ok':'err'); if(r.ok){ dailyEditDate=date; renderDaily(); } });
+  };
+  const copyBtn=$('#weekCopy'); if(copyBtn) copyBtn.onclick=()=>{ const t=$('#weekText'); if(t){ navigator.clipboard.writeText(t.value); toast('已复制周报文本','ok'); } };
+  const oc=$('#oralCopy'); if(oc) oc.onclick=()=>{ const t=$('#oralText'); if(t){ navigator.clipboard.writeText(t.value); toast('已复制口头汇报版','ok'); } };
+  const rg=$('#oralReGen'); if(rg) rg.onclick=()=>{ const t=$('#oralText'); if(t){ t.value=oralText(); toast('已重新生成口头汇报版','ok'); } };
+  const qc=$('#quarterCopy'); if(qc) qc.onclick=()=>{ const t=$('#quarterText'); if(t){ navigator.clipboard.writeText(t.value); toast('已复制季报','ok'); } };
+  const qg=$('#quarterReGen'); if(qg) qg.onclick=()=>{ try{ localStorage.removeItem('quarterly.'+quarterRange(quarterOffset).label); }catch(e){} renderDaily(); toast('已重新生成季报','ok'); };
+  const qp=$('#quarterPolish'); if(qp) qp.onclick=async ()=>{ const t=$('#quarterText'); if(!t) return; if(!t.value.trim()){ toast('季报内容为空','err'); return; } qp.disabled=true; const old=qp.textContent; qp.textContent='润色中…'; try{ const r=await api('/api/polish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t.value})}); if(r&&r.ok&&r.text){ t.value=r.text; try{ localStorage.setItem('quarterly.'+quarterRange(quarterOffset).label, r.text); }catch(e){} toast('已润色季报','ok'); } else { toast((r&&r.msg)||'润色失败','err'); } }catch(e){ toast('润色失败（服务异常）','err'); } finally{ qp.disabled=false; qp.textContent=old; } };
+  const yg=$('#yearReGen'); if(yg) yg.onclick=()=>{ try{ localStorage.removeItem('yearly.'+new Date().getFullYear()); }catch(e){} renderDaily(); toast('已重新生成年报','ok'); };
+  const yp=$('#yearPolish'); if(yp) yp.onclick=async ()=>{ const t=$('#yearText'); if(!t) return; if(!t.value.trim()){ toast('年报内容为空','err'); return; } yp.disabled=true; const old=yp.textContent; yp.textContent='润色中…'; try{ const r=await api('/api/polish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t.value})}); if(r&&r.ok&&r.text){ t.value=r.text; try{ localStorage.setItem('yearly.'+new Date().getFullYear(), r.text); }catch(e){} toast('已润色年报','ok'); } else { toast((r&&r.msg)||'润色失败','err'); } }catch(e){ toast('润色失败（服务异常）','err'); } finally{ yp.disabled=false; yp.textContent=old; } };
+  const yc=$('#yearCopy'); if(yc) yc.onclick=()=>{ const t=$('#yearText'); if(t){ navigator.clipboard.writeText(t.value); toast('已复制年终总结','ok'); } };
+  const wt=$('#weekText'); if(wt) wt.oninput=()=>{ const wr=weekRange(dailyWeekOffset); try{ localStorage.setItem('weekly.'+wr.s+'~'+wr.e, wt.value); }catch(e){} };
+  const qt=$('#quarterText'); if(qt) qt.oninput=()=>{ const rng=quarterRange(quarterOffset); try{ localStorage.setItem('quarterly.'+rng.label, qt.value); }catch(e){} };
+  const yt=$('#yearText'); if(yt) yt.oninput=()=>{ try{ localStorage.setItem('yearly.'+new Date().getFullYear(), yt.value); }catch(e){} };
+}
+async function renderRequirements(){
+  let items=[];
+  try{ const r=await api('/api/requirements'); if(r.ok) items=r.items||[]; }catch(e){}
+  const projs=[...new Set([...((ctxData&&ctxData.allProjects)||[]), ...items.map(i=>i.project)].filter(Boolean))];
+  const shown=items.filter(i=>reqFilter==='all'||i.status===reqFilter);
+  const cnt=s=>items.filter(i=>i.status===s).length;
+  const card=i=>{
+    const pc=i.priority==='高'?'p-high':i.priority==='低'?'p-low':'';
+    const st=i.status==='进行中'?'st-doing':i.status==='已完成'?'st-done':'st-todo';
+    const pri=i.priority==='高'?'high':i.priority==='低'?'low':'mid';
+    return '<div class="req-card '+pc+'">'+
+      '<div class="req-title">'+escapeHtml(i.title)+'</div>'+
+      (i.description?'<div class="req-desc">'+escapeHtml(i.description)+'</div>':'')+
+      '<div class="req-meta">'+
+        '<span class="pill '+pri+'">'+escapeHtml(i.priority||'中')+'</span>'+
+        '<span class="pill '+st+'" data-status="'+i.id+'" style="cursor:pointer" title="点击切换状态">'+escapeHtml(i.status||'待处理')+'</span>'+
+        '<span>'+(i.project?escapeHtml(i.project)+' · ':'')+'创建 '+new Date(i.createdAt).toLocaleDateString('zh-CN')+'</span>'+
+        '<span class="ops"><button class="btn sm" data-edit="'+i.id+'">编辑</button><button class="btn sm danger" data-del="'+i.id+'">删除</button></span>'+
+      '</div></div>'; };
+  view.innerHTML='<div class="daily-card">'+
+    '<div class="req-toolbar"><h3 style="margin:0">需求池</h3>'+
+      '<div class="seg">'+
+        '<button class="'+(reqFilter==='all'?'on':'')+'" data-f="all">全部 <b>'+items.length+'</b></button>'+
+        '<button class="'+(reqFilter==='待处理'?'on':'')+'" data-f="待处理">待处理 <b>'+cnt('待处理')+'</b></button>'+
+        '<button class="'+(reqFilter==='进行中'?'on':'')+'" data-f="进行中">进行中 <b>'+cnt('进行中')+'</b></button>'+
+        '<button class="'+(reqFilter==='已完成'?'on':'')+'" data-f="已完成">已完成 <b>'+cnt('已完成')+'</b></button>'+
+      '</div>'+
+      '<span style="flex:1"></span><button class="btn sm primary" id="reqAdd">+ 新增需求</button>'+
+    '</div>'+
+    '<div class="req-grid">'+(shown.length?shown.map(card).join(''):'<div class="empty">暂无需求 · 点击右上角新增</div>')+'</div>'+
+  '</div>';
+  view.querySelectorAll('[data-f]').forEach(b=>{ b.addEventListener('click', ()=>{ reqFilter=b.dataset.f; renderRequirements(); }); });
+  view.querySelectorAll('[data-status]').forEach(b=>{ b.addEventListener('click', async ()=>{ const seq=['待处理','进行中','已完成']; const it=items.find(x=>x.id===b.dataset.status); if(!it) return; const nxt=seq[(seq.indexOf(it.status)+1)%seq.length]; const r=await api('/api/requirements',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:it.id,title:it.title,project:it.project,priority:it.priority,status:nxt,description:it.description||''})}); if(r.ok) renderRequirements(); }); });
+  view.querySelectorAll('[data-edit]').forEach(b=>{ b.addEventListener('click', ()=>{ const it=items.find(x=>x.id===b.dataset.edit); if(it) openReqModal(it, projs); }); });
+  view.querySelectorAll('[data-del]').forEach(b=>{ b.addEventListener('click', ()=>{ const it=items.find(x=>x.id===b.dataset.del); if(!it) return; confirmModal('删除需求','确定删除需求「'+escapeHtml(it.title)+'」？', async ()=>{ const r=await api('/api/requirements/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:it.id})}); toast(r.msg,r.ok?'ok':'err'); if(r.ok) renderRequirements(); }); }); });
+  const addBtn=$('#reqAdd'); if(addBtn) addBtn.onclick=()=>openReqModal(null, projs);
+}
+function openProjectModal(){
+  let list=[...(dailyData.projects||[])];
+  const sysProjs=((ctxData&&ctxData.allProjects)||[]).filter(Boolean);
+  const tagHtml=list.map((p,i)=>'<span class="pm-tag"><span>'+escapeHtml(p)+'</span><button type="button" data-pm-del="'+i+'" title="移除">✕</button></span>').join('') || '<span class="pm-empty">暂无其他项目，在下方添加</span>';
+  const sysHtml=sysProjs.map(p=>'<span class="pm-tag sys"><span>'+escapeHtml(p)+'</span></span>').join('') || '<span class="pm-empty">项目管理模块暂无项目</span>';
+  openModal('<div class="modal-head"><h3>项目维护</h3><button class="modal-x" onclick="closeModal()">✕</button></div>'+
+    '<div class="modal-body pm-body">'+
+      '<div class="pm-sec"><div class="pm-label">其他项目</div><div class="pm-tags" id="pmCustom">'+tagHtml+'</div></div>'+
+      '<div class="pm-add"><input type="text" id="pmInput" placeholder="输入项目名称"/><button class="btn sm primary" id="pmAddBtn" type="button">添加</button></div>'+
+      '<div class="pm-sec"><div class="pm-label">项目管理模块项目</div><div class="pm-tags">'+sysHtml+'</div></div>'+
+    '</div>'+
+    '<div class="modal-ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" id="pmSave" type="button">保存</button></div>');
+  const refresh=()=>{ $('#pmCustom').innerHTML=list.length?list.map((p,i)=>'<span class="pm-tag"><span>'+escapeHtml(p)+'</span><button type="button" data-pm-del="'+i+'" title="移除">✕</button></span>').join(''):'<span class="pm-empty">暂无其他项目，在下方添加</span>'; };
+  const addOne=()=>{ const v=($('#pmInput').value||'').trim(); if(!v) return; if([...sysProjs,...list].includes(v)){ toast('该项目已存在','err'); return; } list.push(v); $('#pmInput').value=''; refresh(); $('#pmInput').focus(); };
+  $('#pmAddBtn').onclick=addOne;
+  $('#pmInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addOne(); } });
+  $('#pmCustom').addEventListener('click',e=>{ const b=e.target.closest('[data-pm-del]'); if(b){ list.splice(Number(b.dataset.pmDel),1); refresh(); } });
+  $('#pmSave').onclick=async ()=>{ const r=await api('/api/daily/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({projects:list})}); toast(r.msg,r.ok?'ok':'err'); if(r.ok){ dailyData.projects=list; closeModal(); renderDaily(); } };
+}
+function openReqModal(it, projs){
+  const projOpts=projs.map(p=>'<option value="'+escapeHtml(p)+'"'+(it&&it.project===p?' selected':'')+'>'+escapeHtml(p)+'</option>').join('');
+  openModal('<div class="modal-head"><h3>'+(it?'编辑需求':'新增需求')+'</h3><button class="modal-x" onclick="closeModal()">✕</button></div>'+
+    '<div class="field"><label>需求标题</label><input type="text" id="reqTitle" value="'+escapeHtml(it?it.title:'')+'" placeholder="一句话描述需求"/></div>'+
+    '<div class="field"><label>需求正文</label><textarea id="reqDesc" rows="2" placeholder="补充需求细节、验收标准等">'+escapeHtml(it?it.description||'':'')+'</textarea></div>'+
+    '<div class="field-row">'+
+      '<div class="field"><label>关联项目</label><select id="reqProject"><option value="">（无）</option>'+projOpts+'<option value="__new__">＋ 其他项目</option></select><input type="text" id="reqOther" placeholder="输入项目名称" style="display:none;margin-top:6px"/></div>'+
+      '<div class="field"><label>优先级</label><select id="reqPriority"><option value="高"'+(it&&it.priority==='高'?' selected':'')+'>高</option><option value="中"'+(!it||it.priority==='中'?' selected':'')+'>中</option><option value="低"'+(it&&it.priority==='低'?' selected':'')+'>低</option></select></div>'+
+      '<div class="field"><label>状态</label><select id="reqStatus"><option value="待处理"'+(it&&it.status==='待处理'?' selected':'')+'>待处理</option><option value="进行中"'+(it&&it.status==='进行中'?' selected':'')+'>进行中</option><option value="已完成"'+(it&&it.status==='已完成'?' selected':'')+'>已完成</option></select></div>'+
+    '</div>'+
+    '<div class="modal-ops"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" id="reqSave">保存</button></div>');
+  const prj=$('#reqProject'); if(prj) prj.addEventListener('change', ()=>{ const o=$('#reqOther'); if(o) o.style.display = prj.value==='__new__' ? '' : 'none'; });
+  const saveBtn=$('#reqSave'); if(saveBtn) saveBtn.onclick=async ()=>{
+    let project=$('#reqProject').value;
+    if(project==='__new__'){ project=($('#reqOther').value||'').trim(); if(!project){ toast('请先填写项目名称','err'); return; } }
+    const body={ title:$('#reqTitle').value.trim(), project, priority:$('#reqPriority').value, status:$('#reqStatus').value, description:$('#reqDesc').value.trim() };
+    if(it) body.id=it.id;
+    if(!body.title){ toast('请填写需求标题','err'); return; }
+    const r=await api('/api/requirements',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    toast(r.msg,r.ok?'ok':'err');
+    if(r.ok){ closeModal(); renderRequirements(); }
+  };
 }
 
 loadCtx().then(render);

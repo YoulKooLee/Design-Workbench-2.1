@@ -81,11 +81,13 @@ const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench
 // 多智能体互斥：同一项目同一时刻只能被一个智能体 editing。
 const WORKSPACE_DIR = path.join(AXHUB_ROOT, '.workbuddy');
 const WORKSPACE_CTX_FILE = path.join(WORKSPACE_DIR, 'workspace.json');
+// 办公数据目录：日报、需求池、更新检查状态（用户指定 08-办公）
+const OFFICE_DIR = path.join(AXHUB_ROOT, '08-办公');
 
 // ===== 更新检查（多电脑 GitHub 同步）=====
 // 面板左上角「检查更新」：点击主动 git fetch 对比远端；每天 5 点 + 面板启动后各被动检查一次；
 // 检查结果落盘（.workbuddy/update-check.json），重启面板后角标状态不丢失。
-const UPDATE_STATE_FILE = path.join(WORKSPACE_DIR, 'update-check.json');
+const UPDATE_STATE_FILE = path.join(OFFICE_DIR, 'update-check.json');
 const UPDATE_CONFIG_FILE = path.join(WORKSPACE_DIR, 'update-config.json');
 const UPDATE_REMOTE_REF = 'origin/main';
 // 更新检查远端配置：githubUrl（可选）+ branch（默认 main）；配置了 githubUrl 时不再依赖本机 git remote origin
@@ -3007,6 +3009,109 @@ const server = http.createServer(async (req, res) => {
   }
 
   // 404
+  // ===== 日报 / 需求池（2026-10-10 doubao 新增）=====
+  const DAILY_FILE = path.join(OFFICE_DIR, 'daily.json');
+  const REQ_FILE = path.join(OFFICE_DIR, 'requirements.json');
+  const readJson = (fp, fb) => { try { return JSON.parse(fs.readFileSync(fp, 'utf8')); } catch { return fb; } };
+  const writeJson = (fp, d) => { try { fs.mkdirSync(path.dirname(fp), { recursive: true }); fs.writeFileSync(fp, JSON.stringify(d, null, 2), 'utf8'); } catch (e) { try { console.error('[daily] 写入失败:', e.message); } catch {} } };
+  const ymdOf = (dt) => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+
+  // 日报读取（含手动项目列表）
+  if (p === '/api/daily' && method === 'GET') {
+    const d = readJson(DAILY_FILE, { reports: [], projects: [] });
+    return send(res, 200, { ok: true, reports: d.reports || [], projects: d.projects || [] });
+  }
+  // 日报保存（upsert：同日期覆盖）
+  if (p === '/api/daily' && method === 'POST') {
+    const b = await readBody(req);
+    const date = String(b.date || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return sendError(res, '日期格式应为 YYYY-MM-DD', 400);
+    const d = readJson(DAILY_FILE, { reports: [], projects: [] });
+    d.reports = (d.reports || []).filter(r => r.date !== date);
+    d.reports.push({ date, items: Array.isArray(b.items) ? b.items.filter(i => i && i.project && String(i.text || '').trim()) : [], overtime: !!b.overtime });
+    d.reports.sort((a, b) => (a.date < b.date ? -1 : 1));
+    if (Array.isArray(b.projects)) {
+      d.projects = [...new Set([...(d.projects || []), ...b.projects.map(x => String(x).trim()).filter(Boolean)])];
+    }
+    writeJson(DAILY_FILE, d);
+    return send(res, 200, { ok: true, msg: '日报已保存' });
+  }
+  // 删除某天日报
+  if (p === '/api/daily/delete' && method === 'POST') {
+    const b = await readBody(req);
+    const d = readJson(DAILY_FILE, { reports: [], projects: [] });
+    d.reports = (d.reports || []).filter(r => r.date !== b.date);
+    writeJson(DAILY_FILE, d);
+    return send(res, 200, { ok: true, msg: '已删除' });
+  }
+  // 项目选项维护（整体替换自定义项目列表）
+  if (p === '/api/daily/projects' && method === 'POST') {
+    const b = await readBody(req);
+    const d = readJson(DAILY_FILE, { reports: [], projects: [] });
+    d.projects = Array.isArray(b.projects)
+      ? [...new Set(b.projects.map(x => String(x || '').trim()).filter(Boolean))]
+      : [];
+    writeJson(DAILY_FILE, d);
+    return send(res, 200, { ok: true, msg: '项目选项已更新', projects: d.projects });
+  }
+  // 今日是否已写（打开面板时提醒）
+  if (p === '/api/daily/remind' && method === 'GET') {
+    const d = readJson(DAILY_FILE, { reports: [], projects: [] });
+    const today = ymdOf(new Date());
+    return send(res, 200, { ok: true, written: (d.reports || []).some(r => r.date === today), today });
+  }
+  // 需求池读取
+  if (p === '/api/requirements' && method === 'GET') {
+    const d = readJson(REQ_FILE, { items: [] });
+    return send(res, 200, { ok: true, items: d.items || [] });
+  }
+  // 需求池新增 / 更新
+  if (p === '/api/requirements' && method === 'POST') {
+    const b = await readBody(req);
+    const d = readJson(REQ_FILE, { items: [] });
+    const items = d.items || [];
+    if (b.id) {
+      const it = items.find(x => x.id === b.id);
+      if (it) { Object.assign(it, { title: String(b.title || it.title), project: String(b.project || it.project), priority: b.priority || it.priority, status: b.status || it.status, description: typeof b.description === 'string' ? b.description : (it.description || ''), updatedAt: Date.now() }); }
+    } else {
+      items.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title: String(b.title || '未命名需求'), project: String(b.project || ''), priority: b.priority || '中', status: b.status || '待处理', description: typeof b.description === 'string' ? b.description : '', createdAt: Date.now(), updatedAt: Date.now() });
+    }
+    writeJson(REQ_FILE, d);
+    return send(res, 200, { ok: true, msg: '已保存' });
+  }
+  // 需求删除
+  if (p === '/api/requirements/delete' && method === 'POST') {
+    const b = await readBody(req);
+    const d = readJson(REQ_FILE, { items: [] });
+    d.items = (d.items || []).filter(x => x.id !== b.id);
+    writeJson(REQ_FILE, d);
+    return send(res, 200, { ok: true, msg: '已删除' });
+  }
+
+  // 文本润色（CodeBuddy CLI）：prompt 经 stdin 传入，参数仅固定 token，避免 shell 注入
+  if (p === '/api/polish' && method === 'POST') {
+    const b = await readBody(req);
+    const text = String(b.text || '').trim().slice(0, 20000);
+    if (!text) return sendError(res, '缺少待润色文本', 400);
+    const prompt = '请对下面这段工作汇报文本做润色：优化表达、修正语病、使条理清晰、适合汇报场合；保留原有的项目名、数字和事实，不要增删内容；直接输出润色后的完整文本，不要加任何解释或前后缀。\n\n' + text;
+    const child = spawn('codebuddy.cmd', ['-p', '--tools', '', '--permission-mode', 'dontAsk'], { shell: true, windowsHide: true });
+    let out = '', errOut = '', timedOut = false;
+    child.stdout.on('data', d => { out += d; });
+    child.stderr.on('data', d => { errOut += d; });
+    child.on('error', e => { try { safeLog('polish-spawn', e.message); } catch {} return send(res, 200, { ok: false, msg: '润色失败：未找到 CodeBuddy CLI（codebuddy），请确认已安装' }); });
+    const timer = setTimeout(() => { timedOut = true; try { child.kill(); } catch {} }, 90000);
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      const trimmed = (out || '').trim();
+      if (!timedOut && code === 0 && trimmed) return send(res, 200, { ok: true, text: trimmed });
+      try { safeLog('polish', (timedOut ? 'timeout' : 'code=' + code) + ' ' + errOut.slice(0, 500)); } catch {}
+      return send(res, 200, { ok: false, msg: timedOut ? '润色超时（90秒），请重试' : '润色失败：CodeBuddy CLI 执行异常' });
+    });
+    child.stdin.write(prompt);
+    child.stdin.end();
+    return;
+  }
+
   send(res, 404, { ok: false, msg: 'Not Found' });
 });
 
