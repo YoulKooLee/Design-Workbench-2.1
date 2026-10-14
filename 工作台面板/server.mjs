@@ -2484,29 +2484,82 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, out);
   }
 
-  // GET /api/collab/room?name=<房间名>：返回该房间 messages.jsonl 的全部对话记录
+  // GET /api/collab/room?name=<房间名>：返回该房间 messages.jsonl + 参与方间私信的完整对话
   if (p === '/api/collab/room' && method === 'GET') {
     const name = url.searchParams.get('name') || '';
-    const colRoot = path.join(AXHUB_ROOT, '09-协作', 'rooms');
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const roomsDir = path.join(colRoot, 'rooms');
     // 防目录穿越：只允许直接房间名
     if (!name || name.includes('/') || name.includes('\\') || name.includes('..')) {
       return sendError(res, '非法房间名', 400);
     }
-    const rp = path.join(colRoot, name);
+    const rp = path.join(roomsDir, name);
     if (!fs.existsSync(rp) || !fs.statSync(rp).isDirectory()) return sendError(res, '房间不存在', 404);
     const ml = path.join(rp, 'messages.jsonl');
     const out = { ok: true, name, messages: [], task: '' };
     try {
       const taskF = path.join(rp, '00-任务说明.md');
       if (fs.existsSync(taskF)) out.task = fs.readFileSync(taskF, 'utf8');
+      // 1) 读房间内 messages.jsonl
       if (fs.existsSync(ml)) {
         const lines = fs.readFileSync(ml, 'utf8').split('\n').filter(l => l.trim());
         for (const l of lines) {
           try {
             const m = JSON.parse(l);
-            out.messages.push({ ts: m.ts || '', from: m.from || '', intent: m.intent || '', content: m.content || '' });
+            out.messages.push({ ts: m.ts || '', from: m.from || '', intent: m.intent || '', content: m.content || '', channel: 'room' });
           } catch { /* 跳过坏行 */ }
         }
+      }
+      // 2) 提取参与方
+      const participants = new Set();
+      for (const m of out.messages) { if (m.from && m.from !== 'user') participants.add(m.from); }
+      // 兜底：房间名前缀推断
+      if (participants.size === 0) {
+        for (const a of ['codebuddy','workbuddy','deepseek','qwen','doubao']) {
+          if (name.toLowerCase().includes(a)) participants.add(a);
+        }
+      }
+      // 3) 扫描 inbox/outbox，把参与方之间的私信也拉进来
+      if (participants.size > 0) {
+        const roomKeyword = name.replace(/^(codebuddy|workbuddy|deepseek|qwen|doubao|千问|豆包)[_ -]?/i, '').slice(0, 8);
+        for (const box of ['inbox', 'outbox']) {
+          const boxDir = path.join(colRoot, 'messages', box);
+          if (!fs.existsSync(boxDir)) continue;
+          for (const agentDir of fs.readdirSync(boxDir, { withFileTypes: true }).filter(d => d.isDirectory())) {
+            const agentName = agentDir.name;
+            // 只看参与方目录
+            if (!participants.has(agentName) && agentName !== 'user') continue;
+            const dir = path.join(boxDir, agentName);
+            for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json'))) {
+              try {
+                const msg = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+                const from = msg.from || '';
+                const to = msg.to || '';
+                const cc = Array.isArray(msg.cc) ? msg.cc : [];
+                // 条件：from 在参与方，且 to/cc 也在参与方（两方都是本房间参与方）
+                const fromIn = participants.has(from) || from === 'user';
+                const toIn = participants.has(to) || to === 'user' || cc.some(c => participants.has(c));
+                if (!fromIn || !toIn) continue;
+                // 过滤太老的消息（只看最近 30 天，避免一次性拉太多）
+                const ts = msg.timestamp || '';
+                if (ts) {
+                  const age = Date.now() - new Date(ts).getTime();
+                  if (age > 30 * 24 * 3600 * 1000) continue;
+                }
+                const subject = msg.subject || '';
+                const body = (msg.body || '').slice(0, 500);
+                out.messages.push({
+                  ts, from,
+                  intent: msg.type || '私信',
+                  content: (subject ? `【${subject}】\n` : '') + body,
+                  channel: 'private'
+                });
+              } catch { /* 跳过坏 json */ }
+            }
+          }
+        }
+        // 4) 按时间排序
+        out.messages.sort((a, b) => (a.ts || '').localeCompare(b.ts || ''));
       }
     } catch (e) {
       return send(res, 500, { ok: false, msg: e.message });

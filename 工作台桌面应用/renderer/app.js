@@ -84,7 +84,7 @@ function openModal(html, wide) {
   $('#modalMask').classList.add('show');
 }
 function closeModal() { $('#modalMask').classList.remove('show'); }
-$('#modalMask').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
+// 弹窗外围点击不关闭（防误关：只能通过「取消/✕/保存」按钮关闭）
 
 function confirmModal(title, bodyHtml, onConfirm, confirmText, danger) {
   const d = danger !== false;
@@ -102,15 +102,139 @@ function confirmModal(title, bodyHtml, onConfirm, confirmText, danger) {
   };
 }
 
-// 通用 Markdown 编辑弹窗
+// ===== 轻量 Markdown 渲染器（离线无依赖） =====
+function inlineMdD(s) {
+  s = esc(s);
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  return s;
+}
+function renderMarkdown(src) {
+  if (!src) return '<p class="muted">（空文档）</p>';
+  let out = '';
+  const lines = src.replace(/\r/g, '').split('\n');
+  const codePh = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (/^```/.test(lines[i])) {
+      let j = i + 1, buf = [];
+      while (j < lines.length && !/^```/.test(lines[j])) { buf.push(lines[j]); j++; }
+      const idx = codePh.length;
+      codePh.push('<pre class="md-pre"><code>' + esc(buf.join('\n')) + '</code></pre>');
+      const ph = '\x00F' + idx + '\x00';
+      for (let k = i; k <= j; k++) lines[k] = ph;
+      i = j;
+    }
+  }
+  let bodyStart = 0;
+  if (lines[0] && /^---\s*$/.test(lines[0])) {
+    for (let i = 1; i < lines.length; i++) {
+      if (/^---\s*$/.test(lines[i])) { bodyStart = i + 1; break; }
+    }
+    if (bodyStart > 0) out += '<div class="md-frontmatter">' + esc(lines.slice(1, bodyStart - 1).join('\n')) + '</div>';
+  }
+  let i = bodyStart, listType = null, para = [];
+  const flushPara = () => { if (para.length) { out += '<p>' + inlineMdD(para.join(' ')) + '</p>'; para = []; } };
+  const closeList = () => { if (listType) { out += '</' + listType + '>'; listType = null; } };
+  while (i < lines.length) {
+    const ln = lines[i];
+    if (/^\x00F\d+\x00$/.test(ln.trim())) { flushPara(); closeList(); out += codePh[parseInt(ln.match(/\d+/)[0])]; i++; continue; }
+    if (ln.trim() === '') { flushPara(); closeList(); i++; continue; }
+    let m = ln.match(/^(#{1,6})\s+(.*)$/);
+    if (m) { flushPara(); closeList(); const lv = m[1].length; out += '<h' + lv + '>' + inlineMdD(m[2]) + '</h' + lv + '>'; i++; continue; }
+    if (/^(-{3,}|\*{3,})\s*$/.test(ln)) { flushPara(); closeList(); out += '<hr>'; i++; continue; }
+    if (/^>\s?/.test(ln)) { flushPara(); closeList(); const q = []; while (i < lines.length && /^>\s?/.test(lines[i])) { q.push(lines[i].replace(/^>\s?/, '')); i++; } out += '<blockquote>' + inlineMdD(q.join(' ')) + '</blockquote>'; continue; }
+    if (/\|/.test(ln) && lines[i + 1] && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(lines[i + 1])) {
+      flushPara(); closeList();
+      const cells = (s) => s.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(c => c.trim());
+      const head = cells(ln); i += 2;
+      let rows = [];
+      while (i < lines.length && /\|/.test(lines[i]) && lines[i].trim() !== '') { rows.push(cells(lines[i])); i++; }
+      out += '<table class="md-table"><thead><tr>' + head.map(h => '<th>' + inlineMdD(h) + '</th>').join('') + '</tr></thead><tbody>'
+        + rows.map(r => '<tr>' + r.map(c => '<td>' + inlineMdD(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      continue;
+    }
+    m = ln.match(/^\s*[-*+]\s+(.*)$/);
+    if (m) { flushPara(); if (listType !== 'ul') { closeList(); out += '<ul>'; listType = 'ul'; } out += '<li>' + inlineMdD(m[1]) + '</li>'; i++; continue; }
+    m = ln.match(/^\s*\d+[.)]\s+(.*)$/);
+    if (m) { flushPara(); if (listType !== 'ol') { closeList(); out += '<ol>'; listType = 'ol'; } out += '<li>' + inlineMdD(m[1]) + '</li>'; i++; continue; }
+    para.push(ln.trim()); i++;
+  }
+  flushPara(); closeList();
+  return out;
+}
+
+// Markdown 工具栏：在 textarea 光标处插入/包裹语法
+function mdToolbarAction(area, act) {
+  const v = area.value, s = area.selectionStart, e = area.selectionEnd;
+  const selText = v.slice(s, e) || '';
+  const lineStart = v.lastIndexOf('\n', s - 1) + 1;
+  const wrap = (before, after) => {
+    const ins = before + selText + after;
+    area.value = v.slice(0, s) + ins + v.slice(e);
+    area.focus();
+    const p = s + before.length;
+    area.setSelectionRange(selText ? p : s, selText ? p + selText.length : s);
+  };
+  const linePrefix = (prefix, toggle) => {
+    const upTo = v.slice(0, e);
+    const ls = upTo.lastIndexOf('\n') + 1;
+    const line = v.slice(ls, upTo.length);
+    const escRe = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const has = line.trimStart().startsWith(prefix);
+    const block = v.slice(lineStart, e);
+    let out;
+    if (toggle && has) out = block.split('\n').map(l => l.replace(new RegExp('^(\\s*)' + escRe), '$1')).join('\n');
+    else out = block.split('\n').map(l => l.startsWith(prefix) ? l : prefix + l).join('\n');
+    area.value = v.slice(0, lineStart) + out + v.slice(e);
+    area.focus(); area.setSelectionRange(lineStart, lineStart + out.length);
+  };
+  switch (act) {
+    case 'h1': case 'h2': case 'h3': linePrefix({ h1: '# ', h2: '## ', h3: '### ' }[act], true); break;
+    case 'bold': wrap('**', '**'); break;
+    case 'italic': wrap('*', '*'); break;
+    case 'code': wrap('`', '`'); break;
+    case 'codeblock': wrap('```\n', '\n```'); break;
+    case 'quote': linePrefix('> ', false); break;
+    case 'ul': linePrefix('- ', false); break;
+    case 'ol': linePrefix('1. ', false); break;
+    case 'link': wrap('[', '](https://)'); break;
+    case 'table': area.setRangeText('\n| 列一 | 列二 | 列三 |\n|---|---|---|\n|  |  |  |\n', s, e); break;
+    case 'hr': area.setRangeText('\n---\n', s, e); break;
+  }
+  area.dispatchEvent(new Event('input'));
+}
+
+// 通用 Markdown 编辑+预览弹窗（工具栏 / 双栏 / 同步滚动 / 常驻底部按钮）
 function editorModal(title, content, onSave, saveText) {
-  openModal('<h3>' + esc(title) + '</h3>' +
-    '<div class="field"><textarea id="editorArea">' + esc(content) + '</textarea></div>' +
+  openModal(
+    '<div class="md-modal-head"><h3>' + esc(title) + '</h3><button class="modal-x" onclick="window.__closeModal()">✕</button></div>' +
+    '<div class="md-toolbar">' +
+    '<button type="button" data-md="h1" title="一级标题">H1</button><button type="button" data-md="h2" title="二级标题">H2</button><button type="button" data-md="h3" title="三级标题">H3</button>' +
+    '<span class="md-tb-sep"></span>' +
+    '<button type="button" data-md="bold" title="粗体"><b>B</b></button><button type="button" data-md="italic" title="斜体"><i>I</i></button><button type="button" data-md="code" title="行内代码">&lt;/&gt;</button><button type="button" data-md="codeblock" title="代码块">⟨/⟩</button>' +
+    '<span class="md-tb-sep"></span>' +
+    '<button type="button" data-md="quote" title="引用">❝</button><button type="button" data-md="ul" title="无序列表">•≡</button><button type="button" data-md="ol" title="有序列表">1.≡</button><button type="button" data-md="link" title="链接">🔗</button><button type="button" data-md="table" title="表格">▦</button><button type="button" data-md="hr" title="分割线">―</button>' +
+    '</div>' +
+    '<div class="md-editor"><div class="md-edit-col"><textarea id="editorArea" spellcheck="false">' + esc(content) + '</textarea></div>' +
+    '<div class="md-preview-col"><div id="editorPreview" class="md-preview"></div></div></div>' +
     '<div class="modal-ops"><button class="btn btn-ghost" onclick="window.__closeModal()">取消</button>' +
     '<button class="btn btn-primary" id="editorSave">' + (saveText || '保存') + '</button></div>', true);
-  window.__closeModal = closeModal;
+  $('#modalBox').classList.add('md-wide');
+  window.__closeModal = () => { $('#modalBox').classList.remove('md-wide'); closeModal(); };
+  const area = $('#editorArea'), pv = $('#editorPreview');
+  const update = () => { pv.innerHTML = renderMarkdown(area.value); };
+  area.addEventListener('input', update);
+  update();
+  $$('[data-md]', $('#modalBox')).forEach(b => b.onclick = () => mdToolbarAction(area, b.dataset.md));
+  area.addEventListener('scroll', () => {
+    const max = area.scrollHeight - area.clientHeight;
+    if (max <= 0) return;
+    pv.scrollTop = (area.scrollTop / max) * Math.max(0, pv.scrollHeight - pv.clientHeight);
+  });
   $('#editorSave').onclick = async () => {
-    const text = $('#editorArea').value;
+    const text = area.value;
     $('#editorSave').disabled = true; $('#editorSave').textContent = '保存中…';
     await onSave(text);
   };
