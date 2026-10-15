@@ -124,10 +124,10 @@ Write-Host ''
 Write-Host '============================================'
 if ($failed) {
     Write-Host ' 部署引导完成，但存在失败项（见上方 [FAIL]）。' -ForegroundColor Yellow
-    Write-Host ' 修复后重新运行本脚本，或直接双击 启动工作台.cmd 试运行。'
+    Write-Host ' 修复后重新运行本脚本，或双击 工作台面板\启动工作台.cmd 试运行。'
 } else {
     Write-Host ' 环境就绪。接下来：' -ForegroundColor Green
-    Write-Host '   1) 双击 启动工作台.cmd 启动面板（http://127.0.0.1:7788）'
+    Write-Host '   1) 双击 工作台面板\启动工作台.cmd 启动面板（http://127.0.0.1:7788）'
     Write-Host '   2) 面板内新建项目 → 双击「启动开发栈」拉起 Make + Vite'
 }
 Write-Host '============================================'

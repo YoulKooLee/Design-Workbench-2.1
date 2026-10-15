@@ -2,7 +2,7 @@
 
 > **适用范围**：所有接入 Axhub 多智能体协作体系的智能体（豆包 / CodeBuddy / WorkBuddy / DeepSeek / 千问）。
 > **来源**：由主智能体 CodeBuddy 从长期协作中沉淀，2026-08-25 通过消息总线 v0.2 同步至各智能体；2026-09-30 起由豆包统一维护更新。
-> **权威路径**：`C:\Users\游翔\Documents\AI work\产品设计工作台\09-协作\docs\01-协作规范\working-conventions.md`（本文件）
+> **权威路径**：`C:\Users\游翔\Documents\AI work\01 产品设计工作台\09-协作\docs\01-协作规范\working-conventions.md`（本文件）
 > **维护规则**：本文件与 `messages/README.md`、`agent-collaboration.md` 保持一致；任何智能体发现冲突，先告知用户，不擅自下结论。
 
 ---
@@ -30,10 +30,10 @@
 ### 1.1 文件创建与存放
 1. **先询问再创建**：任何新建文件夹 / 文件，必须先询问用户存放地点，不得擅自创建在 `C:\temp`、`C:\tmp`、`C:\c` 或任意临时路径。
 2. **分类存放**：
-   - 工作台相关 → `C:\Users\游翔\Documents\AI work\产品设计工作台\` 按类目：
+   - 工作台相关 → `C:\Users\游翔\Documents\AI work\01 产品设计工作台\` 按类目：
      - 脚本 / 批处理 → `06-运行脚本\`
      - 记忆文件 → `10-智能体记忆\`
-     - 备份 → `03-备份\`
+     - 备份 → 同目录 `.bak-<时间戳>`（见 1.2 铁律）；删除件 → `05-回收站\`
      - 排查 / 复盘 → `08-文档\`
    - 与工作台无关 → `C:\Users\游翔\Documents\AI work\Documents_AI\`（该根维护 README.md 登记所有 AI 产物）。
 3. **固定存放点内维护 README.md**：登记每个文件的用途、创建日期、能否删除。

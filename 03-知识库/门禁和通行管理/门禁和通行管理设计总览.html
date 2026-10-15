@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>门禁和通行管理设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#8BC8EA;--accent-deep:#3D7EA6;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .fnode{font-size:12.5px;padding:7px 12px;border-radius:10px;border:1px solid rgba(61,126,166,.4);background:rgba(139,200,234,.15);font-weight:600;color:var(--accent-deep);}
+  .farr{color:var(--accent-deep);font-size:14px;font-weight:600;}
+  .grid{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+  .box{flex:1 1 220px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13.5px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12.5px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .arch{display:flex;flex-direction:column;gap:8px;}
+  .layer{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+  .layer .lt{font-size:13px;font-weight:600;color:var(--accent-deep);flex:0 0 90px;}
+  .layer .lc{font-size:12px;color:var(--text);flex:1 1 240px;min-width:0;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(139,200,234,.2),rgba(139,200,234,.35));border-color:rgba(61,126,166,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>门禁和通行管理设计总览</h1>
+  <div class="sub">谁 × 什么凭证 × 什么门 × 什么时段 × 几次 → 放行与否 → 全程留痕（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 通行决策链</div>
+  <div class="flow">
+    <span class="fnode">凭证采集（卡/人脸/车牌/二维码/NFC/密码）</span><span class="farr">→</span>
+    <span class="fnode">认证（凭证有效？活体/比对？）</span><span class="farr">→</span>
+    <span class="fnode">鉴权（门点×时段×次数）</span><span class="farr">→</span>
+    <span class="fnode">执行（开门/抬杆/呼梯 or 拒绝）</span><span class="farr">→</span>
+    <span class="fnode">记录（通行日志+抓拍+联动）</span>
+  </div>
+
+  <div class="section-title">② 四大业务场景</div>
+  <div class="grid">
+    <div class="box">
+      <h3>人员通行</h3>
+      <ul>
+        <li>多凭证：卡/人脸/二维码/指纹/NFC/密码</li>
+        <li>组合认证：刷卡+人脸双重核验</li>
+        <li>分级权限：角色 × 门点 × 时段 × 次数</li>
+        <li>特殊开门：首卡/多重卡/超级卡/远程开门</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>访客管理</h3>
+      <ul>
+        <li>预约（员工邀约/自助）→ 审批 → 授权</li>
+        <li>临时凭证：动态二维码/临时人脸/临时密码</li>
+        <li>限区域通行 + 轨迹记录</li>
+        <li>离场自动销权（到期/超次/手动回收）</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>车辆通行</h3>
+      <ul>
+        <li>车牌识别：固定车抬杆 / 临时车收费</li>
+        <li>预约放行：货车/访客车道与道闸</li>
+        <li>人车分流 + 潮汐车道</li>
+        <li>车-人-梯联动：车牌→身份→楼层</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>梯控联动</h3>
+      <ul>
+        <li>授权呼梯：人脸/刷卡/二维码</li>
+        <li>楼层权限：按人员分配可达楼层</li>
+        <li>联动：识别事件下发梯控、电梯预等候</li>
+        <li>保留物理按键紧急旁路</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title">③ 安全与离线（高可用设计）</div>
+  <div class="grid">
+    <div class="box">
+      <h3>反潜回 / 防尾随</h3>
+      <ul>
+        <li>进出记录严格一一对应，非法路线下一通道无效</li>
+        <li>人形检测+轨迹跟踪，通道人数监测</li>
+        <li>双门互锁：一门未关另一门不可开</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>告警与联动</h3>
+      <ul>
+        <li>非法闯入 / 门未关 / 开门超时 / 防拆 / 黑名单</li>
+        <li>胁迫卡/密码：表面正常开门 + 静默报警</li>
+        <li>消防联动：信号到自动全开（逃生）</li>
+        <li>视频联动抓拍 + 多通道通知</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>离线与冗余</h3>
+      <ul>
+        <li>控制器本地权限库（万级），断网自治</li>
+        <li>离线记录联网自动补传</li>
+        <li>边缘人脸识别：端侧比对毫秒级</li>
+        <li>双 RS485 环路 / 防拆防剪 / 断电策略</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title">④ 端-边-云架构与权限模型</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">应用层</div><div class="lc">管理端（Web）/ 移动端（小程序/App）/ 访客机 / 第三方系统（开放 API）</div></div>
+    <div class="layer"><div class="lt">平台层</div><div class="lc">人员·凭证·权限管理 ｜ 通行规则 ｜ 记录报表 ｜ 告警联动 ｜ 策略下发（批量/增量）｜ 离线补传</div></div>
+    <div class="layer"><div class="lt">控制层</div><div class="lc">门禁/梯控/道闸控制器：本地判定、离线自治；本地协议（韦根 / RS485 / 开关量）</div></div>
+    <div class="layer"><div class="lt">感知层</div><div class="lc">读卡器 / 人脸终端 / 车牌识别 / 指纹仪 / 门磁 / 按钮 / 电锁 / 道闸</div></div>
+  </div>
+  <div class="chips" style="margin-top:10px;">
+    <span class="chip rec">权限模型：人员 ─ 凭证 ─ 权限组 ─（门点/区域 × 时段 × 次数 × 有效期）</span>
+    <span class="chip">设计铁律：默认拒绝 · 最小权限 · 临时权限自动失效 · 全量留痕可审计 · 本地自治优先</span>
+  </div>
+
+  <div class="foot">本图为门禁和通行管理模块的结构示意，详细说明见《门禁和通行管理设计方案.md》。</div>
+</div>
+</body>
+</html>

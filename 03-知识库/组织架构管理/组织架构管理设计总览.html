@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>组织架构管理设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#94D8C3;--accent-deep:#2E9E7E;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 64px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .tree{font-size:12.5px;background:#FFFFFF;border:1px solid var(--border);border-radius:14px;padding:12px 16px;}
+  .tree .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:2px 0;}
+  .tree .node{background:#F4FBF8;border:1px solid rgba(46,158,126,.3);border-radius:6px;padding:2px 8px;}
+  .tree .node.p{color:var(--accent-deep);font-weight:600;}
+  .tree .node.v{border-style:dashed;background:#FAFAF7;color:#6B7280;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(148,216,195,.2),rgba(148,216,195,.35));border-color:rgba(46,158,126,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>组织架构管理设计总览</h1>
+  <div class="sub">组织树 · 岗位职级 · 人员归属 · 汇报线 · 变更联动（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 组织树示例（部门 + 虚拟组织）</div>
+  <div class="tree">
+    <div class="row"><span class="node p">集团</span></div>
+    <div class="row" style="padding-left:24px;"><span class="node p">子公司A</span><span class="node p">子公司B</span></div>
+    <div class="row" style="padding-left:48px;"><span class="node">研发部</span><span class="node">市场部</span><span class="node v">项目组X（虚拟/虚线汇报）</span></div>
+    <div class="row" style="padding-left:72px;"><span class="node">app产品组</span><span class="node">平台组</span></div>
+  </div>
+
+  <div class="section-title">② 总体架构</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">中心</div><div class="lc">组织架构中心（单一事实源）：组织树服务 · 岗位职级服务 · 人员归属服务 · 变更引擎</div></div>
+    <div class="arr">↓ 变更联动</div>
+    <div class="layer"><div class="lt">联动</div><div class="lc">权限（数据范围重算）· 工作流（审批链重解析）· 身份认证（JML 入职/调动/离职）· 通知 · 审计</div></div>
+  </div>
+
+  <div class="section-title">③ 核心概念与联动</div>
+  <div class="grid">
+    <div class="box">
+      <h3>岗位 ≠ 职级 ≠ 角色</h3>
+      <ul><li>岗位 Position：业务职责（研发工程师）</li><li>职级 Grade：层级带宽（P5/P6）</li><li>角色 Role：权限（按流程功能聚合，不镜像岗位）</li></ul>
+    </div>
+    <div class="box">
+      <h3>数据权限范围</h3>
+      <ul><li>本人 / 本部门 / 本部门及下级 / 全公司 / 自定义</li><li>子树查询：dept.path LIKE '根路径%'</li><li>范围随组织调整自动更新</li></ul>
+    </div>
+    <div class="box">
+      <h3>审批链解析</h3>
+      <ul><li>按角色+组织维度，不固化具体人</li><li>汇报线 manager_id 自引用逐级上取</li><li>部门经理变更 → 审批人自动更新</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">④ 员工生命周期（JML 联动）</div>
+  <div class="chips">
+    <span class="chip"><b>入职</b>：开号 → 按岗位分权 → 入群组 → 通知</span>
+    <span class="chip"><b>调动</b>：旧权限移除 → 新权限授予 → 审批链更新 → 审计</span>
+    <span class="chip"><b>离职</b>：立即禁用（不删除）→ 撤销会话令牌 → 移出全部组 → 权限回收</span>
+  </div>
+
+  <div class="chips" style="margin-top:12px;">
+    <span class="chip rec">设计铁律：组织为单一事实源 · 树+path 组合建模 · 岗位≠职级≠角色 · 审批按角色不按人 · JML 生命周期自动化 · 调整版本化留痕 · 敏感数据分级</span>
+    <span class="chip">演进：单组织树 → 数据权限范围化 → 审批链自动解析+矩阵 → JML 自动化+版本化+变更联动引擎</span>
+  </div>
+
+  <div class="foot">本图为组织架构管理模块的结构示意，详细说明见《组织架构管理设计方案.md》。</div>
+</div>
+</body>
+</html>

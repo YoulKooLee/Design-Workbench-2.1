@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消息通知中心设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#8BC8EA;--accent-deep:#3D7EA6;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 72px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(139,200,234,.2),rgba(139,200,234,.35));border-color:rgba(61,126,166,.35);font-weight:600;}
+  .prio{display:flex;gap:8px;flex-wrap:wrap;}
+  .pbox{flex:1 1 150px;min-width:0;border-radius:10px;padding:8px 10px;border:1px solid #E4E3DD;}
+  .pbox .pt{font-size:12px;font-weight:600;margin-bottom:3px;}
+  .pbox .pd{font-size:11px;color:#6B7280;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>消息通知中心设计总览</h1>
+  <div class="sub">统一消息发送管理平台：业务与技术分离，多通道触达（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 总体架构（四层）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">接入层</div><div class="lc">统一通知 API（REST+SDK）· 应用注册 · 消息类型声明——业务方只传"类型+接收人+参数"</div></div>
+    <div class="arr">↓ 写前落库再入队</div>
+    <div class="layer"><div class="lt">服务层</div><div class="lc">模板渲染（业务类别×渠道）· 渠道路由 · 优先级队列 · 频控（令牌桶）· 去重（Redis 幂等键）· 偏好检查</div></div>
+    <div class="arr">↓ 按通道独立队列</div>
+    <div class="layer"><div class="lt">通道层</div><div class="lc">渠道处理器（Provider 策略模式）· 各通道 worker 池隔离 · 熔断器 · 指数退避重试 / 死信队列</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">供应商</div><div class="lc">短信（阿里/腾讯云）· 邮件（SMTP/云邮件）· Push（APNs/FCM/厂商）· 站内信（自建）· IM 机器人（企微/钉钉/飞书）· Webhook</div></div>
+  </div>
+
+  <div class="section-title">② 优先级与限频</div>
+  <div class="prio">
+    <div class="pbox" style="background:rgba(234,102,104,.1);"><div class="pt" style="color:#C0392B;">P0 关键</div><div class="pd">验证码/安全告警——绕过限频，最高优先级</div></div>
+    <div class="pbox" style="background:rgba(250,173,20,.12);"><div class="pt" style="color:#B7791F;">P1 事务</div><div class="pd">订单/审批/告警——正常发送，超限排队</div></div>
+    <div class="pbox" style="background:rgba(139,200,234,.15);"><div class="pt" style="color:#3D7EA6;">P2 营销</div><div class="pd">活动/召回——强限频，超限丢弃/顺延，避开深夜</div></div>
+  </div>
+  <div class="chips">
+    <span class="chip"><b>每用户每渠道</b>：Push ≤20/时 · 邮件 ≤5/天 · 短信 ≤3/天</span>
+    <span class="chip"><b>全局限频</b>：令牌桶 3 条/天、12 条/周（P0 除外）</span>
+    <span class="chip"><b>偏好检查在入队前</b>：退订即停 · 免打扰时段</span>
+  </div>
+
+  <div class="section-title">③ 可靠性设计</div>
+  <div class="grid">
+    <div class="box">
+      <h3>写前持久化</h3>
+      <ul><li>通知先落库再进队列，broker 崩溃不丢消息</li></ul>
+    </div>
+    <div class="box">
+      <h3>至少一次 + 强去重</h3>
+      <ul><li>唯一 message_id + Redis 去重键（TTL 24h）</li><li>外部供应商无法 exactly-once，用幂等抑制重复</li></ul>
+    </div>
+    <div class="box">
+      <h3>通道隔离 + 熔断</h3>
+      <ul><li>单渠道故障不影响其他渠道</li><li>连续失败熔断，自动故障转移、渠道回退链</li></ul>
+    </div>
+    <div class="box">
+      <h3>重试与死信</h3>
+      <ul><li>指数退避重试，持久失败进死信队列人工/定时重发</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">④ 站内信：推拉结合 + 存储分离</div>
+  <div class="grid">
+    <div class="box">
+      <h3>数据模型</h3>
+      <ul><li>inbox_message（单条消息）+ user_message_status（用户已读最大 ID）</li><li>避免每用户复制全量消息</li></ul>
+    </div>
+    <div class="box">
+      <h3>推拉结合</h3>
+      <ul><li>在线：WebSocket 实时推</li><li>上线/刷新：按已读最大 ID 增量拉取</li><li>未读计数 = 已读 ID 之后的消息数</li></ul>
+    </div>
+    <div class="box">
+      <h3>收件箱能力</h3>
+      <ul><li>已读/批量已读 · 分类过滤 · 删除归档 · 24h 撤回 · 角标计数</li></ul>
+    </div>
+  </div>
+
+  <div class="chips">
+    <span class="chip rec">设计铁律：业务与技术分离 · 至少一次+强去重 · 写前持久化 · 通道隔离 · 偏好检查在入队前 · 可观测可审计</span>
+    <span class="chip">演进：单渠道站内信 → 统一通知中心 → 中台化（幂等/频控/熔断）→ 智能路由（按偏好/送达率/成本选渠道）</span>
+  </div>
+
+  <div class="foot">本图为消息通知中心模块的结构示意，详细说明见《消息通知中心设计方案.md》。</div>
+</div>
+</body>
+</html>

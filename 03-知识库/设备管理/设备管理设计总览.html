@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备管理设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#94D4D0;--accent-deep:#2E8B86;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 64px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;background:#FFFFFF;border:1px solid #E4E3DD;border-radius:14px;padding:10px 14px;}
+  .flow .node{background:#EAF7F6;border:1px solid rgba(46,139,134,.3);border-radius:6px;padding:3px 9px;}
+  .flow .node.b{font-weight:600;color:var(--accent-deep);}
+  .flow .arrow{color:var(--accent-deep);font-weight:600;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(148,212,208,.2),rgba(148,212,208,.35));border-color:rgba(46,139,134,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>设备管理设计总览</h1>
+  <div class="sub">注册认证 · 物模型 · 设备影子 · 生命周期 · OTA · 分组拓扑（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 总体架构（设备层 → 接入层 → 平台层）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">设备端</div><div class="lc">传感器/网关/终端（MQTT/CoAP/HTTP/私有协议 + TLS + 心跳 + 离线缓存）</div></div>
+    <div class="arr">↓ 协议适配 + 身份验证（一机一密/一型一密/证书）</div>
+    <div class="layer"><div class="lt">平台层</div><div class="lc">产品（物模型：属性/服务/事件）· 设备（注册/状态/生命周期/分组/标签/拓扑）· 影子（desired/reported）· 命令下发 · OTA · 遥测采集</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">数据</div><div class="lc">遥测 → Kafka 异步 → 规则引擎（触发器）/ 热冷分离存储（TSDB/OSS）</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">应用</div><div class="lc">运维管理 · 智控场景 · 工单管理 · 报表告警（行业应用闭环）</div></div>
+  </div>
+
+  <div class="section-title">② 设备注册认证（三种"上户口"）</div>
+  <div class="flow">
+    <span class="node b">一机一密</span><span class="arrow">·</span>
+    <span class="node">每台独立 DeviceSecret，泄漏只影响单台</span>
+    <span class="node b">一型一密</span><span class="arrow">·</span>
+    <span class="node">同型号共用密钥，批量大规模低成本</span>
+    <span class="node b">证书 PKI</span><span class="arrow">·</span>
+    <span class="node">X.509 根证书链校验，强安全可吊销轮换</span>
+    <span class="node b">免注册接入</span><span class="arrow">·</span>
+    <span class="node">注册组+证书策略，量产极简自动注册</span>
+  </div>
+
+  <div class="section-title">③ 核心设计点</div>
+  <div class="grid">
+    <div class="box">
+      <h3>物模型三要素</h3>
+      <ul><li>属性：状态/测量值（可读可设）</li><li>服务：可调用能力（开闸/重启）</li><li>事件：主动上报告警/异常</li><li>同类设备共用产品模型，口径统一</li></ul>
+    </div>
+    <div class="box">
+      <h3>设备影子（离线关键）</h3>
+      <ul><li>reported：设备最近上报状态</li><li>desired：应用期望配置（命令缓存）</li><li>离线→上线自动对齐 reconcile</li><li>应用不阻塞等待设备</li></ul>
+    </div>
+    <div class="box">
+      <h3>生命周期</h3>
+      <ul><li>注册→激活→在线⇄离线→停用→注销</li><li>退役：解绑/吊销凭证/擦数据/关记录</li><li>防遗留设备成安全漏洞</li></ul>
+    </div>
+    <div class="box">
+      <h3>OTA 安全灰度</h3>
+      <ul><li>固件上传对象存储+签名</li><li>按设备组圈定 → 1% canary → 放量</li><li>A/B 双分区，失败自动回滚</li><li>状态回报（下载/校验/安装）</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">④ 铁律与联动</div>
+  <div class="chips">
+    <span class="chip rec">铁律：一设备一身份 · 物模型统一口径 · 影子优先（离线可同步命令可缓存）· 遥测异步 · 安全分级（密钥可轮换可吊销）· OTA 可回滚 · 生命周期闭环 · 离线不丢数据（缓存+补传）</span>
+    <span class="chip"><b>联动</b>：触发器（设备事件→规则）· 运维管理（健康/故障）· 工单管理（故障→工单）· 智控场景（状态→联动）· 策略管理（认证/OTA/命令策略）· 报表告警</span>
+  </div>
+
+  <div class="foot">本图为设备管理模块的结构示意，详细说明见《设备管理设计方案.md》。</div>
+</div>
+</body>
+</html>

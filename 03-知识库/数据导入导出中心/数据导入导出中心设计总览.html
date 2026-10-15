@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据导入导出中心设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#A2DDAA;--accent-deep:#3A9A5A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .lane{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;}
+  .lane-col{flex:1 1 280px;min-width:0;}
+  .lane-col h3{font-size:12.5px;font-weight:600;color:var(--accent-deep);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #E4E3DD;}
+  .step{font-size:12px;padding:6px 8px;background:#FAFAF7;border:1px solid #E4E3DD;border-radius:8px;margin-bottom:6px;}
+  .step b{color:var(--accent-deep);}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(162,221,170,.2),rgba(162,221,170,.35));border-color:rgba(58,154,90,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>数据导入导出中心设计总览</h1>
+  <div class="sub">流式写 + 异步任务 + OSS 文件 · 模板预检 + 逐行校验 + 错误回显（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 导出链路（按数据量分层）</div>
+  <div class="arch">
+    <div class="lane">
+      <div class="lane-col">
+        <h3>小数据（&lt;5万行）同步</h3>
+        <div class="step">列表页点"导出"</div>
+        <div class="step">EasyExcel <b>流式写</b> response</div>
+        <div class="step">浏览器直接下载</div>
+      </div>
+      <div class="lane-col">
+        <h3>大数据（&gt;5万行）异步</h3>
+        <div class="step">建任务表 → 返回 <b>taskId</b></div>
+        <div class="step">发 MQ → 消费者执行</div>
+        <div class="step"><b>游标分页</b>取数（id &gt; last_id）+ SXSSF/EasyExcel 滑动窗口写</div>
+        <div class="step">上传 OSS → 前端轮询进度</div>
+        <div class="step">完成 → 预签名 URL 下载</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">② 导入三阶段</div>
+  <div class="arch">
+    <div class="lane">
+      <div class="lane-col">
+        <h3>阶段1 模板下载</h3>
+        <div class="step">下标准模板（表头/示例/下拉字典）</div>
+        <div class="step"><b>禁止用户自造列</b>，防列错位</div>
+      </div>
+      <div class="lane-col">
+        <h3>阶段2 预检（不入库）</h3>
+        <div class="step">SAX 逐行解析（EasyExcel 不爆内存）</div>
+        <div class="step">格式校验：必填/长度/正则/字典</div>
+        <div class="step">业务校验：唯一性/存在性/关联关系</div>
+        <div class="step">返回校验报告 + <b>错误清单（行号+字段+原因）</b></div>
+      </div>
+      <div class="lane-col">
+        <h3>阶段3 执行（用户确认）</h3>
+        <div class="step">只处理通过的行</div>
+        <div class="step"><b>分批事务</b>（每千行一事务）</div>
+        <div class="step">部分成功部分失败，不整批回滚</div>
+        <div class="step">幂等键去重，重导不重复入库</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">③ 核心设计点</div>
+  <div class="grid">
+    <div class="box">
+      <h3>内存 OOM 根治</h3>
+      <ul>
+        <li>XSSF DOM 全量驻内存 → OOM</li>
+        <li>SXSSF 滑动窗口：内存只留最近 N 行，老行刷磁盘</li>
+        <li>分页取数，写完一批释放 GC</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>深分页根治</h3>
+      <ul>
+        <li>LIMIT offset 越翻越慢</li>
+        <li>游标分页：where id &gt; last_id</li>
+        <li>走主键索引恒定快，防翻页重复</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>权限与审计</h3>
+      <ul>
+        <li>导出 SQL 自动拼当前用户数据权限</li>
+        <li>敏感字段（手机/身份证）按角色脱敏</li>
+        <li>导出操作进审计日志</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>文件与清理</h3>
+      <ul>
+        <li>导出文件存 OSS，预签名下载</li>
+        <li>生命周期 7~30 天自动删</li>
+        <li>单任务行数上限防拖库</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title">④ 与已有模块联动</div>
+  <div class="chips">
+    <span class="chip rec">设计铁律：业务零代码接入（只给分页接口+表头映射）· 流式写内存恒定 · 大导出必异步 · 导入错误前置 · 部分成功可接受 · 权限脱敏审计贯穿 · 文件过期自动清理</span>
+    <span class="chip"><b>联动</b>：文件管理（OSS/预签名）· 任务调度中心（清理/超时重投）· 权限模块（数据权限/脱敏）· 通知中心（完成通知）· 审计日志（敏感导出留痕）</span>
+  </div>
+
+  <div class="foot">本图为数据导入导出中心模块的结构示意，详细说明见《数据导入导出中心设计方案.md》。</div>
+</div>
+</body>
+</html>

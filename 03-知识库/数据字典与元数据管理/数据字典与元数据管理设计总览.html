@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据字典与元数据管理设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#8BC8EA;--accent-deep:#3D7EA6;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .two{display:flex;gap:12px;flex-wrap:wrap;}
+  .layerbox{flex:1 1 430px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layerbox .lt{font-size:13.5px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .tag{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:400;}
+  .tag.runtime{background:rgba(139,200,234,.25);color:#3D7EA6;}
+  .tag.gov{background:rgba(148,216,195,.3);color:#1F7A5C;}
+  .layerbox ul{list-style:none;font-size:12.5px;}
+  .layerbox li{padding:3px 0 3px 14px;position:relative;}
+  .layerbox li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 260px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:7px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 80px;}
+  .layer .lc{font-size:12px;flex:1 1 200px;min-width:0;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(139,200,234,.2),rgba(139,200,234,.35));border-color:rgba(61,126,166,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>数据字典与元数据管理设计总览</h1>
+  <div class="sub">运行时字典（枚举/下拉/翻译/热更新）＋ 治理层元数据（标准/目录/血缘/分级）（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 两个层次</div>
+  <div class="two">
+    <div class="layerbox">
+      <div class="lt">运行时字典 <span class="tag runtime">枚举 · 配置 · 热更新</span></div>
+      <ul>
+        <li>下拉框数据源：查询过滤 / 表单候选值（存字典项 ID）</li>
+        <li>字典翻译：服务端 ID→NAME 绑定返回对象</li>
+        <li>枚举动态调整：增删改/排序/启停/颜色，不发布不重启</li>
+        <li>多级缓存：本地内存 + Redis + DB，版本号定向失效</li>
+        <li>多租户：tenant_id 隔离，系统级+租户级合并，默认租户同步</li>
+      </ul>
+    </div>
+    <div class="layerbox">
+      <div class="lt">治理层元数据 <span class="tag gov">标准 · 资产 · 血缘</span></div>
+      <ul>
+        <li>数据标准：标准字典库 + 建表强制引用 + 未匹配走申请审批</li>
+        <li>资产目录：表/字段/分区元数据 + 全文搜索 + 数据地图</li>
+        <li>数据血缘：图数据库存储，一次遍历全链路，影响分析</li>
+        <li>分级分类：正则自动打标（phone/id_card…）+ Owner 确认</li>
+        <li>采集：Hook 实时 + Pull 定时，Kafka 统一接入</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title">② 核心表结构（dict_type + dict_item 主从表）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">dict_type</div><div class="lc">tenant_id · dict_code（唯一）· dict_name · is_system（内置禁删）· status</div></div>
+    <div class="layer"><div class="lt">dict_item</div><div class="lc">tenant_id · dict_code · item_label（显示）· item_value（存储）· sort · color · parent_id/path（树形）· status</div></div>
+    <div class="layer"><div class="lt">约定</div><div class="lc">业务表存 item_value；服务端翻译返回 label；编码不可变，项只停用不删除（保护历史引用）</div></div>
+  </div>
+
+  <div class="section-title">③ 场景速查</div>
+  <div class="grid">
+    <div class="box">
+      <h3>下拉与展示</h3>
+      <ul><li>筛选下拉 / 编辑下拉 / 列表翻译 / 图表维度，统一走字典</li></ul>
+    </div>
+    <div class="box">
+      <h3>数据标准落地</h3>
+      <ul><li>建表强制引用字典，自动填充字段名/类型/注释；未匹配→审批后入字典</li></ul>
+    </div>
+    <div class="box">
+      <h3>血缘与影响</h3>
+      <ul><li>字段级血缘图，改源字段一键反查下游表/指标/报表</li></ul>
+    </div>
+    <div class="box">
+      <h3>安全分级</h3>
+      <ul><li>公开/内部/敏感/机密四级，正则打标+Ranger 权限同步</li></ul>
+    </div>
+  </div>
+
+  <div class="chips">
+    <span class="chip rec">设计铁律：编码不可变 · 翻译在服务端 · 缓存定向失效防雪崩 · 标准嵌入流程 · 血缘用图存储 · 变更走审批留痕</span>
+    <span class="chip">演进：运行时字典 → 数据标准 → 元数据平台 → 治理中台（Atlas/DataHub）</span>
+  </div>
+
+  <div class="foot">本图为数据字典与元数据管理模块的结构示意，详细说明见《数据字典与元数据管理设计方案.md》。</div>
+</div>
+</body>
+</html>

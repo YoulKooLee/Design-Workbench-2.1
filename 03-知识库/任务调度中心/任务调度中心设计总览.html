@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任务调度中心设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#A3D5E8;--accent-deep:#3A8FB5;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 64px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(163,213,232,.2),rgba(163,213,232,.35));border-color:rgba(58,143,181,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>任务调度中心设计总览</h1>
+  <div class="sub">cron 定时触发 · 失败重试 · 错过补跑 · 分片并行 · 依赖编排（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 总体架构（调度中心 → 队列 → 执行器）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">调度中心</div><div class="lc">任务定义（cron/间隔/一次性）· 触发计算（cron→next_fire_time）· 待执行队列（优先级/可见性超时）· misfire 检测</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">执行器</div><div class="lc">业务应用内嵌：注册发现 · 心跳上报 · 任务执行 · 结果回传 · 分片处理</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">状态</div><div class="lc">job_def（任务定义）· job_run（执行历史/状态/日志）· 配套：重试/超时/阻塞/路由/告警</div></div>
+  </div>
+
+  <div class="section-title">② 核心能力</div>
+  <div class="grid">
+    <div class="box">
+      <h3>失败与超时</h3>
+      <ul><li>失败重试：次数+间隔（如3次/30秒）</li><li>超时主动中断</li><li>阻塞策略：串行/覆盖/并行</li><li>并发数=1 禁止重复执行</li></ul>
+    </div>
+    <div class="box">
+      <h3>幂等与执行语义</h3>
+      <ul><li>at-least-once 投递（exactly-once 不可达）</li><li>业务幂等键：重复投递变安全空操作</li><li>扣款类必须幂等，否则重试重复扣款</li></ul>
+    </div>
+    <div class="box">
+      <h3>misfire 错过策略</h3>
+      <ul><li>结算/账单：bounded 补跑（不丢）</li><li>心跳/监控：skip（过期无意义）</li><li>批处理：立即执行一次</li><li>禁止无限补跑（恢复风暴）</li></ul>
+    </div>
+    <div class="box">
+      <h3>分片广播</h3>
+      <ul><li>一次触发广播到所有执行器</li><li>各节点拿 shardingIndex/shardingTotal</li><li>按 index%total 处理数据子集</li><li>加节点=加分片，水平扩容</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">③ 业务场景</div>
+  <div class="chips">
+    <span class="chip"><b>业务闭环</b>：订单超时关闭 · 会员到期提醒 · 审批超时催办</span>
+    <span class="chip"><b>报表统计</b>：每日销售报表 · 月度经营分析 · 数据归档</span>
+    <span class="chip"><b>数据治理</b>：清理过期数据 · 备份 · 缓存预热 · 健康检查</span>
+    <span class="chip"><b>ETL同步</b>：跨系统同步 · DAG 流水线（抽取→清洗→入仓→出报表）</span>
+    <span class="chip"><b>批量分片</b>：每日批量处理待发货订单 · 全表扫描</span>
+  </div>
+
+  <div class="chips" style="margin-top:12px;">
+    <span class="chip rec">设计铁律：调度与执行分离 · 任务必须幂等 · misfire 按业务定策略 · 失败可感知（重试+告警）· 超时阻塞受控 · 可观测（执行历史/日志）</span>
+    <span class="chip">选型：@Scheduled（单机）→ Quartz/ShedLock（集群防重）→ XXL-JOB（分布式中心化）→ Elastic-Job/SchedulerX（分片/DAG/秒级扩展）</span>
+  </div>
+
+  <div class="foot">本图为任务调度中心模块的结构示意，详细说明见《任务调度中心设计方案.md》。</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工作流引擎设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#8BC8EA;--accent-deep:#3D7EA6;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .concepts{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;}
+  .cbox{flex:1 1 200px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 12px;}
+  .cbox .ct{font-size:13px;font-weight:600;color:var(--accent-deep);margin-bottom:5px;}
+  .cbox .cd{font-size:12px;color:var(--text);}
+  .carr{display:flex;flex-direction:column;justify-content:center;color:var(--accent-deep);font-weight:600;font-size:16px;text-align:center;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .appr{display:flex;gap:8px;flex-wrap:wrap;}
+  .abox{flex:1 1 150px;min-width:0;border-radius:10px;padding:8px 10px;border:1px solid #E4E3DD;background:#FFFFFF;}
+  .abox .at{font-size:12px;font-weight:600;color:var(--accent-deep);margin-bottom:3px;}
+  .abox .ad{font-size:11px;color:#6B7280;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(139,200,234,.2),rgba(139,200,234,.35));border-color:rgba(61,126,166,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>工作流引擎设计总览</h1>
+  <div class="sub">流程定义 → 流程实例 → 任务流转 → 网关路由（BPMN 2.0，结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 四大核心概念</div>
+  <div class="concepts">
+    <div class="cbox"><div class="ct">流程定义</div><div class="cd">BPMN 2.0 静态模板（XML/JSON），描述节点、流转线、条件、参与者</div></div>
+    <div class="carr">→</div>
+    <div class="cbox"><div class="ct">流程实例</div><div class="cd">定义的运行时对象，存储状态、变量、执行上下文</div></div>
+    <div class="carr">→</div>
+    <div class="cbox"><div class="ct">任务</div><div class="cd">用户任务（人工审批）｜服务任务（自动接口/脚本）｜抄送｜定时</div></div>
+    <div class="carr">→</div>
+    <div class="cbox"><div class="ct">网关</div><div class="cd">排他（单选）｜并行（多支并行）｜包容（可多可少）</div></div>
+  </div>
+
+  <div class="section-title">② 审批方式（四人模式）</div>
+  <div class="appr">
+    <div class="abox"><div class="at">依次审批</div><div class="ad">只放出当前处理人，前一人通过后下一人 pending</div></div>
+    <div class="abox"><div class="at">或签</div><div class="ad">一人通过节点通过，其余待办 skipped 作废（单任务多候选）</div></div>
+    <div class="abox"><div class="at">会签</div><div class="ad">全部通过才过，任一驳回整体驳回（多实例）</div></div>
+    <div class="abox"><div class="at">比例会签</div><div class="ad">同意比例达阈值（人数/权重/部门）即通过，剩余待办跳过</div></div>
+  </div>
+
+  <div class="section-title">③ 任务操作全集与驳回</div>
+  <div class="grid">
+    <div class="box">
+      <h3>运行时操作</h3>
+      <ul><li>同意 / 拒绝 / 加签（前加后加）/ 减签 / 转办 / 委派（含归还）/ 改派 / 撤回 / 抄送 / 催办</li><li>全程留痕审计</li></ul>
+    </div>
+    <div class="box">
+      <h3>驳回策略</h3>
+      <ul><li>驳回发起人（从头来）/ 驳回上一节点 / 驳回指定节点（退回修改节点）</li><li>撤回：仅"下一节点未处理前"可撤回</li></ul>
+    </div>
+    <div class="box">
+      <h3>超时与兜底</h3>
+      <ul><li>超时升级上级 / 自动通过 / 转抄送（边界事件）</li><li>审批人为空自动转交上级，流程永不卡死</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">④ 中国式审批语义（比 BPMN 标准更细）</div>
+  <div class="grid">
+    <div class="box">
+      <h3>会签计票</h3>
+      <ul><li>会签人：启动时固定 vs 到达时实时按组织计算</li><li>同部门去重 / 岗位空缺降级 / 弃权计票</li><li>通过比例按人数/权重/部门/层级</li></ul>
+    </div>
+    <div class="box">
+      <h3>运行中变更</h3>
+      <ul><li>加签后分母与完成条件是否重算（节点级配置）</li><li>达到条件后未办任务：取消/转抄送/保留记录</li></ul>
+    </div>
+    <div class="box">
+      <h3>条件分支</h3>
+      <ul><li>排他网关 + 条件顺序流 + 默认路径兜底</li><li>条件按优先级依次匹配，命中即停；复杂条件可接规则引擎</li></ul>
+    </div>
+  </div>
+
+  <div class="chips">
+    <span class="chip rec">设计铁律：流程与业务解耦（可视化建模）· BPMN 2.0 标准 · 运行时表小且快（实例结束即删）· 历史全量留痕 · 流程永不卡死 · 操作全审计</span>
+    <span class="chip">引擎选型：Flowable（Java OA/中国式审批底座）· Camunda 8（云原生）· Activiti（历史存量）</span>
+    <span class="chip">协同：权限（办理人/候选组）· 通知中心（待办/催办/升级）· 数据字典（表单枚举）· 规则引擎（条件）</span>
+  </div>
+
+  <div class="foot">本图为工作流引擎模块的结构示意，详细说明见《工作流引擎设计方案.md》。</div>
+</div>
+</body>
+</html>

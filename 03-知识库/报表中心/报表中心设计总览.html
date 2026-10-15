@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报表中心设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#94D8C3;--accent-deep:#2E9E7E;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 64px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(148,216,195,.2),rgba(148,216,195,.35));border-color:rgba(46,158,126,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>报表中心设计总览</h1>
+  <div class="sub">三层解耦 · 数据集模型 · 指标血缘 · 多级缓存 · 大屏看板（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 总体架构（业务与报表分离）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">业务层</div><div class="lc">业务系统（只做业务操作，不跑报表）</div></div>
+    <div class="arr">↓ ETL / Kafka / 定时同步</div>
+    <div class="layer"><div class="lt">数据层</div><div class="lc">数据仓库（离线 PG/GP）· ClickHouse/Druid（实时多维）· 数据集模型</div></div>
+    <div class="arr">↓ 直连 / 抽取加速双模式</div>
+    <div class="layer"><div class="lt">报表层</div><div class="lc">数据集服务 · 报表引擎 · 看板服务 · 调度与导出</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">展示</div><div class="lc">固定报表 · 自助分析 · 管理驾驶舱/大屏（决策屏核心 KPI，运营屏实时追踪）</div></div>
+  </div>
+
+  <div class="section-title">② 大屏信息架构（给谁看决定设计）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">导航区</div><div class="lc">当前页面/模块标识</div></div>
+    <div class="layer"><div class="lt">核心指标区</div><div class="lc">3~5 个 KPI，大号数字卡片/仪表盘（最显眼位置）</div></div>
+    <div class="layer"><div class="lt">趋势区</div><div class="lc">折线/面积图（时间序列）</div></div>
+    <div class="layer"><div class="lt">构成/排名区</div><div class="lc">柱状/条形（类目对比）</div></div>
+    <div class="layer"><div class="lt">实时动态区</div><div class="lc">滚动列表/跑马灯（实时事件流）</div></div>
+  </div>
+
+  <div class="section-title">③ 核心设计点</div>
+  <div class="grid">
+    <div class="box">
+      <h3>数据集 + 指标血缘</h3>
+      <ul><li>数据源表 + join + 字段类型 → 可复用数据集</li><li>指标模板定义（Σ/DISTINCT）</li><li>血缘树：复杂指标下推底层维度，口径统一</li></ul>
+    </div>
+    <div class="box">
+      <h3>多级缓存</h3>
+      <ul><li>L1 内存 LRU（亚毫秒）</li><li>L2 Redis（TTL 30~60s，削 70~90% 负载）</li><li>L3 物化视图 + 抽数缓存（定时更新）</li></ul>
+    </div>
+    <div class="box">
+      <h3>图表选型原则</h3>
+      <ul><li>比较→柱状/条形/雷达</li><li>趋势→折线/面积</li><li>构成→饼图(≤5)/堆叠/瀑布</li><li>分布→直方图/散点/箱线</li></ul>
+    </div>
+    <div class="box">
+      <h3>双模式查询</h3>
+      <ul><li>直连：数仓性能充足，数据最新</li><li>抽取加速：列式引擎承载分析负载</li><li>聚合下推，不拉明细前端聚合</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">④ 联动与铁律</div>
+  <div class="chips">
+    <span class="chip rec">铁律：业务与报表分离 · 指标口径统一（血缘）· 数据集一次建模多次复用 · 缓存分层热点秒开 · 权限贯穿（行级+目录+导出）· 定时报表闭环（调度→生成→推送）</span>
+    <span class="chip"><b>联动</b>：权限（行级数据权限）· 任务调度中心（定时生成）· 导入导出（报表导出）· 通知中心（订阅推送）· 审计（访问/导出留痕）· 搜索（数据检索）</span>
+  </div>
+
+  <div class="foot">本图为报表中心模块的结构示意，详细说明见《报表中心设计方案.md》。</div>
+</div>
+</body>
+</html>

@@ -1,16 +1,19 @@
 // 只读扫描：列出工作区内「今天」修改的临时/垃圾候选文件（不删除、不移动）
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const ROOT = 'C:/Users/游翔/Documents/AI work/产品设计工作台';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.next', '.cache', 'out', 'coverage', '.workbuddy-sqlite-migrations']);
 
 const IMG_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif']);
 const TMP_PATTERNS = [/~^\$/, /\.tmp$/i, /\.bak$/i, /\.old$/i, /\.crdownload$/i, /\.part$/i, /\.swp$/i];
 const TMP_NAMES = new Set(['thumbs.db', '.ds_store', 'desktop.ini']);
 
-const today = new Date('2026-10-03T00:00:00+08:00').getTime();
-const tomorrow = new Date('2026-10-04T00:00:00+08:00').getTime();
+const startOfToday = new Date();
+startOfToday.setHours(0, 0, 0, 0);
+const today = startOfToday.getTime();
+const tomorrow = today + 24 * 60 * 60 * 1000;
 
 const images = [];
 const temps = [];

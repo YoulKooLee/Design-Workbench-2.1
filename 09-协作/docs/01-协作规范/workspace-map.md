@@ -15,7 +15,7 @@
 
 | 端口 | 是谁 | 作用 | 说明 |
 |---|---|---|---|
-| **7788** | Axhub 工作台客户端 | 管理所有项目的浏览器面板入口 | 双击 `启动工作台.cmd` 启动（`node server.mjs`） |
+| **7788** | Axhub 工作台客户端 | 管理所有项目的浏览器面板入口 | 面板后端为 `工作台面板/server.mjs`（`node server.mjs`） |
 | **53817** | Make 管理端（全局唯一单例） | **用户真正预览原型的地址** | `http://localhost:53817/?projectId=项目名&p=原型id` |
 | **51720** | 项目 Vite dev server | 给 make-server 提供渲染后端 | **不是**用户直接访问的入口；被占时顺延 51721/51722 |
 
@@ -27,7 +27,7 @@
 ## 三、启动方式
 
 ```
-1. 双击  C:\Users\游翔\Documents\AI work\产品设计工作台\启动工作台.cmd   （启动 7788 工作台）
+1. 启动 7788 工作台面板（`工作台面板/server.mjs`）
 2. 浏览器打开工作台面板（7788），对目标项目点「启动开发栈」
 3. 工作台会拉起该项目 Vite（51720）+ 注册到 Make（53817）
 4. 等待项目状态从「启动中」→「活跃」后，点预览即可
@@ -41,27 +41,31 @@
 
 ## 四、目录组织（权威，数字前缀分层）
 
+<!-- AUTO-SYNC:tree START（由 06-运行脚本/sync-projects-index.mjs 自动生成） -->
 ```
-C:\Users\游翔\Documents\AI work\产品设计工作台\
-├── 01-项目\            ← 所有原型项目（核心）
-│   ├── 结构监测\
-│   ├── 健康档案\
+C:\Users\游翔\Documents\AI work\01 产品设计工作台\
+├── 01-项目\                ← 所有原型项目（核心）
 │   ├── Dingcan_app\
-│   ├── Digital Twin\数字孪生\
-│   ├── 演示项目\
-│   ├── Nanshan_Visualization\
-│   └── Rongzhihui_app\
-├── 02-模板\_project-template\   ← 新项目模板
-├── 03-备份\            ← 备份
-├── 05-回收站\
-├── 06-运行脚本\        ← launch-project.ps1 / scan-projects.ps1 等
+│   ├── Markdown 轻量编辑器\
+│   ├── 崂山国家实验室项目\
+│   ├── 指标管理平台\
+│   ├── 数字孪生\
+│   └── 结构监测\
+├── 02-模板\                ← _project-template（React 原型骨架）/ _project-development（研发工程模板）
+├── 03-知识库\              ← 业务知识库
+├── 03-组件库\              ← 组件模板 / 页面模板 / ui-libs
+├── 04-维护台账\            ← patches / archive / tools
+├── 05-回收站\              ← 删除件暂存
+├── 06-运行脚本\            ← launch-project.ps1 / bootstrap.ps1 / env-doctor.ps1 / smoke-test.mjs / sync-projects-index.mjs
 ├── 07-日志\
-├── 08-文档\            ← 工作台架构与排错手册、使用说明等
-├── 09-导出\
-├── 10-智能体记忆\       ← 工作台记忆（4类，frontmatter 机读）
-├── Agent_Stack\        ← 技能/规则/路由/反思（自建 Agent 层）
-└── axhub-manager\      ← 工作台管理端代码（server.mjs）
+├── 08-办公\                ← 办公文件
+├── 08-文档\                ← 迭代过程文档 / 打包输出
+├── 09-协作\                ← 多智能体协作根（messages / rooms / agents / docs / 用户操作）
+├── 10-智能体记忆\          ← 工作台层记忆（000~004 + rules/ + skills/ + router.md + agents/）
+├── 工作台面板\             ← 工作台管理端代码（server.mjs，旧名 axhub-manager）
+└── 工作台桌面应用\         ← Electron 桌面壳
 ```
+<!-- AUTO-SYNC:tree END -->
 
 > ⚠️ **顶层必须带数字前缀。** 旧记忆里不带 `01-项目/02-模板` 前缀的裸路径全部作废。
 
@@ -70,26 +74,25 @@ C:\Users\游翔\Documents\AI work\产品设计工作台\
 ## 五、记忆体系（知道"知识在哪"）
 
 ```
-10-智能体记忆\          ← 工作台外部记忆（纯文本，任何 AI 可读）
+10-智能体记忆\          ← 工作台层记忆（纯文本，任何 AI 可读）
 ├── 000-文件与操作规范.md    （用户铁律：存放/备份/锁文件）
 ├── 001-启动与状态机.md      （必点两次/starting 状态/Make 联动）
 ├── 002-脚本与编码纪律.md    （PowerShell 5.1 坑/中文路径纪律）
 ├── 003-布局与前端实现.md    （Tailwind 4/PrototypeLayout/16:9 大屏）
-└── README.md
+├── 004-工作台架构与联动坑.md （工作台架构事实与联动 bug 根因）
+├── BOOTSTRAP.md / README.md
+├── router.md / router.json  （意图→资产路由）
+├── skills\   axhub-launch / axhub-layout / axhub-script + SKILL.index.md
+├── rules\    startup / script-encoding / layout / file-ops + rules.index.json
+└── agents\<智能体>\          （豆包 / CodeBuddy / WorkBuddy / DeepSeek / 千问 分区）
 
-Agent_Stack\           ← 分层 Agent 层
-├── 01-skill\    axhub-launch / axhub-layout / axhub-script
-├── 02-knowledge\  （引用 10-智能体记忆）
-├── 03-rules\     rules.index.json + 4 分类
-├── 04-router\    router.json + router.md（意图→资产路由）
-├── 05-archive\   历史归档
-└── 06-reflection\ 反思协议
+> 旧版分层目录 `Agent_Stack\`（01-skill / 02-knowledge / 03-rules / 04-router / 05-archive / 06-reflection）已于 2026-09 并入本目录，旧路径一律作废。
 ```
 
 **scope 加载过滤（重要）**：`project > universal > workspace`
 - 处理某个项目 → 读该项目 `AGENTS.md` / `rules/` / `docs/`
-- 处理工作台本身 → 读 `Agent_Stack/`（workspace + universal）
-- 通用方法论 → 读 `Agent_Stack/03-rules/` + `10-智能体记忆/`
+- 处理工作台本身 → 读 `10-智能体记忆/`（workspace + universal）
+- 通用方法论 → 读 `10-智能体记忆/rules/` + `10-智能体记忆/skills/`
 
 ---
 
@@ -106,7 +109,7 @@ Agent_Stack\           ← 分层 Agent 层
 
 ## 七、给处理"工作台/构建/启动"任务的新智能体
 
-1. 先读本文档 + `10-智能体记忆/001-启动与状态机.md` + `Agent_Stack/01-skill/axhub-launch.md`。
+1. 先读本文档 + `10-智能体记忆/001-启动与状态机.md` + `10-智能体记忆/skills/axhub-launch.md`。
 2. 涉及端口/进程：先 `netstat -ano | findstr :53817` / `:51720` 看现状，不要盲目杀进程。
 3. 改依赖后：**记得重启 53817**，并确认其 StartTime 晚于改动。
-4. 完成改动后，把新坑回写到 `10-智能体记忆/` 对应类目，并同步更新本文件（如端口/目录有变）。
+4. 完成改动后，把新坑回写到 `10-智能体记忆/` 对应类目；**第四节目录树已由 `06-运行脚本/sync-projects-index.mjs` 自动同步**（面板运行期间 `01-项目` 变动即重写），无需手工维护。

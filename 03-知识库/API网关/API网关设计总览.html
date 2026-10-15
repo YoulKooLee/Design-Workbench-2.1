@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API 网关设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#C9A7E8;--accent-deep:#7B4FA8;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 64px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(201,167,232,.2),rgba(201,167,232,.35));border-color:rgba(123,79,168,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>API 网关设计总览</h1>
+  <div class="sub">路由 · 鉴权 · 限流 · 熔断 · 灰度 · 安全 · 开放平台（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 总体架构（接入层 → 决策层 → 出口层）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">接入层</div><div class="lc">协议适配（HTTP/gRPC/WS）· TLS 终止 · CORS · IP 黑白名单</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">决策层</div><div class="lc">路由决策 · 认证鉴权（JWT/API Key/AKSK）· 限流（令牌桶 Redis+Lua）· 熔断降级 · 灰度路由</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">出口层</div><div class="lc">调用上游 · 负载均衡（轮询/加权/最少连接）· 超时重试 · 响应转换 · 后端签名</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">配套</div><div class="lc">配置中心（动态路由/限流规则热更新）· 监控（命中率/错误率/耗时）· 审计日志</div></div>
+  </div>
+
+  <div class="section-title">② 四大核心能力</div>
+  <div class="grid">
+    <div class="box">
+      <h3>限流（令牌桶默认）</h3>
+      <ul><li>capacity 桶容量=突发量 · rate 填充率=长期 QPS</li><li>滑动窗口更平滑（拆 10×100ms）</li><li>Redis+Lua 分布式全局一致</li><li>排队→满返回 429+Retry-After</li></ul>
+    </div>
+    <div class="box">
+      <h3>熔断降级</h3>
+      <ul><li>下游超时/错误率飙升 → 熔断</li><li>返回兜底数据防雪崩</li><li>阶梯探测恢复：5s 试探→半打开 10%→成功率&gt;80% 全恢复</li></ul>
+    </div>
+    <div class="box">
+      <h3>认证鉴权</h3>
+      <ul><li>内部：JWT 网关验签→透传身份</li><li>开放平台：AKSK HMAC 签名防篡改</li><li>简单集成：API Key</li><li>后端互信：后端签名验签</li></ul>
+    </div>
+    <div class="box">
+      <h3>灰度发布</h3>
+      <ul><li>按租户/应用/用户渐进式发布</li><li>流量染色 → 灰度路由到新版本</li><li>泳道隔离环境 + 全链路标签透传</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">③ 安全三板斧</div>
+  <div class="chips">
+    <span class="chip"><b>防重放</b>：Nonce（唯一）+ Timestamp（5 分钟有效）+ RequestId（防重复提交）</span>
+    <span class="chip"><b>签名防篡改</b>：AKSK + HMAC 不可伪造签名</span>
+    <span class="chip"><b>边界防护</b>：HTTPS 强制 · IP 黑白名单 · API Key 管理 · 密钥加密存储+轮换</span>
+  </div>
+
+  <div class="section-title">④ 铁律与联动</div>
+  <div class="chips">
+    <span class="chip rec">铁律：横切关注点收敛到网关 · 后端只管业务 · 安全防线前移 · 限流防过载熔断防雪崩 · 灰度不平滑不上线 · 认证（网关）+授权（权限模块）分离 · 全链路可观测</span>
+    <span class="chip"><b>联动</b>：统一身份认证（JWT/令牌校验）· 权限模块（细粒度授权）· 审计日志（调用留痕）· 配置中心（规则热更新）· 通知（告警）</span>
+  </div>
+
+  <div class="foot">本图为 API 网关模块的结构示意，详细说明见《API网关设计方案.md》。</div>
+</div>
+</body>
+</html>

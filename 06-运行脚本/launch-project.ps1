@@ -566,32 +566,71 @@ try {
         }
         function Get-MissingNatives($nm, $arch) {
             $missing = @()
-            foreach ($n in @("@rollup/rollup-win32-$arch-msvc", "@esbuild/win32-$arch")) {
+            foreach ($n in @(
+                "@rollup/rollup-win32-$arch-msvc",
+                "@esbuild/win32-$arch",
+                "lightningcss-win32-$arch-msvc",
+                "@tailwindcss/oxide-win32-$arch-msvc"
+            )) {
                 if (-not (Test-NativePresent $nm $n)) { $missing += $n }
             }
             return $missing
         }
+        # 从 node_modules/.pnpm/ 目录名读取某个包的实际安装版本（pnpm 结构）
+        function Get-InstalledVersion($nm, $pkgName) {
+            $pnpmDir = Join-Path $nm '.pnpm'
+            if (-not (Test-Path $pnpmDir)) { return $null }
+            # pnpm 把 @scope/pkg 编码为 @scope+pkg，目录名形如 rollup@4.62.4 或 @tailwindcss+oxide@4.3.3
+            $encoded = $pkgName -replace '/', '+'
+            foreach ($d in Get-ChildItem -Path $pnpmDir -Directory -ErrorAction SilentlyContinue) {
+                if ($d.Name -like "$encoded@*") {
+                    return ($d.Name -split '@')[-1]
+                }
+            }
+            return $null
+        }
         $needNative = Get-MissingNatives $nodeModules $nodeArch
         if ($needNative.Count -gt 0) {
-            Write-Warn "缺少原生模块 $($needNative -join ', ')，正在自动补齐（按项目包管理器安装，可能需数十秒）…"
-            # 安装命令与项目锁文件匹配：pnpm 项目用 pnpm，npm 项目（package-lock.json）用 npm，
-            # 避免在 npm 项目上跑 pnpm 导致装不上/锁文件被改写（2026-10-08 架构不匹配根因修复）
+            Write-Warn "缺少原生模块 $($needNative -join ', ')，自动按版本补装（arch=$nodeArch）…"
             $usePnpmInstall = (Test-Path (Join-Path $projDir 'pnpm-lock.yaml'))
-            $instCmd  = if ($usePnpmInstall) { 'npx -y pnpm@10 install' } else { 'npm install --no-audit --no-fund' }
-            $forceCmd = if ($usePnpmInstall) { 'npx -y pnpm@10 install --force' } else { 'npm install --force --no-audit --no-fund' }
-            Start-Process -NoNewWindow -Wait -FilePath 'cmd.exe' `
-                -ArgumentList '/c', $instCmd -WorkingDirectory $projDir
+            # 映射：缺失的原生包 → 它对应的主包名（用于查版本）
+            $nativeToMain = @{
+                "@rollup/rollup-win32-$nodeArch-msvc"       = 'rollup'
+                "@esbuild/win32-$nodeArch"                    = 'esbuild'
+                "lightningcss-win32-$nodeArch-msvc"           = 'lightningcss'
+                "@tailwindcss/oxide-win32-$nodeArch-msvc"     = '@tailwindcss/oxide'
+            }
+            if ($usePnpmInstall) {
+                # pnpm 项目：读主包版本，精准 add 对应版本的 arm64 原生包（一次装对，避免反复 install）
+                $addPkgs = @()
+                foreach ($n in $needNative) {
+                    $main = $nativeToMain[$n]
+                    if (-not $main) { continue }
+                    $ver = Get-InstalledVersion $nodeModules $main
+                    if ($ver) { $addPkgs += "$n@$ver" }
+                    else { $addPkgs += $n }   # 读不到版本就不加版本号，让 pnpm 自行解析
+                }
+                if ($addPkgs.Count -gt 0) {
+                    $pnpmCjs = Join-Path $env:APPDATA 'npm\node_modules\pnpm\bin\pnpm.cjs'
+                    if (Test-Path $pnpmCjs) {
+                        Write-Info "执行: node pnpm.cjs add -D $($addPkgs -join ' ')"
+                        & $NodePath $pnpmCjs add -D $addPkgs --registry=https://registry.npmmirror.com 2>&1 | ForEach-Object { Write-Info "  $_" }
+                    } else {
+                        # 回退：无本地 pnpm 时用 npx
+                        $argLine = "/c npx -y pnpm@10 add -D $($addPkgs -join ' ')"
+                        Start-Process -NoNewWindow -Wait -FilePath 'cmd.exe' -ArgumentList $argLine -WorkingDirectory $projDir
+                    }
+                }
+            } else {
+                # npm 项目：回退原逻辑
+                Write-Warn 'npm 项目，回退 npm install --force…'
+                Start-Process -NoNewWindow -Wait -FilePath 'cmd.exe' `
+                    -ArgumentList '/c', 'npm install --force --no-audit --no-fund' -WorkingDirectory $projDir
+            }
+            # 验证
             $needNative = Get-MissingNatives $nodeModules $nodeArch
             if ($needNative.Count -gt 0) {
-                Write-Warn "常规安装未补齐，正在强制重装（$forceCmd）…"
-                Start-Process -NoNewWindow -Wait -FilePath 'cmd.exe' `
-                    -ArgumentList '/c', $forceCmd -WorkingDirectory $projDir
-                $needNative = Get-MissingNatives $nodeModules $nodeArch
-                if ($needNative.Count -gt 0) {
-                    Write-Warn "强制重装后仍缺少 $($needNative -join ', ')，Vite 可能启动失败，请检查网络或手动执行 $instCmd"
-                } else {
-                    Write-Good "原生模块已补齐 (arch=$nodeArch)"
-                }
+                Write-Warn "补装后仍缺少 $($needNative -join ', ')，Vite 可能启动失败，请手动执行 pnpm add -D $($needNative -join ' ')"
             } else {
                 Write-Good "原生模块已补齐 (arch=$nodeArch)"
             }

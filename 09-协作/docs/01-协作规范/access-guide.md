@@ -30,7 +30,7 @@
 3. 注意：因为你看不到真实磁盘，**路径以 README 第五节「权威路径速查」为准**，不要凭记忆猜。
 
 ### 方式 B：CLI / IDE 插件（能访问本地文件）
-1. `cd C:\Users\游翔\Documents\AI work\产品设计工作台\09-协作`
+1. `cd C:\Users\游翔\Documents\AI work\01 产品设计工作台\09-协作`
 2. 按顺序读：`README.md` → `agent-collaboration.md` → `workspace-map.md` → `projects-index.md` → `session-handoff.md`
 3. 顺着索引去读真实工程文件（各项目 `AGENTS.md`、`src/`、`rules/`、`10-智能体记忆/`）。
 4. 动手改代码前，先读对应项目 `AGENTS.md` 与 `rules/prototype-development-guide.md`。
@@ -64,7 +64,7 @@
 
 ## 四、跨项目通用规范速记（很多任务都会用到）
 
-这些规范散落在 `10-智能体记忆/` 与 `Agent_Stack/03-rules/`，关键几条：
+这些规范散落在 `10-智能体记忆/`（`rules/` 与 `skills/`），关键几条：
 
 1. **24 项监测项**命名顺序严格按《物联网平台测点数据推送说明文档.docx》。
 2. **向量模 M=√(Σaᵢ²)**：present/cumulative 是多轴拼接字符串（x,y[,z]）时，须先合成 M 再比对；矢量项：振动频率(三轴)、倾斜(二轴)、深层水平位移(二轴)、测缝(二轴)。其余 20 项是 double 标量。
@@ -73,7 +73,7 @@
 5. **图表规范**：标题在图表区顶部；单位紧邻标题下"单位：xxx"加粗；多系列必须图例；统计周期单选放标题旁。
 6. **本地预览必须 HTTP**，不要双击 index.html。
 
-> 完整版见 `10-智能体记忆/` 与 `Agent_Stack/03-rules/`（方式 A 可让用户贴对应文件）。
+> 完整版见 `10-智能体记忆/rules/` 与 `10-智能体记忆/skills/`（方式 A 可让用户贴对应文件）。
 
 ---
 

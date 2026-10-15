@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>搜索中心设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#9BBBF4;--accent-deep:#4A74C4;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 64px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;background:#FFFFFF;border:1px solid #E4E3DD;border-radius:14px;padding:10px 14px;}
+  .flow .node{background:#EEF3FD;border:1px solid rgba(74,116,196,.3);border-radius:6px;padding:3px 9px;}
+  .flow .node.b{font-weight:600;color:var(--accent-deep);}
+  .flow .arrow{color:var(--accent-deep);font-weight:600;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(155,187,244,.2),rgba(155,187,244,.35));border-color:rgba(74,116,196,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>搜索中心设计总览</h1>
+  <div class="sub">倒排索引 · 分词 · BM25 排序 · 联想拼音 · 数据权限过滤（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 查询链路（理解 → 召回 → 排序 → 过滤 → 输出）</div>
+  <div class="flow">
+    <span class="node b">用户输入 query</span><span class="arrow">→</span>
+    <span class="node">查询理解：分词/纠错/同义词/拼音</span><span class="arrow">→</span>
+    <span class="node b">倒排索引召回（O(1) 定位候选）</span><span class="arrow">→</span>
+    <span class="node">BM25 + 业务权重排序</span><span class="arrow">→</span>
+    <span class="node b">数据权限 + 类目/价格过滤</span><span class="arrow">→</span>
+    <span class="node">聚合 facets + 高亮 + 分页</span>
+  </div>
+
+  <div class="section-title">② 总体架构（写 ES 读 ES，业务库零压力）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">数据源</div><div class="lc">业务库（订单/商品/文档/用户）</div></div>
+    <div class="arr">↓ 索引同步（MQ 事件 / Canal binlog / 定时全量 + 对账补偿）</div>
+    <div class="layer"><div class="lt">搜索中心</div><div class="lc">索引管理（分词器/词典/映射）· 查询服务 · 建议服务（联想/拼音）· 运维（分片/监控/重建）</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">存储</div><div class="lc">Elasticsearch 集群（倒排索引 + 聚合数据）</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">集成</div><div class="lc">权限（结果数据权限过滤）· 数据字典（词典/同义词）· 导入导出（可搜可导）· 审计</div></div>
+  </div>
+
+  <div class="section-title">③ 核心设计点</div>
+  <div class="grid">
+    <div class="box">
+      <h3>索引同步</h3>
+      <ul><li>写库发事件 → 异步同步 ES（CQRS）</li><li>Canal binlog 增量不侵入业务</li><li>定时全量对账 diff 兜底</li></ul>
+    </div>
+    <div class="box">
+      <h3>查询理解</h3>
+      <ul><li>中文分词（IK）</li><li>纠错（编辑距离）· 同义词扩展</li><li>拼音归一（pinyin 字段）</li></ul>
+    </div>
+    <div class="box">
+      <h3>排序</h3>
+      <ul><li>BM25 相关性（标题 boost 高）</li><li>业务加权：销量/新品/库存</li><li>权重可配置，不写死</li></ul>
+    </div>
+    <div class="box">
+      <h3>搜索联想</h3>
+      <ul><li>Tier1：高频 query 建 Trie/FST，预存 Top-K</li><li>Tier2：Redis ZSet 实时热点</li><li>Redis 缓存 prefix→建议，拼音前缀</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">④ 关键能力与联动</div>
+  <div class="chips">
+    <span class="chip rec">设计铁律：倒排索引替代 LIKE · 读 ES 写 DB · 查询理解统一 · 相关性可调 · 权限贯穿检索 · 索引最终一致（增量+对账）</span>
+    <span class="chip"><b>联动</b>：权限（搜索=数据权限过滤）· 文件管理（文档正文检索）· 导入导出（可搜可导出）· 数据字典（词典/同义词运营）· 审计（敏感检索留痕）</span>
+  </div>
+
+  <div class="foot">本图为搜索中心模块的结构示意，详细说明见《搜索中心设计方案.md》。</div>
+</div>
+</body>
+</html>

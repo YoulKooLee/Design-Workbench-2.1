@@ -1,4 +1,4 @@
-﻿// 产品设计工作台 —— 本地管理面板后端
+// 产品设计工作台 —— 本地管理面板后端
 // 纯 Node 内置模块（http/fs/path/child_process），无第三方依赖。
 import http from 'node:http';
 import fs from 'node:fs';
@@ -639,7 +639,7 @@ function isAdminStaticProject(dir) {
     return fs.existsSync(flag) && fs.readFileSync(flag, 'utf8').trim() === 'admin-static';
   } catch { return false; }
 }
-// 递归扫描项目（支持任意层级嵌套，如 01-项目/健康档案、01-项目/Digital Twin/数字孪生）
+// 递归扫描项目（支持任意层级嵌套，如 01-项目/数字孪生）
 function collectProjects(dir, prefix, out, depth) {
   let entries = [];
   try { entries = fs.readdirSync(dir, { withFileTypes: true }); }
@@ -3195,6 +3195,30 @@ function ensureAgentWatchers() {
   }
 }
 
+// ===== 项目索引实时同步：01-项目 一有变动就重写「项目总表 / 目录树」（失败绝不影响面板）=====
+function startProjectIndexSync() {
+  let timer = null, running = false;
+  const run = async () => {
+    if (running) return;
+    running = true;
+    try {
+      const mod = await import(new URL('../06-运行脚本/sync-projects-index.mjs', import.meta.url));
+      const r = mod.syncProjectIndex({ quiet: true });
+      if (r.changed.length) { try { console.log('[index-sync] 已同步:', r.changed.join(', ')); } catch {} }
+    } catch (e) {
+      safeLog('index-sync', e);
+    } finally { running = false; }
+  };
+  run();
+  try {
+    const watcher = fs.watch(path.join(AXHUB_ROOT, '01-项目'), { recursive: true }, () => {
+      clearTimeout(timer);
+      timer = setTimeout(run, 3000); // 去抖：批量增删文件只同步一次
+    });
+    watcher.on('error', (e) => safeLog('index-sync-watch', e));
+  } catch (e) { safeLog('index-sync-watch', e); }
+}
+
 server.listen(PORT, BIND_HOST, () => {
   console.log(`产品设计工作台已启动: http://localhost:${PORT}`);
   // 浏览器标签页统一由 启动工作台.cmd 负责打开，避免重复开标签页，故此处不再自动打开
@@ -3206,6 +3230,8 @@ server.listen(PORT, BIND_HOST, () => {
   // 智能体监听自动拉起 + 保活：工作台运行期间 watcher 常驻，心跳持续写入，看板在线判定真实可用
   ensureAgentWatchers();
   setInterval(ensureAgentWatchers, 60000);
+  // 项目总表 / 目录树实时同步（01-项目 变动 → 去抖 3s 重写 09-协作/docs 下两个自动块）
+  startProjectIndexSync();
 });
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {

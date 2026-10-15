@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>权限模块设计总览（示意）</title>
+<style>
+  :root{
+    --text:#1A1B1C; --text2:#6B7280; --bg:#F4F3EE; --card:#FFFFFF;
+    --border:#E4E3DD; --accent:#8BC8EA; --accent-deep:#3D7EA6;
+    --ok:#52C41A; --warn:#FAAD14; --err:#EA6668;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:960px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 22px;}
+  .note{font-size:12px;color:var(--text2);text-align:center;margin-top:6px;}
+  .flow{display:flex;flex-direction:column;align-items:stretch;gap:0;}
+  .layer{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;}
+  .layer-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+  .step{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:600;flex:none;}
+  .layer-title{font-size:15px;font-weight:600;}
+  .layer-q{font-size:12px;color:var(--accent-deep);font-weight:600;background:rgba(139,200,234,.18);padding:2px 8px;border-radius:6px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-size:12.5px;padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;color:var(--text);}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(139,200,234,.2),rgba(139,200,234,.35));border-color:rgba(61,126,166,.35);font-weight:600;}
+  .arrow{text-align:center;color:var(--accent-deep);font-size:16px;line-height:1;padding:4px 0;}
+  .grid{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px;}
+  .panel{flex:1 1 280px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;}
+  .panel h3{font-size:14px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .panel ul{list-style:none;font-size:12.5px;}
+  .panel li{padding:4px 0 4px 14px;position:relative;}
+  .panel li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:1px;}
+  .tag.g{background:rgba(82,196,26,.15);color:#389E0D;}
+  .tag.w{background:rgba(250,173,20,.18);color:#AD6800;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>权限模块设计总览</h1>
+  <div class="sub">认证 + 三层防线：功能权限 · 数据权限 · 多租户隔离（结构示意，方案为业界通用实践）</div>
+
+  <div class="flow">
+    <div class="layer">
+      <div class="layer-head"><span class="step">0</span><span class="layer-title">身份认证</span><span class="layer-q">你是谁？</span></div>
+      <div class="chips">
+        <span class="chip"><b>Session</b> 会话（可撤销）</span>
+        <span class="chip rec"><b>JWT 双令牌</b> access 15~30min + refresh httpOnly · 微服务推荐</span>
+        <span class="chip"><b>OAuth2/OIDC</b> 三方登录/开放 API</span>
+        <span class="chip"><b>SSO</b> CAS/SAML 一次登录处处通行</span>
+      </div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="layer">
+      <div class="layer-head"><span class="step">1</span><span class="layer-title">功能权限</span><span class="layer-q">你能做什么？</span></div>
+      <div class="chips">
+        <span class="chip rec"><b>RBAC</b> 用户→角色→菜单/按钮 · 企业事实标准</span>
+        <span class="chip"><b>ACL</b> 文件级控制</span>
+        <span class="chip"><b>ABAC</b> 属性策略（主体/客体/环境/操作）</span>
+        <span class="chip"><b>RBAC+ABAC</b> 复杂场景混合</span>
+      </div>
+      <div class="chips" style="margin-top:8px;">
+        <span class="chip">粒度：菜单 → 页面 → <b>按钮/接口</b> → 字段</span>
+        <span class="chip">标识统一：<code>system:role:create</code> 贯穿数据库/后端注解/前端按钮</span>
+        <span class="chip">超管短路 + 严格模式（防漏配绕过）</span>
+      </div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="layer">
+      <div class="layer-head"><span class="step">2</span><span class="layer-title">数据权限</span><span class="layer-q">你能看哪些数据？</span></div>
+      <div class="chips">
+        <span class="chip">全部</span>
+        <span class="chip">自定义部门</span>
+        <span class="chip">仅本部门</span>
+        <span class="chip rec">本部门及子部门</span>
+        <span class="chip">仅本人</span>
+      </div>
+      <div class="chips" style="margin-top:8px;">
+        <span class="chip rec"><b>ORM 拦截器自动注入 SQL</b>（MyBatis 拦截器/MyBatis-Plus）· 业务零侵入</span>
+        <span class="chip">多角色取并集 · 防递归开关 · 闭包表优化部门树 · RLS 数据库兜底</span>
+      </div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="layer">
+      <div class="layer-head"><span class="step">3</span><span class="layer-title">多租户隔离</span><span class="layer-q">你是哪家公司的？</span></div>
+      <div class="chips">
+        <span class="chip rec"><b>共享表 + tenant_id</b> 成本最低 · SaaS 起步推荐</span>
+        <span class="chip">共享库 + 独立 Schema（中客户）</span>
+        <span class="chip">独立数据库（大客户/高安全）</span>
+      </div>
+      <div class="chips" style="margin-top:8px;">
+        <span class="chip">TenantBaseDO 继承 + 拦截器自动追加 tenant_id</span>
+        <span class="chip">套餐（menu_ids）控制租户功能边界 · 创建租户一键初始化</span>
+      </div>
+    </div>
+    <div class="arrow">▼</div>
+    <div class="layer" style="text-align:center;color:var(--accent-deep);font-weight:600;font-size:14px;">
+      返回数据 —— 四层校验通过后放行
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h3>核心设计原则</h3>
+      <ul>
+        <li>最小权限：只授完成任务所需最少权限 <span class="tag g">安全底线</span></li>
+        <li>职责分离：出纳与审核分离、特权角色受限 <span class="tag g">防滥用</span></li>
+        <li>认证与授权分离：网关认证、服务鉴权</li>
+        <li>前后端权限标识一致，后端校验是安全边界</li>
+        <li>框架承担隔离，业务代码专注业务</li>
+        <li>全链路可审计，分级授权 + 变更审批</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>性能：三层缓存</h3>
+      <ul>
+        <li>基础数据缓存：角色/菜单映射（Redis/Spring Cache）</li>
+        <li>校验结果缓存：本地 Guava/Caffeine，TTL 1 分钟</li>
+        <li>请求上下文缓存：数据权限 DTO 单请求复用</li>
+        <li>失效策略：变更主动清缓存 + TTL 兜底 + 登出清理</li>
+        <li>网关两级缓存（本地+Redis），鉴权可到毫秒级</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>演进路线</h3>
+      <ul>
+        <li>① 简单系统：菜单级 RBAC 四表模型</li>
+        <li>② 企业级：按钮级功能 + 行级数据权限</li>
+        <li>③ SaaS：tenant_id 隔离 + 套餐机制</li>
+        <li>④ 高安全/云服务：ABAC / OPA 策略引擎</li>
+        <li>⑤ AI 时代：API Key + 模型级权限 + 配额 <span class="tag w">新场景</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot">本图为权限模块设计方案的结构示意，详细说明见《权限模块设计方案.md》。</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文件管理设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#F4B393;--accent-deep:#C86A3A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 64px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(244,179,147,.2),rgba(244,179,147,.35));border-color:rgba(200,106,58,.35);font-weight:600;}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;background:#FFFFFF;border:1px solid #E4E3DD;border-radius:14px;padding:10px 14px;}
+  .flow .node{background:#FDF2EA;border:1px solid rgba(200,106,58,.3);border-radius:6px;padding:3px 9px;}
+  .flow .node.b{font-weight:600;color:var(--accent-deep);}
+  .flow .arrow{color:var(--accent-deep);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>文件管理设计总览</h1>
+  <div class="sub">附件服务 · 对象存储 · 分片/秒传/断点续传 · CDN · 权限（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 上传链路（预签名直传）</div>
+  <div class="flow">
+    <span class="node b">客户端</span><span class="arrow">→</span>
+    <span class="node">申请上传授权（文件名/大小/类型）</span><span class="arrow">→</span>
+    <span class="node b">业务API 校验权限</span><span class="arrow">→</span>
+    <span class="node">签发预签名PUT URL</span><span class="arrow">→</span>
+    <span class="node b">直传 OSS（不经业务服务器）</span><span class="arrow">→</span>
+    <span class="node">回调登记元数据</span><span class="arrow">→</span>
+    <span class="node">异步：缩略图/转码/病毒扫描</span>
+  </div>
+
+  <div class="section-title">② 大文件三件套</div>
+  <div class="grid">
+    <div class="box">
+      <h3>分片上传</h3>
+      <ul><li>Blob.slice 切固定片（1~5MB 常用）</li><li>fileHash + 片索引并行上传</li></ul>
+    </div>
+    <div class="box">
+      <h3>秒传</h3>
+      <ul><li>上传前算整文件 hash</li><li>查库命中即直接绑定，不重复传字节</li></ul>
+    </div>
+    <div class="box">
+      <h3>断点续传</h3>
+      <ul><li>服务端记录已传分片</li><li>中断只补缺失片</li><li>合并后总 hash 校验完整性</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">③ 总体架构</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">服务</div><div class="lc">文件服务（独立无业务耦合）：上传授权 · 元数据服务 · 异步处理管道 · 权限服务</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">存储</div><div class="lc">OSS/MinIO（字节）｜ CDN（下载加速）｜ DB（元数据）｜ 临时目录 temp/（生命周期自动清理）</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">集成</div><div class="lc">权限（单据数据权限）· 审计（下载/分享留痕）· 通知（分享通知）</div></div>
+  </div>
+
+  <div class="section-title">④ 核心能力</div>
+  <div class="chips">
+    <span class="chip rec">设计铁律：文件与业务数据分离 · 前端直传+签名 · 内容寻址去重 · 权限跟随单据 · 异步处理 · 私有桶+限时签名URL · 临时文件自动清理</span>
+    <span class="chip">演进：基础附件 → 直传+权限 → 大文件三件套+CDN+病毒扫描 → 统一文件服务（多存储适配/分享/预览/协作）</span>
+  </div>
+
+  <div class="foot">本图为文件管理模块的结构示意，详细说明见《文件管理设计方案.md》。</div>
+</div>
+</body>
+</html>

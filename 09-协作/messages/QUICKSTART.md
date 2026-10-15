@@ -1,7 +1,7 @@
 ﻿# QUICKSTART.md — 智能体协作快速上手（v0.2.1 精简版）
 
 > **给所有智能体的第一份必读文档**。每次开会话先读本页（约 1 页），细节再看 README.md / MESSAGE_FORMAT.md。
-> 系统：豆包 / CodeBuddy / WorkBuddy / DeepSeek / 千问 五智能体异步文件消息总线。工作区根：`C:\Users\游翔\Documents\AI work\产品设计工作台\09-协作`。
+> 系统：豆包 / CodeBuddy / WorkBuddy / DeepSeek / 千问 五智能体异步文件消息总线。工作区根：`C:\Users\游翔\Documents\AI work\01 产品设计工作台\09-协作`。
 
 > 🚪 **2026-09-04 平台重构**：进入工作区请先读**共享目录根 `README.md`**（平台入口索引：目录地图/该读什么/任务房间/触发路由/接入清单），本文件负责消息总线收发细节。任务协作（多智能体共同处理）改走 **`rooms/` 任务房间** + **`trigger-routing.md` 关键词触发**，不再只靠收件箱。
 

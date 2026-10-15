@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>触发器模块设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#8BC8EA;--accent-deep:#3D7EA6;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:960px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .eca{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;}
+  .eca-box{flex:1 1 250px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;min-width:0;}
+  .eca-box .t{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .badge{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:600;}
+  .eca-box ul{list-style:none;font-size:12.5px;}
+  .eca-box li{padding:3px 0 3px 14px;position:relative;}
+  .eca-box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .eca-link{display:flex;flex-direction:column;justify-content:center;color:var(--accent-deep);font-size:20px;font-weight:600;text-align:center;}
+  .chain{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .flow-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .node{font-size:12.5px;padding:6px 12px;border-radius:10px;border:1px solid rgba(61,126,166,.4);background:rgba(139,200,234,.15);font-weight:600;color:var(--accent-deep);}
+  .arr{color:var(--accent-deep);font-size:14px;font-weight:600;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(139,200,234,.2),rgba(139,200,234,.35));border-color:rgba(61,126,166,.35);font-weight:600;}
+  .grid{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;}
+  .panel{flex:1 1 280px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;min-width:0;}
+  .panel h3{font-size:13.5px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .panel ul{list-style:none;font-size:12.5px;}
+  .panel li{padding:3px 0 3px 14px;position:relative;}
+  .panel li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>触发器模块设计总览</h1>
+  <div class="sub">告警 / 远程控制 / 自动化 共用规则引擎底座（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 触发器设计：ECA 模型（与魔兽争霸3 触发器同构：事件→条件→动作）</div>
+  <div class="eca">
+    <div class="eca-box">
+      <div class="t"><span class="badge">E</span>事件 Trigger（启动 · OR）</div>
+      <ul>
+        <li>数据/遥测上报</li>
+        <li>业务事件 / 生命周期（上线/下线）</li>
+        <li>定时（cron）</li>
+        <li>API / 外部事件 / AI 结果</li>
+      </ul>
+      <div class="chips"><span class="chip"><b>触发策略</b>：pulse 电平 / reverse 边沿</span></div>
+    </div>
+    <div class="eca-link">→</div>
+    <div class="eca-box">
+      <div class="t"><span class="badge">C</span>条件 Condition（判断 · AND）</div>
+      <ul>
+        <li>阈值 / 范围 / 状态判断</li>
+        <li>时间窗口 / 延时 / 防抖（持续 N 秒）</li>
+        <li>滞回双阈值（80 触发 / 75 恢复）</li>
+        <li>表达式脚本 / 跨对象组合</li>
+      </ul>
+    </div>
+    <div class="eca-link">→</div>
+    <div class="eca-box">
+      <div class="t"><span class="badge">A</span>动作 Action（执行）</div>
+      <ul>
+        <li>指令下发（同步/缓存/影子）</li>
+        <li>创建/清除告警 + 通知</li>
+        <li>数据转发 / 写库</li>
+        <li>外部 API / 子规则 / 脚本</li>
+      </ul>
+      <div class="chips"><span class="chip"><b>治理</b>：去重窗口 · 防抖 · 滞回 · 共因收敛</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">② 任务编排：规则链（节点 + 关系的有向图 DAG）</div>
+  <div class="chain">
+    <div class="flow-row">
+      <span class="node">Filter 过滤</span><span class="arr">→</span>
+      <span class="node">Enrichment 丰富</span><span class="arr">→</span>
+      <span class="node">Transformation 转换</span><span class="arr">→</span>
+      <span class="node">Action 动作</span><span class="arr">→</span>
+      <span class="node">External 外部</span>
+    </div>
+    <div class="chips">
+      <span class="chip">串行</span><span class="chip">并行（一进多出）</span><span class="chip">条件分支（True/False）</span>
+      <span class="chip">循环/批处理</span><span class="chip">子规则链复用</span><span class="chip">延时/定时</span><span class="chip">失败重试/死信</span>
+    </div>
+    <div class="chips"><span class="chip rec">执行引擎：Actor 模型 · 消息不可变 · 处理完成才 ACK · 集群分区</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h3>告警治理（三道闸门）</h3>
+      <ul>
+        <li>重复轰炸 → 去重合并（窗口内合并+计数）</li>
+        <li>边界抖动 → 滞回双阈值 + 防抖</li>
+        <li>共因群发 → 共因收敛 + 分级抑制</li>
+        <li>辅助：分组通知 · 静默 · 时间屏蔽 · 升级</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>远程控制（三种下发模式）</h3>
+      <ul>
+        <li>同步 RPC：命令状态机 + 超时重试</li>
+        <li>异步缓存：离线排队串行补发 + 有效期</li>
+        <li>影子模式：desired / reported / delta 收敛</li>
+        <li>幂等：request_id 全局唯一</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>设计铁律</h3>
+      <ul>
+        <li>规则与业务解耦：新增规则不改代码</li>
+        <li>可靠不丢事件：队列 + 处理完成才 ACK</li>
+        <li>触发质量优先：宁可少触发、不误触发</li>
+        <li>可视化：触发器三栏表单 + 规则链画布</li>
+        <li>可观测可审计：触发轨迹 · 执行链路</li>
+        <li>云边协同：关键规则下推边缘</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot">本图为触发器模块的结构示意，详细说明见《触发器模块设计方案.md》。</div>
+</div>
+</body>
+</html>

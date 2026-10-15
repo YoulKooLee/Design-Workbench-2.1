@@ -12,7 +12,8 @@ import { spawnSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
-const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, 'workbench.config.json'), 'utf8'));
+// 配置真源在 工作台面板\workbench.config.json（其内路径字段均相对工作台根）
+const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, '工作台面板', 'workbench.config.json'), 'utf8'));
 
 const results = [];
 function check(name, ok, detail = '') {
@@ -26,8 +27,8 @@ const dirs = ['01-项目', '02-模板', '03-组件库', '05-回收站', '06-运�
 for (const d of dirs) check(`目录 ${d}`, fs.existsSync(path.join(ROOT, d)));
 check('工作台面板/server.mjs 在位', fs.existsSync(path.join(ROOT, '工作台面板', 'server.mjs')));
 check('工作台面板/public/index.html 在位', fs.existsSync(path.join(ROOT, '工作台面板', 'public', 'index.html')));
-check('启动工作台.cmd 在位', fs.existsSync(path.join(ROOT, '启动工作台.cmd')));
-check('停止工作台.cmd 在位', fs.existsSync(path.join(ROOT, '停止工作台.cmd')));
+check('工作台面板/启动工作台.cmd 在位', fs.existsSync(path.join(ROOT, '工作台面板', '启动工作台.cmd')));
+check('工作台面板/停止工作台.cmd 在位', fs.existsSync(path.join(ROOT, '工作台面板', '停止工作台.cmd')));
 
 // 2. 配置与组件库 JSON
 console.log('\n[2/5] 配置与组件库');
@@ -35,7 +36,7 @@ const clRoot = path.join(ROOT, CFG.componentLibrary.rootDir);
 const reg = JSON.parse(fs.readFileSync(path.join(clRoot, 'component-registry.json'), 'utf8'));
 const libRootOf = (end) => path.dirname(path.join(clRoot, end.source)); // source 的上级 = 库根（如 Vibe Design Pro/）
 const jsons = [
-  'workbench.config.json',
+  path.join('工作台面板', 'workbench.config.json'),
   path.join('03-组件库', 'component-registry.json'),
 ];
 // 动态：每个带 catalog 的端 → catalog JSON；每个库根存在 index.json 时一并校验
@@ -65,12 +66,12 @@ check(`handoff.md 在位`, fs.existsSync(path.join(projRoot, '指标管理平台
 
 // 3.5 模板组件库（React 真组件库，src/component-templates/axhub 中文分类真源）
 console.log('\n[3.5] 模板组件库');
-const axlib = path.join(ROOT, CFG.template?.rootDir || '02-模板', '_project-template', 'src', 'component-templates', 'axhub');
+const axlib = path.join(ROOT, CFG.template?.rootDir || '02-模板', '_project-template', 'src', 'component-templates');
 const axlibCats = ['基础', '布局', '表单', '数据展示', '反馈', '业务组件'];
 const axlibMissingCats = axlibCats.filter((d) => !fs.existsSync(path.join(axlib, d)));
-check(`axhub 组件库 6 分类在位${axlibMissingCats.length ? '（缺 ' + axlibMissingCats.join(',') + '）' : ''}`, axlibMissingCats.length === 0);
-check(`axhub 组件库代表组件在位`, fs.existsSync(path.join(axlib, '基础', 'Button.tsx')) && fs.existsSync(path.join(axlib, '表单', 'index.ts')));
-check(`axhub 组件库索引与主题在位`, fs.existsSync(path.join(axlib, 'index.ts')) && fs.existsSync(path.join(axlib, '_kit', 'theme.css')) && fs.readFileSync(path.join(axlib, '_kit', 'theme.css'), 'utf8').includes('--color-primary'));
+check(`组件库 6 分类在位${axlibMissingCats.length ? '（缺 ' + axlibMissingCats.join(',') + '）' : ''}`, axlibMissingCats.length === 0);
+check(`组件库代表组件在位`, fs.existsSync(path.join(axlib, '基础', 'Button', 'index.tsx')) && fs.existsSync(path.join(axlib, '表单', 'index.ts')));
+check(`组件库索引与主题在位`, fs.existsSync(path.join(axlib, '表单', 'index.ts')) && fs.existsSync(path.join(axlib, '_kit', 'theme.css')) && fs.readFileSync(path.join(axlib, '_kit', 'theme.css'), 'utf8').includes('--color-primary'));
 check(`模板原型目录在位`, fs.existsSync(path.join(ROOT, '02-模板', '_project-template', 'src', 'prototypes')) && fs.existsSync(path.join(ROOT, '02-模板', '_project-template', 'src', 'prototypes', 'sample-page')));
 
 // 4. 组件库引用完整性（按 registry source 动态解析，不再硬编码 frame/）
@@ -181,6 +182,39 @@ function walk(dir) {
 walk(colRoot);
 const residue = mdFiles.filter((p) => fs.readFileSync(p, 'utf8').includes(oldPath));
 check('09-协作 无旧路径残留', residue.length === 0, residue.length ? residue.join('; ') : '干净');
+
+// 5.1 项目总表 / 目录树 与磁盘一致（等价 sync-projects-index.mjs --check）
+try {
+  const sync = await import(new URL('./sync-projects-index.mjs', import.meta.url));
+  const r = sync.syncProjectIndex({ check: true, quiet: true });
+  check('项目总表/目录树 与磁盘一致', r.stale.length === 0,
+    r.stale.length ? r.stale.join('; ') + '（跑 node 06-运行脚本/sync-projects-index.mjs 修复）' : '已同步');
+} catch (e) { check('项目总表/目录树 与磁盘一致', false, e.message); }
+
+// 5.2 活文档里的旧根/旧结构残留（只查活文档：docs / 用户操作 / 10-智能体记忆；rooms、messages、agents 属历史归档，不查）
+try {
+  const stalePats = [
+    ['旧共享根', /Documents[\\/]+AI work[\\/]+共享信息目录/],
+    ['旧工作台根 Axhub', /Documents[\\/]+AI work[\\/]+Axhub/],
+    ['旧项目路径 Digital Twin', /01-项目[\\/]+Digital Twin/],
+  ];
+  const liveRoots = [path.join(colRoot, 'docs'), path.join(colRoot, '用户操作'), path.join(ROOT, '10-智能体记忆')];
+  const liveFiles = [];
+  const walkLive = (dir) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) { if (/^(agents|rooms|messages|node_modules|\.git)$/.test(e.name)) continue; walkLive(p); }
+      else if (/\.(md|json|mjs|ps1|cmd|bat)$/i.test(e.name)) liveFiles.push(p);
+    }
+  };
+  for (const d of liveRoots) if (fs.existsSync(d)) walkLive(d);
+  const bad = [];
+  for (const f of liveFiles) {
+    const t = fs.readFileSync(f, 'utf8');
+    for (const [name, re] of stalePats) if (re.test(t)) bad.push(`${path.relative(ROOT, f)}（${name}）`);
+  }
+  check('活文档无旧根/旧结构残留', bad.length === 0, bad.length ? bad.join('; ') : `已扫 ${liveFiles.length} 个文件`);
+} catch (e) { check('活文档无旧根/旧结构残留', false, e.message); }
 
 // 6. 可移植性（千问 P2-14：编码 / 硬编码路径 / gitattributes / make 可解析 / 中文空格路径 spawn）
 console.log('\n[6/5] 可移植性');

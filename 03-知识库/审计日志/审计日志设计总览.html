@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>审计日志设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#8BC8EA;--accent-deep:#3D7EA6;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 72px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(139,200,234,.2),rgba(139,200,234,.35));border-color:rgba(61,126,166,.35);font-weight:600;}
+  .ret{display:flex;gap:8px;flex-wrap:wrap;}
+  .rbox{flex:1 1 150px;min-width:0;background:#FFFFFF;border:1px solid #E4E3DD;border-radius:10px;padding:8px 10px;}
+  .rbox .rt{font-size:12px;font-weight:600;color:var(--accent-deep);margin-bottom:3px;}
+  .rbox .rd{font-size:11px;color:#6B7280;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>审计日志设计总览</h1>
+  <div class="sub">谁 · 何时 · 何地 · 对什么 · 做了什么 · 结果如何 · 改前改后（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 总体架构（采集 → 管道 → 存储 → 消费）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">采集</div><div class="lc">注解+AOP（@AuditLog 零侵入）｜ 领域事件 ｜ 全局异常处理 ｜ 异步投递（Kafka/@Async，不阻塞主流程）</div></div>
+    <div class="arr">↓ 标准化：补全 trace_id/租户/IP → 脱敏 → 分级</div>
+    <div class="layer"><div class="lt">存储</div><div class="lc">ES（热：全文检索/时间线/异常检测）｜ MySQL（温：合规留存+哈希链防篡改）｜ 冷存储（归档：按保留期）</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">消费</div><div class="lc">审计检索/时间线还原 ｜ 异常告警（规则→通知中心）｜ 报表与合规导出</div></div>
+  </div>
+
+  <div class="section-title">② 采集模式与防篡改</div>
+  <div class="grid">
+    <div class="box">
+      <h3>四种采集模式</h3>
+      <ul><li>注解+AOP：通用操作日志，零侵入业务代码</li><li>领域事件：业务日志/审核链后置动作</li><li>全局异常：异常日志+trace_id</li><li>异步落库：降主链路耗时</li></ul>
+    </div>
+    <div class="box">
+      <h3>脱敏（先脱敏后落库）</h3>
+      <ul><li>password/token/api_key/secret/Cookie 不记录或脱敏</li><li>请求/响应 body 默认不记录，只记摘要</li><li>敏感业务值按掩码/泛化算法落库</li></ul>
+    </div>
+    <div class="box">
+      <h3>防篡改</h3>
+      <ul><li>append-only 只追加不可修改</li><li>哈希链/数字签名防删改</li><li>集中收集独立审计库，防本地篡改</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">③ 核心字段（等保五要素 + 公共字段）</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">五要素</div><div class="lc">事件类型 event_type · 主体 operator · 客体 target · 时间 timestamp（毫秒）· 结果 result</div></div>
+    <div class="layer"><div class="lt">来源</div><div class="lc">request_ip · user_agent · device_info</div></div>
+    <div class="layer"><div class="lt">公共</div><div class="lc">tenant_id/company_id/shop_id · trace_id（调用链）· create_time</div></div>
+    <div class="layer"><div class="lt">业务</div><div class="lc">bill_type/bill_id/bill_code · before_status/after_status · 流程实例ID · operator_id</div></div>
+  </div>
+
+  <div class="section-title">④ 保留期（合规分级）</div>
+  <div class="ret">
+    <div class="rbox"><div class="rt">认证与访问</div><div class="rd">最短 90 天（ISO27001），建议 1 年</div></div>
+    <div class="rbox"><div class="rt">个人信息变更</div><div class="rd">最短 3 年（GDPR），建议 5 年</div></div>
+    <div class="rbox"><div class="rt">金融交易</div><div class="rd">最短 5 年（商法），建议 6 年</div></div>
+    <div class="rbox"><div class="rt">健康数据</div><div class="rd">最短 5 年，建议 15 年</div></div>
+  </div>
+
+  <div class="chips">
+    <span class="chip rec">设计铁律：零侵入采集（AOP）· 异步不阻塞主链路 · 只追加不可篡改 · 先脱敏后落库 · 五要素齐全 · 分级存储归档 · 审计库独立</span>
+    <span class="chip">演进：操作日志 → 合规审计（五要素/脱敏/保留期）→ 数据变更审计+时间线还原 → 异常检测+风险审计（规则告警/行为画像）</span>
+  </div>
+
+  <div class="foot">本图为审计日志模块的结构示意，详细说明见《审计日志设计方案.md》。</div>
+</div>
+</body>
+</html>

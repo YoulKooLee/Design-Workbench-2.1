@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工单管理设计总览（示意）</title>
+<style>
+  :root{--text:#1A1B1C;--text2:#6B7280;--bg:#F4F3EE;--card:#FFFFFF;--border:#E4E3DD;--accent:#8BC8EA;--accent-deep:#1F6FA5;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Roboto','PingFang SC','Segoe UI',Arial,sans-serif;color:var(--text);padding:24px 16px;line-height:1.5;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:22px;font-weight:600;text-align:center;}
+  .sub{text-align:center;font-size:13px;color:var(--text2);margin:6px 0 20px;}
+  .section-title{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--accent-deep);}
+  .arch{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .layer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #F0EFEA;}
+  .layer:last-child{border-bottom:none;}
+  .layer .lt{font-size:12.5px;font-weight:600;color:var(--accent-deep);flex:0 0 80px;}
+  .layer .lc{font-size:12px;flex:1 1 220px;min-width:0;}
+  .arr{text-align:center;color:var(--accent-deep);font-weight:600;font-size:13px;padding:2px 0;}
+  .grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .box{flex:1 1 240px;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+  .box h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--accent-deep);}
+  .box ul{list-style:none;font-size:12px;}
+  .box li{padding:3px 0 3px 14px;position:relative;}
+  .box li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .sm{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:12px;background:#FFFFFF;border:1px solid #E4E3DD;border-radius:14px;padding:10px 14px;}
+  .sm .n{background:#E8F3FA;border:1px solid rgba(31,111,165,.3);border-radius:6px;padding:3px 9px;}
+  .sm .n.b{font-weight:600;color:var(--accent-deep);}
+  .sm .a{color:var(--accent-deep);font-weight:600;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--border);background:#FAFAF7;}
+  .chip b{color:var(--accent-deep);}
+  .chip.rec{background:linear-gradient(135deg,rgba(139,200,234,.2),rgba(139,200,234,.35));border-color:rgba(31,111,165,.35);font-weight:600;}
+  .foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>工单管理设计总览</h1>
+  <div class="sub">报修/巡检/保养/告警建单 · 派单 · SLA 时效 · 验收闭环（结构示意，业界通用实践）</div>
+
+  <div class="section-title">① 工单引擎四段闭环</div>
+  <div class="arch">
+    <div class="layer"><div class="lt">创建</div><div class="lc">手动报修 · 扫码报修 · 巡检异常 · 保养计划到期 · 设备告警自动生成（IoT 联动）</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">路由分配</div><div class="lc">规则引擎自动派单（业务分流/技能匹配/负载均衡）· 工单池抢单 · 人工派单 · 转派/退回（责任链留痕）</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">执行时效</div><div class="lc">状态机流转（待派单→待接单→处理中→待验收）+ SLA 双计时（首响/解决）+ 多级预警升级</div></div>
+    <div class="arr">↓</div>
+    <div class="layer"><div class="lt">验收归档</div><div class="lc">待验收 → 通过关闭 + 满意度评分 / 不通过退回 → 报表 · 知识库 · 重复故障分析</div></div>
+  </div>
+
+  <div class="section-title">② 状态机与派单</div>
+  <div class="sm">
+    <span class="n b">待派单</span><span class="a">→</span>
+    <span class="n">待接单</span><span class="a">→</span>
+    <span class="n b">处理中</span><span class="a">→</span>
+    <span class="n">待验收</span><span class="a">→</span>
+    <span class="n b">已完成</span>
+    <span class="n">已取消</span>
+    <span class="n">退回↺</span><span class="n">转派</span><span class="n">挂起（SLA 暂停计时）</span>
+  </div>
+  <div class="grid" style="margin-top:10px;">
+    <div class="box">
+      <h3>派单四规则</h3>
+      <ul><li>按业务类型分流（故障→维修组）</li><li>技能匹配（分类↔技能标签）</li><li>负载均衡（最少未处理单）</li><li>抢单池兜底 + 超时回收 + 拒接降权</li></ul>
+    </div>
+    <div class="box">
+      <h3>SLA 双计时 + 多级升级</h3>
+      <ul><li>首响 SLA（接单）+ 解决 SLA</li><li>剩余 30% 时限 → 推送处理人</li><li>超时 10 分钟 → 主管短信</li><li>超时 1 小时 → 总监 + 道歉模板</li></ul>
+    </div>
+    <div class="box">
+      <h3>告警自动建单（IoT）</h3>
+      <ul><li>遥测超阈值 → 触发器自动建单</li><li>携带故障代码 + 数据快照</li><li>知识库推荐原因（振动→轴承磨损）</li><li>自动通知负责人/大屏</li></ul>
+    </div>
+    <div class="box">
+      <h3>验收闭环</h3>
+      <ul><li>维修报告（措施/部件/原因分类）</li><li>验收通过 → 关闭 + 满意度评分</li><li>不通过 → 退回继续处理</li><li>重复故障标记 → 专项分析</li></ul>
+    </div>
+  </div>
+
+  <div class="section-title">③ 铁律与联动</div>
+  <div class="chips">
+    <span class="chip rec">铁律：一单一号全流程可溯源 · 状态机含异常分支 · 分类/派单/SLA 可配置 · 每次变更强制填进展 · 验收不过不关闭 · 责任链完整记录 · 时效风险前置（SLA 多级升级）</span>
+    <span class="chip"><b>联动</b>：设备管理（故障→建单）· 触发器（告警规则）· 运维管理（巡检/保养计划）· 消息通知中心（推送/催办）· 报表中心（看板/超时分析）· 审计日志（流转留痕）</span>
+  </div>
+
+  <div class="foot">本图为工单管理模块的结构示意，详细说明见《工单管理设计方案.md》。</div>
+</div>
+</body>
+</html>
