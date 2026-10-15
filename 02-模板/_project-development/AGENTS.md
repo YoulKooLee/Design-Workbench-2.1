@@ -8,20 +8,15 @@
 
 > ⚠️ **常驻越短越好，不是「塞得下就行」**：宿主注入窗口实测约 8.4K 字符，超窗尾部**不会**被看到。故本文件**只放「触发条件 → 读哪个文件」的路由 + 铁律，正文一律外置** `rules/`（见 §十）；上限 **≤8,000 字符**。
 >
-> ⚠️ **凡「会话启动自动注入 X」的写法都作废**：宿主不加载 `.agents/hooks/` 时没有任何自动注入。一律改写为**「会话开始主动 Read X」**。
->
-> ⚠️ **本文件只在会话首轮注入一次，压缩不带回**（10-15 实测）→ 故它只承担「首轮建立心智模型」，**不承担持续约束**。
-> **「若发现它不在上下文就重读它」这类自举指令一律无效**——指令本身就在被驱逐的载体里。**指令的触发条件必须是当下可观测的动作**（读到某行 / 要写某类文件 / 要跑构建），**不能是对缺失的记忆**。
-> **持续约束三落点**：① 构建命令 / git hook（唯一真强制，模型绕不过去）；② 用户固定开场话术（压缩**保留用户消息原文**）；③ `project-memory.md` 顶部（每轮维护的兜底位）。**配套**：按模块 / 阶段**新开会话**是让本文件重注的唯一办法；结论**立刻落盘**（工具结果正文 99.5% 被丢弃）。
+> ⚠️ **本文件只在会话首轮注入一次，压缩不带回** → 故：**会话别开太长**（按模块 / 阶段新开会话）；结论**立刻落盘**（压缩只保留「做了什么动作」，工具结果正文 99.5% 被丢弃）。
+> 维护者须知（写规则 / 迁移时的判据、持续约束三落点）：`templates/project-init.md`。
 
 ---
 
-## 一、本工程事实表（实测，勿凭旧文档或记忆）
+## 一、本工程事实表
 
-> 🔧 **迁移提示**：本表须按项目实际重写（目录层 / 构建命令 / 真源文件 / 载体形态）；**宁可标「待核」也不要沿用示例**。
-> （2026-10-15 实证：沿用模板曾写出**不存在的 `admin/`**、漏掉真实的 `desktop/` Electron 载体。）
 
-| 项 | 实测值 |
+| 项 | 值 |
 |---|---|
 | **框架与栈** | Vue **3.5** + TypeScript ~5.6 + Vite **7**；脚手架 **art-design-pro** 系（`Art*` 前缀、`art-*` 目录、`@styles` 别名）；UI 库 **Element Plus ^2.11.2**（`vite.config.ts` 用 `ElementPlusResolver`，`El*`/`Art*` 自动导入免 import） |
 | **状态·路由·i18n** | pinia ^3 + persistedstate（`defineStore('xStore', () => {...}, { persist: true })` setup 写法）；vue-router ^4 模块化注册（`router/modules/*.ts` + `routes/asyncRoutes.ts`），`meta.title` 走 i18n key；vue-i18n ^9 文案一律 `$t()`，禁硬编码中文 |
@@ -30,7 +25,7 @@
 | **样式** | SCSS + `@styles` 别名 + CSS 变量主题层（`el-ui.scss` / `el-dark.scss`），页面样式一律 scoped |
 | **工程根** | 模板内工程骨架在 `src/admin/`；面板建项时其内容**平铺到项目根**——项目内 `package.json` / `src/` / `README-DEV.md` 都在根，**不存在 `src/admin/` 这层**，写文件按项目根定位 |
 
-> ⚠️ **本工程不使用 Arco Design Vue / Ant Design Pro / shadcn / vant**。旧文档中「Arco」表述已作废（历史误配）。`.agents/knowledge/ui-libs/` 下另有 4 套库目录，是 `page-spec-loader` 按子项目 `package.json` **检测后只加载对应一套**的多栈支持，不是本工程在用——见 `ui-libs/README.md`。
+> ⚠️ **本工程不使用 Arco Design Vue / Ant Design Pro / shadcn / vant**。`.agents/knowledge/ui-libs/` 下另有 4 套库目录，供 `page-spec-loader` 按子项目 `package.json` 检测后只加载对应一套（多栈支持），**不是本工程在用**——见 `ui-libs/README.md`。
 >
 > 写代码前必读：`.agents/knowledge/conventions/react-to-vue.md`（原型→Vue 转换规范：语法映射、既有封装清单、七步作业流程、反面清单）。
 
