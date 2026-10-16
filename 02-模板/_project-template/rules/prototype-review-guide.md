@@ -12,9 +12,10 @@
 
 1. 用户当前说明、附件、链接、截图、需求文档、PRD、会议纪要、业务规则、字段表和数据样例。
 2. 当前原型主规格：依次读取 `.spec/spec.html`、`.spec/spec.md`，同时存在时以 HTML 为准；再读取主规格链接的必要子文档。
-3. `src/resources/` 中与当前原型相关的需求、业务资料、字段清单、流程记录、数据样例和 `src/resources/**/*.excalidraw` 画布。
-4. 当前原型源码、`annotation-source.json`、路由、页面配置、局部状态实现和相关资源。
-5. `.axhub/make/project.json` 等 metadata，仅作为资源、入口和命名关系证据。
+3. `docs/` 中与当前原型相关的需求、业务资料、字段清单、流程记录（PRD / 概念版 / SRS / 纪要 / 报告）。
+4. `src/resources/` 中的画布（`src/resources/**/*.excalidraw`）、图表、设计图与数据样例（资源层）。
+5. 当前原型源码、`annotation-source.json`、路由、页面配置、局部状态实现和相关资源。
+6. `.axhub/make/project.json` 等 metadata，仅作为资源、入口和命名关系证据。
 
 如果用户信息与项目旧文件冲突，以用户当前信息为准，并标记为「资料冲突/待确认」，不使用旧文件覆盖用户最新资料。
 

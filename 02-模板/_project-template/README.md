@@ -6,7 +6,7 @@ Axhub Make Client 是 Axhub Make 的官方项目客户端，用来承载可运�
 
 - 可运行的 React 原型页面
 - 可复用的主题与设计规范
-- 项目资料、素材和文档资源
+- 项目资料与素材资源（文档统一在 `docs/`）
 - 面向 Axhub Make 管理端的预览、设计决策与导出入口
 
 ## Prototype Definition
@@ -18,7 +18,8 @@ Axhub Make Client 是 Axhub Make 的官方项目客户端，用来承载可运�
 ```text
 src/prototypes/   原型页面
 src/themes/       主题与设计规范
-src/resources/    项目资料、文档和素材
+src/resources/    原型资源：画布、图片、图表、数据样例、业务附件（不放文档）
+docs/             全部文档：PRD / SRS / 概要设计 / 详细设计 / 资料 / 纪要 / 报告
 ```
 
 Axhub Make Client 适合把想法、业务流程、界面方案和设计系统沉淀成一个可持续演进的本地项目。
