@@ -52,6 +52,7 @@
 | SRS（需求规格，研发唯一真源） | `docs/01-需求与规划/*SRS*.md` 或 `docs/**/*需求*说明书*.md` |
 | HLD（系统架构 + 数据模型） | `docs/02-架构与设计/*概要设计*.md` |
 | LLD（逐模块实现） | `docs/02-架构与设计/*详细设计*.md` |
+| **`src/resources/` 副本** | 上述 PRD / SRS / HLD / LLD 的 **markdown 副本**（供 Make 预览，Make 只识别 md）；真源在 `docs/`，改完跑 `npm run docs:sync` |
 | 过程与索引 | `project-memory.md`（只放摘要 + 路径，不放正文） |
 | 跨轮接力 | 每轮记「已完成 / 下一步 / 待拍板」，下一轮靠它接力，**不重读上一轮过程讨论** |
 

@@ -8,6 +8,10 @@
 > |---|---|
 > | PRD / 概念版、SRS、功能清单、设计方案、可研、调研/会议纪要/报告 | **`docs/`**（SRS 等在 `docs/01-需求与规划/`，HLD/LLD 在 `docs/02-架构与设计/`，PRD 在 `docs/` 根） |
 > | 画布、图片、图表、数据样例、业务附件 | **`src/resources/`**（本指南管辖） |
+> | SRS / PRD / 概要设计 / 详细设计 的 **markdown 副本**（供 Make 预览） | **`src/resources/`**（真源仍在 `docs/`；用 `npm run docs:sync` 同步） |
+>
+> **副本机制**：Make 只识别 **markdown**，docx / pdf 等格式预览不出来。所以把 `docs/` 里 **PRD / SRS / 概要设计 HLD / 详细设计 LLD** 四类 `.md` **各复制一份**到 `src/resources/`（平铺、同名），供管理端打开。
+> ⚠️ **`docs/` 是唯一真源，`src/resources/` 只是副本**——改文档只改 `docs/`，然后跑 `npm run docs:sync`（`npm run build` 已自动前置）。副本过期会被 `node scripts/sync-docs-to-resources.mjs --check` 检出。
 >
 > 技能按 `docs/` 的路径 Glob 扫描文档；放错位置等于没写。
 

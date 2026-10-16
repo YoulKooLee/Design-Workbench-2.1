@@ -20,7 +20,18 @@ docs/
 ```
 
 > ⚠️ **PRD 与 SRS 落点不同**：PRD 在 `docs/` **根**（扁平），只有 SRS 才进 `docs/01-需求与规划/`。
-> ⚠️ **不要把文档放进 `src/resources/`** —— 那是原型资源层（Make `?doc=` 预览的画布/图片等），不进版本登记、不参与研发链扫描。
+> ⚠️ **`docs/` 是唯一真源**。—— 改文档只改这里；`src/resources/` 下的同名文件只是给 Make 预览的副本（见下）。
+
+## 副本：src/resources/ 供 Make 预览
+
+Make 管理端**只识别 markdown**（docx / pdf 预览不出来）。所以把 **PRD / SRS / 概要设计 / 详细设计** 四类 `.md` 各**复制一份**到 `src/resources/`（平铺、同名）：
+
+```bash
+npm run docs:sync            # 真源 → 副本（build 已自动前置）
+npm run docs:sync -- --check # 只校验，副本过期则非零退出
+```
+
+副本由 `scripts/sync-docs-to-resources.mjs` 生成，**不要手改副本**；`docs/过程文档/`、归档目录下的过程稿不参与同步。
 
 ## SRS 最低要求（page-generator 步骤 0 门禁）
 
