@@ -1,6 +1,8 @@
 # 资源指南
 
-`src/resources/` 用于存放项目资料、需求说明、文档、图表和原型讨论中需要长期保留的上下文，方便后续生成、修改和复盘原型时读取。新建项目文档时，默认保存到这里。
+`src/resources/` 是**原型工程的资料层**：项目资料、画布、图表、图片、数据样例、业务附件，以及产品规划文件（`src/resources/prd/`）——它们可作为资源在 Make 里打开（`?doc=<path>`）、嵌入画布或原型。
+
+> ⚠️ **需求与研发文档不走这里**：PRD 落 `docs/YYYY-MM-DD-<主题>-PRD.md`（`prd-writer` 产出）、SRS 落 `docs/01-需求与规划/`（`req-doc` 产出）、HLD/LLD 落 `docs/02-架构与设计/`。技能按这些路径 Glob 扫描，放错位置等于没写。本指南只管辖 `src/resources/`。
 
 常见内容包括：
 
@@ -17,7 +19,7 @@
 
 ## 目录边界
 
-- `src/resources/` 存放长期项目资料、文档、画布、图表、数据样例和业务附件。
+- `src/resources/` 存放长期项目资料、画布、图表、数据样例和业务附件（**不含** PRD / SRS / HLD / LLD 等需求与研发文档——那些走 `docs/`）。
 - 项目固定文档模板位于根目录 `templates/`，通过项目设置预览和编辑；缺失时可恢复默认模板。
 - 画布是普通资源文件，保存为 `src/resources/**/*.excalidraw`；画布内图片、截图和 AI 生成图统一保存到 `src/resources/.assets/<资源相对路径>/`，例如 `src/resources/.assets/flows/order.excalidraw/`。
 - 原型页面专属素材放在对应原型目录内，例如 `src/prototypes/<name>/assets/`。

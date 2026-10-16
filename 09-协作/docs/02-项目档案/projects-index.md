@@ -17,6 +17,8 @@
 | 4 | 崂山国家实验室项目 | `崂山国家实验室项目` | 1 | 0 | 已初始化 | — | — |
 | 5 | 指标管理平台 | `指标管理平台` | 1 | 27 | 已初始化 | doubao | — |
 | 6 | Markdown 轻量编辑器 | `Markdown 轻量编辑器` | 1 | 0 | 已初始化 | workbuddy | — |
+| 7 | 结构监测 | `_backup-上下文同步-20261015\结构监测` | 0 | — | 未初始化 | codebuddy | — |
+| 8 | 指标管理平台 | `_backup-上下文同步-20261015\指标管理平台` | 0 | — | 未初始化 | doubao | — |
 > 自动列：原型 / 页面 取自 `.axhub/make/project.json`，初始化 按 `package.json` + 原型数判定，负责智能体 取自项目 `project-memory.md` 协作信息表；`状态（人工）` 由人维护、同步时按项目名保留。
 <!-- AUTO-SYNC:projects END -->
 
@@ -91,7 +93,7 @@
 | 场景 | 位置 | Make 链接信号 |
 |---|---|---|
 | 原型开发/验收 | `src/prototypes/<id>/` | `?p=<id>` |
-| PRD 文档 | `src/resources/` | `?doc=<path>` |
+| PRD / SRS / 设计文档 | PRD `docs/*-PRD.md`；SRS `docs/01-需求与规划/`；HLD/LLD `docs/02-架构与设计/` | `?doc=` 仅对 `src/resources/` 下的资源有效 |
 | 主题/设计系统 | `src/themes/<key>/` | `?theme=<key>` |
 
 ---
@@ -100,7 +102,7 @@
 
 1. 在 `session-handoff.md` 确认有没有"进行中的任务"涉及某个项目。
 2. 到本项目路径，**先读 `AGENTS.md`**（它定义了本项目的工作流程、产物规范、对齐方式）。
-3. 要理解需求 → 读 `src/resources/` 下的 PRD / `docs/` / `design-knowledge/`。
+3. 要理解需求 → 读 `docs/` 下的 PRD / 概念版（SRS 在 `docs/01-需求与规划/`）；资料、画布与素材在 `src/resources/`。
 4. 要改原型 → 进 `src/prototypes/<id>/`，遵循 `rules/prototype-development-guide.md`。
 5. 改完要预览 → 用 `http://localhost:53817/?projectId=<项目名>&p=<原型id>`（必须先启动该项目的开发栈）。
 6. **跨项目通用规范**（24项监测项/向量模/监测粒度5种/单位/图表规范）见 `10-智能体记忆/`（`rules/` 与 `skills/`）。
