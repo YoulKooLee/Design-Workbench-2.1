@@ -95,3 +95,6 @@ _theme-refs.txt
 09-协作/tasks/
 工作台桌面应用/renderer/*.png
 *.bak-*
+
+# 启动器编译中间产物
+工作台桌面应用/build/

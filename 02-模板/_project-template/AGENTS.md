@@ -15,7 +15,6 @@
 
 ## 一、本工程独有的事实
 
-
 | 事项 | 值 |
 |-|-|
 | 组件真源 | `src/component-templates/`（每个组件含 `index.html` + `index.tsx`） |
@@ -64,7 +63,7 @@
 
 ## 四、技能与子 Agent
 
-- **技能**：需要时查 `.agents/skills/INDEX.md`，**命中才加载**那一个 `SKILL.md`；没命中就用通用能力，并在回复里说明「本次未匹配到技能」，**不必强行匹配**。
+- **技能**：`.agents/skills/INDEX.md` 自动加载；命中加载对应 `SKILL.md`，若采用通用能力于对话中说明。严禁遍历技能目录（约 400 KB）。
 - **需求文档类**（PRD / SRS / 说明书）：先 Read `.agents/rules/req-doc-workflow.md` 与 `.agents/rules/prd-to-srs-gate.md` 按表选技能，再读对应 `SKILL.md`。
 - **子 Agent 适合「盘点取结论」**：几十 KB 的文件换成几 KB 的结论清单，省一个数量级。
 - **子 Agent 不适合「审查」**：审查必须自己读改动点——实测派子 Agent 做审查会返回截断、白花时间。
@@ -89,12 +88,12 @@
 
 | 要用什么 | 读哪里 |
 |-|-|
-| 技能索引 | `.agents/skills/INDEX.md` |
 | 需求文档路由 / 转写门禁 | `.agents/rules/req-doc-workflow.md`、`.agents/rules/prd-to-srs-gate.md` |
 | 子 Agent 调用标准 | `.agents/rules/agent-orchestration.md` |
 | 编码 / 前端 / 安全规范 | `.agents/knowledge/conventions/` |
 | SRS 语言与章节格式 | `.agents/knowledge/phase1-requirements/` |
 | 设计规范 | `.agents/knowledge/phase2-design/` |
+| 原型设计基线 / 交互与内容规范 | .agents/knowledge/phase2-design/prototype-*.md |
 | UI 库参考 | `.agents/knowledge/ui-libs/` |
 | 业务规范（原型 / 主题 / 资源 / Review） | `rules/`（入口 `rules/README.md`） |
 | 压缩恢复检查表 | `.agents/rules/compaction-recovery.md` |

@@ -15,7 +15,6 @@
 
 ## 一、本工程事实表
 
-
 | 项 | 值 |
 |---|---|
 | **框架与栈** | Vue **3.5** + TypeScript ~5.6 + Vite **7**；脚手架 **art-design-pro** 系（`Art*` 前缀、`art-*` 目录、`@styles` 别名）；UI 库 **Element Plus ^2.11.2**（`vite.config.ts` 用 `ElementPlusResolver`，`El*`/`Art*` 自动导入免 import） |
@@ -70,7 +69,7 @@
 
 > **细则已外迁**：`.agents/rules/nav-map.md` §一（15 技能分组速记、已剥离清单、需求文档路由速记）。
 >
-> **触发条件与用途以 `.agents/skills/INDEX.md` 为准**——该文件**不会被自动注入**（宿主不加载 hook），须**会话开始主动 Read 一次**（精准单文件读，不受预算拦截）。严禁为查触发词遍历 Read 各 `SKILL.md`（遍历击穿上下文）。INDEX 缺失或过期时运行 `node .agents/scripts/build-skills-index.mjs`。
+- **技能**：`.agents/skills/INDEX.md` 自动加载；命中加载对应 `SKILL.md`，若采用通用能力于对话中说明。严禁遍历技能目录（约 400 KB）。索引缺失或过期时运行 `node .agents/scripts/build-skills-index.mjs`。
 
 ---
 

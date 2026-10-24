@@ -207,13 +207,16 @@ deepseek 提出的判据（A 的输出都能被某模块接住、无孤儿数据
 
 ---
 
-## 十、AGENTS.md 与 AGENTS.template.md 的关系（用户 2026-09-19 澄清）
+## 十、`AGENTS.template.md` 已于 2026-10-19 删除
 
-**`AGENTS.md` 是唯一正本**，新建项目时由 `工作台面板/server.mjs` 用 `fs.cpSync` 从 `02-模板/_project-template` **整体拷贝**（只排除 `node_modules` 和 `.git`），项目初始即带 AGENTS.md，**不存在"由 template 再生成一次"的步骤**。
+**`AGENTS.md` 是唯一正本**：新建项目时由 `工作台面板/server.mjs` 用 `fs.cpSync` 从 `02-模板/_project-template` **整体拷贝**（只排除 `node_modules` 和 `.git`），项目初始即带 AGENTS.md。
 
-`AGENTS.template.md` 由 `.agents/scripts/build-agents-template.mjs` 从 AGENTS.md **单向派生**（脚本头注释明写"AGENTS.md 是唯一正本"），仅在标题后插入维护提醒 + `{{PROJECT_INFO_SECTION}}` 占位符，其余正文与 AGENTS.md 一致。其定位接近**备份/占位参考**，不参与项目生成。
+原先那份 `AGENTS.template.md` 是 `build-agents-template.mjs` 从 AGENTS.md **单向派生**的副本（仅插入 `{{PROJECT_INFO_SECTION}}` 占位符），定位是「备份/占位参考」，**不参与任何生成流程**。它有两个致命问题：
 
-故：改 AGENTS.md 即刻对新项目生效；跑生成器同步 template 是**可选的收尾动作**（避免 template 变成过期副本误导后续维护者），不是生效前提。
+1. **它是过期副本**——派生之后 AGENTS.md 继续演进，而没有人会去重跑生成器，两文件必然脱节（删除前实测：_project-template 的 AGENTS.md 4,201 字符，template 只有 3,893 字符，缺了「常驻越短」警告与两行基线路径）。
+2. **它是自举型提示的唯一载体**——那句「改 AGENTS.md 必须重跑脚本同步本文件」写在只有维护者才会打开的副本里，条件永远观测不到。
+
+故 2026-10-19 把 `AGENTS.template.md` 与 `build-agents-template.mjs` **一并移出**（存档在 `05-回收站/2026-10-19-AGENTS模板清理/`，可逆）。AGENTS.md 的版本追溯改由 `08-文档/2.1更新文档/AGENTS历史版本/` 承担，不再维护任何派生副本。
 
 ---
 

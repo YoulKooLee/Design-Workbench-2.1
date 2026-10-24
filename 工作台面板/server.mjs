@@ -2336,6 +2336,22 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Make-Template 页面模板本地预览：/make-preview/<id>/<file> → 02-页面模板/templates/<id>/preview/<file>
+  // 产物为 vite-plugin-singlefile 打出的自包含 HTML（无外链依赖），供「在线预览」按钮 iframe/新窗打开。
+  if (method === 'GET' && p.startsWith('/make-preview/')) {
+    const rel = decodeURIComponent(p.slice('/make-preview/'.length)).replace(/\\/g, '/');
+    const segs = rel.split('/').filter((s) => s && s !== '..' && s !== '.');
+    if (segs.length < 2) return sendError(res, '路径无效', 400);
+    const root = path.join(MAKE_TEMPLATES_DIR, 'templates', segs[0], 'preview');
+    const fp = path.join(root, ...segs.slice(1));
+    if (!fp.startsWith(root + path.sep)) return sendError(res, '路径越界', 403);
+    if (!fs.existsSync(fp) || fs.statSync(fp).isDirectory()) return sendError(res, '预览文件不存在（可运行 build-previews.mjs 生成）', 404);
+    const extMap = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
+    res.writeHead(200, { 'Content-Type': extMap[path.extname(fp).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+    res.end(fs.readFileSync(fp));
+    return;
+  }
+
   if (p === '/api/components' && method === 'GET') {
     const clRoot = path.join(AXHUB_ROOT, '03-组件库');
     const out = { ok: true, ends: [], uiLibs: [], registry: null, custom: [] };

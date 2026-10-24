@@ -15,6 +15,7 @@ import { websocketPlugin } from './vite-plugins/websocketPlugin';
 import { canvasHotUpdateFilterPlugin } from './vite-plugins/canvasHotUpdateFilter';
 import { annotationRuntimeOptimizeDepsPlugin } from './vite-plugins/annotationRuntimeOptimizeDeps';
 import { createAnnotationSourceMarkdownPlugin } from './vite-plugins/annotationSourceMarkdown';
+import { docsSyncPlugin } from './vite-plugins/docsSyncPlugin';
 import {
   MAKE_ENTRIES_RELATIVE_PATH,
 } from './vite-plugins/utils/makeConstants';
@@ -99,6 +100,7 @@ export default defineConfig(({ command }) => {
       isServe ? autoStartMakeServerPlugin() : null,
       isServe ? websocketPlugin() : null,
       isServe ? clientPreviewPlugin() : null,
+      isServe ? docsSyncPlugin(projectRoot) : null,
       isServe ? annotationNavFixPlugin() : null,
       createAnnotationSourceMarkdownPlugin(projectRoot, { mode: isServe ? 'serve' : 'build' }),
       forceInlineDynamicImportsOff(isIifeBuild),

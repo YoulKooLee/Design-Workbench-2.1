@@ -61,15 +61,24 @@ entries.sort((a, b) => a.name.localeCompare(b.name));
 
 // 生成 INDEX.md（紧凑：name + description 首行）
 const lines = [];
+lines.push('---');
+lines.push('name: skills-index');
+lines.push('description: 技能索引（自动生成）。列出全部技能的 name 与一句话说明，按名取用对应 SKILL.md；本文件不承载规则。');
+lines.push('---');
+lines.push('');
 lines.push('# 技能索引（自动生成）');
 lines.push('');
-lines.push(`> 共 ${entries.length} 个技能。本文件由 \`.agents/scripts/build-skills-index.mjs\` 自动生成，由 \`session-start.cjs\` 负责注入本文件；⚠️ 但宿主不加载 .agents/hooks/ 时该 hook 不执行，**本文件不会被自动注入**——**会话开始请主动 Read 本文件一次**（精准单文件读，不受预算拦截）。**请勿手改**；更新技能后重新运行生成脚本。`);
+lines.push(`> 共 ${entries.length} 个技能（自动生成，勿手改）。按名定位后取用对应 SKILL.md；未命中用通用能力并在回复中说明。`);
 lines.push('');
 lines.push('## 技能速查');
 lines.push('');
 for (const e of entries) {
-  const desc = (e.description || '').split(/\r?\n/)[0].trim();
-  lines.push(`- **${e.name}** — ${desc}`);
+  let desc = (e.description || '').split(/\r?\n/)[0].trim();
+    // 按句号/感叹号/问号截断，只留第一句
+    const m = desc.match(/^(.{1,40}?[。！？.!?])(\s|$)/);
+    if (m) desc = m[1];
+    else if (desc.length > 40) desc = desc.slice(0, 37) + "...";
+  lines.push(`- **${e.name}** - ${desc}`);
 }
 lines.push('');
 const indexText = lines.join('\n') + '\n';
@@ -86,5 +95,5 @@ const lock = {
 fs.writeFileSync(indexFile, indexText, 'utf8');
 fs.writeFileSync(lockFile, JSON.stringify(lock, null, 2) + '\n', 'utf8');
 
-console.log(`[OK] 生成 INDEX.md：${entries.length} 个技能，${indexText.length} 字节`);
+console.log(`[OK] 生成 INDEX.md：${entries.length} 个技能，${indexText.length} 字符`);
 console.log(`[OK] 写入 skills-lock.json（hash=${lock.hash}）`);
