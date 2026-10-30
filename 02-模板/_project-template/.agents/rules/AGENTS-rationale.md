@@ -30,9 +30,11 @@
 
 **教训**：预算声明必须与实测一致，且禁令覆盖范围必须与工作流实际引导的目录一致——两者错位就是溢出事故。
 
-### 为什么需要技术强制而非文字警告
+### 为什么要有一道护栏（当前为提示型，非强制）
 
-原护栏只有文字警告（"严禁遍历"），无技术强制件，等于摆设。现由 `.agents/hooks/context-budget.cjs` 在 preToolUse 拦截 `Read|Glob|Grep`：命中 6 类高危目录（`.agents/skills`、`.agents/knowledge`、`.agents/rules`、`rules/references/impeccable`、`src/themes`、`03-组件库/**/vendor`）且为通配/递归/目录级操作时阻断，精确单文件 Read 放行。
+原护栏只有文字警告（"严禁遍历"），无技术件配合，等于摆设。现由 `.agents/hooks/context-budget.cjs` 在 preToolUse **提醒** `Read|Glob|Grep`：命中高危目录且为通配/递归/目录级操作时返回 `additionalContext` 提示改精确路径，精确单文件 Read 放行。
+
+> ⚠️ **措辞更正（2026-10-30）**：该 hook **不含 deny / exit(2) 出口，不会阻断读取**；且宿主不加载 `.agents/hooks/` 时它根本不执行（2026-09-22 WorkBuddy 实测）。故本节标题原写「技术强制」是**过度声明**——实际是「文字禁令 + 一道可选提醒」。真正的闸门仍是执行者动手前过禁令清单（`context-budget.md`）。若日后要升级为真阻断：给 hook 加 deny 出口 → 同步改 `context-budget.md` 末行与两侧 `AGENTS.md` → 在 `check-doc-links.mjs` 加一条断言锁住三处一致。
 
 ---
 

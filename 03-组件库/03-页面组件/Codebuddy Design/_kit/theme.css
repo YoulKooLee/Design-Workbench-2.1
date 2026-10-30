@@ -28,6 +28,13 @@
   --color-info: #165dff;
   --color-info-light: #e8f3ff;
 
+  /* 语义色 · 文字态（2026-10-30 CodeBuddy 增补）
+   * 绿/橙/红原色直接当文字在白底上不足 4.5:1（原型基线要求），
+   * 故另立加深后的「文字级」色值：文字用 *-text，填充/进度条仍用原色。 */
+  --color-success-text: #0a7c3c;
+  --color-warning-text: #a35c00;
+  --color-danger-text: #c81e1e;
+
   /* 中性灰阶（Arco neutral-1 ~ neutral-10） */
   --color-neutral-1: #f7f8fa;
   --color-neutral-2: #f2f3f5;

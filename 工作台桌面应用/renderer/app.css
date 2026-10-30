@@ -181,7 +181,19 @@ tr:hover td{background:#FAFBFD}
 .status-editing .dot{background:var(--accent)}
 .status-stopped{background:var(--line-inner);color:var(--text-3);border:1px solid var(--line)}
 .status-stopped .dot{background:var(--placeholder)}
-.row-ops{display:flex;gap:6px;justify-content:flex-end;flex-wrap:nowrap}
+.row-ops{display:flex;gap:6px;justify-content:flex-end;flex-wrap:nowrap;align-items:center;white-space:nowrap}
+.row-ops .op-btn{height:24px;padding:0 9px;font-size:11px;white-space:nowrap;flex-shrink:0}
+/* 历史版本弹窗 */
+.hist-wrap{border:1px solid var(--line);border-radius:10px;overflow:auto;max-height:46vh;background:var(--panel)}
+.hist-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.hist-table th{font-size:11px;font-weight:600;color:var(--text-3);text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);background:#F8FAFC;white-space:nowrap}
+.hist-table td{padding:9px 14px;font-size:12px;border-bottom:1px solid var(--line-inner);vertical-align:middle}
+.hist-table tr:last-child td{border-bottom:none}
+.selrow{cursor:pointer}
+.selrow:hover td{background:var(--line-inner)}
+.desc-cell{max-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-ops{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.badge-root{display:inline-block;padding:1px 8px;border-radius:20px;font-size:10px;font-weight:600;background:#fef3c7;color:#92400e;margin-left:6px}
 .op-btn{height:26px;padding:0 9px;border-radius:7px;font-size:11px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--text-2);transition:all .12s;white-space:nowrap;flex-shrink:0}
 .op-btn:hover{border-color:var(--accent-border);color:var(--accent);background:var(--accent-soft)}
 .op-btn.danger{color:var(--red)}
@@ -433,6 +445,31 @@ td .muted,span.muted{color:var(--placeholder)}
 .room-reply textarea:focus{outline:none;border-color:var(--accent)}
 .room-reply-ops{display:flex;align-items:center;justify-content:space-between;gap:8px}
 #roomBody{max-height:44vh;overflow-y:auto;padding-right:4px}
+/* 房间助理：状态徽标 / 小结卡 / 单选委派 */
+.room-status-select{font-size:12px;border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--panel);color:var(--text);margin-left:8px}
+.st-badge{display:inline-flex;align-items:center;font-size:11px;border-radius:var(--radius-pill);padding:2px 8px;margin-left:6px;border:1px solid transparent;white-space:nowrap;font-weight:600}
+.st-not_started{background:#F1F5F9;color:#64748B;border-color:#E2E8F0}
+.st-in_progress{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-border)}
+.st-blocked{background:var(--red-soft);color:var(--red);border-color:#FECACA}
+.st-waiting_user{background:var(--amber-soft);color:var(--amber);border-color:#FDE68A}
+.st-done{background:var(--green-soft);color:var(--green);border-color:var(--green-border)}
+.st-archived{background:#F1F5F9;color:#94A3B8;border-color:#E2E8F0}
+.st-faded{opacity:.55}
+.asst-card{background:#F8FAFC;border:1px solid var(--line);border-radius:var(--radius-ctl);padding:12px 14px;margin-bottom:12px}
+.asst-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.asst-head b{font-size:13px}
+.asst-head .spacer{flex:1}
+.asst-meta{font-size:11px;color:var(--placeholder);margin-bottom:8px}
+.asst-sec{margin:8px 0}
+.asst-sec h5{margin:0 0 4px;font-size:12px;color:var(--text-3);font-weight:600}
+.asst-sec p{margin:0;font-size:12.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--text-2)}
+.asst-fallback{background:var(--amber-soft);color:#B45309;border:1px solid #FDE68A;border-radius:8px;padding:6px 10px;font-size:12px;margin:8px 0}
+.pick-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.pick-chip{font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:var(--radius-pill);padding:4px 12px;cursor:pointer}
+.pick-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pick-chip.off{opacity:.55}
+.delegate-bar{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.delegate-bar textarea{flex:1;min-width:220px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;min-height:40px;resize:vertical;font-family:inherit;color:var(--text);background:var(--panel)}
 
 /* 编辑弹窗 / 信息行 */
 #editorArea{width:100%;min-height:340px;border:1px solid var(--line);border-radius:var(--radius-ctl);padding:10px 12px;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.6;color:var(--text);resize:vertical;background:var(--panel)}
@@ -485,6 +522,10 @@ td .muted,span.muted{color:var(--placeholder)}
 .proj-row .d-other{flex:1;min-width:0;border:1px solid var(--line);border-radius:var(--radius-ctl);padding:7px 10px;font:inherit;font-size:12.5px;color:var(--text);background:#fff;transition:border-color .15s,box-shadow .15s}
 .proj-row .d-text{width:100%;min-width:0;min-height:34px;max-height:96px;border:1px solid var(--line);border-radius:var(--radius-ctl);padding:6px 10px;font:inherit;font-size:12.5px;line-height:1.6;resize:none;background:#fff;color:var(--text);overflow-y:auto;transition:border-color .15s,box-shadow .15s}
 .proj-row .d-proj:focus,.proj-row .d-other:focus,.proj-row .d-text:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.proj-row .d-hours{flex:none;width:76px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font:inherit;font-size:12.5px;color:var(--text);background:#fff;transition:border-color .15s,box-shadow .15s}
+.proj-row .d-hours:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.proj-row .d-hours-ro{flex:none;font-size:12px;color:var(--text-2);padding:6px 10px;white-space:nowrap}
+.proj-row .d-hours-ro.muted{color:var(--text-3)}
 .ed-ops{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
 .ed-scroll{flex:1;min-height:0;overflow-y:auto}
 .week-box textarea,.daily-card textarea{width:100%;min-height:clamp(110px,17vh,150px);border:1px solid var(--line);border-radius:var(--radius-ctl);padding:10px 12px;font:inherit;font-size:12.5px;line-height:1.65;color:var(--text);resize:vertical;transition:border-color .15s,box-shadow .15s}
@@ -505,7 +546,7 @@ td .muted,span.muted{color:var(--placeholder)}
 .stat-bar .nm{width:130px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat-bar .bar{flex:1;height:10px;background:var(--line-inner);border-radius:5px;overflow:hidden}
 .stat-bar .bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),#38BDF8)}
-.stat-bar .pct{width:52px;text-align:right;font-size:12px;font-weight:700;color:var(--accent)}
+.stat-bar .pct{min-width:96px;text-align:right;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
 .month-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .month-side{flex:1;min-width:230px;background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:12px 16px 10px;display:flex;flex-direction:column}
 .month-side-h{font-size:12px;color:var(--text-3);font-weight:600;margin-bottom:8px}
@@ -561,3 +602,41 @@ td .muted,span.muted{color:var(--placeholder)}
   .week-box textarea,.daily-card textarea{min-height:110px}
   .ed-scroll{max-height:150px}
 }
+
+/* ===== 通信看板 · 待我处理 ===== */
+.todo-card .tag{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;line-height:1.7;white-space:nowrap}
+.todo-card .tag-red{background:var(--red-soft);color:#B91C1C;border:1px solid #FECACA}
+.todo-card .tag-gray{background:#F1F5F9;color:var(--text-3);border:1px solid var(--line)}
+.todo-card .tag-blue{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border)}
+.todo-card .tag-amber{background:var(--amber-soft);color:#B45309;border:1px solid #FCD34D}
+.todo-card tbody tr:hover{background:#F8FAFF}
+.todo-card .table-scroll.collab-rooms{max-height:360px}
+/* #main 是 flex 列容器，卡片默认会被压扁导致列表只剩半截；待办卡按内容取高，其余卡片维持原行为 */
+.main > .todo-card{flex:0 0 auto}
+.todo-card td{white-space:nowrap;padding-top:9px;padding-bottom:9px;overflow:hidden}
+/* 固定列宽：否则「事项」的 nowrap 会把表格撑出容器，最右的操作列被裁掉 */
+.todo-card table{width:100%;table-layout:fixed}
+/* 待我处理的行保持单行：横排空间足够，双行 clamp 会把可视行数压到 3 行 */
+.todo-card .t-desc{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:none;-webkit-line-clamp:unset}
+
+/* ===== AI 生成通道设置 ===== */
+.ai-cur{font-size:12.5px;color:var(--text-2);background:var(--line-inner);border-radius:var(--radius-ctl);padding:10px 12px;margin-bottom:14px;line-height:1.6}
+.ai-presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.ai-chip{height:26px;padding:0 11px;border-radius:var(--radius-pill);border:1px solid var(--line);background:var(--panel);color:var(--text-2);font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .13s}
+.ai-chip:hover{border-color:var(--accent);color:var(--accent)}
+.ai-msg{font-size:11.5px;line-height:1.6;margin-top:12px;color:var(--text-3)}
+.ai-msg.ok{color:var(--green);font-weight:600}
+.ai-msg.err{color:var(--red);font-weight:600}
+
+/* ===== Vite 端口池明细弹窗（含关闭端口） ===== */
+.vp-head,.vp-row{display:grid;grid-template-columns:86px 1fr 84px;align-items:center;gap:10px}
+.vp-head{padding:0 8px 8px;font-size:11.5px;font-weight:600;color:var(--text-3);border-bottom:1px solid var(--line-inner)}
+.vp-row{padding:9px 8px;border-bottom:1px solid var(--line-inner);font-size:12.5px}
+.vp-row-last{border-bottom:none}
+.vp-port{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;color:var(--accent)}
+.vp-name{color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vp-op,.vp-row .vp-kill{justify-self:end}
+.vp-empty{padding:20px 8px;text-align:center;color:var(--text-3);font-size:12.5px}
+.btn-mini{height:26px;padding:0 12px;font-size:11.5px;font-weight:600;border-radius:var(--radius-pill);border:1px solid var(--line);background:var(--panel);color:var(--text-2);cursor:pointer;font-family:var(--font);transition:all .13s}
+.btn-mini:hover:not(:disabled){border-color:var(--red);color:var(--red)}
+.btn-mini:disabled{opacity:.55;cursor:default}

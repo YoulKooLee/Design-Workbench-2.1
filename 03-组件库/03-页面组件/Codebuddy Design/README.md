@@ -4,7 +4,7 @@
 
 > **为什么有它**：`Vibe Design Pro` 是 Vue 3 + Arco 的 **静态 HTML 母版**，React 原型工程（React 18 + Tailwind v4，无 arco）无法直接 import 其组件。因此本库按母版的**组件字典**一次性提炼为 React 源码 —— 之后所有原型 `import` 即用，不再逐页重写。
 
-> **当前交付状态（2026-09-26）**：`status = ready`，**133 个组件条目 / 15 个分类 / 157 个文件（其中分类内 133 个 `.tsx`）**；分类为 `基础` / `布局` / `表单` / `数据展示` / `反馈` / `业务组件` / `页面模式` / `订单` / `付款` / `触发器` / `CMS` / `工作流` / `物联网` / `园区` / `办公` + `_kit`（主题 token）。库状态以 `./index.json` 与 `../component-registry.json` 为准，**不一致即视为缺陷**。
+> **当前交付状态（2026-10-30）**：`status = ready`，**143 个组件条目 / 15 个分类 / 168 个文件（其中分类内 143 个 `.tsx`）**；分类为 `基础` / `布局` / `表单` / `数据展示` / `反馈` / `业务组件` / `页面模式` / `订单` / `付款` / `触发器` / `CMS` / `工作流` / `物联网` / `园区` / `办公` + `_kit`（主题 token）。库状态以 `./index.json` 与 `../component-registry.json` 为准，**不一致即视为缺陷**。
 >
 > **组件浏览页（gallery）**：`./gallery.html` 汇总全部 133 个组件，每卡带**「预览」按钮**——弹层 iframe 加载 `preview/<分类>/<组件>.html` 真实渲染产物（React 已内联，file:// 双击即可看，无需起服务）；「新窗口打开」可全页查看。预览产物由构建脚本批量生成（Tailwind CSS + esbuild IIFE 自包含 HTML），组件源码改动后需重新生成。
 >
@@ -64,7 +64,8 @@ import { Button, Card, DataTable, ChartCard, LineChart, type Column } from '../c
 │       ├── _meta/
 │       │   ├── layout.manifest.json   ← 库元数据（id/theme/version/status/分类/消费方式/文档）
 │       │   ├── components.catalog.json ← component → 文件/导出/参数/场景/prompt（选型真源）
-│       │   └── sync-registry.mjs       ← catalog → custom-components.json 单向同步 / 一致性校验
+│       │   ├── sync-registry.mjs       ← catalog → custom-components.json 单向同步 / 一致性校验
+│       │   └── build-previews.mjs      ← 组件预览产物生成器（preview/<分类>/<组件>.html，2026-10-30 重建）
 │       ├── _kit/                      ← 底座：theme.css（@theme token）+ cn.ts（零依赖类名工具）+ format.ts（金额/日期/字节格式化）
 │       ├── 基础/    Button·Card·Tag·Badge·Avatar·Typography·Divider·Overlay·Popconfirm
 │       ├── 布局/    Layout(Space/Row/Col/Grid)·PageHeader·Tabs·Breadcrumb·Steps·Toolbar
@@ -72,12 +73,15 @@ import { Button, Card, DataTable, ChartCard, LineChart, type Column } from '../c
 │       ├── 数据展示/ DataTable·Pagination·Descriptions·Progress·List·Tree·Chart·Timeline·Collapse·Calendar
 │       ├── 反馈/    Modal·Drawer·Alert·Spin·ResultPage·Message·Notification
 │       ├── 业务组件/KpiRow·FilterBar·TableCard·StatusTag·Kanban
-│       ├── 页面模式/PageListSearchTable·PageListCard·PageFormBasic·PageFormGroup（整页级模板）
+│       ├── 页面模式/PageListSearchTable·PageListCard·PageFormBasic·PageFormGroup·MobileFrameIos·MobileFrameWechat·MobileOnboardingScreen（整页级模板）
 │       ├── 订单/    OrderTable·OrderDetailHeader·OrderItemList·OrderStatusFlow·OrderTimeline·OrderAmountSummary
-│       ├── 付款/    PaymentCashier·PaymentMethodPicker·PaymentCountdown·PaymentResult·InvoiceForm
+│       ├── 付款/    PaymentCashier·PaymentMethodPicker·PaymentCountdown·PaymentResult·InvoiceForm·InvoiceSheet
 │       ├── 触发器/  TriggerTypePicker·TriggerConditionBuilder·TriggerActionList·TriggerRuleCard
-│       ├── CMS/     ContentTable·ContentStatusBadge·ContentEditorForm·RichTextEditor·ContentVersionDiff·MediaPicker·PublishSchedulePanel
+│       ├── CMS/     ContentTable·ContentStatusBadge·ContentEditorForm·RichTextEditor·ContentVersionDiff·MediaPicker·PublishSchedulePanel·EmailNewsletter
 │       ├── 工作流/  WorkflowList·NodePalettePanel·ExecutionLogTimeline·ApprovalNodeCard·WorkflowCanvas（⚠️ 需 @xyflow/react）
+│       ├── 物联网/  DeviceCard·DeviceStatusTag·AlarmLevelTag·AlarmList·DeviceGrid·MetricGauge·RealTimeValue·TelemetryChart
+│       ├── 园区/    AccessPointStatus·EnergyPanel·InspectionTaskList·ParkingSpaceGrid·PassageRecordTable·PatrolCheckpointTimeline·VisitorForm·VisitorPassCard
+│       ├── 办公/    ApprovalActionBar·ApprovalFlowTimeline·ApprovalTaskList·AttendanceCalendar·ClockInCard·ContactDirectory·EmployeeCard·OrgTreeSelect·OkrObjectiveCard·OkrQuarterSummary·OnboardingDaySchedule·OnboardingChecklist·MeetingHeader·MeetingAgendaList·MeetingActionTable
 │       ├── gallery.html               ← 预览墙（组件清单 + 提示词复制）
 │       ├── 提示词手册.md               ← 每组件【组件引用】提示词
 │       └── 选型映射.md                 ← 页面/模块 → 组件组合 + 整页提示词模板
@@ -134,7 +138,8 @@ PRD / 原型设计 → 选型映射.md 选组件组合 → 复制本库到工程
 - [ ] `index.json` 与真实目录、`defaultFramework` 一致（`ready` 库目录必须存在）
 - [ ] `index.json` 与 `../component-registry.json` 的库版本 / 状态一致
 - [ ] `componentCount` 等于 `_meta/components.catalog.json` 组件条目数
-- [ ] 新增组件：分类目录加文件 → 更新分类 `index.ts` → 登记 `_meta/components.catalog.json` → 登记 `../custom-components.json`（含 prompt）→ 更新 `提示词手册.md` / `选型映射.md`
+- [ ] 新增组件：分类目录加文件 → 更新分类 `index.ts` → 登记 `_meta/components.catalog.json` → 登记 `../custom-components.json`（含 prompt）→ 更新 `提示词手册.md` / `选型映射.md` / `gallery.html`
+- [ ] 新增/改动组件后生成预览产物：`node _meta/build-previews.mjs`（缺产物的才构建；`--all` 全量重建）。依赖工程包 `02-模板/_project-template/node_modules` 的 vite / @tailwindcss/vite；ARM64 Windows 需先补装 `lightningcss-win32-arm64-msvc` / `@tailwindcss/oxide-win32-arm64-msvc` / `@rollup/rollup-win32-arm64-msvc` / `@esbuild/win32-arm64` 四个原生包
 - [ ] 组件源码零第三方依赖（例外：`工作流/WorkflowCanvas.tsx` 依赖 `@xyflow/react`，且不得加入统一出口；`SideMenu` 依赖 `lucide-react`，因原型工程已内置）
 - [ ] 视觉改动只改 `_kit/theme.css`；改完同步到各项目副本（用时复制模式）
 - [ ] 使用方：整目录复制，保持内部相对结构；不自造同类控件
@@ -156,4 +161,4 @@ PRD / 原型设计 → 选型映射.md 选组件组合 → 复制本库到工程
 
 ---
 
-_维护：CodeBuddy（2026-09-17 依用户指派填充并按 03-页面组件 规范迁移整改；2026-09-19 WorkBuddy 增补 27 个业务场景组件：订单/付款/触发器/CMS/工作流 + `_kit/format.ts`）；2026-09-26 WorkBuddy 增补 24 个领域组件（物联网 8 / 园区 8 / 办公 8，用户裁定全部由 WorkBuddy 承接），并建成 preview 预览产物管线 + gallery 预览改造（133 卡全部支持弹窗预览）。_
+_维护：CodeBuddy（2026-09-17 依用户指派填充并按 03-页面组件 规范迁移整改；2026-09-19 WorkBuddy 增补 27 个业务场景组件：订单/付款/触发器/CMS/工作流 + `_kit/format.ts`）；2026-09-26 WorkBuddy 增补 24 个领域组件（物联网 8 / 园区 8 / 办公 8，用户裁定全部由 WorkBuddy 承接），并建成 preview 预览产物管线 + gallery 预览改造（133 卡全部支持弹窗预览）；2026-10-30 CodeBuddy 按 qwen《页面模板批量转译任务书》P0 后 6 项（team-okrs / hr-onboarding / meeting-notes / invoice / email-marketing / mobile-onboarding）提炼 10 个区块级组件（办公 7 / 付款 1 / CMS 1 / 页面模式 1），并重建 `_meta/build-previews.mjs` 预览生成管线（143 卡全部有预览产物）。_

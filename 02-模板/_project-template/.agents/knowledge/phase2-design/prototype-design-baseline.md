@@ -71,7 +71,7 @@ description: 原型设计基线（对比度/字号/间距/动效/安全区/风�
 - 变长文本写前三选一：自动尺寸块内换行+行钳制 / 省略号单行+一次点击可达 / 详情收到披露后面——绝不允许未声明溢出或裸 `overflow:hidden`。
 - 短 CJK 标签用 `white-space: nowrap` + `<wbr>` 在短语边界断行。
 - pointer-only 样式放 `@media (hover: hover)`。
-- 布局原语参考：`../../03-组件库/03-页面组件/设备外壳/layout.css`（纯结构——display/flex/grid/溢出/换行/比例，不设调色板、字体与组件外观）。
+- 布局原语参考：`../../../../../03-组件库/03-页面组件/Codebuddy Design/布局/`（Layout / PageHeader / Tabs / Toolbar 等纯结构原语，不设调色板、字体与组件外观）。
 
 ## 七、冲突取舍顺序
 

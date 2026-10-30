@@ -38,6 +38,9 @@ const C = {
 const Z_MODAL = 1000;
 const Z_CONN = 9999;
 
+/** 右侧设计说明面板宽度（与 .dn-right 的 width/min-width 保持一致），宿主三栏布局用它预留 padding */
+export const NOTES_PANEL_WIDTH = 360;
+
 // ============ 组件属性 ============
 export interface DesignNotesPanelProps {
   /** 设计说明真源数组（来自源码 buildModules / 后端）。新增编辑以它为基础，面板内部用本地草稿叠加展示。 */
@@ -52,6 +55,8 @@ export interface DesignNotesPanelProps {
   onSave?: DesignNotesSaveAdapter;
   /** 面板标题文案，默认「设计说明」 */
   title?: string;
+  /** 面板顶部提示语；不传时用内置默认提示 */
+  hint?: string;
   /**
    * 左侧内容版本号：当宿主切换子页 / 重渲染左侧 DOM 时变化，触发连线与可绑定清单重扫。
    * 不传时面板仅在 modules 变化时重扫（多数场景够用）。
@@ -193,10 +198,12 @@ function DescModal({
 }
 
 const DescStyle = `
-  .dn-right{width:360px;min-width:360px;background:#fff;border-left:3px solid ${C.primary};padding:16px;overflow-y:auto;max-height:100vh;position:sticky;top:0}
-  .dn-rd-titlebar{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:2px solid ${C.primary};margin-bottom:12px}
-  .dn-rd-badge{background:${C.primary};color:#fff;font-size:11px;font-weight:700;padding:3px 8px;letter-spacing:.05em}
-  .dn-rd-title{font-size:15px;font-weight:700;color:${C.text}}
+  .dn-right{width:360px;min-width:360px;max-width:360px;box-sizing:border-box;position:fixed;top:0;right:0;height:100vh;z-index:40;background:#fff;border-left:3px solid ${C.primary};padding:16px;overflow-y:auto;flex-shrink:0}
+  .dn-rd-titlebar{position:sticky;top:0;z-index:1;background:#fff;display:flex;flex-direction:column;gap:8px;padding:2px 0 12px;border-bottom:2px solid ${C.primary};margin-bottom:12px}
+  .dn-rd-badge{background:${C.primary};color:#fff;font-size:11px;font-weight:700;padding:3px 8px;letter-spacing:.05em;flex-shrink:0}
+  .dn-rd-toolrow{display:flex;align-items:center;gap:10px;justify-content:space-between}
+  .dn-rd-tools{display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .dn-rd-title{font-size:15px;font-weight:700;color:${C.text};line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dn-rd-hint{font-size:11px;color:${C.text3};margin:0 0 14px;line-height:1.5}
   .dn-desc{background:#fff;border:2px solid ${C.primary};margin-bottom:12px;padding:12px;transition:background .15s,border-color .15s}
   .dn-desc-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
@@ -254,7 +261,7 @@ const DescStyle = `
 
 // ============ 主组件 ============
 export function DesignNotesPanel({
-  modules, pageKey, pageSub, leftContentRef, onSave, title = '设计说明', contentKey,
+  modules, pageKey, pageSub, leftContentRef, onSave, title = '设计说明', contentKey, hint,
 }: DesignNotesPanelProps) {
   // 编辑状态（按单模块弹窗编辑）
   const [editing, setEditing] = useState<{ m: ModuleDef; index: number; isNew?: boolean } | null>(null);
@@ -262,6 +269,8 @@ export function DesignNotesPanel({
   const [saveError, setSaveError] = useState<string | null>(null);
   // 左侧当前页面可关联的模块（data-proto-id -> 可读标签），供「关联页面模块」下拉使用
   const [bindTargets, setBindTargets] = useState<Array<{ id: string; label: string }>>([]);
+  // 全部左侧元素 id -> 可读名（含已绑定项）；bindTargets 只保留未绑定项供下拉，已绑定卡的绑定标签用本映射显示中文名
+  const [protoLabels, setProtoLabels] = useState<Record<string, string>>({});
   // 悬停「+ 加说明」快捷入口的目标元素
   const [quickAddTarget, setQuickAddTarget] = useState<{ id: string; rect: DOMRect } | null>(null);
 
@@ -269,6 +278,12 @@ export function DesignNotesPanel({
   const storageKey = `dn-notes-${pageKey}-${pageSub ?? ''}-${modules.map((m) => m.id).join(',')}`;
 
   const displayModules = localOverride ?? modules;
+
+  // 切换页面（contentKey / pageSub 变化）时先清掉上一页的本地草稿与错误提示，避免草稿串到下一页；须先于下方恢复 effect 声明
+  useEffect(() => {
+    setLocalOverride(null);
+    setSaveError(null);
+  }, [contentKey, pageSub]);
 
   // 挂载 / contentKey 变化时，从浏览器 localStorage 非破坏性地恢复此前保存的设计说明草稿
   useEffect(() => {
@@ -424,17 +439,20 @@ export function DesignNotesPanel({
   // 扫描左侧页面元素，收集可关联的模块清单（已被绑定的不再出现在下拉，避免重复）
   useEffect(() => {
     const left = leftContentRef.current;
-    if (!left) { setBindTargets([]); return; }
+    if (!left) { setBindTargets([]); setProtoLabels({}); return; }
     const boundIds = new Set(displayModules.map((m) => m.bind ?? m.id));
     const seen = new Set<string>();
     const opts: Array<{ id: string; label: string }> = [];
+    const labels: Record<string, string> = {};
     left.querySelectorAll<HTMLElement>('[data-proto-id]').forEach((le) => {
       const id = le.getAttribute('data-proto-id')!;
+      if (!labels[id]) labels[id] = deriveLabel(le, id);
       if (seen.has(id) || boundIds.has(id)) return;
       seen.add(id);
-      opts.push({ id, label: deriveLabel(le, id) });
+      opts.push({ id, label: labels[id] });
     });
     setBindTargets(opts);
+    setProtoLabels(labels);
   }, [leftContentRef, contentKey, displayModules]);
 
   // 左侧已绑定模块悬停时显示「+ 加说明」快捷入口
@@ -491,40 +509,40 @@ export function DesignNotesPanel({
     <>
       <style>{DescStyle}</style>
       <aside ref={rightRef} className="dn-right" onMouseOver={handleHover} onMouseLeave={() => setActiveId(null)}>
-        <div className="dn-rd-titlebar" style={{ justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="dn-rd-titlebar">
+          <div className="dn-rd-toolrow">
             <span className="dn-rd-badge">DESIGN NOTES</span>
-            <span className="dn-rd-title">{title}</span>
-          </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {saveError ? (
-              <span style={{ fontSize: 10, color: C.danger, display: 'flex', alignItems: 'center', gap: 4 }} title={saveError}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: C.danger, display: 'inline-block' }} />
-                ⚠ 落盘失败
-              </span>
-            ) : hasOverride ? (
-              <span style={{ fontSize: 10, color: '#b7791f', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#b7791f', display: 'inline-block' }} />
-                本地草稿·待保存
-              </span>
-            ) : null}
-            {hasOverride && onSave && (
-              <button onClick={() => persist(displayModules)} title="将设计说明写入真源（落盘）" style={{ fontSize: 11, padding: '4px 10px', background: '#2b6cff', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>
-                保存到真源
+            <div className="dn-rd-tools">
+              {saveError ? (
+                <span style={{ fontSize: 10, color: C.danger, display: 'flex', alignItems: 'center', gap: 4 }} title={saveError}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: C.danger, display: 'inline-block' }} />
+                  ⚠ 落盘失败
+                </span>
+              ) : hasOverride ? (
+                <span style={{ fontSize: 10, color: '#b7791f', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#b7791f', display: 'inline-block' }} />
+                  本地草稿·待保存
+                </span>
+              ) : null}
+              {hasOverride && onSave && (
+                <button onClick={() => persist(displayModules)} title="将设计说明写入真源（落盘）" style={{ fontSize: 11, padding: '4px 10px', background: '#2b6cff', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>
+                  保存到真源
+                </button>
+              )}
+              <button onClick={handleReset} title="恢复为默认说明内容" style={{ fontSize: 11, padding: '4px 10px', background: '#fff', color: C.text3, border: `1px solid ${C.border}`, borderRadius: 4, cursor: 'pointer' }}>
+                重置
               </button>
-            )}
-            <button onClick={handleReset} title="恢复为默认说明内容" style={{ fontSize: 11, padding: '4px 10px', background: '#fff', color: C.text3, border: `1px solid ${C.border}`, borderRadius: 4, cursor: 'pointer' }}>
-              重置
-            </button>
+            </div>
           </div>
+          <div className="dn-rd-title">{title}</div>
         </div>
-        <p className="dn-rd-hint">点击下方「+ 添加模块」可为页面任意区域补充设计说明：在弹窗中选择「关联左侧页面模块」即可自动生成连线；悬停模块可高亮对应区域。</p>
+        <p className="dn-rd-hint">{hint ?? '点击下方「+ 添加模块」可为页面任意区域补充设计说明：在弹窗中选择「关联左侧页面模块」即可自动生成连线；悬停模块可高亮对应区域。'}</p>
         {displayModules.map((m, i) => (
           <DescCard
             key={`${m.id}-${i}`}
             m={m}
             index={i}
-            bindLabel={bindTargets.find((t) => t.id === (m.bind ?? m.id))?.label ?? (m.bind ?? m.id)}
+            bindLabel={protoLabels[m.bind ?? m.id] ?? bindTargets.find((t) => t.id === (m.bind ?? m.id))?.label ?? (m.bind ?? m.id)}
             onEdit={(mod, idx) => setEditing({ m: mod, index: idx })}
             onRemove={removeModule}
           />

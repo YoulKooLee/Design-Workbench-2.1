@@ -7,8 +7,128 @@ import path from 'node:path';
 import { exec, spawn, spawnSync, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { cleanEnvForSpawn, send, sendError, readBody, safeName, parseFrontmatter, extractTriggers } from './lib/utils.mjs';
+import { dwsTodoWatcher } from './dws-todo-watcher.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// 杀子进程树：spawn(shell:true) 拿到的 pid 是 cmd 外壳，只 kill 外壳会把真正的
+// codebuddy 子进程留在后台，且它的 stdout 不关闭 → 'close' 事件永远不触发、请求挂死。
+const killChildTree = (child) => {
+  try {
+    if (process.platform === 'win32' && child && child.pid) {
+      spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { windowsHide: true, timeout: 8000 });
+    } else if (child) {
+      child.kill('SIGKILL');
+    }
+  } catch { try { child && child.kill(); } catch {} }
+};
+
+// ===== 分享包构建任务：后台跑 + 轮询进度 =====
+// 多入口项目 vite build 可能十几分钟，同步等会把请求挂死、前端也像卡住。
+// 因此拆成「提交任务 → 轮询状态」，前端能持续看到已用时长和最后一行日志。
+const shareBuildJobs = new Map();
+let shareBuildSeq = 0;
+
+// 解析项目 → 起一个后台构建任务，立即返回 jobId
+const startShareBuildJob = (dir) => {
+  const pkgPath = path.join(dir, 'package.json');
+  if (!fs.existsSync(pkgPath)) return { ok: false, msg: '该项目没有 package.json，不是可构建的前端工程（静态 HTML 项目可直接分享文件夹）' };
+  let pkg;
+  // 去 BOM：部分工程用 PowerShell/记事本存过 package.json，带 \uFEFF 会让 JSON.parse 直接炸
+  try { pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8').replace(/^\uFEFF/, '')); } catch { return { ok: false, msg: 'package.json 解析失败（格式非法）' }; }
+  const scripts = pkg.scripts || {};
+  const buildScript = scripts.build ? 'build' : (scripts['build:prod'] ? 'build:prod' : '');
+  if (!buildScript) return { ok: false, msg: 'package.json 里没有 build 脚本，无法生成产物' };
+
+  const pm = fs.existsSync(path.join(dir, 'pnpm-lock.yaml')) ? 'pnpm'
+    : fs.existsSync(path.join(dir, 'yarn.lock')) ? 'yarn' : 'npm';
+  // 没有任何依赖就没必要 install（省一次几十秒的无意义等待）
+  const depCount = Object.keys(pkg.dependencies || {}).length + Object.keys(pkg.devDependencies || {}).length;
+  const needInstall = depCount > 0 && !fs.existsSync(path.join(dir, 'node_modules'));
+
+  const id = 'b' + (++shareBuildSeq) + '-' + Date.now().toString(36);
+  const job = {
+    id, dir, status: 'running', startedAt: Date.now(), finishedAt: 0,
+    steps: [], lines: ['准备构建（' + pm + '）…'], msg: '', dist: null, distMb: 0
+  };
+  shareBuildJobs.set(id, job);
+  // 任务只留最近 20 个，避免长期运行累积
+  if (shareBuildJobs.size > 20) {
+    for (const k of shareBuildJobs.keys()) { if (shareBuildJobs.size <= 20) break; shareBuildJobs.delete(k); }
+  }
+
+  const runCmd = (cmd, timeoutMs) => new Promise((resolve) => {
+    job.lines.push('$ ' + cmd);
+    let child;
+    try { child = spawn(cmd, { cwd: dir, shell: true, windowsHide: true, env: cleanEnvForSpawn() }); }
+    catch (e) { return resolve({ code: -1, out: '启动失败：' + String(e.message || e) }); }
+    const onData = (d) => {
+      const text = String(d);
+      for (const ln of text.split(/\r?\n/)) {
+        const t = ln.trim();
+        if (!t) continue;
+        job.lines.push(t.slice(0, 300));
+        if (job.lines.length > 400) job.lines.splice(0, job.lines.length - 400);
+      }
+    };
+    child.stdout.on('data', onData);
+    child.stderr.on('data', onData);
+    const timer = setTimeout(() => { killChildTree(child); resolve({ code: -2, out: '超时' }); }, timeoutMs);
+    child.on('error', (e) => { clearTimeout(timer); resolve({ code: -1, out: String(e.message || e) }); });
+    child.on('close', (code) => { clearTimeout(timer); resolve({ code, out: '' }); });
+  });
+
+  (async () => {
+    try {
+      if (needInstall) {
+        job.steps.push({ step: pm + ' install' });
+        const inst = await runCmd(pm + ' install', 480000);
+        job.steps[job.steps.length - 1].code = inst.code;
+        if (inst.code !== 0) { job.status = 'failed'; job.msg = '依赖安装失败，无法构建'; job.finishedAt = Date.now(); return; }
+      }
+      job.steps.push({ step: pm + ' run ' + buildScript });
+      const build = await runCmd(pm + ' run ' + buildScript, 1500000); // 多入口项目可能要十几分钟
+      job.steps[job.steps.length - 1].code = build.code;
+
+      const dist = path.join(dir, 'dist');
+      if (!fs.existsSync(dist)) {
+        job.status = 'failed';
+        job.msg = build.code === 0
+          ? '构建脚本执行完成但没产出 dist（检查 vite.config 的 build.outDir）'
+          : '构建失败（退出码 ' + build.code + '），详见日志';
+        job.finishedAt = Date.now();
+        return;
+      }
+      let bytes = 0;
+      const walk = (d) => {
+        for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+          const fp = path.join(d, e.name);
+          if (e.isDirectory()) walk(fp);
+          else { try { bytes += fs.statSync(fp).size; } catch {} }
+        }
+      };
+      try { walk(dist); } catch {}
+      job.status = 'done';
+      job.dist = path.relative(dir, dist).replace(/\\/g, '/');
+      job.distMb = +(bytes / 1024 / 1024).toFixed(1);
+      job.msg = '构建完成（' + job.distMb + 'MB）';
+      job.finishedAt = Date.now();
+    } catch (e) {
+      job.status = 'failed';
+      job.msg = '构建异常：' + String(e.message || e);
+      job.finishedAt = Date.now();
+    }
+  })();
+
+  return { ok: true, jobId: id, steps: job.steps.map(s => s.step) };
+};
+
+// CLI 探针缓存必须放模块级：路由处理函数每次请求都会重新执行，函数内声明等于每次清零。
+// 探针要起一个完整 CLI 进程（十几秒），缓存后连续点击不再重复等。
+
+let __cliProbeCache = { at: 0, r: null };
+let __cliVersion = '';
+const cliProbeCacheSet = (r) => { __cliProbeCache = { at: Date.now(), r }; };
 
 // ===== 全局异常兜底：EPIPE 自激防护 =====
 // EPIPE 自激防护（deepseek 诊断）：管道断裂时 console.error 写坏管道会再次触发 uncaughtException -> 自激循环
@@ -983,7 +1103,8 @@ function killNodeProcessesByPath(relative) {
     const needle = abs.replace(/\//g, '\\');
     const ps = spawnSync('powershell', [
       '-NoProfile', '-Command',
-      `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.CommandLine -like '*${needle.replace(/'/g, "''")}*' } | Select-Object -ExpandProperty ProcessId`
+      // 命令行里的路径可能是 / 或 \ 两种写法，先归一化成 \ 再匹配
+      `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { ($_.CommandLine -replace '/', '\\') -like '*${needle.replace(/'/g, "''")}*' } | Select-Object -ExpandProperty ProcessId`
     ], { windowsHide: true, encoding: 'utf8' });
     if (ps.error || !ps.stdout) return { killed: false, pid: 0 };
     const pids = String(ps.stdout).trim().split(/\s+/).map(Number).filter((n) => n > 0);
@@ -995,6 +1116,105 @@ function killNodeProcessesByPath(relative) {
   } catch {
     return { killed: false, pid: 0 };
   }
+}
+
+// ===== Vite 端口池：端口关闭能力 =====
+
+// 端口当前是否有 TCP 监听（用于「关闭端口」前后回验）。
+// netstat -ano 全量约 100~300ms，只在关闭动作里调，不放进高频接口。
+function isPortListening(port) {
+  const n = Number(port);
+  if (!(n > 0)) return false;
+  try {
+    if (process.platform === 'win32') {
+      const r = spawnSync('netstat', ['-ano', '-p', 'TCP'], { windowsHide: true, encoding: 'utf8', timeout: 8000 });
+      if (!r || !r.stdout) return false;
+      return String(r.stdout).split(/\r?\n/).some((ln) => {
+        if (!/LISTENING/i.test(ln)) return false;
+        const m = ln.match(/:(\d+)\s+\S+\s+LISTENING/i);
+        return !!m && Number(m[1]) === n;
+      });
+    }
+    const r = spawnSync('lsof', ['-nP', '-iTCP:' + n, '-sTCP:LISTEN'], { encoding: 'utf8', timeout: 5000 });
+    return !!(r && r.stdout && r.stdout.trim());
+  } catch {
+    return false;
+  }
+}
+
+// 找出监听指定端口的进程 pid（Windows netstat / macOS lsof）。
+function listeningPids(port) {
+  const n = Number(port);
+  if (!(n > 0)) return [];
+  if (process.platform !== 'win32') {
+    try {
+      const r = spawnSync('lsof', ['-t', '-nP', '-iTCP:' + n, '-sTCP:LISTEN'], { encoding: 'utf8', timeout: 5000 });
+      return String((r && r.stdout) || '').trim().split(/\s+/).map(Number).filter((x) => x > 0);
+    } catch { return []; }
+  }
+  const pids = new Set();
+  try {
+    const r = spawnSync('netstat', ['-ano', '-p', 'TCP'], { windowsHide: true, encoding: 'utf8', timeout: 8000 });
+    for (const ln of String((r && r.stdout) || '').split(/\r?\n/)) {
+      if (!/LISTENING/i.test(ln)) continue;
+      const m = ln.match(/:(\d+)\s+\S+\s+LISTENING\s+(\d+)/i);
+      if (m && Number(m[1]) === n) pids.add(Number(m[2]));
+    }
+  } catch { /* ignore */ }
+  return [...pids].filter((x) => x > 0);
+}
+
+// 按端口兜底杀进程，但**先校验归属**：只有命令行指向该项目目录的进程才杀。
+// 这样既支持 Vite 用默认端口（5173 等）的项目，也不会误杀面板自身或其他服务。
+// 注意：命令行含中文，跨进程取回会因控制台编码错乱而匹配失败，
+//      因此归属判定全部在 PowerShell 内完成，只回传纯数字 PID。
+// 返回 { killed, pids, msg }。
+function killProcessOnPortForProject(port, relative) {
+  const n = Number(port);
+  if (!(n > 0)) return { killed: false, pids: [], msg: '' };
+  if (n === PORT) return { killed: false, pids: [], msg: '拒绝关闭工作台面板自身端口' };
+  const rel = String(relative || '').replace(/\\/g, '/');
+  if (!rel) return { killed: false, pids: [], msg: '缺少项目路径，无法确认端口归属' };
+
+  const pids = listeningPids(n);
+  if (!pids.length) return { killed: false, pids: [], msg: '' };
+
+  if (process.platform !== 'win32') {
+    for (const pid of pids) { try { process.kill(pid, 'SIGKILL'); } catch { /* ignore */ } }
+    return { killed: true, pids, msg: '' };
+  }
+
+  const abs = path.resolve(AXHUB_ROOT, rel).replace(/\//g, '\\');
+  const script = [
+    "$abs = '" + abs.replace(/'/g, "''") + "'",
+    '$owned = @(); $foreign = @()',
+    'foreach ($p in @(' + pids.join(',') + ')) {',
+    "  $cl = (Get-CimInstance Win32_Process -Filter \"ProcessId=$p\").CommandLine",
+    "  if ($cl) { $cl2 = ($cl -replace '/', '\\') } else { $cl2 = '' }",
+    '  if ($cl2.IndexOf($abs, [StringComparison]::OrdinalIgnoreCase) -ge 0) { $owned += $p } else { $foreign += $p }',
+    '}',
+    '($owned -join ",") + "|" + ($foreign -join ",")',
+  ].join('\n');
+
+  const r = spawnSync('powershell', ['-NoProfile', '-Command', script], {
+    windowsHide: true, encoding: 'utf8', timeout: 15000,
+  });
+  const raw = String((r && r.stdout) || '').trim();
+  const parts = raw.split('|');
+  const owned = String(parts[0] || '').split(',').map(Number).filter((x) => x > 0);
+  const foreign = String(parts[1] || '').split(',').map(Number).filter((x) => x > 0);
+
+  if (!owned.length) {
+    if (!foreign.length) return { killed: false, pids: [], msg: '' }; // 探测间隙端口已释放
+    return {
+      killed: false, pids: [],
+      msg: '端口 ' + n + ' 被其他进程占用（不属于该项目），已跳过：' + foreign.map((p) => 'PID ' + p).join('、'),
+    };
+  }
+  for (const pid of owned) {
+    spawnSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true });
+  }
+  return { killed: true, pids: owned, msg: '' };
 }
 
 // 在"干净环境"（剔除 CodeBuddy safe-delete shim）下 spawn 一个 Node 子进程执行 fs 操作，
@@ -1397,7 +1617,13 @@ const server = http.createServer(async (req, res) => {
     if (!addR.ok) { try { fs.unlinkSync(tmpMsg); } catch { /* ignore */ } return sendError(res, '暂存失败：' + (addR.stderr || addR.stdout).slice(0, 200), 500); }
     const r = await gitExec(dir, `commit -q -F "${tmpMsg.replace(/\\/g, '/')}"`);
     try { fs.unlinkSync(tmpMsg); } catch { /* ignore */ }
-    if (!r.ok) return sendError(res, '提交失败：' + (r.stderr || r.stdout).slice(0, 200), 500);
+    if (!r.ok) {
+      const raw = (r.stderr || r.stdout || '');
+      const friendly = /nothing to commit/i.test(raw)
+        ? '当前项目没有改动内容，无需提交新版本'
+        : '提交失败：' + raw.slice(0, 200);
+      return sendError(res, friendly, 500);
+    }
     return send(res, 200, { ok: true, msg: '已提交：' + msg });
   }
 
@@ -2236,6 +2462,42 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true, agents: stopped.agents, projects: stopped.projects });
   }
 
+  // POST /api/context/stop-port：关闭某个项目的 Vite 端口（真杀进程，不只是改状态）。
+  // 参数 { relative, port }。两步走：① 按项目心跳/命令行精确杀进程树；② 端口仍在监听则按端口兜底杀。
+  // 最后回验端口是否释放，让前端能区分「已关闭」和「进程没了但端口仍被占」。
+  if (p === '/api/context/stop-port' && method === 'POST') {
+    const { relative, port } = await readBody(req);
+    const rel = String(relative || '').replace(/\\/g, '/');
+    const n = Number(port) || 0;
+    if (!rel && !n) return sendError(res, '缺少 relative 或 port');
+    if (rel) {
+      const dir = safeResolve(rel);
+      if (!dir) return sendError(res, SAFE_RESOLVE_MSG);
+    }
+    // ① 精确杀：心跳 pid + 命令行含项目绝对路径的 node 进程（含 vite/esbuild 子进程树）
+    const byProject = rel ? killProjectProcess(rel) : { killed: false, pid: 0 };
+    // ② 兜底杀：上一步之后端口还占着，说明真正持有者是别的进程（心跳过期/子进程逃逸）。
+    //    会先校验该进程命令行确实指向本项目才动手，避免误杀面板自身或其他服务。
+    let byPort = { killed: false, pids: [], msg: '' };
+    if (n && isPortListening(n)) byPort = killProcessOnPortForProject(n, rel);
+    // ③ 清状态，避免卡片继续显示「运行中」
+    if (rel) markProjectStopped(readWorkspaceCtx(), rel);
+    // ④ 回验
+    const listening = n ? isPortListening(n) : false;
+    const killed = !!(byProject.killed || byPort.killed);
+    const pids = (byPort.pids && byPort.pids.length) ? byPort.pids : (byProject.pid ? [byProject.pid] : []);
+    if (listening) {
+      return send(res, 200, {
+        ok: false, killed, pids, port: n, listening: true,
+        msg: byPort.msg || '进程已终止，但端口仍被其他进程占用，请稍后重试',
+      });
+    }
+    return send(res, 200, {
+      ok: true, killed, pids, port: n, listening: false,
+      msg: killed ? '已关闭' : '该端口当前没有监听进程（状态已重置）',
+    });
+  }
+
   // POST /api/context/cleanup-stale：清理工作台/项目级的"陈旧"状态文件。
   // 适用场景：进程被 kill 但心跳/current.json 没清，导致工作台徽标误显示"运行中"。
   // 实际有没有进程活着由调用方确认；这里只负责清文件。
@@ -2451,7 +2713,7 @@ const server = http.createServer(async (req, res) => {
   // ===== 通信看板概览（09-协作） =====
   if (p === '/api/collab/overview' && method === 'GET') {
     const colRoot = path.join(AXHUB_ROOT, '09-协作');
-    const out = { ok: true, rooms: [], agents: [], messages: { inbox: {}, outbox: {} }, roomsTotal: 0, messagesTotal: { inbox: 0, outbox: 0 } };
+    const out = { ok: true, rooms: [], agents: [], messages: { inbox: {}, outbox: {}, unread: {} }, roomsTotal: 0, messagesTotal: { inbox: 0, outbox: 0, unread: 0 } };
     try {
       // 房间：名称 + 任务说明 + 消息条数（messages.jsonl 行数）+ 产物目录
       const roomsDir = path.join(colRoot, 'rooms');
@@ -2466,9 +2728,17 @@ const server = http.createServer(async (req, res) => {
           }
           const taskF = path.join(rp, '00-任务说明.md');
           if (fs.existsSync(taskF)) {
-            try { info.task = fs.readFileSync(taskF, 'utf8').slice(0, 200).replace(/\s+/g, ' '); } catch { info.task = ''; }
+            try { info.task = fs.readFileSync(taskF, 'utf8').slice(0, 1500).replace(/\s+/g, ' '); } catch { info.task = ''; }
           }
           info.hasArtifacts = fs.existsSync(path.join(rp, '产物'));
+          // 房间状态徽标 + 最近小结时间（旧房间无记录时给空默认，前端兜底为「进行中」弱化显示）
+          try {
+            const stateF = path.join(rp, 'room-state.json');
+            info.status = null;
+            if (fs.existsSync(stateF)) { try { info.status = JSON.parse(fs.readFileSync(stateF, 'utf8')).status || null; } catch { info.status = null; } }
+            const noteF = path.join(rp, '助理进展.md');
+            info.assistant = { hasNote: fs.existsSync(noteF), lastGeneratedAt: fs.existsSync(noteF) ? fs.statSync(noteF).mtime.toISOString() : null };
+          } catch { info.assistant = { hasNote: false, lastGeneratedAt: null }; }
           out.rooms.push(info);
         }
       }
@@ -2480,20 +2750,60 @@ const server = http.createServer(async (req, res) => {
           return { name: d.name, online: !!(hb && hb.online), lastSeen: hb ? new Date(hb.at).toISOString() : null };
         });
       }
-      // 消息统计（inbox/outbox 按智能体子目录计 json 数）
+      // 房间最后活动时间 + 任务摘要：去掉任务说明里的元信息行（创建人/时间/参与者/状态），
+      // 只留任务名与实质内容，避免把 markdown 原文整段塞进表格单元格
+      for (const r of out.rooms) {
+        try { r.lastActive = fs.statSync(path.join(roomsDir, r.name, 'messages.jsonl')).mtime.toISOString(); } catch { r.lastActive = null; }
+        r.task = String(r.task || '')
+          .replace(/^#+\s*/gm, '')
+          .replace(/-\s*(创建时间|创建人|参与者|状态|接棒人)\s*[：:].*?(?=\s-\s|$)/g, '')
+          .replace(/##+\s*(任务说明|任务目标|进展|结论|下一步|说明)\s*/g, '')
+          .replace(/[（(]由创建者补充任务目标[)）]/g, '')
+          .replace(/\[[\w]+\s+\d{4}-\d{2}-\d{2}T[^\]]*\]/g, '')
+          .replace(/\*\*|__|`+/g, '')
+          .replace(/^\s*[-*+]\s+/gm, '')
+          .replace(/^\s*[-|]+\s*$/gm, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 90);
+        if (!r.task) r.task = '（无任务说明）';
+      }
+      // 消息统计（inbox/outbox 按智能体子目录计 json 数；inbox 额外统计 status=unread）
       for (const box of ['inbox', 'outbox']) {
         const bd = path.join(colRoot, 'messages', box);
         if (!fs.existsSync(bd)) continue;
         const ags = fs.readdirSync(bd, { withFileTypes: true }).filter(d => d.isDirectory());
         for (const a of ags) {
           try {
-            const n = fs.readdirSync(path.join(bd, a.name)).filter(f => f.endsWith('.json')).length;
-            out.messages[box][a.name] = n;
-            out.messagesTotal[box] += n;
-          } catch { out.messages[box][a.name] = 0; }
+            const dir = path.join(bd, a.name);
+            const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+            out.messages[box][a.name] = files.length;
+            out.messagesTotal[box] += files.length;
+            if (box === 'inbox') {
+              let u = 0;
+              for (const f of files) {
+                try {
+                  const m = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+                  const st = String(m.status || 'unread');
+                  if (st === 'unread') u++;
+                } catch { /* 单条消息解析失败不影响整体统计 */ }
+              }
+              out.messages.unread[a.name] = u;
+              out.messagesTotal.unread += u;
+            }
+          } catch { out.messages[box][a.name] = 0; if (box === 'inbox') out.messages.unread[a.name] = 0; }
         }
       }
       out.roomsTotal = out.rooms.length;
+      // 监听器状态：心跳是 watcher 写的，全部过期即代表 watcher 没在跑。
+      // 看板据此说明「为什么 0 个在线」，并给出一键恢复入口，避免用户只看到一片灰。
+      const hbTimes = out.agents.map(a => (a.lastSeen ? Date.parse(a.lastSeen) : 0)).filter(n => Number.isFinite(n) && n > 0);
+      const latestHb = hbTimes.length ? Math.max(...hbTimes) : 0;
+      out.watcher = {
+        running: latestHb > 0 && (Date.now() - latestHb) <= HEARTBEAT_TTL_MS,
+        lastHeartbeatAt: latestHb ? new Date(latestHb).toISOString() : null,
+        staleMinutes: latestHb ? Math.max(0, Math.round((Date.now() - latestHb) / 60000)) : null
+      };
     } catch (e) {
       return send(res, 500, { ok: false, msg: e.message });
     }
@@ -2648,6 +2958,118 @@ const server = http.createServer(async (req, res) => {
       };
       fs.writeFileSync(path.join(outboxDir, om.message_id + '.json'), JSON.stringify(om, null, 2), 'utf8');
       return send(res, 200, { ok: true, msg: `已回复房间 ${name}（confirm，通知 ${sentTo} 个智能体）`, participants: Array.from(participants).filter(a => a !== 'doubao') });
+    } catch (e) {
+      return send(res, 500, { ok: false, msg: e.message });
+    }
+  }
+
+  // GET /api/collab/arbitration（旧路径 /api/collab/todo 保留兼容）
+  // 口径纠正：智能体之间的日常私信往来（ask/review/ack/info）不需要产品经理介入——它们自己会在房间里收敛。
+  // 只有 rooms 里出现「多智能体僵住 / 明确点名请你拍板」才进待办；私信未读一律只做数字统计。
+  //   ① 点名：房间末尾 12 条里出现「请用户裁定 / 等你决定 / 交你拍板」之类，且该条之后用户还没发言
+  //   ② 僵持：末尾 6 条全是智能体、≥2 个不同智能体、ask/review ≥3 轮，且最近 3 天内还在动
+  // 7~30 天内曾点名但此后没动静的房间 → 只计入 staleCount（折叠，不占版面）。
+  if ((p === '/api/collab/arbitration' || p === '/api/collab/todo') && method === 'GET') {
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const roomsDir = path.join(colRoot, 'rooms');
+    const limit = Math.min(50, Math.max(1, parseInt(url.searchParams.get('limit') || '20', 10) || 20));
+    const STRONG = /(请|待|需|由|交)\s*(用户|你)\s*.{0,10}(裁定|决定|确认|拍板|仲裁|定夺|选择)/;
+    const FOCUS = /(裁定|仲裁|拍板|定夺|分歧|纠纷|僵持|请你选|你来定)/;
+    const items = [];
+    let staleCount = 0;
+    let roomCount = 0;
+    let dirs = [];
+    try { dirs = fs.readdirSync(roomsDir, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name); } catch { dirs = []; }
+    for (const name of dirs) {
+      const ml = path.join(roomsDir, name, 'messages.jsonl');
+      if (!fs.existsSync(ml)) continue;
+      roomCount++;
+      let ms = [];
+      try {
+        ms = fs.readFileSync(ml, 'utf8').split('\n').filter(l => l.trim())
+          .map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+      } catch { continue; }
+      if (!ms.length) continue;
+      const last = ms[ms.length - 1];
+      const lastAt = String(last.ts || '');
+      const ageH = lastAt ? (Date.now() - Date.parse(lastAt)) / 36e5 : 1e9;
+      if (!Number.isFinite(ageH) || ageH > 30 * 24) continue;   // 一个月没动的房间不再打扰
+
+      // 取命中句：从消息正文里挑第一句含「裁定/分歧」的话，讲清楚到底要决策什么
+      const pickAsk = (txt) => {
+        const s = String(txt || '').replace(/\r/g, '').replace(/\*\*|__|`/g, '');
+        const sentences = s.split(/[。！？\n]+/).map(x => x.trim()).filter(Boolean);
+        const hit = sentences.find(x => FOCUS.test(x));
+        return (hit || sentences[0] || s).replace(/\s+/g, ' ').slice(0, 140);
+      };
+
+      const lastUserIdx = ms.reduce((acc, m, i) => (m.from === 'user' ? i : acc), -1);
+      const winStart = Math.max(0, ms.length - 12);
+      let askMsg = null;
+      for (let i = ms.length - 1; i >= winStart; i--) {
+        if (i <= lastUserIdx) break;                       // 用户已经回过话，说明这件事过去了
+        const m = ms[i];
+        if (m.from === 'user') continue;
+        if (STRONG.test(String(m.content || ''))) { askMsg = m; break; }
+      }
+
+      const tail = ms.slice(-6);
+      const froms = Array.from(new Set(tail.map(m => m.from).filter(Boolean)));
+      const rounds = tail.filter(m => /^(ask|review|handoff)$/.test(String(m.intent || ''))).length;
+      const stalemate = tail.length >= 6 && !tail.some(m => m.from === 'user')
+        && froms.filter(f => f !== 'user').length >= 2 && rounds >= 3 && ageH <= 72;
+
+      if (askMsg && ageH <= 7 * 24) {
+        items.push({
+          room: name,
+          kind: 'ask',
+          ask: pickAsk(askMsg.content),
+          quote: String(askMsg.content || '').replace(/\s+/g, ' ').slice(0, 400),
+          by: String(askMsg.from || ''),
+          participants: Array.from(new Set(ms.map(m => m.from).filter(x => x && x !== 'user'))),
+          lastAt, ageHours: Math.round(ageH), rounds
+        });
+      } else if (stalemate) {
+        items.push({
+          room: name,
+          kind: 'stalemate',
+          ask: '双方 ' + rounds + ' 轮往来仍未收敛：' + pickAsk(last.content),
+          quote: String(last.content || '').replace(/\s+/g, ' ').slice(0, 400),
+          by: String(last.from || ''),
+          participants: froms.filter(f => f !== 'user'),
+          lastAt, ageHours: Math.round(ageH), rounds
+        });
+      } else if (askMsg) {
+        staleCount++;                                       // 7 天前点名、之后没动静：只计数
+      }
+    }
+    // 越新、越明确点名越靠前
+    items.sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'ask' ? -1 : 1) || String(b.lastAt).localeCompare(String(a.lastAt)));
+    const byKind = items.reduce((o, x) => { o[x.kind] = (o[x.kind] || 0) + 1; return o; }, {});
+    return send(res, 200, { ok: true, total: items.length, byKind, staleCount, roomCount, items: items.slice(0, limit) });
+  }
+
+  // POST /api/collab/ack  { box, file }：把本方收件箱里的一条消息标记为已处理（read）
+  // 通道纪律：只允许改 user / workbuddy 自己的 inbox 副本，不碰其他智能体的邮箱与任何 outbox。
+  if (p === '/api/collab/ack' && method === 'POST') {
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    try {
+      const bd = await readBody(req);
+      const box = String((bd && bd.box) || '').trim();
+      const file = String((bd && bd.file) || '').trim();
+      if (!['user', 'workbuddy'].includes(box)) return send(res, 403, { ok: false, msg: '只允许标记自己的收件箱' });
+      if (!file || file.includes('/') || file.includes('\\') || file.includes('..') || !file.endsWith('.json')) {
+        return send(res, 400, { ok: false, msg: '非法文件名' });
+      }
+      const fp = path.join(colRoot, 'messages', 'inbox', box, file);
+      if (!fs.existsSync(fp)) return send(res, 404, { ok: false, msg: '消息不存在' });
+      const m = JSON.parse(fs.readFileSync(fp, 'utf8'));
+      m.status = 'read';
+      m.read_at = new Date().toISOString();
+      const tmp = fp + '.tmp';
+      fs.writeFileSync(tmp, JSON.stringify(m, null, 2), 'utf8');
+      fs.renameSync(tmp, fp);
+      return send(res, 200, { ok: true, msg: '已标记为已处理' });
     } catch (e) {
       return send(res, 500, { ok: false, msg: e.message });
     }
@@ -3097,7 +3519,21 @@ const server = http.createServer(async (req, res) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return sendError(res, '日期格式应为 YYYY-MM-DD', 400);
     const d = readJson(DAILY_FILE, { reports: [], projects: [] });
     d.reports = (d.reports || []).filter(r => r.date !== date);
-    d.reports.push({ date, items: Array.isArray(b.items) ? b.items.filter(i => i && i.project && String(i.text || '').trim()) : [], overtime: !!b.overtime });
+    d.reports.push({
+      date,
+      items: Array.isArray(b.items)
+        ? b.items.map(i => {
+            const project = String((i && i.project) || '').trim();
+            const text = String((i && i.text) || '').trim();
+            if (!project || !text) return null;
+            let h = Number(i && i.hours);
+            if (!isFinite(h) || h < 0) h = 0;
+            h = Math.round(h * 10) / 10;
+            return { project, text, hours: h };
+          }).filter(Boolean)
+        : [],
+      overtime: !!b.overtime,
+    });
     d.reports.sort((a, b) => (a.date < b.date ? -1 : 1));
     if (Array.isArray(b.projects)) {
       d.projects = [...new Set([...(d.projects || []), ...b.projects.map(x => String(x).trim()).filter(Boolean)])];
@@ -3157,28 +3593,951 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true, msg: '已删除' });
   }
 
+  // ===== 待办事项（钉钉 dws 同步 + 手动新增兼容旧需求池）=====
+  // GET /api/todos：合并返回钉钉同步项 + 手动项
+  if (p === '/api/todos' && method === 'GET') {
+    const ding = dwsTodoWatcher.readTodos().items || [];
+    const manual = (readJson(REQ_FILE, { items: [] }).items || []).map(x => ({
+      id: x.id, source: 'manual', taskId: '', title: x.title, project: x.project || '',
+      priority: x.priority, statusStage: x.status === '已完成' ? 2 : (x.status === '进行中' ? 1 : 0),
+      planFinishDate: '', description: x.description || '', createdAt: x.createdAt, updatedAt: x.updatedAt,
+    }));
+    return send(res, 200, { ok: true, items: [...ding, ...manual], watcher: dwsTodoWatcher.status() });
+  }
+  // POST /api/todos：手动新增（写入旧 requirements.json 保持兼容）
+  if (p === '/api/todos' && method === 'POST') {
+    const b = await readBody(req);
+    const d = readJson(REQ_FILE, { items: [] });
+    const items = d.items || [];
+    items.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      title: String(b.title || '未命名待办'), project: String(b.project || ''),
+      priority: b.priority || '中', status: b.status || '待处理',
+      description: typeof b.description === 'string' ? b.description : '',
+      createdAt: Date.now(), updatedAt: Date.now(),
+    });
+    d.items = items;
+    writeJson(REQ_FILE, d);
+    return send(res, 200, { ok: true, msg: '已保存' });
+  }
+  // POST /api/todos/delete：钉钉项加入本地隐藏名单并移除（钉钉服务器保留）；手动项删 requirements.json
+  if (p === '/api/todos/delete' && method === 'POST') {
+    const b = await readBody(req);
+    if (String(b.id || '').startsWith('ding-')) {
+      const tid = String(b.id).replace(/^ding-/, '');
+      dwsTodoWatcher.addHidden(tid);
+      dwsTodoWatcher.deleteTodo(tid);
+      return send(res, 200, { ok: true, msg: '已从工作台移除（钉钉服务器待办保留，如需彻底删除请到钉钉客户端操作）' });
+    }
+    const d = readJson(REQ_FILE, { items: [] });
+    d.items = (d.items || []).filter(x => x.id !== b.id);
+    writeJson(REQ_FILE, d);
+    return send(res, 200, { ok: true, msg: '已删除' });
+  }
+  // POST /api/todos/state：变更状态。钉钉 done/reopen 回写钉钉；doing 钉钉不支持仅本地；手动项写 requirements.json
+  if (p === '/api/todos/state' && method === 'POST') {
+    const b = await readBody(req);
+    const id = String(b.id || '');
+    const action = String(b.action || ''); // doing 进行中 / done 完成 / reopen 重新打开
+    if (!id) return send(res, 200, { ok: false, msg: '缺少待办 id' });
+    if (id.startsWith('ding-')) {
+      const tid = id.replace(/^ding-/, '');
+      if (action === 'done') {
+        const r = await dwsTodoWatcher.setDoneRemote(tid, true);
+        return send(res, 200, r.ok ? { ok: true, msg: '已在钉钉标记完成' } : { ok: false, msg: '钉钉标记完成失败：' + r.msg });
+      }
+      if (action === 'reopen') {
+        const r = await dwsTodoWatcher.setDoneRemote(tid, false);
+        return send(res, 200, r.ok ? { ok: true, msg: '已在钉钉重新打开' } : { ok: false, msg: '钉钉重开失败：' + r.msg });
+      }
+      if (action === 'doing') {
+        dwsTodoWatcher.setLocalStage(tid, 1);
+        return send(res, 200, { ok: true, localOnly: true, msg: '钉钉暂不支持“进行中”状态，已仅在工作台本地标记' });
+      }
+      return send(res, 200, { ok: false, msg: '未知动作' });
+    }
+    const d = readJson(REQ_FILE, { items: [] });
+    const it = (d.items || []).find(x => x.id === id);
+    if (!it) return send(res, 200, { ok: false, msg: '未找到该待办' });
+    const statusMap = { doing: '进行中', done: '已完成', reopen: '待处理' };
+    if (!statusMap[action]) return send(res, 200, { ok: false, msg: '未知动作' });
+    Object.assign(it, { status: statusMap[action], updatedAt: Date.now() });
+    writeJson(REQ_FILE, d);
+    return send(res, 200, { ok: true, msg: '状态已更新' });
+  }
+  // POST /api/todos/sync：手动从钉钉全量拉取待办（不再定时轮询，点按钮触发）
+  if (p === '/api/todos/sync' && method === 'POST') {
+    const r = await dwsTodoWatcher.syncFullOnce();
+    if (!r.ok) return send(res, 200, { ok: false, count: 0, msg: '同步失败：' + (r.reason || r.msg || '未知错误') });
+    return send(res, 200, { ok: true, count: r.count, msg: '已从钉钉同步 ' + r.count + ' 条待办' });
+  }
+  // GET /api/todos/status：watcher 连接状态
+  if (p === '/api/todos/status' && method === 'GET') {
+    return send(res, 200, { ok: true, ...dwsTodoWatcher.status() });
+  }
+
+  // ===== 周报 / 季报 / 年报文本（服务端存储，消除桌面端 file:// 与 Web 端 http:// 的 localStorage 双源隔离）=====
+  const REPORTS_FILE = path.join(OFFICE_DIR, 'reports.json');
+  const REPORT_KINDS = ['weekly', 'quarterly', 'yearly'];
+
+  if (p === '/api/reports' && method === 'GET') {
+    const d = readJson(REPORTS_FILE, {});
+    const out = {};
+    for (const k of REPORT_KINDS) out[k] = (d && d[k]) || {};
+    return send(res, 200, { ok: true, reports: out });
+  }
+
+  if (p === '/api/reports' && method === 'POST') {
+    const b = await readBody(req);
+    const kind = String(b.kind || '');
+    const key = String(b.key || '').trim();
+    if (!REPORT_KINDS.includes(kind)) return sendError(res, 'kind 必须是 weekly / quarterly / yearly', 400);
+    if (!key || key.length > 60) return sendError(res, 'key 非法', 400);
+    const text = typeof b.text === 'string' ? b.text.slice(0, 200000) : '';
+    const d = readJson(REPORTS_FILE, {});
+    d[kind] = d[kind] || {};
+    if (text.trim()) d[kind][key] = { text, updatedAt: Date.now() };
+    else delete d[kind][key];
+    writeJson(REPORTS_FILE, d);
+    return send(res, 200, { ok: true, msg: text.trim() ? '已保存到云端' : '已清空' });
+  }
+
+  // 批量导入：首次打开时把浏览器 localStorage 里的历史报告迁到服务端（服务端已有则不覆盖）
+  if (p === '/api/reports/import' && method === 'POST') {
+    const b = await readBody(req);
+    const src = (b && b.reports) || {};
+    const d = readJson(REPORTS_FILE, {});
+    let imported = 0, skipped = 0;
+    for (const kind of REPORT_KINDS) {
+      const srcKind = src[kind];
+      if (!srcKind || typeof srcKind !== 'object') continue;
+      d[kind] = d[kind] || {};
+      for (const [key, val] of Object.entries(srcKind)) {
+        const text = typeof val === 'string' ? val : (val && val.text) || '';
+        if (!text.trim()) continue;
+        if (d[kind][key] && d[kind][key].text) { skipped++; continue; }
+        d[kind][key] = { text, updatedAt: Date.now(), migrated: true };
+        imported++;
+      }
+    }
+    if (imported) writeJson(REPORTS_FILE, d);
+    return send(res, 200, { ok: true, imported, skipped });
+  }
+
+  // ===== 数据导出备份：日报 / 需求池 / 报告文本全部落在本机 08-办公 下，损坏即全失，
+  // 因此提供两条出口：GET 走浏览器下载（Web 端用），POST 直接落盘到 08-办公/exports（桌面端用）。
+  if (p === '/api/export/all' && method === 'GET') {
+    const payload = {
+      schema: 'workbench-backup/1',
+      exportedAt: new Date().toISOString(),
+      daily: readJson(DAILY_FILE, { reports: [], projects: [] }),
+      requirements: readJson(REQ_FILE, { items: [] }),
+      reports: readJson(REPORTS_FILE, {})
+    };
+    const fn = 'workbench-backup-' + ymdOf(new Date()) + '.json';
+    res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${fn}"`,
+      'Cache-Control': 'no-store'
+    });
+    res.end(JSON.stringify(payload, null, 2));
+    return;
+  }
+
+  if (p === '/api/export/save' && method === 'POST') {
+    const b = await readBody(req);
+    const kind = String(b.kind || 'all');
+    const dir = path.join(OFFICE_DIR, 'exports');
+    const stamp = ymdOf(new Date()) + '-' + String(new Date().getHours()).padStart(2, '0') + String(new Date().getMinutes()).padStart(2, '0');
+    let name = '', content = '';
+    if (kind === 'csv') {
+      const d = readJson(DAILY_FILE, { reports: [] });
+      const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+      const lines = ['日期,项目,工作内容,加班'];
+      for (const r of (d.reports || [])) {
+        const items = Array.isArray(r.items) ? r.items : [];
+        if (!items.length) lines.push([r.date, '', '', r.overtime ? '是' : '否'].map(q).join(','));
+        for (const it of items) lines.push([r.date, it.project || '', it.text || '', r.overtime ? '是' : '否'].map(q).join(','));
+      }
+      name = 'daily-' + stamp + '.csv';
+      content = '\uFEFF' + lines.join('\r\n'); // BOM：让 Excel 正确识别 UTF-8 中文
+    } else {
+      name = 'workbench-backup-' + stamp + '.json';
+      content = JSON.stringify({
+        schema: 'workbench-backup/1',
+        exportedAt: new Date().toISOString(),
+        daily: readJson(DAILY_FILE, { reports: [], projects: [] }),
+        requirements: readJson(REQ_FILE, { items: [] }),
+        reports: readJson(REPORTS_FILE, {})
+      }, null, 2);
+    }
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+      const fp = path.join(dir, name);
+      fs.writeFileSync(fp, content, 'utf8');
+      return send(res, 200, { ok: true, msg: '已导出到 08-办公/exports/' + name, path: fp, name, dir });
+    } catch (e) {
+      return sendError(res, '导出失败：' + e.message, 500);
+    }
+  }
+
+  // ===== AI 生成通道 =====
+  // 两条腿走路：
+  //   ① 本地 ai.config.json 配的 OpenAI 兼容端点（最稳：不依赖 CLI 登录态，任何兼容服务都能接）
+  //   ② CodeBuddy CLI（要求本机 CLI 已登录；独立子进程拿不到宿主 OAuth 时会静默无输出）
+  // 两条都不通时，报告生成退回本地模板草稿，绝不让按钮变成死路。
+  const AI_CONFIG_FILE = path.join(__dirname, 'ai.config.json');
+  const readAiConfig = () => {
+    try {
+      const c = JSON.parse(fs.readFileSync(AI_CONFIG_FILE, 'utf8'));
+      if (c && c.apiKey && c.baseUrl && c.model) return c;
+      return null;
+    } catch { return null; }
+  };
+  // CLI 探针：--version 只能证明装没装，证明不了登录态。
+  // 真正能出字才算可用——这就是之前「健康检查通过、点生成却空等 150 秒」的根因。
+  // 探针要起一个完整 CLI 进程，很贵（十几秒），结果缓存 5 分钟，避免每次点生成都白等。
+  const cliProbe = () => {
+    if (__cliProbeCache.r && Date.now() - __cliProbeCache.at < 300000) return __cliProbeCache.r;
+    let result;
+    try {
+      const r = spawnSync('codebuddy.cmd', ['-p', '--max-turns', '1', '只回复两个字：可用'],
+        { encoding: 'utf8', timeout: 12000, shell: true, windowsHide: true, env: cleanEnvForSpawn() });
+      const out = String((r && r.stdout) || '').trim();
+      const err = String((r && r.stderr) || '').trim();
+      if (out) result = { ok: true, out: out.slice(0, 40) };
+      else {
+        // 空输出：把最可能的原因挑出来，别让用户猜
+        let hint = 'CLI 无输出（多为未登录，或本进程环境不允许嵌套调用 CLI）';
+        if (/Authentication Provider/i.test(err)) hint = 'CLI 未登录（找不到认证 provider），请先在终端运行 codebuddy 完成登录';
+        else if (/ENOENT|not recognized/i.test(err)) hint = '未安装 CodeBuddy CLI';
+        else if (err) hint = err.slice(0, 160);
+        result = { ok: false, msg: hint };
+      }
+    } catch (e) { result = { ok: false, msg: 'CLI 探测失败：' + String(e.message || e).slice(0, 120) }; }
+    cliProbeCacheSet(result);
+    return result;
+  };
+  // OpenAI 兼容 chat/completions（DeepSeek、通义、硅基流动、LM Studio 等都能填）
+  const callModelHttp = async (prompt, cfg) => {
+    const url = String(cfg.baseUrl).replace(/\/+$/, '') + '/chat/completions';
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), Math.max(20000, Math.min(300000, Number(cfg.timeoutMs) || 120000)));
+    try {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + cfg.apiKey },
+        body: JSON.stringify({
+          model: cfg.model,
+          messages: [
+            { role: 'system', content: cfg.systemPrompt || '你是产品经理的工作助手，只输出成稿正文，不要任何解释或前后缀。' },
+            { role: 'user', content: prompt }
+          ],
+          temperature: Number(cfg.temperature) >= 0 ? Number(cfg.temperature) : 0.3,
+          stream: false
+        }),
+        signal: ac.signal
+      });
+      const txt = await r.text();
+      if (!r.ok) return { ok: false, msg: '模型接口 ' + r.status + '：' + txt.slice(0, 200) };
+      let data; try { data = JSON.parse(txt); } catch { return { ok: false, msg: '模型返回非 JSON：' + txt.slice(0, 160) }; }
+      const text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '').trim();
+      if (!text) return { ok: false, msg: '模型返回空内容' };
+      return { ok: true, text, model: cfg.model };
+    } catch (e) {
+      return { ok: false, msg: e.name === 'AbortError' ? '模型请求超时' : '模型请求失败：' + String(e.message || e).slice(0, 160) };
+    } finally { clearTimeout(timer); }
+  };
+
+  // 起一个 CLI 子进程跑生成：返回 Promise，超时杀进程树并立刻 resolve（不等 close）
+  const runCli = (prompt, timeoutMs) => new Promise((resolve) => {
+    let done = false;
+    const finish = (r) => { if (!done) { done = true; resolve(r); } };
+    let child;
+    try {
+      child = spawn('codebuddy.cmd', ['-p', '--tools', '', '--permission-mode', 'dontAsk'],
+        { shell: true, windowsHide: true, env: cleanEnvForSpawn() });
+    } catch (e) { return finish({ ok: false, msg: '启动 CLI 失败：' + String(e.message || e) }); }
+    let out = '', errOut = '';
+    child.stdout.on('data', d => { out += d; });
+    child.stderr.on('data', d => { errOut += d; });
+    child.on('error', e => finish({ ok: false, msg: '启动 CLI 失败：' + String(e.message || e) }));
+    const timer = setTimeout(() => { killChildTree(child); finish({ ok: false, msg: 'CLI 超时' }); }, timeoutMs || 90000);
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      const t = (out || '').trim();
+      if (code === 0 && t) return finish({ ok: true, text: t });
+      finish({ ok: false, msg: (errOut || '').trim().slice(0, 160) || ('CLI 退出码 ' + code + '，无输出') });
+    });
+    try { child.stdin.write(prompt); child.stdin.end(); } catch {}
+  });
+
+  // 每次生成都留档：08-办公/汇报/<kind>-<时间戳>.md（用户要求产物落本地，方便直接打开/发给别人）
+  const archiveReport = (kind, range, text, source) => {
+    try {
+      const d = path.join(OFFICE_DIR, '汇报');
+      fs.mkdirSync(d, { recursive: true });
+      const now = new Date();
+      const stamp = ymdOf(now) + '-' + String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0');
+      const name = kind + '-' + stamp + '.md';
+      const head = '# ' + ({ weekly: '周报', oral: '口头汇报', quarterly: '季度报告', yearly: '年终总结' }[kind] || kind) +
+        (range ? '（' + range + '）' : '') + '\n\n> 生成方式：' + source + ' · ' + now.toLocaleString('zh-CN') + '\n\n';
+      fs.writeFileSync(path.join(d, name), head + text + '\n', 'utf8');
+      return path.join(d, name);
+    } catch { return null; }
+  };
+
+  // AI 能力预检：告诉前端「现在会走哪条通道」，用户不用猜为什么点不动
+  if (p === '/api/ai/health' && method === 'GET') {
+    const cfg = readAiConfig();
+    let cli = { ok: false, msg: '未检测' };
+    let version = __cliVersion || '';
+    if (!version) {
+      try {
+        const v = spawnSync('codebuddy.cmd', ['--version'], { encoding: 'utf8', timeout: 10000, shell: true, windowsHide: true, env: cleanEnvForSpawn() });
+        version = String((v && v.stdout) || '').trim().split('\n')[0].slice(0, 40);
+        __cliVersion = version;
+      } catch {}
+    }
+    if (!cfg) cli = cliProbe();               // 没配 HTTP 端点才去探 CLI（探针本身要花几秒）
+    const channel = cfg ? 'http' : (cli.ok ? 'cli' : 'none');
+    const msg = cfg ? ''
+      : cli.ok ? ''
+        : '未配置模型通道，生成会退回本地模板草稿。填好 工作台面板/ai.config.json 后即可用 AI 归纳。';
+    return send(res, 200, {
+      ok: true,
+      available: channel !== 'none',
+      channel,
+      model: cfg ? cfg.model : '',
+      version,
+      cli,
+      http: cfg ? { baseUrl: String(cfg.baseUrl).replace(/(key|token)=[^&]*/gi, '$1=***'), model: cfg.model } : null,
+      configPath: AI_CONFIG_FILE,
+      msg
+    });
+  }
+
+  // ===== 房间任务助理：小结 / 状态 / 委派（路线②自研；小结、状态徽标、委派同批交付）=====
+  const ASSISTANT_STATES = ['not_started', 'in_progress', 'blocked', 'waiting_user', 'done', 'archived'];
+  // 执行型智能体（单选委派候选）；豆包为主持人/维护方，不作为被指派对象
+  const DELEGATE_AGENTS = ['codebuddy', 'workbuddy', 'deepseek', 'qwen'];
+  const assistArchiveDir = (rp) => path.join(rp, '助理存档');
+
+  // 房间名安全校验 + 目录解析；非法（含 / \ ..）或不存在返回 null
+  const collabSafeRoom = (colRoot, name) => {
+    if (!name || name.includes('/') || name.includes('\\') || name.includes('..')) return null;
+    const rp = path.join(colRoot, 'rooms', name);
+    if (!fs.existsSync(rp) || !fs.statSync(rp).isDirectory()) return null;
+    return rp;
+  };
+
+  // 委派候选在线状态（离线不剔除，前端弱化标注、仍可提交）
+  const delegateAgentsStatus = (colRoot) => {
+    const agDir = path.join(colRoot, 'agents');
+    return DELEGATE_AGENTS.map((id) => {
+      const hb = readAgentHeartbeat(path.join(agDir, id));
+      return { name: id, online: !!(hb && hb.online), lastSeen: hb ? new Date(hb.at).toISOString() : null };
+    });
+  };
+
+  // 收集房间上下文：任务说明、最近 80 条消息、参与方近 30 天私信、产物顶层条目（不读内容）
+  const collectAssistantContext = (colRoot, rp, name) => {
+    const taskF = path.join(rp, '00-任务说明.md');
+    let task = '';
+    try { if (fs.existsSync(taskF)) task = fs.readFileSync(taskF, 'utf8').slice(0, 3000); } catch { }
+    const messages = [];
+    const ml = path.join(rp, 'messages.jsonl');
+    let rawLines = [];
+    try { if (fs.existsSync(ml)) rawLines = fs.readFileSync(ml, 'utf8').split('\n').filter((l) => l.trim()); } catch { }
+    for (const l of rawLines.slice(-80)) {
+      try {
+        const m = JSON.parse(l);
+        messages.push({ ts: m.ts || '', from: m.from || '', intent: m.intent || '', content: String(m.content || '').slice(0, 600), channel: 'room' });
+      } catch { /* 跳过坏行 */ }
+    }
+    const participants = new Set();
+    for (const m of messages) { if (m.from && m.from !== 'user') participants.add(m.from); }
+    if (participants.size === 0) {
+      for (const a of DELEGATE_AGENTS.concat(['doubao'])) { if (name.toLowerCase().includes(a)) participants.add(a); }
+    }
+    const privates = [];
+    for (const box of ['inbox', 'outbox']) {
+      const boxDir = path.join(colRoot, 'messages', box);
+      if (!fs.existsSync(boxDir)) continue;
+      let boxAgents = [];
+      try { boxAgents = fs.readdirSync(boxDir, { withFileTypes: true }).filter((d) => d.isDirectory()); } catch { boxAgents = []; }
+      for (const ad of boxAgents) {
+        if (!participants.has(ad.name) && ad.name !== 'user') continue;
+        const dir = path.join(boxDir, ad.name);
+        let files = [];
+        try { files = fs.readdirSync(dir).filter((x) => x.endsWith('.json')); } catch { files = []; }
+        for (const f of files) {
+          try {
+            const msg = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+            const from = msg.from || '', to = msg.to || '', cc = Array.isArray(msg.cc) ? msg.cc : [];
+            const fromIn = participants.has(from) || from === 'user';
+            const toIn = participants.has(to) || to === 'user' || cc.some((c) => participants.has(c));
+            if (!fromIn || !toIn) continue;
+            if (msg.timestamp) { const age = Date.now() - new Date(msg.timestamp).getTime(); if (age > 30 * 24 * 3600 * 1000) continue; }
+            privates.push({ ts: msg.timestamp || '', from, intent: msg.type || '私信', subject: msg.subject || '', body: String(msg.body || '').slice(0, 300), channel: 'private' });
+          } catch { /* 跳过坏 json */ }
+        }
+      }
+    }
+    let artifacts = [];
+    try {
+      const pd = path.join(rp, '产物');
+      if (fs.existsSync(pd)) artifacts = fs.readdirSync(pd, { withFileTypes: true }).map((d) => d.name).slice(0, 20);
+    } catch { artifacts = []; }
+    return { task, messages, privates, participants: Array.from(participants), artifacts, cover: messages.length };
+  };
+
+  // 四段 markdown 切为结构化小节；缺失标题对应小节返回空字符串
+  const splitAssistantSections = (text) => {
+    const out = { progress: '', blocks: '', next: '', decide: '' };
+    const head = /^##\s*[一二三四][、.．]?\s*.*$/;
+    const map = { '一': 'progress', '二': 'blocks', '三': 'next', '四': 'decide' };
+    let cur = null;
+    for (const ln of String(text || '').split(/\r?\n/)) {
+      const h = ln.match(/^##\s*([一二三四])/);
+      if (h) { cur = map[h[1]]; continue; }
+      if (cur) out[cur] += ln + '\n';
+    }
+    for (const k of Object.keys(out)) out[k] = out[k].trim();
+    return out;
+  };
+
+  // 本地规则草稿：模型不可用时保证按钮不空转、不报错，四段骨架与 AI 成稿一致
+  const buildLocalDraft = (ctx, name) => {
+    const L = [];
+    L.push(`# 房间进展小结 · ${name}`, '');
+    L.push('## 一、当前进展');
+    const byFrom = {};
+    for (const m of ctx.messages) { (byFrom[m.from] = byFrom[m.from] || []).push(m.content); }
+    const keys = Object.keys(byFrom);
+    if (!keys.length) L.push('- 暂无对话记录。');
+    for (const f of keys.slice(0, 6)) {
+      const items = byFrom[f].slice(-4).map((s) => String(s).slice(0, 120));
+      L.push(`- ${f}：` + items.join('；'));
+    }
+    L.push('', '## 二、阻塞与待确认');
+    const hit = [];
+    for (const m of [...ctx.messages, ...ctx.privates]) {
+      const content = m.content || m.body || '';
+      if (/(卡|阻塞|待确认|等你|需要你|请确认|失败|报错|分歧|僵持)/.test(content)) {
+        hit.push(`- ${m.from || ''}：${String(content).slice(0, 120)}`);
+      }
+    }
+    L.push(hit.length ? hit.slice(0, 6).join('\n') : '- 暂无。');
+    L.push('', '## 三、下一步建议');
+    L.push('- 补充最新讨论后可点「重新整理」刷新小结；可从执行智能体中单选一位跟进，确认后再发送。');
+    L.push('', '## 四、需要你拍板', '- 暂无。', '');
+    L.push('> 本次为本地规则草稿（未连接模型），建议人工补充后使用。');
+    return L.join('\n');
+  };
+
+  // 覆盖最新稿前把旧稿移入存档目录；再以 tmp+rename 原子写入新稿（UTF-8 无 BOM）
+  const writeAssistantNote = (rp, text, source, cover, participants) => {
+    const noteF = path.join(rp, '助理进展.md');
+    const archDir = assistArchiveDir(rp);
+    let archivedPath = null;
+    if (fs.existsSync(noteF)) {
+      fs.mkdirSync(archDir, { recursive: true });
+      try {
+        const old = fs.readFileSync(noteF, 'utf8');
+        const now = new Date();
+        const stamp = now.getFullYear()
+          + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0')
+          + '-' + String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0') + String(now.getSeconds()).padStart(2, '0');
+        archivedPath = path.join(archDir, `assistant-${stamp}.md`);
+        fs.writeFileSync(archivedPath, old, 'utf8');
+      } catch (e) { archivedPath = null; try { safeLog('assistant-archive', e.message); } catch { } }
+    }
+    const meta = `\n> 生成方式：${source} · ${new Date().toLocaleString('zh-CN')} · 覆盖对话 ${cover} 条 · 参与方：${participants.join('、')}\n`;
+    const tmp = noteF + '.tmp';
+    fs.writeFileSync(tmp, String(text).replace(/\s+$/, '') + '\n' + meta, 'utf8');
+    fs.renameSync(tmp, noteF);
+    return archivedPath;
+  };
+
+  const readAssistantNote = (rp) => {
+    const noteF = path.join(rp, '助理进展.md');
+    if (!fs.existsSync(noteF)) return null;
+    try {
+      const raw = fs.readFileSync(noteF, 'utf8').replace(/^\uFEFF/, '');
+      const metaLine = (raw.match(/^>\s*生成方式：(.+)$/m) || [])[1] || '';
+      const sections = splitAssistantSections(raw);
+      const st = fs.statSync(noteF);
+      return { content: raw, sections, meta: metaLine, generatedAt: st.mtime.toISOString() };
+    } catch { return null; }
+  };
+
+  // GET /api/collab/assistant?name=：读取最新小结 + 房间状态 + 委派候选（无小结返回空态，不报错）
+  if (p === '/api/collab/assistant' && method === 'GET') {
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const name = url.searchParams.get('name') || '';
+    const rp = collabSafeRoom(colRoot, name);
+    if (!rp) return send(res, 404, { ok: false, msg: '房间不存在' });
+    try {
+      const note = readAssistantNote(rp);
+      let state = null;
+      const stateF = path.join(rp, 'room-state.json');
+      try { if (fs.existsSync(stateF)) state = JSON.parse(fs.readFileSync(stateF, 'utf8')); } catch { state = null; }
+      const archDir = assistArchiveDir(rp);
+      let hasArchive = false;
+      try { hasArchive = fs.existsSync(archDir) && fs.readdirSync(archDir).filter((f) => f.endsWith('.md')).length > 0; } catch { hasArchive = false; }
+      return send(res, 200, { ok: true, name, note, state, candidates: delegateAgentsStatus(colRoot), hasArchive });
+    } catch (e) { return send(res, 500, { ok: false, msg: e.message }); }
+  }
+
+  // POST /api/collab/assistant/generate {name}：收集上下文 → 三级通路 → 覆盖最新稿 + 旧稿存档
+  if (p === '/api/collab/assistant/generate' && method === 'POST') {
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const bd = await readBody(req);
+    const name = String((bd && bd.name) || '').trim();
+    const rp = collabSafeRoom(colRoot, name);
+    if (!rp) return send(res, 404, { ok: false, msg: '房间不存在' });
+    try {
+      const ctx = collectAssistantContext(colRoot, rp, name);
+      const candidateList = delegateAgentsStatus(colRoot).map((a) => `${a.name}${a.online ? '' : '（离线）'}`).join('、');
+      let ctxText = '';
+      if (ctx.task.trim()) ctxText += `【任务说明】\n${ctx.task}\n\n`;
+      ctxText += `【房间对话（最近 ${ctx.messages.length} 条）】\n`;
+      for (const m of ctx.messages) ctxText += `- [${m.ts}] ${m.from || 'user'}（${m.intent}）：${m.content}\n`;
+      if (ctx.privates.length) {
+        ctxText += `\n【参与方私信（近 30 天）】\n`;
+        for (const m of ctx.privates.slice(-40)) ctxText += `- [${m.ts}] ${m.from} → ${m.to || ''}：${(m.subject ? `【${m.subject}】` : '') + m.body}\n`;
+      }
+      if (ctx.artifacts.length) ctxText += `\n【产物文件】${ctx.artifacts.join('、')}\n`;
+
+      const prompt = '你是协作房间的整理助手，把下面的对话材料归纳成一份中文进展小结。\n' +
+        '【输出骨架，必须严格使用这四个小节标题，缺内容就在该小节写「暂无」】\n' +
+        '## 一、当前进展\n## 二、阻塞与待确认\n## 三、下一步建议\n## 四、需要你拍板\n\n' +
+        '【纪律】\n' +
+        '1. 只能使用材料中的事实，不编造人名、项目名、日期、数字与结论；依据不足写「暂无」或「待确认」；\n' +
+        '2. 第三步建议每条后可标注建议责任方，且只能从这些执行智能体中选：' + candidateList + '；不确定就写「待人工指定」；\n' +
+        '3. 直接输出 Markdown 正文，不要开场白、不要代码块、不要解释。\n\n' + ctxText;
+
+      const cfg = readAiConfig();
+      let aiText = '', aiErr = '', source = '';
+      if (cfg) {
+        const r = await callModelHttp(prompt, cfg);
+        if (r.ok) { aiText = r.text; source = '模型 ' + (r.model || cfg.model); } else aiErr = r.msg || '模型调用失败';
+      }
+      if (!aiText) {
+        const probe = cliProbe();
+        if (probe.ok) {
+          const c = await runCli(prompt, 90000);
+          if (c.ok) { aiText = c.text; source = 'CodeBuddy CLI'; } else aiErr = (aiErr ? aiErr + '；' : '') + 'CLI：' + c.msg;
+        } else aiErr = (aiErr ? aiErr + '；' : '') + 'CLI：' + probe.msg;
+      }
+      let text, finalSource, fallback = false;
+      if (aiText) { text = aiText; finalSource = source; }
+      else {
+        text = buildLocalDraft(ctx, name); finalSource = '本地规则草稿'; fallback = true;
+        try { safeLog('assistant-gen', 'all channels failed: ' + aiErr); } catch { }
+      }
+      const archivedPath = writeAssistantNote(rp, text, finalSource, ctx.cover, ctx.participants);
+      const note = readAssistantNote(rp);
+      return send(res, 200, {
+        ok: true, name, text, note, source: finalSource, fallback,
+        generatedAt: note ? note.generatedAt : null, archivedPath,
+        cover: { messages: ctx.messages.length, participants: ctx.participants }
+      });
+    } catch (e) { return send(res, 500, { ok: false, msg: e.message }); }
+  }
+
+  // POST /api/collab/state {name,status,note}：六态枚举校验，history 追加留痕、不覆盖旧记录
+  if (p === '/api/collab/state' && method === 'POST') {
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const bd = await readBody(req);
+    const name = String((bd && bd.name) || '').trim();
+    const status = String((bd && bd.status) || '').trim();
+    const note = String((bd && bd.note) || '').slice(0, 200);
+    if (!ASSISTANT_STATES.includes(status)) return send(res, 400, { ok: false, msg: '非法状态值' });
+    const rp = collabSafeRoom(colRoot, name);
+    if (!rp) return send(res, 404, { ok: false, msg: '房间不存在' });
+    try {
+      const stateF = path.join(rp, 'room-state.json');
+      let state = { status: 'in_progress', owner: '', updatedAt: null, updatedBy: 'user', history: [] };
+      if (fs.existsSync(stateF)) { try { state = Object.assign(state, JSON.parse(fs.readFileSync(stateF, 'utf8'))); } catch { } }
+      const from = ASSISTANT_STATES.includes(state.status) ? state.status : 'in_progress';
+      const ts = new Date().toISOString();
+      state.status = status; state.updatedAt = ts; state.updatedBy = 'user';
+      state.history = Array.isArray(state.history) ? state.history : [];
+      if (from !== status) state.history.push({ at: ts, by: 'user', from, to: status, note });
+      const tmp = stateF + '.tmp';
+      fs.writeFileSync(tmp, JSON.stringify(state, null, 2), 'utf8');
+      fs.renameSync(tmp, stateF);
+      return send(res, 200, { ok: true, state });
+    } catch (e) { return send(res, 500, { ok: false, msg: e.message }); }
+  }
+
+  // POST /api/collab/delegate {name,to,summary}：单选单发；原子写入目标收件箱，房间时间线追加，outbox 留档
+  if (p === '/api/collab/delegate' && method === 'POST') {
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const bd = await readBody(req);
+    const name = String((bd && bd.name) || '').trim();
+    const to = String((bd && bd.to) || '').trim();
+    const summary = String((bd && bd.summary) || '').trim().slice(0, 1200);
+    if (!DELEGATE_AGENTS.includes(to)) return send(res, 400, { ok: false, msg: '只能委派给执行智能体，且一次一个' });
+    if (!summary) return send(res, 400, { ok: false, msg: '委派内容不能为空' });
+    const rp = collabSafeRoom(colRoot, name);
+    if (!rp) return send(res, 404, { ok: false, msg: '房间不存在' });
+    try {
+      const ts = new Date().toISOString();
+      const tsKey = ts.replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+      const midBase = `${tsKey}-delegate-${name.replace(/[\\/:*?"<>|]/g, '').slice(0, 16)}`;
+      const messageId = `${midBase}-${to}`;
+      const msg = {
+        schema_version: '0.2.1', message_id: messageId, from: 'doubao', to,
+        cc: [], timestamp: ts, type: 'delegate',
+        subject: `【任务委派】${name}`, body: summary, attachments: [],
+        status: 'unread', priority: 'normal', thread_id: name, reply_to: '',
+        action: 'delegate', due_at: '', sender_note: 'workbench-panel/assistant'
+      };
+      const inboxDir = path.join(colRoot, 'messages', 'inbox', to);
+      fs.mkdirSync(inboxDir, { recursive: true });
+      const tmp = path.join(inboxDir, `.${messageId}.tmp`);
+      fs.writeFileSync(tmp, JSON.stringify(msg, null, 2), 'utf8');
+      fs.renameSync(tmp, path.join(inboxDir, messageId + '.json'));
+      // 房间时间线只追加，不改既有行
+      const ml = path.join(rp, 'messages.jsonl');
+      fs.appendFileSync(ml, JSON.stringify({ ts, from: 'doubao', intent: 'delegate', to, content: summary }) + '\n', 'utf8');
+      // outbox/user 留一份发出副本（与 reply 双副本做法一致）
+      const outDir = path.join(colRoot, 'messages', 'outbox', 'user');
+      fs.mkdirSync(outDir, { recursive: true });
+      const om = Object.assign({}, msg, { message_id: messageId + '-out', status: 'sent' });
+      fs.writeFileSync(path.join(outDir, om.message_id + '.json'), JSON.stringify(om, null, 2), 'utf8');
+      return send(res, 200, { ok: true, sentTo: to, messageId });
+    } catch (e) { return send(res, 500, { ok: false, msg: e.message }); }
+  }
+
+  // AI 配置读写：让用户在界面上直接填端点与 key，保存后立刻生效（readAiConfig 每次都读文件，无需重启）。
+  // 之所以补这组接口：原来只提示「去改 ai.config.json」，产品经理要手写 JSON + 重启，等于没打通。
+  if (p === '/api/ai/config' && method === 'GET') {
+    let c = {};
+    try { c = JSON.parse(fs.readFileSync(AI_CONFIG_FILE, 'utf8')) || {}; } catch { c = {}; }
+    return send(res, 200, {
+      ok: true,
+      baseUrl: c.baseUrl || '',
+      model: c.model || '',
+      temperature: typeof c.temperature === 'number' ? c.temperature : 0.3,
+      hasKey: !!c.apiKey,
+      keyHint: c.apiKey ? String(c.apiKey).slice(0, 4) + '****' + String(c.apiKey).slice(-4) : '',
+      configPath: AI_CONFIG_FILE
+    });
+  }
+  if (p === '/api/ai/config' && method === 'POST') {
+    const b = await readBody(req);
+    const baseUrl = String(b.baseUrl || '').trim().replace(/\/+$/, '');
+    const model = String(b.model || '').trim();
+    const apiKey = typeof b.apiKey === 'string' ? b.apiKey.trim() : '';
+    if (!baseUrl || !model) return sendError(res, '端点和模型名都要填', 400);
+    if (!/^https?:\/\//i.test(baseUrl)) return sendError(res, '端点要以 http:// 或 https:// 开头', 400);
+    // 留空 apiKey 表示「沿用已保存的 key」，避免前端回填占位符把真 key 覆盖掉
+    let prev = {};
+    try { prev = JSON.parse(fs.readFileSync(AI_CONFIG_FILE, 'utf8')) || {}; } catch { prev = {}; }
+    const finalKey = apiKey || prev.apiKey || '';
+    const next = { ...prev, baseUrl, model, apiKey: finalKey };
+    if (typeof b.temperature === 'number') next.temperature = b.temperature;
+    try { fs.writeFileSync(AI_CONFIG_FILE, JSON.stringify(next, null, 2), 'utf8'); }
+    catch (e) { return sendError(res, '写入配置失败：' + e.message, 500); }
+    __cliProbeCache.r = null; __cliProbeCache.at = 0;
+    return send(res, 200, { ok: true, msg: '已保存，立即生效', configPath: AI_CONFIG_FILE });
+  }
+  // 真调一次模型，验证 key 是否可用——不验证的话用户只会在点周报时才发现填错了
+  if (p === '/api/ai/test' && method === 'POST') {
+    const cfg = readAiConfig();
+    if (!cfg) return send(res, 200, { ok: false, msg: '还没保存可用的配置（端点 / 模型 / key 三项都要有）' });
+    const r = await callModelHttp('只回复两个字：可用', cfg);
+    if (!r.ok) return send(res, 200, { ok: false, msg: r.msg || '调用失败' });
+    return send(res, 200, { ok: true, msg: '连通正常，模型回复：' + String(r.text || '').slice(0, 40), model: r.model || cfg.model });
+  }
+
+  // ===== 原型分享包：脱敏扫描 + 打包 =====
+  // 设计原则：先扫描后打包，命中敏感信息不阻断但必须在界面上显式确认；不做自动部署。
+  // 原因：原型里常含客户单位名、真实指标与内网地址，一旦部署就是公网可访问，脱敏闸门不能省。
+  if (p === '/api/share/scan' && method === 'POST') {
+    const b = await readBody(req);
+    const dir = safeResolve(String(b.relative || ''));
+    if (!dir || !fs.existsSync(dir)) return sendError(res, '项目不存在或路径非法', 404);
+    const DIST = path.join(dir, 'dist');
+    const isBuild = fs.existsSync(DIST);
+    const base = isBuild ? DIST : path.join(dir, 'src');
+    if (!fs.existsSync(base)) return send(res, 200, { ok: true, base: null, hits: [], total: 0, msg: '项目下既没有 dist 也没有 src，无法扫描' });
+
+    const TEXT_EXT = new Set(['.html', '.htm', '.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.css', '.json', '.md', '.txt', '.svg']);
+    const PATTERNS = [
+      { kind: '内网 IP', re: /\b(?:10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}\b/g, level: 'high' },
+      { kind: '手机号', re: /\b1[3-9]\d{9}\b/g, level: 'high' },
+      { kind: '身份证号', re: /\b\d{17}[\dXx]\b/g, level: 'high' },
+      { kind: '邮箱', re: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, level: 'mid' }
+    ];
+    const hits = [];
+    let scanned = 0, skipped = 0;
+    const walk = (d, depth) => {
+      if (depth > 8 || hits.length > 500) return;
+      let ents = [];
+      try { ents = fs.readdirSync(d, { withFileTypes: true }); } catch { return; }
+      for (const e of ents) {
+        if (hits.length > 500) return;
+        const fp = path.join(d, e.name);
+        if (e.isDirectory()) {
+          if (/^(node_modules|\.git|\.vite|\.axhub|\.agents|\.workbuddy)$/.test(e.name)) continue;
+          walk(fp, depth + 1);
+          continue;
+        }
+        if (!e.isFile() || !TEXT_EXT.has(path.extname(e.name).toLowerCase())) continue;
+        let st; try { st = fs.statSync(fp); } catch { continue; }
+        if (st.size > 2 * 1024 * 1024) { skipped++; continue; }
+        if (++scanned > 3000) return;
+        let txt = '';
+        try { txt = fs.readFileSync(fp, 'utf8'); } catch { continue; }
+        for (const pt of PATTERNS) {
+          pt.re.lastIndex = 0;
+          let m;
+          while ((m = pt.re.exec(txt)) !== null && hits.length <= 500) {
+            hits.push({ kind: pt.kind, level: pt.level, file: path.relative(dir, fp).replace(/\\/g, '/'), sample: m[0].slice(0, 60) });
+            if (pt.re.lastIndex === m.index) pt.re.lastIndex++;
+          }
+        }
+      }
+    };
+    walk(base, 0);
+    return send(res, 200, {
+      ok: true,
+      base: path.relative(dir, base).replace(/\\/g, '/'),
+      isBuild, scanned, skipped,
+      total: hits.length,
+      high: hits.filter(h => h.level === 'high').length,
+      hits: hits.slice(0, 200)
+    });
+  }
+
+  // POST /api/share/build：提交构建任务，立即返回 jobId（构建可能十几分钟，不能同步等）
+  if (p === '/api/share/build' && method === 'POST') {
+    const b = await readBody(req);
+    const dir = safeResolve(String(b.relative || ''));
+    if (!dir || !fs.existsSync(dir)) return sendError(res, '项目不存在或路径非法', 404);
+    return send(res, 200, startShareBuildJob(dir));
+  }
+
+  // GET /api/share/build/status?job=xxx：轮询构建进度（已用时长 + 最后若干行日志）
+  if (p === '/api/share/build/status' && method === 'GET') {
+    const id = String(url.searchParams.get('job') || '');
+    const job = shareBuildJobs.get(id);
+    if (!job) return send(res, 200, { ok: false, msg: '任务不存在或已过期' });
+    return send(res, 200, {
+      ok: true,
+      jobId: job.id,
+      status: job.status,
+      elapsedMs: (job.finishedAt || Date.now()) - job.startedAt,
+      steps: job.steps,
+      dist: job.dist,
+      distMb: job.distMb,
+      msg: job.msg,
+      lines: job.lines.slice(-40)
+    });
+  }
+
+  if (p === '/api/share/pack' && method === 'POST') {
+    const b = await readBody(req);
+    const dir = safeResolve(String(b.relative || ''));
+    if (!dir || !fs.existsSync(dir)) return sendError(res, '项目不存在或路径非法', 404);
+    const DIST = path.join(dir, 'dist');
+    if (!fs.existsSync(DIST)) {
+      return send(res, 200, {
+        ok: false, needBuild: true,
+        msg: '没有 dist 构建产物。请先在项目里执行构建（npm run build / pnpm build），再回来打包分享。'
+      });
+    }
+    const projName = String(path.basename(dir)).replace(/[\\/:*?"<>|]/g, '_');
+    const now = new Date();
+    const stamp = ymdOf(now) + '-' + String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0');
+    const outDir = path.join(OFFICE_DIR, 'exports');
+    const zip = path.join(outDir, 'share-' + projName + '-' + stamp + '.zip');
+    try {
+      fs.mkdirSync(outDir, { recursive: true });
+      const src = DIST.replace(/'/g, "''") + '\\*';
+      const dst = zip.replace(/'/g, "''");
+      const r = spawnSync('powershell', ['-NoProfile', '-Command', `Compress-Archive -Path '${src}' -DestinationPath '${dst}' -Force`], { encoding: 'utf8', timeout: 180000, windowsHide: true });
+      if (!fs.existsSync(zip)) return send(res, 200, { ok: false, msg: '打包失败：' + String((r && r.stderr) || '').slice(0, 200) });
+      const size = fs.statSync(zip).size;
+      return send(res, 200, { ok: true, msg: '已打包（' + (size / 1024 / 1024).toFixed(1) + 'MB）到 08-办公/exports/' + path.basename(zip), path: zip, size });
+    } catch (e) {
+      return send(res, 200, { ok: false, msg: '打包失败：' + e.message });
+    }
+  }
+
+  // ===== 周报 / 口头汇报 / 季报 / 年终总结：调 CodeBuddy CLI 做「归纳」而非「润色」=====
+  // 前端把已聚合好的结构化数据传上来（按项目的要点、统计），服务端只负责组织 prompt 与调 CLI。
+  // 关键约束写进提示词：只归纳不编造、保留全部项目名与数字、禁止输出解释性前后缀。
+  if (p === '/api/report/generate' && method === 'POST') {
+    const b = await readBody(req);
+    const kind = String(b.kind || 'weekly');
+    const range = String(b.range || '').slice(0, 80);
+    const projects = Array.isArray(b.projects) ? b.projects.slice(0, 40) : [];
+    const stats = (b && typeof b.stats === 'object' && b.stats) || {};
+    if (!projects.length) return sendError(res, '本周没有任何日报记录，无法生成', 400);
+
+    let flow = '';
+    for (const pr of projects) {
+      const name = String(pr.name || '未归类').slice(0, 60);
+      const items = Array.isArray(pr.items) ? pr.items.slice(0, 60) : [];
+      flow += '【' + name + '】\n';
+      for (const it of items) flow += '- ' + String(it).slice(0, 300) + '\n';
+    }
+    const statLine = '日报 ' + (Number(stats.days) || 0) + ' 天，加班 ' + (Number(stats.overtimeDays) || 0) + ' 天' +
+      (Array.isArray(stats.overtimeDates) && stats.overtimeDates.length ? '（' + stats.overtimeDates.join('、') + '）' : '');
+
+    const STYLE = {
+      weekly: '写一份中文书面周报。要求：①按项目分组，每个项目用 1-3 条要点**归纳成果**（合并同类工作、提炼产出价值，不要逐条复述流水原文）；②结构固定为「一、本周工作（按项目）」「二、数据统计」「三、风险与阻塞」「四、下周计划」；③风险无内容时写「暂无」，下周计划基于本周工作合理推断并在末尾标注「（待确认）」；④保留所有项目名、日期和数字，不得编造。',
+      oral: '写一段适合当面向领导口头汇报的中文口语稿，100-160 字，第一人称，**不分点、不列标题**，像说话一样连贯。要求：说清这周主要做了哪些项目、各自推进到什么程度、加班情况、下周重点；保留项目名和数字，不得编造。',
+      quarterly: '写一份中文季度工作报告。要求：①按项目总结本季度成果，每条都要有可验证的产出（不要复述流水）；②结构固定为「一、季度工作概览」「二、分项目成果」「三、量化数据」「四、问题与改进」「五、下季度计划」；③问题与改进若依据不足，写「需结合实际情况补充」；④保留所有项目名和数字，不得编造。',
+      yearly: '写一份中文年度工作总结。要求：①开头一段总览全年投入与覆盖项目；②按项目总结年度成果，突出有代表性的产出；③结构固定为「一、年度概览」「二、分项目成果」「三、亮点」「四、不足与改进」「五、明年计划」；④亮点与不足必须有事实支撑，依据不足处标「（待补充）」；⑤保留所有项目名和数字，不得编造。'
+    };
+    const style = STYLE[kind] || STYLE.weekly;
+
+    const prompt = '你是产品经理的工作助手，负责把流水式工作记录整理成正式汇报材料。\n' +
+      '请基于以下' + (range ? '（' + range + '）' : '') + '工作记录，' + style + '\n\n' +
+      '【硬性要求】\n' +
+      '1. 只能使用下面给出的事实，严禁编造项目、数字、人名或结论；\n' +
+      '2. 直接输出成稿正文，不要任何开场白、解释、代码块或「以下是」之类的前后缀；\n' +
+      '3. 用中文，用 Markdown 标题层级（#、##）组织，不要用表格。\n\n' +
+      '【统计】' + statLine + '\n\n' +
+      '【工作记录】\n' + flow;
+
+    // env 必须清洗：宿主注入的 CODEBUDDY_* / NODE_OPTIONS 会让子进程误判自身状态并卡住不出结果
+    // 兜底草稿：CLI 不可用/无输出时，按项目把已有记录结构化拼一份，保证「点生成」不会空手而归。
+    // 明确标 fallback=true，前端会提示「这是模板草稿，不是 AI 成稿」，避免用户误当成品。
+    // 日报条目常是「1、xxx\n2、yyy」一整段，直接当一条会顶出多行、且编号重复。
+    // 这里按换行拆行、剥掉行首编号符号、去重保序，草稿才读得下去。
+    const splitItems = (items) => {
+      const seen = new Set(); const uniq = [];
+      for (const raw of items) {
+        for (const ln of String(raw).split(/[\r\n]+/)) {
+          const t = ln.replace(/^\s*(?:\d+\s*[、.．)]|[-*•])\s*/, '').replace(/[；;：:，,。]+$/, '').trim();
+          if (t && !seen.has(t)) { seen.add(t); uniq.push(t); }
+        }
+      }
+      return uniq;
+    };
+    const localDraft = () => {
+      const L = [];
+      const rng = range ? '（' + range + '）' : '';
+      if (kind === 'oral') {
+        const names = projects.map(x => String(x.name || '未归类')).slice(0, 4);
+        const cnt = projects.reduce((n, x) => n + (Array.isArray(x.items) ? splitItems(x.items).length : 0), 0);
+        return '本周' + rng + '主要推进' + (names.length ? names.join('、') : '既定工作') + '等工作，共记录 ' + cnt + ' 项进展；' +
+          '日报 ' + (Number(stats.days) || 0) + ' 天，加班 ' + (Number(stats.overtimeDays) || 0) + ' 天。' +
+          '下周重点是把在做的部分收口，具体安排见周报。';
+      }
+      // 每种汇报的「小节标题」与「该小节放什么」一一对应，避免再出现标题越界取到 undefined
+      const SPEC = {
+        weekly: {
+          title: '# 周报',
+          secs: ['一、本周工作（按项目）', '二、数据统计', '三、风险与阻塞', '四、下周计划'],
+          blocks: ['projects', 'stats', 'na', 'plan']
+        },
+        quarterly: {
+          title: '# 季度工作报告',
+          secs: ['一、季度工作概览', '二、分项目成果', '三、量化数据', '四、问题与改进', '五、下季度计划'],
+          blocks: ['overview', 'projects', 'stats', 'na', 'plan']
+        },
+        yearly: {
+          title: '# 年度工作总结',
+          secs: ['一、年度概览', '二、分项目成果', '三、量化数据与亮点', '四、不足与改进', '五、明年计划'],
+          blocks: ['overview', 'projects', 'stats', 'na', 'plan']
+        }
+      };
+      const spec = SPEC[kind] || SPEC.weekly;
+      const totalItems = projects.reduce((n, p) => n + splitItems(Array.isArray(p.items) ? p.items : []).length, 0);
+      const nextLabel = kind === 'quarterly' ? '下季度' : kind === 'yearly' ? '明年' : '下周';
+      L.push(spec.title + rng, '');
+      spec.secs.forEach((sec, i) => {
+        const blk = spec.blocks[i];
+        L.push('## ' + sec, '');
+        if (blk === 'overview') {
+          L.push('本周期共涉及 ' + projects.length + ' 个项目、' + totalItems + ' 项工作记录；' + statLine + '。', '');
+        } else if (blk === 'projects') {
+          L.push('共 ' + projects.length + ' 个项目、' + totalItems + ' 项记录，按项目归并如下。', '');
+          for (const pr of projects) {
+            const its = splitItems(Array.isArray(pr.items) ? pr.items : []);
+            L.push('### ' + String(pr.name || '未归类'));
+            if (!its.length) L.push('- （本周期无记录）');
+            for (const t of its.slice(0, 8)) L.push('- ' + t.slice(0, 140));
+            L.push('');
+          }
+        } else if (blk === 'stats') {
+          L.push('- ' + statLine);
+          L.push('- 覆盖项目：' + projects.map(x => String(x.name || '未归类')).join('、'));
+          L.push('');
+        } else if (blk === 'na') {
+          L.push('- 暂无（如存在阻塞请手工补充）', '');
+        } else if (blk === 'plan') {
+          const names = projects.map(x => String(x.name || '未归类')).slice(0, 4);
+          L.push('- ' + nextLabel + '继续推进' + (names.length ? names.join('、') : '在手事项') + '的未完成部分（待确认）', '');
+        }
+      });
+      L.push('> 说明：本稿由本地模板按已记录数据生成，未经 AI 归纳，请人工补充/精简后使用。');
+      return L.join('\n');
+    };
+    // 三级通路：HTTP 模型通道 → CodeBuddy CLI → 本地模板草稿。
+    // 顺序理由：HTTP 不受 CLI 登录态影响；CLI 要先探针（真能出字才跑）；都不通才退模板，保证按钮不空转。
+    const cfg = readAiConfig();
+    let aiText = '', aiErr = '', source = '';
+    if (cfg) {
+      const r = await callModelHttp(prompt, cfg);
+      if (r.ok) { aiText = r.text; source = '模型 ' + (r.model || cfg.model); }
+      else aiErr = r.msg || '模型调用失败';
+    }
+    if (!aiText) {
+      const probe = cliProbe();
+      if (probe.ok) {
+        const c = await runCli(prompt, 90000);
+        if (c.ok) { aiText = c.text; source = 'CodeBuddy CLI'; }
+        else aiErr = (aiErr ? aiErr + '；' : '') + 'CLI：' + c.msg;
+      } else {
+        aiErr = (aiErr ? aiErr + '；' : '') + 'CLI：' + probe.msg;
+      }
+    }
+    if (aiText) {
+      const archived = archiveReport(kind, range, aiText, source);
+      return send(res, 200, { ok: true, text: aiText, kind, source, archived });
+    }
+    const draft = localDraft();
+    const archived = archiveReport(kind, range, draft, '本地模板草稿');
+    try { safeLog('report-gen', 'all channels failed: ' + aiErr); } catch {}
+    return send(res, 200, {
+      ok: true, fallback: true, text: draft, kind, archived,
+      reason: aiErr,
+      msg: (aiErr ? aiErr + '；' : '') + '已用本地模板生成草稿，建议人工补充'
+    });
+  }
+
   // 文本润色（CodeBuddy CLI）：prompt 经 stdin 传入，参数仅固定 token，避免 shell 注入
   if (p === '/api/polish' && method === 'POST') {
     const b = await readBody(req);
     const text = String(b.text || '').trim().slice(0, 20000);
     if (!text) return sendError(res, '缺少待润色文本', 400);
     const prompt = '请对下面这段工作汇报文本做润色：优化表达、修正语病、使条理清晰、适合汇报场合；保留原有的项目名、数字和事实，不要增删内容；直接输出润色后的完整文本，不要加任何解释或前后缀。\n\n' + text;
-    const child = spawn('codebuddy.cmd', ['-p', '--tools', '', '--permission-mode', 'dontAsk'], { shell: true, windowsHide: true });
-    let out = '', errOut = '', timedOut = false;
-    child.stdout.on('data', d => { out += d; });
-    child.stderr.on('data', d => { errOut += d; });
-    child.on('error', e => { try { safeLog('polish-spawn', e.message); } catch {} return send(res, 200, { ok: false, msg: '润色失败：未找到 CodeBuddy CLI（codebuddy），请确认已安装' }); });
-    const timer = setTimeout(() => { timedOut = true; try { child.kill(); } catch {} }, 90000);
-    child.on('close', (code) => {
-      clearTimeout(timer);
-      const trimmed = (out || '').trim();
-      if (!timedOut && code === 0 && trimmed) return send(res, 200, { ok: true, text: trimmed });
-      try { safeLog('polish', (timedOut ? 'timeout' : 'code=' + code) + ' ' + errOut.slice(0, 500)); } catch {}
-      return send(res, 200, { ok: false, msg: timedOut ? '润色超时（90秒），请重试' : '润色失败：CodeBuddy CLI 执行异常' });
-    });
-    child.stdin.write(prompt);
-    child.stdin.end();
-    return;
+    const cfg = readAiConfig();
+    let aiText = '', aiErr = '';
+    if (cfg) {
+      const r = await callModelHttp(prompt, cfg);
+      if (r.ok) aiText = r.text; else aiErr = r.msg;
+    }
+    if (!aiText) {
+      const probe = cliProbe();
+      if (probe.ok) {
+        const c = await runCli(prompt, 90000);
+        if (c.ok) aiText = c.text; else aiErr = (aiErr ? aiErr + '；' : '') + 'CLI：' + c.msg;
+      } else { aiErr = (aiErr ? aiErr + '；' : '') + 'CLI：' + probe.msg; }
+    }
+    if (aiText) return send(res, 200, { ok: true, text: aiText });
+    try { safeLog('polish', 'all channels failed: ' + aiErr); } catch {}
+    return send(res, 200, { ok: false, msg: '润色失败：' + (aiErr || '未配置可用模型通道') });
   }
 
   send(res, 404, { ok: false, msg: 'Not Found' });
@@ -3248,6 +4607,9 @@ server.listen(PORT, BIND_HOST, () => {
   setInterval(ensureAgentWatchers, 60000);
   // 项目总表 / 目录树实时同步（01-项目 变动 → 去抖 3s 重写 09-协作/docs 下两个自动块）
   startProjectIndexSync();
+  // 钉钉待办长连接订阅守护（失败不阻塞面板，dws 未装/未登录时后台自动重试）
+  process.env.WORKBENCH_OFFICE_DIR = OFFICE_DIR;
+  try { dwsTodoWatcher.startWatcher(); } catch (e) { console.error('[todos] watcher 启动失败:', e.message); }
 });
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {

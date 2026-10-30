@@ -1,14 +1,15 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-22T04:09:15.334Z",
-  "count": 51,
-  "hash": "5a1606a22c0ba5a3",
+  "generatedAt": "2026-10-27T01:32:03.369Z",
+  "count": 52,
+  "hash": "815f68083a59a9a1",
   "skills": {
     "annotation": "annotation",
     "brainstorming": "brainstorming",
     "build-design-system": "build-design-system",
     "canvas-workspace": "canvas-workspace",
     "slides": "ckm:slides",
+    "d2-diagram": "d2-diagram",
     "delivery-plan": "delivery-plan",
     "diagram-generator": "diagram-generator",
     "drawio-generator": "drawio-generator",

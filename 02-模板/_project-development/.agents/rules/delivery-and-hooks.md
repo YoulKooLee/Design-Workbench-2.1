@@ -61,7 +61,7 @@ IDE **不会**自动读 `.agents/settings.json`，须把薄接线复制到它认
 | Hook | 事件 | 作用 |
 | --- | --- | --- |
 | `session-start` | SessionStart | **（仅接线后生效）**注入强制执行清单 + 技能索引 `INDEX.md`；未接线时须手动 Read（见 §2.3） |
-| `context-budget` | PreToolUse（Read\|Glob\|Grep） | 拦截命中高危目录（skills / knowledge / rules / vendor / `03-组件库`）的递归·通配读取 |
+| `context-budget` | PreToolUse（Read\|Glob\|Grep） | **提醒**（非阻断）命中高危目录（skills / knowledge / rules / vendor / node_modules）的递归·通配读取；无 deny 出口，读取仍会执行 |
 | `gateguard` | PreToolUse（Edit\|Write） | 编辑文件前须先 Read，避免盲改 |
 | `config-protection` | PreToolUse（Edit\|Write） | 阻止修改 eslint、tsconfig 等配置来消除报错 |
 | `review-reminder` | PostToolUse | 代码改动后提醒调度 code-reviewer |
@@ -73,19 +73,32 @@ IDE **不会**自动读 `.agents/settings.json`，须把薄接线复制到它认
 
 > ⚠️ **宿主决定 Hook 是否生效，不要假设护栏在跑。**
 
-2026-09-22 实测（MarkDesk 项目，证据 `09-协作/agents/workbuddy/上下文实测-证据/T-2-*`）：
+**2026-09-22 实测**（MarkDesk 项目，证据 `09-协作/agents/workbuddy/上下文实测-证据/T-2-*`）：
 
-- **WorkBuddy 宿主不加载项目内 `.agents/hooks/`** → 8 个 hook 全不执行；
+- **WorkBuddy 宿主未接线时不加载项目内 `.agents/hooks/`** → 8 个 hook 全不执行；
 - 连锁后果：`session-start` 不注入 `INDEX.md` → **技能路由入口整个断掉**（执行者不知有哪些技能，凭通用能力直接写，出现"未走 prd-writer 技能路由"的真实偏差）；
 - 因此该宿主下 AGENTS.md 里所有"技术强制"表述**实际退化为纯文字约束**。
 
-**接线后必须验证一次最小触发**（例如故意 Glob 一次 `skills/` 整目录，看是否被拦）。未生效时按 `soft-gates.md` 执行，并在 `project-memory.md` 记一行「本次会话无 hook 保护」。
+**2026-10-30 已补接线（但生效性尚未证实）**：
+
+- 根因不是「宿主不支持 hook」，而是**从没放过宿主会读的薄接线**——`.agents/settings.json` 是配置真源，但 WorkBuddy/CodeBuddy 读的是 `<项目>/.codebuddy/settings.local.json`（依据：`03-组件库/01-补丁源/mem-hooks/README.md`「只对 CodeBuddy 系宿主生效，其他宿主不读 `.codebuddy/`」）。
+- 已用 `06-运行脚本/wire-hooks.mjs` 给两模板（生成 `.agents/adapters/codebuddy/` 样板）与 7 个项目（真接线）补齐，格式对齐 mem-hooks 这个**唯一经验证可跑的样本**：绝对路径 `$CODEBUDDY_PROJECT_DIR/.agents/hooks/run.cjs`、SessionStart matcher `startup|resume`、timeout 单位秒。脚本幂等，重跑替换自身条目、**保留 mem-hooks**。
+- hook 逻辑本身经宿主式 spawn + stdin 实测**正常**：`config-protection` 改 tsconfig 真返回 `deny`；`context-budget` 命中高危目录给提醒、精确单文件放行。（此前 PowerShell 管道下测出「无输出」是管道编码问题，非 hook 缺陷。）
+
+**⚠️ 接线 ≠ 已生效**：宿主是否真的读 `.codebuddy/settings.local.json` 并 spawn hook，**尚无实测证据**。必须新开一次会话确认：
+
+1. 宿主日志出现 `HookExecutor spawn … run.cjs`；
+2. 会话里能看到 `session-start` 注入的「【技能索引（自动注入…）】」；
+3. 故意 Glob 一次 `skills/` 整目录，应出现「上下文预算提醒」文案——注意 `context-budget` 是提醒型，验证标准是**看到提醒**而不是**读取被拒**（看到拒绝反而说明有人改过 hook 出口）。
+
+**三项未全部证实前，一律按 `soft-gates.md` 执行**，并在 `project-memory.md`「运行态留痕」记一行「本次会话无 hook 保护」。
+
 
 ### 2.4 历史坑（改动 hook 相关配置时必读）
 
 | 坑 | 教训 |
 | --- | --- |
 | 双配置分裂 | 曾同时存在 `hooks.json` 与 `settings.json` 且内容不一致 → 读错一份即静默失效。**现已合一，`settings.json` 为唯一真源，不要再建 `hooks.json`** |
-| 拦截名单与声明不符 | `context-budget.cjs` 的名单曾漏 3 处（根级 `rules/`、`03-组件库` 父目录、`component-templates`），导致 AGENTS.md 声明的禁区实际裸奔。**改声明必须同步改名单** |
+| 名单与声明不符 | `context-budget.cjs` 的名单曾漏 3 处（根级 `rules/`、`03-组件库` 父目录、`component-templates`），导致 AGENTS.md 声明的禁区实际无提醒。**改声明必须同步改名单**（本包名单：`.agents/skills`、`.agents/knowledge`、`.agents/rules`、`03-组件库`、`vendor`、`node_modules`；`_project-template` 侧另有根级 `rules/`、`src/themes`、`src/component-templates`） |
 | BOM 导致静默不拦 | hook 的 io 库遇 UTF-8 BOM 会静默失效。`.agents` 下配置文件**一律无 BOM** |
 | 注册未接线 | hook 脚本存在、配置也注册了，但分发器 `run.cjs` 白名单缺该项 → 永不执行。**新增 hook 要三处同步：脚本 + settings.json + run.cjs 白名单** |

@@ -91,7 +91,7 @@ export const getRoleList = (params: RoleListParams) => { ... }
 
 ## 文件规模规范
 
-- 单个文件超过 500 行时，考虑拆分为多个文件，每个文件职责单一
+- 单个文件超过 800 行时，考虑拆分为多个文件，每个文件职责单一
 - 拆分原则：按功能模块拆分，而非按技术层级拆分
 
 ---
@@ -107,7 +107,7 @@ export const getRoleList = (params: RoleListParams) => { ... }
 
 以下规则不可绕过，生成代码时必须严格执行：
 
-1. **单文件行数** ≤ 500 行；单个函数/方法 ≤ 80 行
+1. **单文件行数** ≤ 800 行（建议 ≤ 600）；单个函数/方法 ≤ 120 行
 2. **禁止 `console.log`**，调试日志必须在提交前清除
 3. **禁止裸写 `fetch` / `XMLHttpRequest`**，统一通过项目封装的 `request` 工具（admin: `@/utils/http`，mobile: `@/utils/request.js`）
 4. **禁止在组件内直接操作 DOM**，使用 Vue 响应式或 `ref` / `useTemplateRef`

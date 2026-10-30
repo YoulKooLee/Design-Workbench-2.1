@@ -2,9 +2,13 @@
 
 // ============================================================
 //  context-budget.cjs - 上下文预算护栏（千问 P1-7）
-//  拦截 Read|Glob|Grep 命中高危目录（.agents/skills、.agents/knowledge、
+//  Read|Glob|Grep 命中高危目录时返回 additionalContext【提醒】（.agents/skills、.agents/knowledge、
 //  .agents/rules、根级 rules、src/themes、src/component-templates、03-组件库）的
 //  递归/通配/目录级操作，提示改为精确路径读取。
+//  ⚠️ 本 hook 是提示型，不是强制型：只返回 additionalContext，
+//     没有 deny / exit(2) 出口 —— 读取仍会照常执行。
+//     要升级为真阻断须显式加 deny 出口，并同步改
+//     rules/context-budget.md 末行与 AGENTS.md 的对应表述。
 //  注册：hooks.json preToolUse matcher=Read|Glob|Grep
 // ============================================================
 const path = require('path');
@@ -48,7 +52,7 @@ exports.run = (input) => {
     hookSpecificOutput: {
       hookEventName: 'PreToolUse',
       additionalContext:
-        '【上下文预算拦截】目标命中高危目录（' + hits.map((h) => h.name).join('、') + '）' +
+        '【上下文预算提醒】目标命中高危目录（' + hits.map((h) => h.name).join('、') + '）' +
         (isSearchTool ? '，且为 Glob/Grep 检索' : hasWildcard ? '，且含通配符' : '，且为目录级 Read') +
         '，可能一次带进数万 token 击穿上下文窗口。\n' +
         '请改为：精确路径 Read 单个文件；检查 src/themes/ 只读 theme.json 的 name 字段或只列一级目录名；' +

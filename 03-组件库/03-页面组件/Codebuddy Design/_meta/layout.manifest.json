@@ -6,7 +6,7 @@
   "theme": "arco",
   "version": "1.7.0",
   "status": "ready",
-  "syncedAt": "2026-09-19",
+  "syncedAt": "2026-10-30",
   "source": "vibepm-demo-agent-v1.4 frame/admin（Vibe Design Pro）组件字典 → React 提炼",
   "componentsCatalog": "components.catalog.json",
   "categories": {
@@ -16,12 +16,15 @@
     "数据展示": "DataTable/Pagination/Descriptions/Progress/List/Tree/Chart/Timeline/Collapse/Calendar",
     "反馈": "Modal/Drawer/Alert/Spin/ResultPage/Message/Notification",
     "业务组件": "KpiRow/FilterBar/TableCard/StatusTag/Kanban",
-    "页面模式": "PageListSearchTable/PageListCard/PageFormBasic/PageFormGroup/PageFormStep/PageFormStepVertical/PageDetailBasic/PageDetailAdvanced/PageListImport/PageListCalendar/PageListEditable/PageListKanban/PageListMasterDetail/PageListTagFilter/PageListFilterTable/PageListTreeTable/PageListMedia/PageException/PageResult/PageLogin/PageUserHome/PageWorkplace/PageMessageList/PageUserSetting/PageDashboardAnalytics/PageDashboardCustomer/PageDashboardFinance/PageDashboardAcademy/PageDashboardProductivity/PageDashboardBanking/PageDashboardCrm/PageDashboardEcommerce/MobileFrameIos/MobileFrameWechat",
+    "页面模式": "PageListSearchTable/PageListCard/PageFormBasic/PageFormGroup/PageFormStep/PageFormStepVertical/PageDetailBasic/PageDetailAdvanced/PageListImport/PageListCalendar/PageListEditable/PageListKanban/PageListMasterDetail/PageListTagFilter/PageListFilterTable/PageListTreeTable/PageListMedia/PageException/PageResult/PageLogin/PageUserHome/PageWorkplace/PageMessageList/PageUserSetting/PageDashboardAnalytics/PageDashboardCustomer/PageDashboardFinance/PageDashboardAcademy/PageDashboardProductivity/PageDashboardBanking/PageDashboardCrm/PageDashboardEcommerce/MobileFrameIos/MobileFrameWechat/MobileOnboardingScreen",
     "订单": "OrderTable/OrderDetailHeader/OrderItemList/OrderStatusFlow/OrderTimeline/OrderAmountSummary",
-    "付款": "PaymentMethodPicker/PaymentCashier/PaymentCountdown/PaymentResult/InvoiceForm",
+    "付款": "PaymentMethodPicker/PaymentCashier/PaymentCountdown/PaymentResult/InvoiceForm/InvoiceSheet",
     "触发器": "TriggerTypePicker/TriggerConditionBuilder/TriggerActionList/TriggerRuleCard",
-    "CMS": "ContentTable/ContentStatusBadge/ContentEditorForm/ContentVersionDiff/MediaPicker/PublishSchedulePanel/RichTextEditor",
-    "工作流": "WorkflowList/NodePalettePanel/ExecutionLogTimeline/ApprovalNodeCard/WorkflowCanvas(需 @xyflow/react)"
+    "CMS": "ContentTable/ContentStatusBadge/ContentEditorForm/ContentVersionDiff/MediaPicker/PublishSchedulePanel/RichTextEditor/EmailNewsletter",
+    "工作流": "WorkflowList/NodePalettePanel/ExecutionLogTimeline/ApprovalNodeCard/WorkflowCanvas(需 @xyflow/react)",
+    "物联网": "DeviceCard/DeviceStatusTag/AlarmLevelTag/AlarmList/DeviceGrid/MetricGauge/RealTimeValue/TelemetryChart",
+    "园区": "AccessPointStatus/EnergyPanel/InspectionTaskList/ParkingSpaceGrid/PassageRecordTable/PatrolCheckpointTimeline/VisitorForm/VisitorPassCard",
+    "办公": "ApprovalActionBar/ApprovalFlowTimeline/ApprovalTaskList/AttendanceCalendar/ClockInCard/ContactDirectory/EmployeeCard/MeetingActionTable/MeetingAgendaList/MeetingHeader/OkrObjectiveCard/OkrQuarterSummary/OnboardingChecklist/OnboardingDaySchedule/OrgTreeSelect"
   },
   "consume": {
     "mode": "one-dir-per-component",

@@ -5,7 +5,7 @@
 **动因**：宿主注入窗口实测约 8.4K 字符（WorkBuddy 8,402）；v2.0 的 `AGENTS.md` 达 10,016 字符，**超窗 1,614 字符** → 尾部「十二、编码底线」「十三、语言与安全」实际不可见（与 2026-09-24《上下文装载与规则体检报告》P1 同一现象在新模板复发）。
 
 **处置**：
-- `AGENTS.md` 外部化「技能清单」「知识库速查」「角色调度触发清单」「交付模式/Hook 细则」「变更摘要」五处参考型内容 → `rules/nav-map.md`、`rules/role-dispatch.md`、`rules/delivery-and-hooks.md`、本文件；正文只留指针。
+- `AGENTS.md` 外部化「技能清单」「知识库速查」「角色调度触发清单」「交付模式/Hook 细则」「变更摘要」五处参考型内容 → `.agents/rules/nav-map.md`、`.agents/rules/role-dispatch.md`、`.agents/rules/delivery-and-hooks.md`、本文件；正文只留指针。
 - 修正断链前提：原写「会话启动注入 `.agents/skills/INDEX.md`」——宿主不加载 `.agents/hooks/`（`session-start` 不执行），改为**会话开始主动 Read**。
 - 全文压至 ≤8.4K 字符窗口内（含余量），并校核所有章节偏移。
 

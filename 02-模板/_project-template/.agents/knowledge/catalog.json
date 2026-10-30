@@ -7,7 +7,9 @@
     "conventions/feature-existence",
     "conventions/frontend",
     "conventions/git",
+    "conventions/mock",
     "conventions/plan-writing",
+    "conventions/project",
     "conventions/security",
     "conventions/subagent-development",
     "conventions/testing",
@@ -36,6 +38,15 @@
     "phase3-development/database",
     "phase3-development/delivery-plan",
     "phase3-development/project",
-    "phase4-testing/strategy"
+    "phase4-testing/strategy",
+    "ui-libs/ant-design-vue/components",
+    "ui-libs/ant-design-vue/pages",
+    "ui-libs/element-plus/components",
+    "ui-libs/element-plus/pages",
+    "ui-libs/shadcn/charts",
+    "ui-libs/shadcn/components",
+    "ui-libs/shadcn/pages",
+    "ui-libs/vant/components",
+    "ui-libs/vant/pages"
   ]
 }

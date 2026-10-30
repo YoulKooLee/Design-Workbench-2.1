@@ -55,7 +55,7 @@ footer{margin-top:34px;color:var(--n6);font-size:12px;border-top:1px solid var(-
   <b>卡片顶部为真实渲染活缩略图</b>（iframe 缩放加载 preview 产物，与 Vibe Design Pro 同款：默认降饱和、悬停恢复彩色），点缩略图或「预览」按钮可在弹窗内查看该组件以真实示例 props 渲染的完整页面（React 已内联，双击本文件即可看，无需起服务）；「新窗口」可整页打开。预览产物由 <code>preview/</code> 目录提供（浏览用，无需复制进工程）。<br />
   每条卡片的<b>用法片段</b>可直接贴进原型页，<b>参数与提示词</b>可整段给智能体（或在工作台「组件库」页签一键复制）。
 </div>
-<div class="meta"><span>共 133 个组件条目</span><span>版本 1.7.0</span><span>更新 2026-10-02</span><span>选型映射：选型映射.md</span><span>提示词：提示词手册.md</span></div>
+<div class="meta"><span>共 143 个组件条目</span><span>版本 1.7.0</span><span>更新 2026-10-30</span><span>选型映射：选型映射.md</span><span>提示词：提示词手册.md</span></div>
 <nav><a href="#cat-%E5%9F%BA%E7%A1%80">基础 <span class="n">9</span></a><a href="#cat-%E5%B8%83%E5%B1%80">布局 <span class="n">6</span></a><a href="#cat-%E8%A1%A8%E5%8D%95">表单 <span class="n">11</span></a><a href="#cat-%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA">数据展示 <span class="n">10</span></a><a href="#cat-%E5%8F%8D%E9%A6%88">反馈 <span class="n">7</span></a><a href="#cat-%E4%B8%9A%E5%8A%A1%E7%BB%84%E4%BB%B6">业务组件 <span class="n">5</span></a><a href="#cat-%E8%AE%A2%E5%8D%95">订单 <span class="n">6</span></a><a href="#cat-%E4%BB%98%E6%AC%BE">付款 <span class="n">5</span></a><a href="#cat-%E8%A7%A6%E5%8F%91%E5%99%A8">触发器 <span class="n">4</span></a><a href="#cat-CMS">CMS <span class="n">7</span></a><a href="#cat-%E5%B7%A5%E4%BD%9C%E6%B5%81">工作流 <span class="n">5</span></a><a href="#cat-%E7%89%A9%E8%81%94%E7%BD%91">物联网 <span class="n">8</span></a><a href="#cat-%E9%A1%B5%E9%9D%A2%E6%A8%A1%E5%BC%8F">页面模式 <span class="n">34</span></a><a href="#cat-%E5%9B%AD%E5%8C%BA">园区 <span class="n">8</span></a><a href="#cat-%E5%8A%9E%E5%85%AC">办公 <span class="n">8</span></a></nav>
 <section id="cat-%E5%9F%BA%E7%A1%80"><h2>基础 <span class="n">9</span></h2><div class="grid">
       <article class="card" id="axhub-base-button">
@@ -1313,7 +1313,7 @@ footer{margin-top:34px;color:var(--n6);font-size:12px;border-top:1px solid var(-
 规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
       </article>
 </div></section>
-<section id="cat-%E4%BB%98%E6%AC%BE"><h2>付款 <span class="n">5</span></h2><div class="grid">
+<section id="cat-%E4%BB%98%E6%AC%BE"><h2>付款 <span class="n">6</span></h2><div class="grid">
       <article class="card" id="axhub-payment-method-picker">
         <div class="card-thumb" data-cat="付款" data-comp="PaymentMethodPicker" data-label="PaymentMethodPicker 支付方式选择" title="点击打开真实渲染预览" role="button" tabindex="0">
           <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E4%BB%98%E6%AC%BE/PaymentMethodPicker.html" data-live-title="PaymentMethodPicker 支付方式选择 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
@@ -1429,6 +1429,29 @@ footer{margin-top:34px;color:var(--n6);font-size:12px;border-top:1px solid var(-
 场景：收银台/订单详情的发票信息新增与编辑（个人/普票/专票，专票才要地址电话开户行账号）
 规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
       </article>
+      <article class="card" id="axhub-payment-invoice-sheet">
+        <div class="card-thumb" data-cat="付款" data-comp="InvoiceSheet" data-label="InvoiceSheet 发票单" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E4%BB%98%E6%AC%BE/InvoiceSheet.html" data-live-title="InvoiceSheet 发票单 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>InvoiceSheet 发票单</h3>
+          <span class="hdr-r"><button class="pv" data-cat="付款" data-comp="InvoiceSheet" data-label="InvoiceSheet 发票单" title="打开真实渲染预览">预览</button><span class="tag">付款</span></span>
+        </header>
+        <p class="scene">账单详情、开票预览、对账单：抬头 + 收付双方 + 明细表 + 金额汇总 + 付款方式（金额走 formatMoney）</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { InvoiceSheet } from '../../component-templates/付款/InvoiceSheet';
+
+// InvoiceSheet 发票单
+&lt;InvoiceSheet  /&gt;
+参数：brand/brandDesc/brandMark/no/issuedOn/dueOn/from/to/refs[]/items[{title,desc,qty,rate,amount}]/totals[]/terms/payGroups[]/note/currency</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】InvoiceSheet 发票单（组件库 付款）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/付款/InvoiceSheet.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { InvoiceSheet } from '../component-templates/axhub';
+参数：brand/brandDesc/brandMark/no/issuedOn/dueOn/from/to/refs[]/items[{title,desc,qty,rate,amount}]/totals[]/terms/payGroups[]/note/currency
+场景：账单详情、开票预览、对账单：抬头 + 收付双方 + 明细表 + 金额汇总 + 付款方式（金额走 formatMoney）
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
 </div></section>
 <section id="cat-%E8%A7%A6%E5%8F%91%E5%99%A8"><h2>触发器 <span class="n">4</span></h2><div class="grid">
       <article class="card" id="axhub-trigger-type-picker">
@@ -1524,7 +1547,7 @@ footer{margin-top:34px;color:var(--n6);font-size:12px;border-top:1px solid var(-
 规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
       </article>
 </div></section>
-<section id="cat-CMS"><h2>CMS <span class="n">7</span></h2><div class="grid">
+<section id="cat-CMS"><h2>CMS <span class="n">8</span></h2><div class="grid">
       <article class="card" id="axhub-cms-content-table">
         <div class="card-thumb" data-cat="CMS" data-comp="ContentTable" data-label="ContentTable 内容列表" title="点击打开真实渲染预览" role="button" tabindex="0">
           <div class="thumb-iframe-wrap is-pending" data-live-src="preview/CMS/ContentTable.html" data-live-title="ContentTable 内容列表 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
@@ -1684,6 +1707,29 @@ footer{margin-top:34px;color:var(--n6);font-size:12px;border-top:1px solid var(-
   import { RichTextEditor } from '../../component-templates/CMS/RichTextEditor';
 参数：value(HTML)/onChange(html,plainText)/placeholder/disabled/readOnly/minHeight/showCount/maxLength/tools
 场景：CMS 正文编辑、公告详情、帮助文档；基于浏览器 contentEditable 的轻量方案（零依赖，不引 TipTap/Lexical），不适合生产环境
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
+      <article class="card" id="axhub-cms-email-newsletter">
+        <div class="card-thumb" data-cat="CMS" data-comp="EmailNewsletter" data-label="EmailNewsletter 邮件正文" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/CMS/EmailNewsletter.html" data-live-title="EmailNewsletter 邮件正文 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>EmailNewsletter 邮件正文</h3>
+          <span class="hdr-r"><button class="pv" data-cat="CMS" data-comp="EmailNewsletter" data-label="EmailNewsletter 邮件正文" title="打开真实渲染预览">预览</button><span class="tag">CMS</span></span>
+        </header>
+        <p class="scene">邮件营销活动（EDM）编辑与预览：报头 + 主视觉 + 大标题正文 + 行动按钮 + 参数格 + 页脚（含退订）</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { EmailNewsletter } from '../../component-templates/CMS/EmailNewsletter';
+
+// EmailNewsletter 邮件正文
+&lt;EmailNewsletter  /&gt;
+参数：brand/nav[]（可省略）/hero（内联 SVG 主视觉）/eyebrow/title/body/ctaText/onCtaClick/specs[{value,unit,label}]/address/footerLinks[]/copyright/width</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】EmailNewsletter 邮件正文（组件库 CMS）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/CMS/EmailNewsletter.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { EmailNewsletter } from '../component-templates/axhub';
+参数：brand/nav[]（可省略）/hero（内联 SVG 主视觉）/eyebrow/title/body/ctaText/onCtaClick/specs[{value,unit,label}]/address/footerLinks[]/copyright/width
+场景：邮件营销活动（EDM）编辑与预览：报头 + 主视觉 + 大标题正文 + 行动按钮 + 参数格 + 页脚（含退订）
 规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
       </article>
 </div></section>
@@ -1991,7 +2037,7 @@ items 字段：id/level/title/source/time/status(active|acked|resolved|ignored)/
 规则：标题与单位由 ChartCard 承载；阈值线用 thresholds 传，不要在数据里插假序列；零第三方依赖。</pre></details>
       </article>
 </div></section>
-<section id="cat-%E9%A1%B5%E9%9D%A2%E6%A8%A1%E5%BC%8F"><h2>页面模式 <span class="n">34</span></h2><div class="grid">
+<section id="cat-%E9%A1%B5%E9%9D%A2%E6%A8%A1%E5%BC%8F"><h2>页面模式 <span class="n">35</span></h2><div class="grid">
       <article class="card" id="axhub-page-list-search-table">
         <div class="card-thumb" data-cat="页面模式" data-comp="PageListSearchTable" data-label="PageListSearchTable 查询表格页" title="点击打开真实渲染预览" role="button" tabindex="0">
           <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E9%A1%B5%E9%9D%A2%E6%A8%A1%E5%BC%8F/PageListSearchTable.html" data-live-title="PageListSearchTable 查询表格页 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
@@ -2667,6 +2713,29 @@ items 字段：id/level/title/source/time/status(active|acked|resolved|ignored)/
 参数：variant（plain|header|nav|tabs）；title；navItems；tabs；width；children
 场景：把小程序页面装进微信外框做演示（含胶囊按钮与底部标签栏）。页面级组件，直接整页使用。</pre></details>
       </article>
+      <article class="card" id="axhub-page-mobile-onboarding-screen">
+        <div class="card-thumb" data-cat="页面模式" data-comp="MobileOnboardingScreen" data-label="MobileOnboardingScreen 移动端引导单屏" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E9%A1%B5%E9%9D%A2%E6%A8%A1%E5%BC%8F/MobileOnboardingScreen.html" data-live-title="MobileOnboardingScreen 移动端引导单屏 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>MobileOnboardingScreen 移动端引导单屏</h3>
+          <span class="hdr-r"><button class="pv" data-cat="页面模式" data-comp="MobileOnboardingScreen" data-label="MobileOnboardingScreen 移动端引导单屏" title="打开真实渲染预览">预览</button><span class="tag">页面模式</span></span>
+        </header>
+        <p class="scene">App 新用户引导单屏（欢迎 / 价值点 / 登录注册），可多屏并排展示完整流程</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { MobileOnboardingScreen } from '../../component-templates/页面模式/MobileOnboardingScreen';
+
+// MobileOnboardingScreen 移动端引导单屏
+&lt;MobileOnboardingScreen  /&gt;
+参数：actionText/onAction/statusTime/network/battery/art（内联 SVG）/title/desc/step/totalSteps/primaryText/onPrimary/secondaryText/onSecondary/footnote/children</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】MobileOnboardingScreen 移动端引导单屏（组件库 页面模式）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/页面模式/MobileOnboardingScreen.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { MobileOnboardingScreen } from '../component-templates/axhub';
+参数：actionText/onAction/statusTime/network/battery/art（内联 SVG）/title/desc/step/totalSteps/primaryText/onPrimary/secondaryText/onSecondary/footnote/children
+场景：App 新用户引导单屏（欢迎 / 价值点 / 登录注册），可多屏并排展示完整流程
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
 </div></section>
 <section id="cat-%E5%9B%AD%E5%8C%BA"><h2>园区 <span class="n">8</span></h2><div class="grid">
       <article class="card" id="axhub-park-access-point-status">
@@ -2830,7 +2899,7 @@ items 字段：id/level/title/source/time/status(active|acked|resolved|ignored)/
 状态含：待生效 / 生效中 / 已过期 / 已注销。请在登记完成页、访客凭证场景使用该组件。</pre></details>
       </article>
 </div></section>
-<section id="cat-%E5%8A%9E%E5%85%AC"><h2>办公 <span class="n">8</span></h2><div class="grid">
+<section id="cat-%E5%8A%9E%E5%85%AC"><h2>办公 <span class="n">15</span></h2><div class="grid">
       <article class="card" id="axhub-office-approval-action-bar">
         <div class="card-thumb" data-cat="办公" data-comp="ApprovalActionBar" data-label="ApprovalActionBar 审批操作栏" title="点击打开真实渲染预览" role="button" tabindex="0">
           <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E5%8A%9E%E5%85%AC/ApprovalActionBar.html" data-live-title="ApprovalActionBar 审批操作栏 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
@@ -2990,6 +3059,167 @@ type 含：work 正常 / late 迟到 / early 早退 / missing 缺卡 / leave 请
 用法：import { OrgTreeSelect } from &quot;../../component-templates/办公/OrgTreeSelect&quot;
 参数：data（组织树：{ name, children }，字符串叶子 = 人员）；value + onChange（受控）；height
 请在转交人选择、权限分配、通讯录筛选场景使用该组件。</pre></details>
+      </article>
+      <article class="card" id="axhub-office-okr-objective-card">
+        <div class="card-thumb" data-cat="办公" data-comp="OkrObjectiveCard" data-label="OkrObjectiveCard 目标卡（OKR）" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E5%8A%9E%E5%85%AC/OkrObjectiveCard.html" data-live-title="OkrObjectiveCard 目标卡（OKR） 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>OkrObjectiveCard 目标卡（OKR）</h3>
+          <span class="hdr-r"><button class="pv" data-cat="办公" data-comp="OkrObjectiveCard" data-label="OkrObjectiveCard 目标卡（OKR）" title="打开真实渲染预览">预览</button><span class="tag">办公</span></span>
+        </header>
+        <p class="scene">OKR 看板、季度目标管理：一个目标 + 关键结果进度行（状态胶囊 + 进度条 + 完成值）</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { OkrObjectiveCard } from '../../component-templates/办公/OkrObjectiveCard';
+
+// OkrObjectiveCard 目标卡（OKR）
+&lt;OkrObjectiveCard  /&gt;
+参数：index/title/ownerName/status(onTrack|atRisk|offTrack)/statusText/keyResults[{id,name,note,percent,valueText}]/onSelect</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】OkrObjectiveCard 目标卡（OKR）（组件库 办公）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/办公/OkrObjectiveCard.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { OkrObjectiveCard } from '../component-templates/axhub';
+参数：index/title/ownerName/status(onTrack|atRisk|offTrack)/statusText/keyResults[{id,name,note,percent,valueText}]/onSelect
+场景：OKR 看板、季度目标管理：一个目标 + 关键结果进度行（状态胶囊 + 进度条 + 完成值）
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
+      <article class="card" id="axhub-office-okr-quarter-summary">
+        <div class="card-thumb" data-cat="办公" data-comp="OkrQuarterSummary" data-label="OkrQuarterSummary 季度概览" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E5%8A%9E%E5%85%AC/OkrQuarterSummary.html" data-live-title="OkrQuarterSummary 季度概览 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>OkrQuarterSummary 季度概览</h3>
+          <span class="hdr-r"><button class="pv" data-cat="办公" data-comp="OkrQuarterSummary" data-label="OkrQuarterSummary 季度概览" title="打开真实渲染预览">预览</button><span class="tag">办公</span></span>
+        </header>
+        <p class="scene">OKR 看板侧栏、季度复盘：目标健康度统计 + 本周变动 + 阻塞项</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { OkrQuarterSummary } from '../../component-templates/办公/OkrQuarterSummary';
+
+// OkrQuarterSummary 季度概览
+&lt;OkrQuarterSummary  /&gt;
+参数：title/stats[{label,value,tone}]/moversTitle/movers[{title,name,delta,up}]/blockersTitle/blockers[{title,detail}]</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】OkrQuarterSummary 季度概览（组件库 办公）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/办公/OkrQuarterSummary.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { OkrQuarterSummary } from '../component-templates/axhub';
+参数：title/stats[{label,value,tone}]/moversTitle/movers[{title,name,delta,up}]/blockersTitle/blockers[{title,detail}]
+场景：OKR 看板侧栏、季度复盘：目标健康度统计 + 本周变动 + 阻塞项
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
+      <article class="card" id="axhub-office-onboarding-day-schedule">
+        <div class="card-thumb" data-cat="办公" data-comp="OnboardingDaySchedule" data-label="OnboardingDaySchedule 入职首日日程" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E5%8A%9E%E5%85%AC/OnboardingDaySchedule.html" data-live-title="OnboardingDaySchedule 入职首日日程 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>OnboardingDaySchedule 入职首日日程</h3>
+          <span class="hdr-r"><button class="pv" data-cat="办公" data-comp="OnboardingDaySchedule" data-label="OnboardingDaySchedule 入职首日日程" title="打开真实渲染预览">预览</button><span class="tag">办公</span></span>
+        </header>
+        <p class="scene">新人入职首日、培训日/开放日流程：时间列 + 事项 + 说明</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { OnboardingDaySchedule } from '../../component-templates/办公/OnboardingDaySchedule';
+
+// OnboardingDaySchedule 入职首日日程
+&lt;OnboardingDaySchedule  /&gt;
+参数：title/desc/entries[{time,title,desc}]</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】OnboardingDaySchedule 入职首日日程（组件库 办公）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/办公/OnboardingDaySchedule.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { OnboardingDaySchedule } from '../component-templates/axhub';
+参数：title/desc/entries[{time,title,desc}]
+场景：新人入职首日、培训日/开放日流程：时间列 + 事项 + 说明
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
+      <article class="card" id="axhub-office-onboarding-checklist">
+        <div class="card-thumb" data-cat="办公" data-comp="OnboardingChecklist" data-label="OnboardingChecklist 入职就绪清单" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E5%8A%9E%E5%85%AC/OnboardingChecklist.html" data-live-title="OnboardingChecklist 入职就绪清单 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>OnboardingChecklist 入职就绪清单</h3>
+          <span class="hdr-r"><button class="pv" data-cat="办公" data-comp="OnboardingChecklist" data-label="OnboardingChecklist 入职就绪清单" title="打开真实渲染预览">预览</button><span class="tag">办公</span></span>
+        </header>
+        <p class="scene">入职准备自检、上线前检查、交接确认：勾选项 + 完成进度条</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { OnboardingChecklist } from '../../component-templates/办公/OnboardingChecklist';
+
+// OnboardingChecklist 入职就绪清单
+&lt;OnboardingChecklist  /&gt;
+参数：title/entries[{title,desc,done}]/onChange（受控）/showProgress</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】OnboardingChecklist 入职就绪清单（组件库 办公）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/办公/OnboardingChecklist.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { OnboardingChecklist } from '../component-templates/axhub';
+参数：title/entries[{title,desc,done}]/onChange（受控）/showProgress
+场景：入职准备自检、上线前检查、交接确认：勾选项 + 完成进度条
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
+      <article class="card" id="axhub-office-meeting-header">
+        <div class="card-thumb" data-cat="办公" data-comp="MeetingHeader" data-label="MeetingHeader 会议头" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E5%8A%9E%E5%85%AC/MeetingHeader.html" data-live-title="MeetingHeader 会议头 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>MeetingHeader 会议头</h3>
+          <span class="hdr-r"><button class="pv" data-cat="办公" data-comp="MeetingHeader" data-label="MeetingHeader 会议头" title="打开真实渲染预览">预览</button><span class="tag">办公</span></span>
+        </header>
+        <p class="scene">会议纪要、例会详情、评审记录页顶部：标题 + 日期·时间·地点·记录人 + 出席人 + 缺席说明</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { MeetingHeader } from '../../component-templates/办公/MeetingHeader';
+
+// MeetingHeader 会议头
+&lt;MeetingHeader  /&gt;
+参数：title/crumb/meta[{label,value}]/attendees[]（姓名数组，自动头像组）/absent</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】MeetingHeader 会议头（组件库 办公）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/办公/MeetingHeader.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { MeetingHeader } from '../component-templates/axhub';
+参数：title/crumb/meta[{label,value}]/attendees[]（姓名数组，自动头像组）/absent
+场景：会议纪要、例会详情、评审记录页顶部：标题 + 日期·时间·地点·记录人 + 出席人 + 缺席说明
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
+      <article class="card" id="axhub-office-meeting-agenda-list">
+        <div class="card-thumb" data-cat="办公" data-comp="MeetingAgendaList" data-label="MeetingAgendaList 议题清单" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E5%8A%9E%E5%85%AC/MeetingAgendaList.html" data-live-title="MeetingAgendaList 议题清单 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>MeetingAgendaList 议题清单</h3>
+          <span class="hdr-r"><button class="pv" data-cat="办公" data-comp="MeetingAgendaList" data-label="MeetingAgendaList 议题清单" title="打开真实渲染预览">预览</button><span class="tag">办公</span></span>
+        </header>
+        <p class="scene">会议纪要「议程」区、评审会检查单：议题勾选态 + 说明 + 时段</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { MeetingAgendaList } from '../../component-templates/办公/MeetingAgendaList';
+
+// MeetingAgendaList 议题清单
+&lt;MeetingAgendaList  /&gt;
+参数：title/entries[{title,desc,done,time}]/onChange（受控）</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】MeetingAgendaList 议题清单（组件库 办公）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/办公/MeetingAgendaList.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { MeetingAgendaList } from '../component-templates/axhub';
+参数：title/entries[{title,desc,done,time}]/onChange（受控）
+场景：会议纪要「议程」区、评审会检查单：议题勾选态 + 说明 + 时段
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
+      </article>
+      <article class="card" id="axhub-office-meeting-action-table">
+        <div class="card-thumb" data-cat="办公" data-comp="MeetingActionTable" data-label="MeetingActionTable 会议行动项表" title="点击打开真实渲染预览" role="button" tabindex="0">
+          <div class="thumb-iframe-wrap is-pending" data-live-src="preview/%E5%8A%9E%E5%85%AC/MeetingActionTable.html" data-live-title="MeetingActionTable 会议行动项表 预览"><div class="thumb-chip"><span class="spin"></span></div></div><span class="go">🔍 预览</span>
+        </div>
+        <header>
+          <h3>MeetingActionTable 会议行动项表</h3>
+          <span class="hdr-r"><button class="pv" data-cat="办公" data-comp="MeetingActionTable" data-label="MeetingActionTable 会议行动项表" title="打开真实渲染预览">预览</button><span class="tag">办公</span></span>
+        </header>
+        <p class="scene">会议纪要「行动项」区、决议落地跟踪：事项/负责人/截止/状态（状态走 StatusTag）</p>
+        <details><summary>用法片段（可直接贴进原型页）</summary><pre>  import { MeetingActionTable } from '../../component-templates/办公/MeetingActionTable';
+
+// MeetingActionTable 会议行动项表
+&lt;MeetingActionTable  /&gt;
+参数：title/entries[{action,owner,due,status(todo|doing|done|blocked),statusNote}]/onSelect</pre></details>
+        <details><summary>参数与提示词</summary><pre>【组件引用】MeetingActionTable 会议行动项表（组件库 办公）
+框架：React 18 + Tailwind v4（零第三方依赖）
+来源：03-组件库/03-页面组件/Codebuddy Design/办公/MeetingActionTable.tsx
+用法：先把「Codebuddy Design」整目录复制到工程 src/component-templates/axhub/，然后
+  import { MeetingActionTable } from '../component-templates/axhub';
+参数：title/entries[{action,owner,due,status(todo|doing|done|blocked),statusNote}]/onSelect
+场景：会议纪要「行动项」区、决议落地跟踪：事项/负责人/截止/状态（状态走 StatusTag）
+规则：请使用该组件，不要自造同类样式；零第三方依赖。</pre></details>
       </article>
 </div></section>
 <footer>由 <code>_meta/rebuild-gallery.mjs</code> 从 components.catalog.json（真源）生成；组件预览产物在 preview/ 目录。</footer>

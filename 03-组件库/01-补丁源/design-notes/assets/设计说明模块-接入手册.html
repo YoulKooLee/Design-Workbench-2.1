@@ -263,14 +263,14 @@ const onSave = createAxhubDesignNotesAdapter(); // 默认对接 Axhub 预览服�
 
 <section>
   <h2>文件清单</h2>
-  <div class="file-tree">设计说明模块/
+  <div class="file-tree">src/common/
   ├── DesignNotesPanel.tsx   <span style="color:#646a73"># 主组件（零 Axhub 依赖，仅依赖 react）</span>
   ├── designNotesTypes.ts    <span style="color:#646a73"># ModuleDef / DesignNotesSaveAdapter / DesignNotesSaveMeta</span>
   ├── axhubSaveAdapter.ts    <span style="color:#646a73"># Axhub 落盘参考实现，可照搬或改写</span>
-  ├── docs/
-  │   ├── demo.html          <span style="color:#646a73"># 运行演示（可直接打开）</span>
-  │   └── 规范.md            <span style="color:#646a73"># 本文档的 Markdown 源</span>
-  └── README.md</div>
+  └── design-notes/          <span style="color:#646a73"># 模块自带文档，落 src/common/design-notes/，不进项目 docs/</span>
+      ├── demo.html          <span style="color:#646a73"># 运行演示（可直接打开）</span>
+      ├── 规范.md            <span style="color:#646a73"># 本文档的 Markdown 源</span>
+      └── 设计说明模块-接入手册.html</div>
 </section>
 
 <section>

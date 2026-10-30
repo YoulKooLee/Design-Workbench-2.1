@@ -22,7 +22,7 @@ description: >
 
 **所有图表统一使用 draw.io XML 格式，通过后端 API 渲染为 PNG/SVG。**
 
-- 不使用 Mermaid、PlantUML、D2 或任何其他图表语言
+- 不使用 Mermaid、PlantUML 等其他图表语言；**D2 仅在「独立出图」场景使用**（见 `d2-diagram` 技能），文档内插图一律用 draw.io XML
 - 源文件为 `.xml`（draw.io 格式），输出为 `.png`（默认）或 `.svg`
 - 渲染通过 `draw.axuremart.com/api/export` API 完成
 
@@ -338,7 +338,7 @@ docs/images/<模块>-<描述>.png
 
 ## 禁止行为
 
-1. **禁止使用 Mermaid/PlantUML/D2** — 所有图表必须是 draw.io XML
+1. **禁止 Mermaid / PlantUML**；D2 只在「独立出图」场景用（`d2-diagram` 技能），文档内插图必须是 draw.io XML
 2. **禁止跳过本地校验与渲染验证** — 须先 `validate-diagram` 通过，再 `render-diagram` 确认输出
 3. **禁止绕过 config.json** — 渲染时优先从 `.agents/skills/config.json` 读取 API 地址，仅在 config.json 不存在时使用默认值
 4. **禁止省略 id="0" 和 id="1"** — 这两个根节点是 draw.io 必需的

@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          { "type": "command", "command": "node \"$CODEBUDDY_PROJECT_DIR/.codebuddy/mem.cjs\" start", "timeout": 15 }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node \"$CODEBUDDY_PROJECT_DIR/.codebuddy/mem.cjs\" turn", "timeout": 10 }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node \"$CODEBUDDY_PROJECT_DIR/.codebuddy/mem.cjs\" compact", "timeout": 15 }
+        ]
+      }
+    ]
+  }
+}

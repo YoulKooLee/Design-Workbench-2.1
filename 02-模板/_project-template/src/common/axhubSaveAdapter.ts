@@ -43,7 +43,7 @@ async function fetchPrototypeSourceRaw(pageKey: string, opt: AxhubAdapterOptions
     return text
       .slice(open + 1, close)
       .replace(/\\([`$\\])/g, '$1')
-      .replace(/\\(r|n|t|b|f|v|0)/g, (_, ch) => ({ r: '\r', n: '\n', t: '\t', b: '\b', f: '\f', v: '\v', '0': '\0' }[ch] as string));
+      .replace(/\\(r|n|t|b|f|v|0)/g, (_, ch: string) => (({ r: '\r', n: '\n', t: '\t', b: '\b', f: '\f', v: '\v', '0': '\0' } as Record<string, string>)[ch] ?? ch));
   }
   return text;
 }

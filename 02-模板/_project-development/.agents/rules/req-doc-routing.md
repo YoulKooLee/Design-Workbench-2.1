@@ -1,7 +1,7 @@
 # 需求文档技能路由（brainstorming / srs-writer / prd-writer）
 
 > 位置：`.agents/rules/req-doc-routing.md` ｜ 读取层：按需（收到需求文档类任务时 Read）
-> 来源：自 `AGENTS.md` v1.7「需求文档技能路由」专章外迁（v2.0 瘦身，2026-09-29）
+> 来源：自 `本文件（`.agents/rules/req-doc-routing.md`）专章外迁（v2.0 瘦身，2026-09-29）
 > 变更：已剥离技能（`prototype-to-prd`、`feasibility-report`、`annotation`、`pm-product-pipeline` 等）的相关路由行同步移除
 
 本包存在 **两套需求文档体系**，不可混为同一真源。收到需求文档类任务时 **先按本表选技能**，再 Read 对应 `SKILL.md`；禁止跳过路由直接写文档。

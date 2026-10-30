@@ -23,7 +23,7 @@ description: >
 
 **所有图表统一使用 draw.io XML 格式。**
 
-- 不使用 Mermaid、PlantUML、D2 或任何其他图表语言
+- 不使用 Mermaid、PlantUML 等其他图表语言；**D2 仅在「独立出图」场景使用**（见 `d2-diagram` 技能），文档内插图一律用 draw.io XML
 - 源文件为完整 `<mxfile>...</mxfile>` 包装的 `.xml` / `.drawio`，可直接导入 draw.io / diagrams.net
 - **交付物仅为可编辑源文件**；不调用外部 API，不生成 PNG/SVG 等位图或矢量导出
 - 生成前先在内部完成节点拆解、坐标计算、连接关系规划和避障路由，避免元素重叠、连线穿透、布局错乱
@@ -373,7 +373,7 @@ WARN 级：非英文文件名、空图、顶点尺寸异常、重叠（启用 `-
 
 ## 禁止行为
 
-1. **禁止使用 Mermaid / PlantUML / D2** — 所有图表必须是 draw.io XML
+1. **禁止 Mermaid / PlantUML**；D2 只在「独立出图」场景用（`d2-diagram` 技能），文档内插图必须是 draw.io XML
 2. **禁止调用外部渲染 API 或生成 PNG/SVG** — 交付物仅为 `.xml` / `.drawio` 源文件
 3. **禁止省略 id="0" 和 id="1"** — 这两个根节点是 draw.io 必需的
 4. **禁止使用中文文件名** — 文件名用英文，节点内容可以用中文

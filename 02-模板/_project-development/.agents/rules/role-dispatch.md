@@ -66,7 +66,7 @@
 - **实现页面前 → 后** → `page-spec-loader`（检测栈、按需加载 UI 库规范、规划组件）→ 编码 → `page-reviewer`（还原度 + 规范）。
 - **需求文档产出（SRS）** → `req-analyzer` → `req-writer` → `req-reviewer`；改 SRS 前先 Read `phase1-requirements/prd-language.md`+`section-format.md`，改后过 SRS 规范扫描。
 - **设计文档产出（HLD/LLD）** → `design-analyzer` → `design-writer` → `design-reviewer`。
-- **仅有 PRD 却要研发类技能** → 转写门禁：Read `rules/prd-to-srs-gate.md`，路由 `srs-writer` Step F。
+- **仅有 PRD 却要研发类技能** → 转写门禁：Read `.agents/rules/prd-to-srs-gate.md`，路由 `srs-writer` Step F。
 - **从零生成 SRS 且信息不足** → 先 `brainstorming`，禁止直接 A4。
 - **多文件变更/架构决策前 · 交付计划编排 · 图表绘制** → `planner` · `delivery-analyzer` · `diagram-drawer`。
 - **无依赖关系的独立操作** → 并行执行，不要无谓串行等待。

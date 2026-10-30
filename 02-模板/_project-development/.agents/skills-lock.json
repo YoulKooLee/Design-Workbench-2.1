@@ -1,11 +1,12 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-22T04:10:14.457Z",
-  "count": 15,
-  "hash": "3474fe208f2e10fc",
+  "generatedAt": "2026-10-27T04:17:46.329Z",
+  "count": 16,
+  "hash": "5d3c0d221be912b1",
   "skills": {
     "brainstorming": "brainstorming",
     "slides": "ckm:slides",
+    "d2-diagram": "d2-diagram",
     "delivery-plan": "delivery-plan",
     "diagram-generator": "diagram-generator",
     "feature-dev": "feature-dev",

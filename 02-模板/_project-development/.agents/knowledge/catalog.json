@@ -8,7 +8,10 @@
     "conventions/feature-existence",
     "conventions/frontend",
     "conventions/git",
+    "conventions/mock",
     "conventions/plan-writing",
+    "conventions/project",
+    "conventions/react-to-vue",
     "conventions/security",
     "conventions/subagent-development",
     "conventions/testing",
@@ -30,6 +33,21 @@
     "phase3-development/database",
     "phase3-development/delivery-plan",
     "phase3-development/project",
-    "phase4-testing/strategy"
+    "phase4-testing/strategy",
+    "ui-libs/ant-design-pro/charts",
+    "ui-libs/ant-design-pro/components",
+    "ui-libs/ant-design-pro/pages",
+    "ui-libs/arco-design-vue/charts",
+    "ui-libs/arco-design-vue/components",
+    "ui-libs/arco-design-vue/pages",
+    "ui-libs/element-plus/charts",
+    "ui-libs/element-plus/components",
+    "ui-libs/element-plus/pages",
+    "ui-libs/README",
+    "ui-libs/shadcn/charts",
+    "ui-libs/shadcn/components",
+    "ui-libs/shadcn/pages",
+    "ui-libs/vant/components",
+    "ui-libs/vant/pages"
   ]
 }

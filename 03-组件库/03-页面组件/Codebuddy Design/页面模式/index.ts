@@ -42,3 +42,4 @@ export * from './PageDashboardCrm';
 export * from './PageDashboardEcommerce';
 export * from './MobileFrameIos';
 export * from './MobileFrameWechat';
+export * from './MobileOnboardingScreen';

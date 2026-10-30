@@ -5,7 +5,7 @@ description: 技能索引（自动生成）。列出全部技能的 name 与一�
 
 # 技能索引（自动生成）
 
-> 共 51 个技能（自动生成，勿手改）。按名定位后取用对应 SKILL.md；未命中用通用能力并在回复中说明。
+> 共 52 个技能（自动生成，勿手改）。按名定位后取用对应 SKILL.md；未命中用通用能力并在回复中说明。
 
 ## 技能速查
 
@@ -14,6 +14,7 @@ description: 技能索引（自动生成）。列出全部技能的 name 与一�
 - **build-design-system** - Use when an Axhub Make client task ex...
 - **canvas-workspace** - 当任务明确涉及 Axhub 画布、原型草稿、Excalidraw 文件、画...
 - **ckm:slides** - 创建战略性 HTML 演示文稿，支持 Chart.js 数据可视化、设计令...
+- **d2-diagram** - 要独立成图的架构、流程、时序图时，用 D2 写源文件并渲染成 SVG/PNG。
 - **delivery-plan** - 项目交付链路规划技能。分析需求说明书，生成从前端原型到上线的完整交付计划，...
 - **diagram-generator** - 用户要求在文档中生成、创建、绘制或插入任何类型图表时必须使用本技能。
 - **drawio-generator** - AI draw.io 原生生成器。用户要求在文档中生成、创建、绘制或插入任...
