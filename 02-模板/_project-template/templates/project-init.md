@@ -118,6 +118,8 @@ VITE_PORT = 3006
 mkdir -p docs/01-需求与规划
 ```
 
+若 `docs/README.md` 不存在，再从 `templates/docs-README.md` 复制过去（**已存在则不要覆盖**）——它是基线区入口，也是家规自检的兜底点之一（另两个：`project-memory.md`、`README-DEV.md`）。注：make 原型工程与 Vue 编码工程的面板建项**都会拷贝 `docs/`**（含 `docs/README.md`），正常无需手动补；此步仅在面板版本过旧、或手工接入工程包未走面板时作为兜底确认。
+
 参见 [docs-structure.md](./docs-structure.md)。
 
 ## 第 7 步：验证

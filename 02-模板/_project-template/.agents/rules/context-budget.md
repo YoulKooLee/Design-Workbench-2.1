@@ -3,9 +3,9 @@
 > 位置：`.agents/rules/context-budget.md` ｜ 读取层：按需 Read
 > 来源：自 `AGENTS.md` v09（2026-09-19）该章节原文外移。**2026-10-30/31 已改写**：体量按实测更正、末行「技术强制」改为诚实表述、接线指向修正为本包 `knowledge-and-hooks.md`。
 
-**体量实测基线**（2026-10-30 复测，改动后须重测）：本文件 **0.8 KB**（外移前它在 `AGENTS.md` 里占 ≈35 KB / ≈1.5 万 token，外移即为此省空间）。被禁的目录实测体量：`.agents/skills/` **2.4 MB / 273 文件**（其中 `SKILL.md` 合计 446 KB）；`.agents/knowledge/` 200 KB / 48 文件；根级 `rules/` 0.43 MB / 47 文件。推导与事故见 rationale §一。
+**被禁目录的实测体量**（改动后须重测）：`.agents/skills/` **2.4 MB / 273 文件**（其中 `SKILL.md` 合计 446 KB）；`.agents/knowledge/` 200 KB / 48 文件；根级 `rules/` 0.43 MB / 47 文件。推导与事故见 rationale §一。
 
-> 注：`AGENTS.md` §四 的技能目录体量必须与本行同源（`session-start.cjs` 注释现只提 INDEX 体量、不提技能目录，故不在本约束内）；不一致时以本文件实测值为准并同步 AGENTS.md。
+> 注：本文件是上述体量的**唯一实测真源**。`AGENTS.md` §4.7 只写「严禁遍历技能目录」不带数字，避免两处数字打架；要引用体量一律引本行。
 
 **禁止**：遍历 / 批量 Read（含通配符、递归）：`.agents/skills/`、`.agents/knowledge/`、`.agents/rules/`、根级 `rules/`、`src/themes/`、`03-组件库/**/vendor/`。
 

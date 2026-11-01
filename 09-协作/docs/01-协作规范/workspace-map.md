@@ -50,6 +50,7 @@ C:\Users\游翔\Documents\AI work\01 产品设计工作台\
 │   ├── 崂山国家实验室项目\
 │   ├── 指标管理平台\
 │   ├── 数字孪生\
+│   ├── 测试\
 │   ├── 结构监测\
 │   └── 翔安南区新城\
 ├── 02-模板\                ← _project-template（React 原型骨架）/ _project-development（研发工程模板）

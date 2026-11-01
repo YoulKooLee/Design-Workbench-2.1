@@ -2,6 +2,8 @@
 
 > **AI 协作说明**：技能触发与工作流见 [AGENTS.md](../AGENTS.md)（单项目时 AGENTS.md 与本文同目录）；**本文为项目实现规范的单一事实来源**。
 >
+> ⚠️ **读到本行 → 确认 `AGENTS.md` 是否还在上下文里**；不在就先 Read 一次它与 `.agents/skills/INDEX.md` 再动手。（与 `project-memory.md`、`docs/README.md` 开头同一句，三处互为兜底。）
+>
 > 使用前请填写下方「项目配置」表格；`page-spec-loader` 优先读取本文，再从 `{WORKSPACE_PATH}/.agents/knowledge/` 加载通用与 UI 库规范；**冲突时以本文为准**。
 
 ## 项目配置（必填）

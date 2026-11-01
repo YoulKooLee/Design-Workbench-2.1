@@ -130,6 +130,7 @@ for (const rel of targets) {
 //   C. 声明体量 vs 实测体量（技能目录 / 知识库）
 //   D. .claude/skills 副本 vs .agents/skills 真源无漂移
 //   E. 已撤销的过度声明不得复现（「技术强制」「必须阻断」黑名单）
+//   F. .agents/rules/*.md 无孤儿（每个规则文件至少有一个入口可达）
 // ==================================================================
 let assertFails = 0;
 const AFAIL = [];
@@ -205,6 +206,46 @@ for (const rel of targets) {
       fail('D', `${rel}: .claude/skills 副本与真源不一致 —— 内容漂移 ${drift}、孤儿 ${orphan}。跑 node .agents/scripts/sync-claude-skills.mjs --write`);
     }
   }
+
+  // ---- F. .agents/rules/*.md 孤儿检测（2026-11-01 加）----
+  // 动因：2026-11-01 删改 AGENTS.md 叙事时误删指针，导致 4 个 rules 文件全库
+  // 无任何入口可达（AGENTS.md 不引、其他文件也不引）。既有断言只查「引用的路径
+  // 存不存在」（断线），查不出「存在的文件有没有人引用」（孤儿）。
+  // knowledge/ 有 catalog.json + A 断言兜着；rules/ 此前无任何机制，是盲区。
+  const rdir = path.join(root, '.agents', 'rules');
+  if (fs.existsSync(rdir)) {
+    const ruleFiles = fs.readdirSync(rdir).filter((f) => f.endsWith('.md') && f !== 'INDEX.md');
+    // 引用池：AGENTS.md + .agents/**、根级 rules/**、templates/** 下全部 .md + 工程根 .md
+    const pool = [];
+    const agf2 = path.join(root, 'AGENTS.md');
+    if (fs.existsSync(agf2)) pool.push(agf2);
+    walk(path.join(root, '.agents'), pool);
+    walk(path.join(root, 'rules'), pool);
+    walk(path.join(root, 'templates'), pool);
+    for (const f of fs.readdirSync(root)) {
+      const fp = path.join(root, f);
+      try { if (fs.statSync(fp).isFile() && f.endsWith('.md')) pool.push(fp); } catch {}
+    }
+    // 预读引用池正文，避免 N×M 次重复读盘
+    const poolText = new Map();
+    for (const p of pool) {
+      try { poolText.set(path.resolve(p), fs.readFileSync(p, 'utf8')); } catch {}
+    }
+    const orphans = [];
+    for (const f of ruleFiles) {
+      const self = path.resolve(path.join(rdir, f));
+      const stem = f.replace(/\.md$/, '');
+      let cited = false;
+      for (const [fp, txt] of poolText) {
+        if (fp === self) continue;          // 排除自引用（文件内提到自己不算可达）
+        if (txt.includes(stem)) { cited = true; break; }
+      }
+      if (!cited) orphans.push(f);
+    }
+    if (orphans.length) {
+      fail('F', `${rel}: .agents/rules 有 ${orphans.length} 个孤儿文件（全库无任何入口可达）—— ${orphans.join(', ')}。在 AGENTS.md §三 地图或 .agents/rules/INDEX.md 补指针`);
+    }
+  }
 }
 
 // ---- B. 跨模板必须同口径的片段（模块快照模板）----
@@ -263,7 +304,7 @@ if (assertFails) {
   console.log(`✗ 断言失败 ${assertFails} 条`);
   for (const a of AFAIL) console.log('    ' + a);
 } else {
-  console.log('✓ A/B/C/D/E 五类断言全部通过');
+  console.log('✓ A/B/C/D/E/F 六类断言全部通过');
 }
 
 console.log(`\n合计断线 ${brokenTotal} 条（检查引用 ${refsTotal} 处）；结构断言失败 ${assertFails} 条`);
