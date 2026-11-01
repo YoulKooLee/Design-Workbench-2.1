@@ -96,6 +96,81 @@ function openModal(html, wide) {
 function closeModal() { $('#modalMask').classList.remove('show'); }
 // 弹窗外围点击不关闭（防误关：只能通过「取消/✕/保存」按钮关闭）
 
+// AI 设置弹窗：抽为全局函数，日报页备份条按钮与「设置」视图入口共用一套逻辑，避免只在日报页找得到。
+async function openAiSetupDialog(btn) {
+  const trigger = btn || $('#aiSetup') || $('#openAiSetupBtn');
+  const oldTxt = trigger ? trigger.textContent : '';
+  if (trigger) { trigger.disabled = true; trigger.textContent = '读取中…'; }
+  // 只读 /api/ai/config（瞬时），不先调 /api/ai/health——health 会跑 CLI 探针，未登录时要等十几秒
+  let c = null;
+  try { c = await api('GET', '/api/ai/config'); } catch (e) {}
+  if (trigger) { trigger.disabled = false; trigger.textContent = oldTxt; }
+  const ready = !!(c && c.baseUrl && c.model && c.hasKey);
+  const chText = ready ? ('模型通道（' + esc(c.model) + '）已配置') : '未配置 → 生成时退回本地模板草稿';
+  const PRESETS = [
+    { name: 'DeepSeek', baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
+    { name: '通义千问', baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus' },
+    { name: '本地 LM Studio', baseUrl: 'http://127.0.0.1:1234/v1', model: 'local-model' }
+  ];
+  openModal('<div class="modal-head"><h3>AI 生成通道</h3><button class="modal-x" onclick="closeModal()">✕</button></div>' +
+    '<div class="modal-body">' +
+      '<div class="ai-cur">当前：<b>' + chText + '</b>' +
+        '<div class="muted" style="font-size:12px;margin-top:3px">填好后点「保存并测试」，面板会真调一次模型确认能出稿。</div>' +
+      '</div>' +
+      '<div class="ai-presets">' + PRESETS.map(p => '<button type="button" class="ai-chip" data-preset="' + esc(p.name) + '">' + esc(p.name) + '</button>').join('') + '</div>' +
+      '<label class="field"><span>端点（OpenAI 兼容）</span><input id="aiBase" type="text" placeholder="https://api.deepseek.com/v1" value="' + esc((c && c.baseUrl) || '') + '"/></label>' +
+      '<label class="field"><span>模型名</span><input id="aiModel" type="text" placeholder="deepseek-chat" value="' + esc((c && c.model) || '') + '"/></label>' +
+      '<label class="field"><span>API Key</span><input id="aiKey" type="password" placeholder="' + (c && c.hasKey ? '已保存 ' + esc(c.keyHint) + '，留空表示不修改' : '粘贴你的 key') + '"/></label>' +
+      '<div class="ai-msg muted" id="aiMsg">填完点「保存并测试」，立即生效、不用重启。先点上面的预设可自动填端点和模型。</div>' +
+      '<div class="ai-hist"><div class="ai-hist-head"><span>最近测试记录</span><button type="button" class="ai-clear" id="aiHistClear">清空</button></div>' +
+      '<div class="ai-hist-list" id="aiHistList"><div class="ai-hist-empty">读取中…</div></div></div>' +
+    '</div>' +
+    '<div class="modal-ops"><button class="btn btn-ghost" onclick="closeModal()">关闭</button><button class="btn btn-primary" id="aiSave">保存并测试</button></div>');
+  window.__closeModal = closeModal;
+  const $msg = $('#aiMsg');
+  document.querySelectorAll('.ai-chip').forEach(b => b.onclick = () => {
+    const p = PRESETS.find(x => x.name === b.dataset.preset); if (!p) return;
+    $('#aiBase').value = p.baseUrl; $('#aiModel').value = p.model; $('#aiKey').focus();
+  });
+  // 最近测试记录：最新在前，只显示模型与结果片段，不展示 key
+  const renderAiHist = async () => {
+    const box = $('#aiHistList'); if (!box) return;
+    const h = await api('GET', '/api/ai/test/history?limit=15');
+    if (!h || !h.ok || !Array.isArray(h.items) || !h.items.length) {
+      box.innerHTML = '<div class="ai-hist-empty">暂无测试记录，点「保存并测试」后结果会留在这里。</div>'; return;
+    }
+    const ft = (ts) => { try { const d = new Date(ts); const p = n => String(n).padStart(2, '0'); return p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds()); } catch { return ''; } };
+    box.innerHTML = h.items.map(it => '<div class="ai-hit ' + (it.ok ? 'ok' : 'err') + '">' +
+      '<span class="ai-hit-time">' + esc(ft(it.ts)) + '</span>' +
+      (it.model ? '<span class="ai-hit-model">' + esc(it.model) + '</span>' : '') +
+      '<span class="ai-hit-msg">' + esc(String(it.msg || (it.ok ? '成功' : '失败'))) + '</span>' +
+    '</div>').join('');
+  };
+  renderAiHist();
+  const hc = $('#aiHistClear'); if (hc) hc.onclick = async () => { await api('POST', '/api/ai/test/history/clear', {}); toast('已清空测试记录', 'ok'); renderAiHist(); };
+  $('#aiSave').onclick = async (ev) => {
+    const btn2 = ev.currentTarget; const old2 = btn2.textContent;
+    btn2.disabled = true; btn2.textContent = '保存中…';
+    const r = await api('POST', '/api/ai/config', {
+      baseUrl: ($('#aiBase').value || '').trim(),
+      model: ($('#aiModel').value || '').trim(),
+      apiKey: ($('#aiKey').value || '').trim()
+    });
+    if (!r || !r.ok) { btn2.disabled = false; btn2.textContent = old2; $msg.textContent = (r && r.msg) || '保存失败'; $msg.className = 'ai-msg err'; return; }
+    btn2.textContent = '测试中…';
+    const t = await api('POST', '/api/ai/test', {});
+    btn2.disabled = false; btn2.textContent = old2;
+    if (t && t.ok) {
+      $msg.textContent = '✓ ' + t.msg; $msg.className = 'ai-msg ok';
+      toast('AI 通道已就绪，可以点生成周报了', 'ok');
+    } else {
+      $msg.textContent = '已保存，但连不通：' + ((t && t.msg) || '未知原因') + '。可检查端点/模型名/key 是否正确。';
+      $msg.className = 'ai-msg err';
+    }
+    renderAiHist();
+  };
+}
+
 function confirmModal(title, bodyHtml, onConfirm, confirmText, danger) {
   const d = danger !== false;
   openModal('<h3>' + title + '</h3><div>' + bodyHtml + '</div>' +
@@ -2417,60 +2492,8 @@ function bindDaily() {
       else toast('导出目录尚未创建', 'err');
     } catch (e) { toast('打开目录失败', 'err'); }
   };
-  // AI 设置：不再只让用户去手改 JSON（那等于没打通），改成界面填端点/key，保存即刻生效
-  // 注意：这里只读 /api/ai/config（瞬时），不再先调 /api/ai/health——health 会跑 CLI 探针，
-  // 未登录时要等十几秒，弹窗迟迟不出，用户会以为按钮坏了
-  const asb = $('#aiSetup'); if (asb) asb.onclick = async () => {
-    asb.disabled = true; asb.textContent = '读取中…';
-    let c = null;
-    try { c = await api('GET', '/api/ai/config'); } catch (e) {}
-    asb.disabled = false; asb.textContent = 'AI 设置';
-    const ready = !!(c && c.baseUrl && c.model && c.hasKey);
-    const chText = ready ? ('模型通道（' + esc(c.model) + '）已配置') : '未配置 → 生成时退回本地模板草稿';
-    const PRESETS = [
-      { name: 'DeepSeek', baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
-      { name: '通义千问', baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus' },
-      { name: '本地 LM Studio', baseUrl: 'http://127.0.0.1:1234/v1', model: 'local-model' }
-    ];
-    openModal('<div class="modal-head"><h3>AI 生成通道</h3><button class="modal-x" onclick="closeModal()">✕</button></div>' +
-      '<div class="modal-body">' +
-        '<div class="ai-cur">当前：<b>' + chText + '</b>' +
-          '<div class="muted" style="font-size:12px;margin-top:3px">填好后点「保存并测试」，面板会真调一次模型确认能出稿。</div>' +
-        '</div>' +
-        '<div class="ai-presets">' + PRESETS.map(p => '<button type="button" class="ai-chip" data-preset="' + esc(p.name) + '">' + esc(p.name) + '</button>').join('') + '</div>' +
-        '<label class="field"><span>端点（OpenAI 兼容）</span><input id="aiBase" type="text" placeholder="https://api.deepseek.com/v1" value="' + esc((c && c.baseUrl) || '') + '"/></label>' +
-        '<label class="field"><span>模型名</span><input id="aiModel" type="text" placeholder="deepseek-chat" value="' + esc((c && c.model) || '') + '"/></label>' +
-        '<label class="field"><span>API Key</span><input id="aiKey" type="password" placeholder="' + (c && c.hasKey ? '已保存 ' + esc(c.keyHint) + '，留空表示不修改' : '粘贴你的 key') + '"/></label>' +
-        '<div class="ai-msg muted" id="aiMsg">填完点「保存并测试」，立即生效、不用重启。先点上面的预设可自动填端点和模型。</div>' +
-      '</div>' +
-      '<div class="modal-ops"><button class="btn btn-ghost" onclick="closeModal()">关闭</button><button class="btn btn-primary" id="aiSave">保存并测试</button></div>');
-    window.__closeModal = closeModal;
-    const $msg = $('#aiMsg');
-    document.querySelectorAll('.ai-chip').forEach(b => b.onclick = () => {
-      const p = PRESETS.find(x => x.name === b.dataset.preset); if (!p) return;
-      $('#aiBase').value = p.baseUrl; $('#aiModel').value = p.model; $('#aiKey').focus();
-    });
-    $('#aiSave').onclick = async (ev) => {
-      const btn = ev.currentTarget; const old = btn.textContent;
-      btn.disabled = true; btn.textContent = '保存中…';
-      const r = await api('POST', '/api/ai/config', {
-        baseUrl: ($('#aiBase').value || '').trim(),
-        model: ($('#aiModel').value || '').trim(),
-        apiKey: ($('#aiKey').value || '').trim()
-      });
-      if (!r || !r.ok) { btn.disabled = false; btn.textContent = old; $msg.textContent = (r && r.msg) || '保存失败'; $msg.className = 'ai-msg err'; return; }
-      btn.textContent = '测试中…';
-      const t = await api('POST', '/api/ai/test', {});
-      btn.disabled = false; btn.textContent = old;
-      if (t && t.ok) {
-        $msg.textContent = '✓ ' + t.msg; $msg.className = 'ai-msg ok';
-        toast('AI 通道已就绪，可以点生成周报了', 'ok');
-      } else {
-        $msg.textContent = '已保存，但连不通：' + ((t && t.msg) || '未知原因') + '。可检查端点/模型名/key 是否正确。';
-        $msg.className = 'ai-msg err';
-      }
-    };
-  };
+  // AI 设置弹窗已抽为全局 openAiSetupDialog：日报备份条按钮与「设置」视图入口共用同一套逻辑
+  const asb = $('#aiSetup'); if (asb) asb.onclick = () => openAiSetupDialog(asb);
   const wt = $('#weekText'); if (wt) wt.oninput = () => { const wr = weekRange(dailyWeekOffset); saveReport('weekly', wr.s + '~' + wr.e, wt.value); };  const qt = $('#quarterText'); if (qt) qt.oninput = () => { saveReport('quarterly', quarterRange(dailyQuarterOffset).label, qt.value); };
   const yt = $('#yearText'); if (yt) yt.oninput = () => { saveReport('yearly', String(new Date().getFullYear()), yt.value); };
 }
@@ -2648,6 +2671,10 @@ async function renderView(view) {
       card.className = 'list-card';
       card.innerHTML =
         '<div class="list-item"><div class="item-body"><div class="item-title">服务地址</div><div class="item-desc">面板 http://localhost:7788 · Make http://localhost:53817</div></div></div>' +
+        '<div class="list-item"><div class="item-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+          '<div><div class="item-title">AI 生成通道</div><div class="item-desc" id="aiSetupStatus">配置 DeepSeek / 通义千问 / 本地模型后，生成日报周报时直接调用；未配置则用本地模板草稿。</div></div>' +
+          '<button class="btn btn-ghost" id="openAiSetupBtn" type="button">打开 AI 设置</button>' +
+        '</div></div>' +
         (IS_PACKAGED
           ? '<div class="list-item"><div class="item-body"><div class="item-title">更新检查</div><div class="item-desc">安装包更新由 GitHub Releases 自动管理（检查→下载→安装重启），点击右上角「检查更新」触发。</div></div></div>'
           : '<div class="list-item"><div class="item-body"><div class="item-title">GitHub 仓库</div>' +
@@ -2664,6 +2691,12 @@ async function renderView(view) {
         '<div class="list-item"><div class="item-body"><div class="item-title">版本</div><div class="item-desc">产品设计工作台 v3.1 · Electron 桌面应用</div></div></div>';
       $('#main').appendChild(card);
       loadUpdateConfigUI();
+      const openAiBtn = $('#openAiSetupBtn');
+      if (openAiBtn) openAiBtn.onclick = () => openAiSetupDialog(openAiBtn);
+      api('GET', '/api/ai/config').then((c) => {
+        const st = $('#aiSetupStatus'); if (!st) return;
+        st.textContent = (c && c.baseUrl && c.model && c.hasKey) ? ('已配置：' + c.model + '（可直接生成）') : '未配置 → 生成日报周报时退回本地模板草稿';
+      }).catch(() => {});
     }
     if (token !== renderToken) return; // 已被更新的渲染取代（快速切换 / 双击防覆盖）
   } catch (e) {

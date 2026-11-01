@@ -121,6 +121,18 @@
   .ai-msg{font-size:11.5px;line-height:1.6;margin-top:12px;color:#64748b}
   .ai-msg.ok{color:#16A34A;font-weight:600}
   .ai-msg.err{color:#DC2626;font-weight:600}
+  .ai-hist{margin-top:14px;border-top:1px dashed #e2e8f0;padding-top:10px}
+  .ai-hist-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:600;color:#475569;margin-bottom:8px}
+  .ai-clear{border:none;background:none;color:#94a3b8;font-size:11.5px;cursor:pointer;font-family:inherit}
+  .ai-clear:hover{color:#DC2626}
+  .ai-hist-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto}
+  .ai-hit{display:flex;gap:8px;align-items:baseline;font-size:11.5px;line-height:1.5;padding:6px 8px;border-radius:8px;background:#f8fafc}
+  .ai-hit.ok{border-left:3px solid #16A34A}
+  .ai-hit.err{border-left:3px solid #DC2626}
+  .ai-hit-time{color:#94a3b8;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ai-hit-model{color:#64748b;white-space:nowrap}
+  .ai-hit-msg{color:#334155;flex:1;min-width:0;word-break:break-all}
+  .ai-hist-empty{font-size:11.5px;color:#94a3b8;padding:4px 2px}
   .owner-pick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
   .owner-opt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;cursor:pointer;transition:.15s}
   .owner-opt:hover{border-color:var(--accent)}
@@ -463,6 +475,7 @@
     <p>项目管理 · 技能库 · 知识库 · 工作规则</p>
   </div>
   <div class="spacer"></div>
+  <button class="btn ghost sm" id="aiSetupGlobal" title="配置 AI 生成通道（DeepSeek / 通义千问 / 本地模型），所有页面均可点开">⚙ AI 设置</button>
   <button class="btn ghost sm" id="updateBtn" title="从 GitHub 检查工作台更新">↻ 检查更新<span class="update-badge" id="updateBadge" hidden></span></button>
   <button class="btn ghost sm danger-t" id="exitBtn" title="停止工作台全部服务（工作台 7788 / Make 53817 / ACP 32124 / Vite / 预览 8899）并清理状态，等价于运行「停止工作台.cmd」">⏻ 退出</button>
 </header>
@@ -848,6 +861,64 @@ $('#exitBtn').addEventListener('click', async () => {
     setTimeout(function(){ try { window.location.replace('about:blank'); } catch(e){ /* ignore */ } }, 500);
   }, '确认退出');
 });
+
+// AI 设置弹窗：抽为全局函数，顶栏常驻「AI 设置」与日报页备份条按钮共用，避免入口只藏在日报页。
+async function openAiSetupDialog(btn){
+  const trigger = btn || $('#aiSetupGlobal') || $('#aiSetup');
+  const oldTxt = trigger ? trigger.textContent : '';
+  if(trigger){ trigger.disabled=true; trigger.textContent='读取中…'; }
+  // 只读配置（瞬时）；不调 /api/ai/health，避免为了一次弹窗去跑十几秒的 CLI 探针
+  let c=null; try{ c=await api('/api/ai/config'); }catch(e){}
+  if(trigger){ trigger.disabled=false; trigger.textContent=oldTxt; }
+  const ready=!!(c&&c.baseUrl&&c.model&&c.hasKey);
+  const chText = ready ? ('模型通道（'+escapeHtml(c.model)+'）已配置') : '未配置 → 生成时退回本地模板草稿';
+  const PRESETS=[
+    {name:'DeepSeek',baseUrl:'https://api.deepseek.com/v1',model:'deepseek-chat'},
+    {name:'通义千问',baseUrl:'https://dashscope.aliyuncs.com/compatible-mode/v1',model:'qwen-plus'},
+    {name:'本地 LM Studio',baseUrl:'http://127.0.0.1:1234/v1',model:'local-model'}
+  ];
+  openModal('<h3>AI 生成通道</h3>'+
+    '<div class="ai-cur">当前：<b>'+chText+'</b>'+
+      '<div class="muted" style="font-size:12px;margin-top:3px">填好后点「保存并测试」，面板会真调一次模型确认能出稿。</div>'+
+    '</div>'+
+    '<div class="ai-presets">'+PRESETS.map(p=>'<button type="button" class="ai-chip" data-preset="'+escapeHtml(p.name)+'">'+escapeHtml(p.name)+'</button>').join('')+'</div>'+
+    '<label class="field"><span>端点（OpenAI 兼容）</span><input id="aiBase" type="text" placeholder="https://api.deepseek.com/v1" value="'+escapeHtml((c&&c.baseUrl)||'')+'"/></label>'+
+    '<label class="field"><span>模型名</span><input id="aiModel" type="text" placeholder="deepseek-chat" value="'+escapeHtml((c&&c.model)||'')+'"/></label>'+
+    '<label class="field"><span>API Key</span><input id="aiKey" type="password" placeholder="'+((c&&c.hasKey)?('已保存 '+escapeHtml(c.keyHint)+'，留空表示不修改'):'粘贴你的 key')+'"/></label>'+
+    '<div class="ai-msg" id="aiMsg">填完点「保存并测试」，立即生效、不用重启。先点上面的预设可自动填端点和模型。</div>'+
+    '<div class="ai-hist"><div class="ai-hist-head"><span>最近测试记录</span><button type="button" class="ai-clear" id="aiHistClear">清空</button></div>'+
+    '<div class="ai-hist-list" id="aiHistList"><div class="ai-hist-empty">读取中…</div></div></div>'+
+    '<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px"><button class="btn" id="aiSetupClose">关闭</button><button class="btn btn-primary" id="aiSave">保存并测试</button></div>');
+  const msg=$('#aiMsg');
+  document.querySelectorAll('.ai-chip').forEach(b=>{ b.onclick=()=>{ const p=PRESETS.find(x=>x.name===b.dataset.preset); if(!p) return; $('#aiBase').value=p.baseUrl; $('#aiModel').value=p.model; $('#aiKey').focus(); }; });
+  // 最近测试记录：最新在前，只显示模型与结果片段，不展示 key
+  const renderAiHist=async ()=>{
+    const box=$('#aiHistList'); if(!box) return;
+    const h=await api('/api/ai/test/history?limit=15').catch(()=>null);
+    if(!h||!h.ok||!Array.isArray(h.items)||!h.items.length){ box.innerHTML='<div class="ai-hist-empty">暂无测试记录，点「保存并测试」后结果会留在这里。</div>'; return; }
+    const ft=(ts)=>{ try{ const d=new Date(ts); const p=n=>String(n).padStart(2,'0'); return p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds()); }catch{ return ''; } };
+    box.innerHTML=h.items.map(it=>'<div class="ai-hist '+(it.ok?'ok':'err')+'">'+
+      '<span class="ai-hit-time">'+escapeHtml(ft(it.ts))+'</span>'+
+      (it.model?'<span class="ai-hit-model">'+escapeHtml(it.model)+'</span>':'')+
+      '<span class="ai-hit-msg">'+escapeHtml(String(it.msg||(it.ok?'成功':'失败')))+'</span>'+
+    '</div>').join('');
+  };
+  renderAiHist();
+  const hc=$('#aiHistClear'); if(hc) hc.onclick=async ()=>{ await api('/api/ai/test/history/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>null); toast('已清空测试记录','ok'); renderAiHist(); };
+  const cBtn=$('#aiSetupClose'); if(cBtn) cBtn.onclick=()=>closeModal();
+  const sv=$('#aiSave'); if(sv) sv.onclick=async ()=>{
+    const old=sv.textContent; sv.disabled=true; sv.textContent='保存中…';
+    const r=await api('/api/ai/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({baseUrl:($('#aiBase').value||'').trim(),model:($('#aiModel').value||'').trim(),apiKey:($('#aiKey').value||'').trim()})});
+    if(!r||!r.ok){ sv.disabled=false; sv.textContent=old; msg.textContent=(r&&r.msg)||'保存失败'; msg.className='ai-msg err'; return; }
+    sv.textContent='测试中…';
+    const t=await api('/api/ai/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+    sv.disabled=false; sv.textContent=old;
+    if(t&&t.ok){ msg.textContent='✓ '+t.msg; msg.className='ai-msg ok'; toast('AI 通道已就绪','ok'); }
+    else { msg.textContent='已保存，但连不通：'+((t&&t.msg)||'未知原因'); msg.className='ai-msg err'; }
+    renderAiHist();
+  };
+}
+const aiSetupGlobalEl=$('#aiSetupGlobal'); if(aiSetupGlobalEl) aiSetupGlobalEl.addEventListener('click',()=>openAiSetupDialog(aiSetupGlobalEl));
 
 // Make 重启入口统一在 KPI 卡「Make 管理端」的「重启」按钮（kpiRestartMake），顶栏不再重复。
 
@@ -2723,43 +2794,8 @@ function bindDaily(){
   const ygen=$('#yearGen'); if(ygen) ygen.onclick=()=>genReport('yearly', ygen, $('#yearText'), String(new Date().getFullYear()));
   const expJson=$('#expJson'); if(expJson) expJson.onclick=()=>{ window.open('/api/export/all','_blank'); toast('开始下载备份文件','ok'); };
   const expCsv=$('#expCsv'); if(expCsv) expCsv.onclick=async ()=>{ const r=await api('/api/export/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'csv'})}); toast((r&&r.msg)||'已导出','ok'); };
-  // AI 设置：说明当前通道与配置方法，避免「点了生成只拿到模板草稿」的困惑
-  const aiBtn=$('#aiSetup'); if(aiBtn) aiBtn.onclick=async ()=>{
-    aiBtn.disabled=true; aiBtn.textContent='读取中…';
-    // 只读配置（瞬时）；不调 /api/ai/health，避免为了一次弹窗去跑十几秒的 CLI 探针
-    let c=null; try{ c=await api('/api/ai/config'); }catch(e){}
-    aiBtn.disabled=false; aiBtn.textContent='AI 设置';
-    const ready=!!(c&&c.baseUrl&&c.model&&c.hasKey);
-    const chText = ready ? ('模型通道（'+escapeHtml(c.model)+'）已配置') : '未配置 → 生成时退回本地模板草稿';
-    const PRESETS=[
-      {name:'DeepSeek',baseUrl:'https://api.deepseek.com/v1',model:'deepseek-chat'},
-      {name:'通义千问',baseUrl:'https://dashscope.aliyuncs.com/compatible-mode/v1',model:'qwen-plus'},
-      {name:'本地 LM Studio',baseUrl:'http://127.0.0.1:1234/v1',model:'local-model'}
-    ];
-    openModal('<h3>AI 生成通道</h3>'+
-      '<div class="ai-cur">当前：<b>'+chText+'</b>'+
-        '<div class="muted" style="font-size:12px;margin-top:3px">填好后点「保存并测试」，面板会真调一次模型确认能出稿。</div>'+
-      '</div>'+
-      '<div class="ai-presets">'+PRESETS.map(p=>'<button type="button" class="ai-chip" data-preset="'+escapeHtml(p.name)+'">'+escapeHtml(p.name)+'</button>').join('')+'</div>'+
-      '<label class="field"><span>端点（OpenAI 兼容）</span><input id="aiBase" type="text" placeholder="https://api.deepseek.com/v1" value="'+escapeHtml((c&&c.baseUrl)||'')+'"/></label>'+
-      '<label class="field"><span>模型名</span><input id="aiModel" type="text" placeholder="deepseek-chat" value="'+escapeHtml((c&&c.model)||'')+'"/></label>'+
-      '<label class="field"><span>API Key</span><input id="aiKey" type="password" placeholder="'+((c&&c.hasKey)?('已保存 '+escapeHtml(c.keyHint)+'，留空表示不修改'):'粘贴你的 key')+'"/></label>'+
-      '<div class="ai-msg" id="aiMsg">填完点「保存并测试」，立即生效、不用重启。先点上面的预设可自动填端点和模型。</div>'+
-      '<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px"><button class="btn" id="aiSetupClose">关闭</button><button class="btn btn-primary" id="aiSave">保存并测试</button></div>');
-    const msg=$('#aiMsg');
-    document.querySelectorAll('.ai-chip').forEach(b=>{ b.onclick=()=>{ const p=PRESETS.find(x=>x.name===b.dataset.preset); if(!p) return; $('#aiBase').value=p.baseUrl; $('#aiModel').value=p.model; $('#aiKey').focus(); }; });
-    const cBtn=$('#aiSetupClose'); if(cBtn) cBtn.onclick=()=>closeModal();
-    const sv=$('#aiSave'); if(sv) sv.onclick=async ()=>{
-      const old=sv.textContent; sv.disabled=true; sv.textContent='保存中…';
-      const r=await api('/api/ai/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({baseUrl:($('#aiBase').value||'').trim(),model:($('#aiModel').value||'').trim(),apiKey:($('#aiKey').value||'').trim()})});
-      if(!r||!r.ok){ sv.disabled=false; sv.textContent=old; msg.textContent=(r&&r.msg)||'保存失败'; msg.className='ai-msg err'; return; }
-      sv.textContent='测试中…';
-      const t=await api('/api/ai/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-      sv.disabled=false; sv.textContent=old;
-      if(t&&t.ok){ msg.textContent='✓ '+t.msg; msg.className='ai-msg ok'; toast('AI 通道已就绪','ok'); }
-      else { msg.textContent='已保存，但连不通：'+((t&&t.msg)||'未知原因'); msg.className='ai-msg err'; }
-    };
-  };
+  // AI 设置弹窗已抽为全局 openAiSetupDialog：顶栏常驻按钮与本页备份条按钮共用同一套逻辑
+  const aiBtn=$('#aiSetup'); if(aiBtn) aiBtn.onclick=()=>openAiSetupDialog(aiBtn);
   const qp=$('#quarterPolish'); if(qp) qp.onclick=async ()=>{ const t=$('#quarterText'); if(!t) return; if(!t.value.trim()){ toast('季报内容为空','err'); return; } qp.disabled=true; const old=qp.textContent; qp.textContent='润色中…'; try{ const r=await api('/api/polish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t.value})}); if(r&&r.ok&&r.text){ t.value=r.text; saveReport('quarterly',quarterRange(quarterOffset).label, r.text); toast('已润色季报','ok'); } else { toast((r&&r.msg)||'润色失败','err'); } }catch(e){ toast('润色失败（服务异常）','err'); } finally{ qp.disabled=false; qp.textContent=old; } };
   const yg=$('#yearReGen'); if(yg) yg.onclick=async ()=>{ await deleteReport('yearly',String(new Date().getFullYear())); renderDaily(); toast('已重新生成年报','ok'); };
   const yp=$('#yearPolish'); if(yp) yp.onclick=async ()=>{ const t=$('#yearText'); if(!t) return; if(!t.value.trim()){ toast('年报内容为空','err'); return; } yp.disabled=true; const old=yp.textContent; yp.textContent='润色中…'; try{ const r=await api('/api/polish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t.value})}); if(r&&r.ok&&r.text){ t.value=r.text; saveReport('yearly',String(new Date().getFullYear()), r.text); toast('已润色年报','ok'); } else { toast((r&&r.msg)||'润色失败','err'); } }catch(e){ toast('润色失败（服务异常）','err'); } finally{ yp.disabled=false; yp.textContent=old; } };

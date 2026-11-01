@@ -627,6 +627,18 @@ td .muted,span.muted{color:var(--placeholder)}
 .ai-msg{font-size:11.5px;line-height:1.6;margin-top:12px;color:var(--text-3)}
 .ai-msg.ok{color:var(--green);font-weight:600}
 .ai-msg.err{color:var(--red);font-weight:600}
+.ai-hist{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px}
+.ai-hist-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:8px}
+.ai-clear{border:none;background:none;color:var(--text-3);font-size:11.5px;cursor:pointer;font-family:var(--font)}
+.ai-clear:hover{color:var(--red)}
+.ai-hist-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto}
+.ai-hit{display:flex;gap:8px;align-items:baseline;font-size:11.5px;line-height:1.5;padding:6px 8px;border-radius:var(--radius-ctl);background:var(--line-inner)}
+.ai-hit.ok{border-left:3px solid var(--green)}
+.ai-hit.err{border-left:3px solid var(--red)}
+.ai-hit-time{color:var(--text-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ai-hit-model{color:var(--text-2);white-space:nowrap}
+.ai-hit-msg{color:var(--text-2);flex:1;min-width:0;word-break:break-all}
+.ai-hist-empty{font-size:11.5px;color:var(--text-3);padding:4px 2px}
 
 /* ===== Vite 端口池明细弹窗（含关闭端口） ===== */
 .vp-head,.vp-row{display:grid;grid-template-columns:86px 1fr 84px;align-items:center;gap:10px}

@@ -245,6 +245,19 @@ let updateState = {
 const MAKE_ADMIN_PORT = Number(process.env.AXHUB_MAKE_PORT) || Number(CFG.axhub?.makePort) || 53817;
 const MAKE_ADMIN_ORIGIN = `http://localhost:${MAKE_ADMIN_PORT}`;
 
+// 解析 powershell.exe 绝对路径：受控/精简启动环境（后台守护、第三方启动器）可能让进程 PATH 缺
+// System32，此时裸名 spawn / spawnSync 会 ENOENT(-4058)，启动脚本与保活探测静默失败、前端一直
+// 等不到 done。优先 Windows PowerShell 5.1（launch-project.ps1 为 5.1 语法），存在即用；否则回退
+// 裸名交给系统自行解析。结果缓存，避免每次启动重复探测文件系统。
+let _psExeCache;
+function resolvePowerShellExe() {
+  if (_psExeCache !== undefined) return _psExeCache;
+  const sysRoot = process.env.SystemRoot || 'C:\\Windows';
+  const candidate = path.join(sysRoot, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+  _psExeCache = fs.existsSync(candidate) ? candidate : 'powershell.exe';
+  return _psExeCache;
+}
+
 // ===== 智能体在线判定（心跳机制，支持任意智能体）=====
 // 约定：智能体活跃时向 09-协作/agents/<id>/heartbeat.json 写 { at, pid, host }；
 // 面板按心跳新鲜度判定在线（TTL 内视为在线）。任何 agents 目录下的智能体均适用。
@@ -1101,7 +1114,7 @@ function killNodeProcessesByPath(relative) {
     const abs = path.resolve(AXHUB_ROOT, String(relative || ''));
     // 路径可能以 \ 或 / 出现，统一取反斜杠形式用于匹配命令行。
     const needle = abs.replace(/\//g, '\\');
-    const ps = spawnSync('powershell', [
+    const ps = spawnSync(resolvePowerShellExe(), [
       '-NoProfile', '-Command',
       // 命令行里的路径可能是 / 或 \ 两种写法，先归一化成 \ 再匹配
       `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { ($_.CommandLine -replace '/', '\\') -like '*${needle.replace(/'/g, "''")}*' } | Select-Object -ExpandProperty ProcessId`
@@ -1196,7 +1209,7 @@ function killProcessOnPortForProject(port, relative) {
     '($owned -join ",") + "|" + ($foreign -join ",")',
   ].join('\n');
 
-  const r = spawnSync('powershell', ['-NoProfile', '-Command', script], {
+  const r = spawnSync(resolvePowerShellExe(), ['-NoProfile', '-Command', script], {
     windowsHide: true, encoding: 'utf8', timeout: 15000,
   });
   const raw = String((r && r.stdout) || '').trim();
@@ -1703,8 +1716,12 @@ const server = http.createServer(async (req, res) => {
         // 研发工程包 = AGENTS.md（入口）+ .agents（技能/规则/知识库/角色）+ templates/（建项与打包规范、交接清单模板）+ src/admin（Vue 工程骨架）。
         // frame 母版画廊已于 2026-09-29 从 _project-development 移除（其消费技能 prototype-demo 不存在，属死链）。
         // 组件库画廊仍在 03-组件库/03-页面组件/Vibe Design Pro，由 /clib、/frame 路由服务，与本清单无关。
-        for (const coreItem of ['AGENTS.md', '.agents', 'templates']) {
-          // 工程包入口（AGENTS.md/.agents/templates）位于 _project-development 根，admin 工程在 src/admin
+        // docs/ 于 2026-10-31 加入白名单：其内 docs/README.md 是家规自检「三点互兜底」之一
+        // （AGENTS.md §一 / project-memory.md 开头 / docs/README.md）。此前 docs/ 只随 make 原型工程
+        // 整目录 cpSync 带过去；Vue 编码工程走本白名单而漏掉，导致新项目缺这个兜底点，故补入。
+        // 注：inheritUpstreamDocs 只写 dst/研发基线/，不碰 dst/docs/，二者不冲突。
+        for (const coreItem of ['AGENTS.md', '.agents', 'templates', 'docs']) {
+          // 工程包入口（AGENTS.md/.agents/templates/docs）位于 _project-development 根，admin 工程在 src/admin
           const coreSrc = path.join(ADMIN_TEMPLATE_DIR, '..', '..', coreItem);
           const coreDst = path.join(dst, coreItem);
           try {
@@ -2115,7 +2132,7 @@ const server = http.createServer(async (req, res) => {
       );
       fs.writeFileSync(tmpPs1, Buffer.concat([bom, psBody]));
       fs.appendFileSync(logFile, `TMP: ${tmpPs1}\n`, 'utf8');
-      const child = spawn('powershell.exe', ['-ExecutionPolicy', 'Bypass', '-File', tmpPs1], {
+      const child = spawn(resolvePowerShellExe(), ['-ExecutionPolicy', 'Bypass', '-File', tmpPs1], {
         detached: false,
         stdio: ['ignore', 'pipe', 'pipe'],
         env: cleanEnvForSpawn(),
@@ -2243,7 +2260,7 @@ const server = http.createServer(async (req, res) => {
   // 查询智能体监听运行状态
   if (p === '/api/listen/status' && method === 'GET') {
     try {
-      const r = spawnSync('powershell', ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | ForEach-Object { $_.ProcessId.ToString() + '|' + ($_.CommandLine -replace '.*\\\\', '') }"], { encoding: 'utf8', windowsHide: true, timeout: 8000 });
+      const r = spawnSync(resolvePowerShellExe(), ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | ForEach-Object { $_.ProcessId.ToString() + '|' + ($_.CommandLine -replace '.*\\\\', '') }"], { encoding: 'utf8', windowsHide: true, timeout: 8000 });
       const pids = String(r.stdout || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
       const list = pids.map(s => { const [pid, name] = s.split('|'); return { pid: Number(pid), name: name || 'watcher' }; });
       return send(res, 200, { ok: true, running: list.length > 0, list });
@@ -2257,8 +2274,8 @@ const server = http.createServer(async (req, res) => {
     try {
       // 写禁用标记：关闭后自动保活不再拉起（手动「启动监听」时清除）
       try { fs.mkdirSync(path.dirname(LISTEN_DISABLED_FLAG), { recursive: true }); fs.writeFileSync(LISTEN_DISABLED_FLAG, String(Date.now()), 'utf8'); } catch {}
-      spawnSync('powershell', ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"], { encoding: 'utf8', windowsHide: true, timeout: 10000 });
-      const st = spawnSync('powershell', ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | Select-Object -ExpandProperty ProcessId"], { encoding: 'utf8', windowsHide: true, timeout: 8000 });
+      spawnSync(resolvePowerShellExe(), ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"], { encoding: 'utf8', windowsHide: true, timeout: 10000 });
+      const st = spawnSync(resolvePowerShellExe(), ['-NoProfile', '-Command', "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | Select-Object -ExpandProperty ProcessId"], { encoding: 'utf8', windowsHide: true, timeout: 8000 });
       const left = String(st.stdout || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
       return send(res, 200, { ok: true, msg: left.length ? `仍有 ${left.length} 个监听进程未退出` : '已关闭全部智能体监听' });
     } catch (e) {
@@ -3794,6 +3811,23 @@ const server = http.createServer(async (req, res) => {
       return null;
     } catch { return null; }
   };
+  // 连通测试留痕：07-日志 已被忽略规则排除、不入库；只记模型与结果片段，绝不写 key
+  const AI_TEST_LOG = path.join(__dirname, '..', '07-日志', 'ai-test-history.jsonl');
+  const appendAiTestRecord = (rec) => {
+    try {
+      fs.mkdirSync(path.dirname(AI_TEST_LOG), { recursive: true });
+      fs.appendFileSync(AI_TEST_LOG, JSON.stringify(rec) + '\n', 'utf8');
+    } catch (e) { safeLog('ai-test-log', e && e.message ? e.message : String(e)); }
+  };
+  const readAiTestHistory = (limit) => {
+    let lines = [];
+    try { if (fs.existsSync(AI_TEST_LOG)) lines = fs.readFileSync(AI_TEST_LOG, 'utf8').split('\n').filter(l => l.trim()); } catch {}
+    const items = [];
+    for (const l of lines.slice(-Math.max(1, limit) * 3)) {
+      try { const o = JSON.parse(l); if (o && typeof o === 'object') items.push(o); } catch {}
+    }
+    return items.slice(-limit).reverse();
+  };
   // CLI 探针：--version 只能证明装没装，证明不了登录态。
   // 真正能出字才算可用——这就是之前「健康检查通过、点生成却空等 150 秒」的根因。
   // 探针要起一个完整 CLI 进程，很贵（十几秒），结果缓存 5 分钟，避免每次点生成都白等。
@@ -4249,10 +4283,26 @@ const server = http.createServer(async (req, res) => {
   // 真调一次模型，验证 key 是否可用——不验证的话用户只会在点周报时才发现填错了
   if (p === '/api/ai/test' && method === 'POST') {
     const cfg = readAiConfig();
-    if (!cfg) return send(res, 200, { ok: false, msg: '还没保存可用的配置（端点 / 模型 / key 三项都要有）' });
+    if (!cfg) {
+      appendAiTestRecord({ ts: new Date().toISOString(), ok: false, model: '', kind: '连通测试', msg: '还没保存可用的配置（端点 / 模型 / key 三项都要有）' });
+      return send(res, 200, { ok: false, msg: '还没保存可用的配置（端点 / 模型 / key 三项都要有）' });
+    }
     const r = await callModelHttp('只回复两个字：可用', cfg);
-    if (!r.ok) return send(res, 200, { ok: false, msg: r.msg || '调用失败' });
+    if (!r.ok) {
+      appendAiTestRecord({ ts: new Date().toISOString(), ok: false, model: cfg.model, kind: '连通测试', msg: r.msg || '调用失败' });
+      return send(res, 200, { ok: false, msg: r.msg || '调用失败' });
+    }
+    appendAiTestRecord({ ts: new Date().toISOString(), ok: true, model: cfg.model, kind: '连通测试', msg: String(r.text || '').slice(0, 120) });
     return send(res, 200, { ok: true, msg: '连通正常，模型回复：' + String(r.text || '').slice(0, 40), model: r.model || cfg.model });
+  }
+  // 最近测试记录：设置弹窗回看连通过程（最新在前）；清空只删本地日志，不碰配置与 key
+  if (p === '/api/ai/test/history' && method === 'GET') {
+    const limit = Math.min(50, Math.max(1, parseInt(url.searchParams.get('limit') || '15', 10) || 15));
+    return send(res, 200, { ok: true, items: readAiTestHistory(limit) });
+  }
+  if (p === '/api/ai/test/history/clear' && method === 'POST') {
+    try { fs.writeFileSync(AI_TEST_LOG, '', 'utf8'); } catch (e) { return sendError(res, '清空记录失败：' + e.message, 500); }
+    return send(res, 200, { ok: true, msg: '已清空测试记录' });
   }
 
   // ===== 原型分享包：脱敏扫描 + 打包 =====
@@ -4361,7 +4411,7 @@ const server = http.createServer(async (req, res) => {
       fs.mkdirSync(outDir, { recursive: true });
       const src = DIST.replace(/'/g, "''") + '\\*';
       const dst = zip.replace(/'/g, "''");
-      const r = spawnSync('powershell', ['-NoProfile', '-Command', `Compress-Archive -Path '${src}' -DestinationPath '${dst}' -Force`], { encoding: 'utf8', timeout: 180000, windowsHide: true });
+      const r = spawnSync(resolvePowerShellExe(), ['-NoProfile', '-Command', `Compress-Archive -Path '${src}' -DestinationPath '${dst}' -Force`], { encoding: 'utf8', timeout: 180000, windowsHide: true });
       if (!fs.existsSync(zip)) return send(res, 200, { ok: false, msg: '打包失败：' + String((r && r.stderr) || '').slice(0, 200) });
       const size = fs.statSync(zip).size;
       return send(res, 200, { ok: true, msg: '已打包（' + (size / 1024 / 1024).toFixed(1) + 'MB）到 08-办公/exports/' + path.basename(zip), path: zip, size });
@@ -4544,27 +4594,34 @@ const server = http.createServer(async (req, res) => {
 });
 
 // 智能体监听常驻保活：面板运行期间保证 watcher 在跑（缺失即拉起）；用户显式「关闭监听」后不拉起
+// 判断 PID 是否仍存活（process.kill(pid,0) 为 Node 原生调用，不派生子进程、不阻塞事件循环）。
+// Windows 下进程存在但无权限时返回 EPERM，同样视为存活；不存在抛 ESRCH。
+function pidAlive(pid) {
+  const n = Number(String(pid || '').trim());
+  if (!Number.isInteger(n) || n <= 0) return false;
+  try { process.kill(n, 0); return true; }
+  catch (e) { return e && (e.code === 'EPERM' || e.errno === 'EPERM'); }
+}
+
 function ensureAgentWatchers() {
   if (fs.existsSync(LISTEN_DISABLED_FLAG)) return; // 用户已手动关闭，尊重关闭意图
   try {
     const toolsDir = path.join(AXHUB_ROOT, '09-协作', 'messages', 'tools');
     const node = process.env.NODE_BIN || process.execPath || 'C:\\Program Files\\nodejs\\node.exe';
-    const ps = (cmd) => spawnSync('powershell', ['-NoProfile', '-Command', cmd], { encoding: 'utf8', windowsHide: true, timeout: 8000 }).stdout || '';
-    const pids = ps("Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -match 'agent-hub-watcher|inbox-watcher' } | Select-Object -ExpandProperty ProcessId").split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-    const need = new Set(['agent-hub-watcher.mjs']); // 心跳/在线判定只需 hub-watcher；inbox-watcher 依赖 dsh 引擎，缺失时不自动拉起（可手动 /api/listen/start）
-    for (const pid of pids) {
-      const detail = ps(`(Get-CimInstance Win32_Process -Filter 'ProcessId=${pid}').CommandLine`) || '';
-      if (/agent-hub-watcher\.mjs/.test(detail)) need.delete('agent-hub-watcher.mjs');
-      if (/inbox-watcher\.mjs/.test(detail)) need.delete('inbox-watcher.mjs');
-    }
-    for (const m of [...need]) {
-      const script = path.join(toolsDir, m);
-      if (!fs.existsSync(script)) { continue; }
-      const child = spawn(node, [m], { cwd: toolsDir, detached: true, stdio: 'ignore', windowsHide: true });
-      child.on('error', (e) => { try { console.error('[spawn] 监听拉起失败:', m, e.message); } catch {} });
-      child.unref();
-      try { console.log('[watcher] 已拉起缺失监听:', m); } catch {}
-    }
+    const hubPidFile = path.join(toolsDir, 'agent-hub-watcher.pid');
+    // 1) 以 watcher 自己写出的 PID 文件为准做单例判定，避免每个定时器周期都串行调用
+    //    同步 PowerShell CIM 查询（进程一多会把单线程事件循环堵死，所有 HTTP 请求超时）。
+    let hubPid = '';
+    try { hubPid = fs.readFileSync(hubPidFile, 'utf8').trim(); } catch {}
+    if (pidAlive(hubPid)) return; // 已有存活的 hub-watcher，直接复用，不重复拉起
+
+    // 2) PID 文件缺失 / 对应进程已退出：拉起一个新实例。watcher 启动后会覆写该 PID 文件。
+    const script = path.join(toolsDir, 'agent-hub-watcher.mjs');
+    if (!fs.existsSync(script)) return;
+    const child = spawn(node, [script], { cwd: toolsDir, detached: true, stdio: 'ignore', windowsHide: true });
+    child.on('error', (e) => { try { console.error('[spawn] 监听拉起失败:', e.message); } catch {} });
+    child.unref();
+    try { console.log('[watcher] 已拉起缺失监听: agent-hub-watcher.mjs'); } catch {}
   } catch (e) {
     try { console.error('[watcher] 保活检查失败:', e.message); } catch {}
   }

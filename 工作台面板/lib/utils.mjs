@@ -1,5 +1,6 @@
 ﻿// 产品设计工作台 —— 无状态工具函数（从 server.mjs 拆出，P3 拆分第一步）
 // 纯 Node 内置模块。改动本文件后须 node --check + 重启验证。
+import path from 'node:path';
 
 function cleanEnvForSpawn() {
   const env = { ...process.env };
@@ -8,10 +9,22 @@ function cleanEnvForSpawn() {
     if (/^CODEBUDDY/i.test(k)) delete env[k];
   }
   if (env.PATH) {
-    env.PATH = env.PATH
+    const keep = env.PATH
       .split(';')
-      .filter((p) => p && !/CodeBuddy/i.test(p) && !/codebuddy/i.test(p))
-      .join(';');
+      .filter((p) => p && !/CodeBuddy/i.test(p) && !/codebuddy/i.test(p));
+    // 兜底补齐子进程运行必需的系统目录：受控/精简启动环境（后台守护、第三方启动器）可能
+    // 从父进程继承到缺 System32 的 PATH，导致 ps1 内部 netstat、node 以及系统命令解析不到（ENOENT）。
+    // 已存在则不重复追加；缺 SystemRoot 时回退 C:\Windows。
+    const sysRoot = env.SystemRoot || 'C:\\Windows';
+    const mustDirs = [
+      path.join(sysRoot, 'System32'),
+      path.join(sysRoot, 'System32', 'WindowsPowerShell', 'v1.0'),
+      path.dirname(process.execPath),
+    ];
+    for (const m of mustDirs) {
+      if (m && !keep.some((p) => p.toLowerCase() === m.toLowerCase())) keep.push(m);
+    }
+    env.PATH = keep.join(';');
   }
   return env;
 }
