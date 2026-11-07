@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-27T04:17:46.329Z",
-  "count": 16,
-  "hash": "5d3c0d221be912b1",
+  "generatedAt": "2026-11-03T09:32:04.357Z",
+  "count": 17,
+  "hash": "e855368bafc97910",
   "skills": {
     "brainstorming": "brainstorming",
     "slides": "ckm:slides",
@@ -13,6 +13,7 @@
     "feature-list": "feature-list",
     "finishing-branch": "finishing-branch",
     "hld-design": "hld-design",
+    "karpathy-guidelines": "karpathy-guidelines",
     "lld-design": "lld-design",
     "prd-writer": "prd-writer",
     "skill-creator": "skill-creator",

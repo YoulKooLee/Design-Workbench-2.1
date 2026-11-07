@@ -476,6 +476,7 @@
   </div>
   <div class="spacer"></div>
   <button class="btn ghost sm" id="aiSetupGlobal" title="配置 AI 生成通道（DeepSeek / 通义千问 / 本地模型），所有页面均可点开">⚙ AI 设置</button>
+  <button class="btn ghost sm" id="makePatchBtn" title="Make 客户端功能删减补丁：设置打补丁时是否隔离到单个项目">🔧 补丁设置</button>
   <button class="btn ghost sm" id="updateBtn" title="从 GitHub 检查工作台更新">↻ 检查更新<span class="update-badge" id="updateBadge" hidden></span></button>
   <button class="btn ghost sm danger-t" id="exitBtn" title="停止工作台全部服务（工作台 7788 / Make 53817 / ACP 32124 / Vite / 预览 8899）并清理状态，等价于运行「停止工作台.cmd」">⏻ 退出</button>
 </header>
@@ -919,6 +920,35 @@ async function openAiSetupDialog(btn){
   };
 }
 const aiSetupGlobalEl=$('#aiSetupGlobal'); if(aiSetupGlobalEl) aiSetupGlobalEl.addEventListener('click',()=>openAiSetupDialog(aiSetupGlobalEl));
+
+// Make 功能删减补丁：隔离 / 共享 开关（写 06-运行脚本/make功能删减/patch-config.json）
+async function openMakePatchDialog(){
+  let mode='isolate';
+  try{ const r=await fetch('/api/make-patch/config'); const j=await r.json(); if(j&&j.mode) mode=j.mode; }catch(e){}
+  const wrap=document.createElement('div');
+  wrap.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:9999';
+  wrap.innerHTML='<div style="background:#fff;border-radius:10px;padding:18px 20px;width:460px;box-shadow:0 12px 40px rgba(0,0,0,.22);font-size:13px;line-height:1.7">'
+    +'<div style="font-weight:600;font-size:14px;margin-bottom:6px">Make 补丁设置</div>'
+    +'<div style="color:#666;margin-bottom:10px">控制「功能删减」补丁（更多菜单 / 规格 / PRD 标注 / 发布组 / 设置 tab / 管理技能）打下去时，是否只作用于当前项目。</div>'
+    +'<label style="display:block;margin:10px 0;cursor:pointer"><input type="radio" name="mpMode" value="isolate" '+(mode==='isolate'?'checked':'')+'> <b>隔离</b>（推荐）：打补丁前先断开 pnpm 硬链接，只影响当前项目</label>'
+    +'<label style="display:block;margin:10px 0;cursor:pointer"><input type="radio" name="mpMode" value="share" '+(mode==='share'?'checked':'')+'> <b>共享</b>：不断链，同版本项目一起变；任一项目重装依赖会全部回退</label>'
+    +'<div style="color:#888;font-size:12px;margin-top:8px">配置文件：06-运行脚本/make功能删减/patch-config.json</div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">'
+    +'<button class="btn ghost sm" id="mpCancel">取消</button>'
+    +'<button class="btn sm" id="mpSave">保存</button></div></div>';
+  document.body.appendChild(wrap);
+  wrap.querySelector('#mpCancel').onclick=()=>wrap.remove();
+  wrap.querySelector('#mpSave').onclick=async()=>{
+    const v=wrap.querySelector('input[name="mpMode"]:checked').value;
+    try{
+      const r=await fetch('/api/make-patch/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:v})});
+      const j=await r.json();
+      if(j&&j.ok){ toast('已保存：'+(v==='isolate'?'隔离（每项目独立）':'共享（同 inode 一起变）')); wrap.remove(); }
+      else toast('保存失败：'+((j&&j.error)||'未知错误'));
+    }catch(e){ toast('保存失败：'+e.message); }
+  };
+}
+const makePatchBtnEl=$('#makePatchBtn'); if(makePatchBtnEl) makePatchBtnEl.addEventListener('click',()=>openMakePatchDialog());
 
 // Make 重启入口统一在 KPI 卡「Make 管理端」的「重启」按钮（kpiRestartMake），顶栏不再重复。
 
@@ -1595,6 +1625,9 @@ async function renderCollab(){
   // 「待我处理」：server 端已按 needsMe + priority 排好序，前端只负责渲染
   let todo = null;
   try{ todo = await api('/api/collab/arbitration?limit=20'); }catch(e){ todo = null; }
+  // 私信线程：inbox/outbox 里没建房间的往来，按 thread_id 聚合
+  let dms = null;
+  try{ dms = await api('/api/collab/dms?limit=15'); }catch(e){ dms = null; }
   let html = `<div class="toolbar"></div>`;
   // v4 统计区：4 张主卡 + 1 条智能体收发明细 chip 带（房间列表保持原样）
   const rooms = r.rooms || [];
@@ -1695,12 +1728,42 @@ async function renderCollab(){
     </tr>`;
   }
   html += '</tbody></table></div>';
+  // 私信线程：没建房间的 inbox/outbox 往来
+  if(dms && dms.ok && dms.dms && dms.dms.length){
+    html += `<div class="card" style="margin-top:12px">
+      <div style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line,#E2E8F0)">
+        <b>私信线程</b><span class="muted" style="font-size:12px">${dms.dms.length} 个最近往来（未建房间的对话，点开头看完整内容）</span>
+      </div>
+      <table><thead><tr><th style="width:200px">参与方</th><th>主题</th><th style="width:80px">条数</th><th style="width:150px">最近活动</th><th style="width:90px">操作</th></tr></thead><tbody>`;
+    for(const dm of dms.dms){
+      const at = dm.lastTs ? new Date(dm.lastTs).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+      const who = (dm.participants||[]).map(x=>agentLabel(x)||x).join(' / ');
+      const subj = dm.lastSubject || '（无主题）';
+      html += `<tr style="cursor:pointer" data-dm="${encodeURIComponent(dm.thread_id)}">
+        <td><b>${escapeHtml(who)}</b></td>
+        <td class="desc">${escapeHtml(subj)}</td>
+        <td class="muted">${dm.count}</td>
+        <td class="muted">${escapeHtml(at)}</td>
+        <td><button class="btn sm" data-open-dm="${encodeURIComponent(dm.thread_id)}">查看对话</button></td>
+      </tr>`;
+    }
+    html += '</tbody></table></div>';
+  }
   view.innerHTML = html;
 
   // 查看对话
   view.querySelectorAll('[data-act="room"]').forEach(b=>{
     b.onclick = ()=> showRoomDialog(decodeURIComponent(b.dataset.name));
   });
+  // 私信线程：点行/按钮打开完整对话
+  if(dms && dms.ok){
+    view.querySelectorAll('[data-dm]').forEach(tr=>{
+      tr.onclick = ()=> showDmDialog(decodeURIComponent(tr.dataset.dm));
+    });
+    view.querySelectorAll('[data-open-dm]').forEach(b=>{
+      b.onclick = (ev)=>{ ev.stopPropagation(); showDmDialog(decodeURIComponent(b.dataset.openDm)); };
+    });
+  }
   // 待你仲裁：点行/按钮都打开房间对话，裁定用房间底部的「仲裁回复」
   if(todo && todo.ok){
     view.querySelectorAll('[data-room][data-room]').forEach(tr=>{
@@ -1790,6 +1853,35 @@ async function showRoomDialog(name){
     toast(rr.msg, rr.ok ? 'ok' : 'err');
     if(rr.ok){ showRoomDialog(name); } else { sendBtn.disabled = false; }
   };
+}
+
+// 私信线程弹窗：读取 /api/collab/dm?thread=xxx 完整对话
+async function showDmDialog(thread){
+  openModal(`<h3>私信线程 · ${escapeHtml(thread)}</h3>
+    <div class="modal-body">
+      <div id="dmTimeline"><span class="spinner"></span>读取中…</div>
+    </div>
+    <div class="modal-ops"><button class="btn" onclick="closeModal()">关闭</button></div>`, true);
+  const r = await api('/api/collab/dm?thread=' + encodeURIComponent(thread));
+  const box = $('#dmTimeline');
+  if(!r || !r.ok){ box.innerHTML = '<div class="empty">读取失败</div>'; return; }
+  if(!r.messages || !r.messages.length){ box.innerHTML = '<div class="empty">该线程暂无消息</div>'; return; }
+  let body = r.messages.map(m => {
+    const from = escapeHtml(agentLabel(m.from) || m.from || '未知');
+    const ts = m.ts ? escapeHtml(m.ts.replace('T',' ').replace('Z','')) : '';
+    const intent = m.intent ? `<span class="rm-intent">${escapeHtml(m.intent)}</span>` : '';
+    const dirTag = m.direction === 'inbox' ? '<span class="rm-intent" style="background:#dbeafe;border-color:#bfdbfe;color:#1e40af">收</span>' : '<span class="rm-intent" style="background:#dcfce7;border-color:#bbf7d0;color:#166534">发</span>';
+    const subject = m.subject ? `<div style="font-size:12px;color:#64748b;margin-bottom:4px">【${escapeHtml(m.subject)}】</div>` : '';
+    const content = escapeHtml(m.content || '');
+    return `<div class="room-msg">
+      <div class="rm-avatar">${from[0] || '?'}</div>
+      <div class="rm-body">
+        <div class="rm-head"><span class="rm-from">${from}</span>${intent}${dirTag}<span class="rm-ts">${ts}</span></div>
+        ${subject}<div class="rm-content">${content}</div>
+      </div>
+    </div>`;
+  }).join('');
+  box.innerHTML = `<div class="hint" style="margin-bottom:10px">共 ${r.messages.length} 条记录</div>${body}`;
 }
 
 // 助理小结卡：空态 / 成稿态 + 单选一位智能体委派

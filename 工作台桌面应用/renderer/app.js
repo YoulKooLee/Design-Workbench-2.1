@@ -592,6 +592,23 @@ async function loadUpdateConfigUI() {
   };
 }
 
+// ===== 设置页 · Make 补丁（隔离 / 共享）=====
+async function loadMakePatchUI() {
+  const radios = $$('input[name="mpMode"]');
+  if (!radios.length) return;
+  const r = await api('GET', '/api/make-patch/config');
+  const mode = (r && r.mode === 'share') ? 'share' : 'isolate';
+  radios.forEach((inp) => {
+    inp.checked = inp.value === mode;
+    inp.onchange = async () => {
+      const pr = await api('POST', '/api/make-patch/config', { mode: inp.value });
+      const ok = !!(pr && pr.ok);
+      toast(ok ? ('已保存：' + (inp.value === 'isolate' ? '隔离（每项目独立）' : '共享（同版本一起变）')) : ((pr && (pr.msg || pr.error)) || '保存失败'), ok ? 'ok' : 'err');
+      if (!ok) loadMakePatchUI();
+    };
+  });
+}
+
 // ===== 导航 =====
 const VIEW_TITLES = {
   projects: ['项目管理', '项目生命周期与运行状态'],
@@ -2675,6 +2692,18 @@ async function renderView(view) {
           '<div><div class="item-title">AI 生成通道</div><div class="item-desc" id="aiSetupStatus">配置 DeepSeek / 通义千问 / 本地模型后，生成日报周报时直接调用；未配置则用本地模板草稿。</div></div>' +
           '<button class="btn btn-ghost" id="openAiSetupBtn" type="button">打开 AI 设置</button>' +
         '</div></div>' +
+        '<div class="list-item"><div class="item-body"><div class="item-title">Make 补丁</div>' +
+          '<div class="item-desc">「功能删减」补丁（官网/GitHub/版本号、规格、PRD 标注、发布组、项目设置、网络配置、管理技能）打下去时，是否只作用于单个项目。</div>' +
+          '<div class="cfg-group">' +
+            '<div class="cfg-row"><span class="cfg-label">打补丁方式</span><div class="cfg-ctl">' +
+              '<label class="chk" style="margin:0 14px 0 0"><input type="radio" name="mpMode" value="isolate"> 隔离（推荐）</label>' +
+              '<label class="chk" style="margin:0"><input type="radio" name="mpMode" value="share"> 共享</label>' +
+            '</div></div>' +
+            '<div class="cfg-row"><span class="cfg-label"></span><div class="cfg-ctl" style="color:var(--text-3);font-size:12px">' +
+              '隔离＝打补丁前断开 pnpm 硬链接，只影响当前项目；共享＝同版本项目一起变，任一项目重装依赖会全部回退。' +
+            '</div></div>' +
+          '</div>' +
+        '</div></div>' +
         (IS_PACKAGED
           ? '<div class="list-item"><div class="item-body"><div class="item-title">更新检查</div><div class="item-desc">安装包更新由 GitHub Releases 自动管理（检查→下载→安装重启），点击右上角「检查更新」触发。</div></div></div>'
           : '<div class="list-item"><div class="item-body"><div class="item-title">GitHub 仓库</div>' +
@@ -2691,6 +2720,7 @@ async function renderView(view) {
         '<div class="list-item"><div class="item-body"><div class="item-title">版本</div><div class="item-desc">产品设计工作台 v3.1 · Electron 桌面应用</div></div></div>';
       $('#main').appendChild(card);
       loadUpdateConfigUI();
+      loadMakePatchUI();
       const openAiBtn = $('#openAiSetupBtn');
       if (openAiBtn) openAiBtn.onclick = () => openAiSetupDialog(openAiBtn);
       api('GET', '/api/ai/config').then((c) => {

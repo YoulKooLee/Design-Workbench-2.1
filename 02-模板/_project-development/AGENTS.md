@@ -77,7 +77,7 @@
 
 ### 4.7 技能与角色
 
-技能索引 `.agents/skills/INDEX.md` 会话开始时注入；命中才加载对应 `SKILL.md`，未命中用通用能力并说明。**严禁遍历技能目录**（数 MB，一次读进来就爆窗口；体量真源见 `context-budget.md`），索引过期跑 `build-skills-index.mjs`。先匹配技能再动手；「这只是个小问题」等六类借口一律不成立，话术见 `nav-map.md`。
+技能索引 `.agents/skills/INDEX.md` 会话开始时注入；命中才加载对应 `SKILL.md`，未命中用通用能力并说明。**严禁遍历技能目录**（数 MB，一次读进来就爆窗口；体量真源见 `context-budget.md`），索引过期跑 `build-skills-index.mjs`。先匹配技能再动手；「这只是个小问题」等六类借口一律不成立，话术见 `nav-map.md`。写 / 审 / 重构代码时命中 `karpathy-guidelines`（四条编码行为准则：先想后写·简单优先·外科手术式改动·目标驱动验证），与 §4.1 工程底线互补。
 
 角色调度（13 个，无「这次可跳过」的例外）：改完代码 → `code-reviewer`；实现页面前后 → `page-spec-loader` → 编码 → `page-reviewer`；SRS、HLD、LLD 产出 → 各自 analyzer/writer/reviewer 三段。
 

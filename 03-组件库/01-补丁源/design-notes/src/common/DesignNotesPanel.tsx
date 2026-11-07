@@ -34,12 +34,20 @@ const C = {
   danger: '#d13438',
 };
 
+// 字体颜色卡：固定 7 色（与面板 Fluent 配色同源），替代系统取色器，避免选到过浅/过艳的颜色
+const TEXT_COLORS: { name: string; value: string }[] = [
+  { name: '正文黑', value: '#242424' },
+  { name: '警示红', value: '#d13438' },
+  { name: '提醒橙', value: '#ca5010' },
+  { name: '通过绿', value: '#107c10' },
+  { name: '主题蓝', value: '#0067b8' },
+  { name: '强调紫', value: '#5c2d91' },
+  { name: '次要灰', value: '#797775' },
+];
+
 // 浮层层级：连线 SVG 置顶（覆盖所有面板），弹窗居中
 const Z_MODAL = 1000;
 const Z_CONN = 9999;
-
-/** 面板展开态宽度（收起态 54px）。导出给宿主做布局预留用（兼容出口，与规范文档一致） */
-export const NOTES_PANEL_WIDTH = 360;
 
 // ============ 状态标记字典（顺序即选择器展示顺序） ============
 const STATUS_META: Record<NoteStatus, { label: string; color: string; bg: string; border: string }> = {
@@ -65,7 +73,7 @@ export interface DesignNotesPanelProps {
   onSave?: DesignNotesSaveAdapter;
   /** 面板标题文案，默认「设计说明」 */
   title?: string;
-  /** 自定义面板顶部提示语；不传用内置提示 */
+  /** 自定义面板顶部提示语；不传则不显示提示行（无内置文案） */
   hint?: string;
   /**
    * 左侧内容版本号：当宿主切换子页 / 重渲染左侧 DOM 时变化，触发连线与可绑定清单重扫。
@@ -268,8 +276,7 @@ function DescModal({
   onDelete?: () => void;
 }) {
   const [title, setTitle] = useState(initial.title);
-  // 关联选择器：搜索关键词 + 手动填写模式（下拉里选「＋ 手动填写区域 ID」时切换）
-  const [bindKw, setBindKw] = useState('');
+  // 关联选择器：分组下拉 + 手动填写模式（下拉里选「＋ 手动填写区域 ID」时切换）
   const [manualBind, setManualBind] = useState(false);
   // 删除二次确认：叠加在本弹窗内，取消可回到继续编辑，确认才真正删除
   const [confirmDel, setConfirmDel] = useState(false);
@@ -284,6 +291,8 @@ function DescModal({
   const apiEditorRef = useRef<HTMLDivElement>(null);
   const savedRangeRef = useRef<{ ref: React.RefObject<HTMLDivElement>; range: Range } | null>(null);
   const [color, setColor] = useState('#0067b8');
+  // 颜色卡弹层开关（固定色板，点色块即应用并收起）
+  const [colorOpen, setColorOpen] = useState(false);
   // 弹窗内小节页签：页面说明 / 接口说明（与卡片页签同款交互）
   const [mtab, setMtab] = useState<'overview' | 'api'>('overview');
 
@@ -298,13 +307,26 @@ function DescModal({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       // 删除确认层开着时，Esc 只关确认层（由 ConfirmDelete 处理），不要连编辑弹窗一起关掉
-      if (e.key === 'Escape' && !confirmDelRef.current) onClose();
+      if (e.key !== 'Escape' || confirmDelRef.current) return;
+      // 颜色卡弹层开着时，Esc 只收弹层，不关编辑弹窗
+      if (colorOpen) { setColorOpen(false); return; }
+      onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose, colorOpen]);
 
-  // 选区快照（按编辑器区分）：点工具栏按钮 / 取色器会抢走焦点，先用 savedRange 记住光标位置
+  // 点弹层外面收起颜色卡（工具栏已 preventDefault 保住选区，这里只负责关闭）
+  useEffect(() => {
+    if (!colorOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('.dn-color-wrap')) setColorOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [colorOpen]);
+
+  // 选区快照（按编辑器区分）：点工具栏按钮 / 色卡会抢走焦点，先用 savedRange 记住光标位置
   const saveSelection = (ref: React.RefObject<HTMLDivElement>) => {
     const sel = window.getSelection();
     const editor = ref.current;
@@ -356,18 +378,30 @@ function DescModal({
           <button type="button" className="dn-editor-btn" title="斜体" onClick={() => exec(ref, 'italic')}><i>I</i></button>
           <button type="button" className="dn-editor-btn" title="下划线" onClick={() => exec(ref, 'underline')}><u>U</u></button>
           <span className="dn-toolbar-sep" />
-          <label
-            className="dn-editor-btn dn-color-btn"
-            title={`字体颜色：${color}`}
-            onMouseDown={() => saveSelection(ref)}
-          >
-            <span className="dn-color-a" style={{ color }}>A</span>
-            <input
-              type="color"
-              value={color}
-              onChange={(e) => { setColor(e.target.value); exec(ref, 'foreColor', e.target.value); }}
-            />
-          </label>
+          <div className="dn-color-wrap">
+            <button
+              type="button"
+              className="dn-editor-btn dn-color-btn"
+              title={`字体颜色（当前 ${TEXT_COLORS.find((c) => c.value === color)?.name ?? color}）`}
+              onClick={() => setColorOpen((v) => !v)}
+            >
+              <span className="dn-color-a" style={{ color }}>A</span>
+            </button>
+            {colorOpen && (
+              <div className="dn-color-pop">
+                {TEXT_COLORS.map((c) => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    className={`dn-color-chip${color === c.value ? ' on' : ''}`}
+                    style={{ background: c.value }}
+                    title={c.name}
+                    onClick={() => { setColor(c.value); exec(ref, 'foreColor', c.value); setColorOpen(false); }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </>
       )}
       <button type="button" className="dn-editor-btn" title="项目符号" onClick={() => exec(ref, 'insertUnorderedList')}>• 列表</button>
@@ -413,11 +447,9 @@ function DescModal({
             <div className="dn-modal-label">关联页面模块（卡片上不再展示，统一在此查看与修改）</div>
             {(() => {
               const opts = bindOptions || [];
-              const kw = bindKw.trim().toLowerCase();
-              const matched = opts.filter((o) => !kw || o.id.toLowerCase().includes(kw) || o.label.toLowerCase().includes(kw));
               // 分组：此刻真正渲染在页面上的（可立刻连线）/ 本页此前识别过但当前未渲染（弹窗、页签里的）
-              const liveOpts = matched.filter((o) => o.live);
-              const offOpts = matched.filter((o) => !o.live);
+              const liveOpts = opts.filter((o) => o.live);
+              const offOpts = opts.filter((o) => !o.live);
               const inList = opts.some((o) => o.id === bind);
               const renderOpt = (o: { id: string; label: string; bound?: number }) => (
                 <option key={o.id} value={o.id}>
@@ -426,12 +458,6 @@ function DescModal({
               );
               return (
                 <div className="dn-bind-picker">
-                  <input
-                    className="dn-bind-search"
-                    value={bindKw}
-                    onChange={(e) => setBindKw(e.target.value)}
-                    placeholder="搜索区域名称或 ID（如 弹窗、ind-add-form）"
-                  />
                   <select
                     value={manualBind ? '__manual__' : bind}
                     onChange={(e) => {
@@ -448,13 +474,18 @@ function DescModal({
                     <option value="__manual__">＋ 手动填写区域 ID…</option>
                   </select>
                   {manualBind && (
-                    <input
-                      className="dn-bind-search"
-                      value={bind}
-                      onChange={(e) => setBind(e.target.value.trim())}
-                      placeholder="填写 data-proto-id，如 ind-add-form"
-                      autoFocus
-                    />
+                    <>
+                      <input
+                        className="dn-bind-search"
+                        value={bind}
+                        onChange={(e) => setBind(e.target.value.trim())}
+                        placeholder="填写 data-proto-id，如 ind-add-form"
+                        autoFocus
+                      />
+                      <div className="dn-bind-hint">
+                        区域 ID 就是目标元素上的 data-proto-id：在左侧页面右键「检查」，看该元素的 data-proto-id 属性即可；下拉里已列出本页识别到的区域（含需打开弹窗 / 页签才渲染的），手填用于补录当前视图找不到的。
+                      </div>
+                    </>
                   )}
                 </div>
               );
@@ -494,16 +525,13 @@ function DescModal({
                 </div>
               );
             })()}
-            <div style={{ fontSize: 11, color: '#a19f9d', lineHeight: 1.65 }}>
-              提示：下拉分两组——「当前视图可见」是此刻已渲染的区域，选中即连线；「本页识别过」是此前打开弹窗 / 页签时识别到的区域（按页记在本地），选中后打开对应视图就会连线。找不到目标时可搜索，或用「＋ 手动填写区域 ID」直接填 data-proto-id。
-            </div>
           </div>
-          <div className="dn-modal-field">
+          <div className="dn-modal-field editor-field">
             <div className="dn-tabs modal-tabs">
               <button type="button" className={`dn-tab${mtab === 'overview' ? ' on' : ''}`} onClick={() => setMtab('overview')}>页面说明</button>
               <button type="button" className={`dn-tab${mtab === 'api' ? ' on' : ''}`} onClick={() => setMtab('api')}>接口说明<span className="tb-badge">API</span></button>
             </div>
-            <div style={{ display: mtab === 'overview' ? 'block' : 'none' }}>
+            <div className="dn-editor-pane" style={{ display: mtab === 'overview' ? 'flex' : 'none' }}>
               <div className="dn-editor-wrap">
                 {renderToolbar(editorRef, true)}
                 <div
@@ -517,7 +545,7 @@ function DescModal({
                 />
               </div>
             </div>
-            <div style={{ display: mtab === 'api' ? 'block' : 'none' }}>
+            <div className="dn-editor-pane" style={{ display: mtab === 'api' ? 'flex' : 'none' }}>
               <div className="dn-editor-wrap">
                 {renderToolbar(apiEditorRef, false)}
                 <div
@@ -673,17 +701,20 @@ const DescStyle = `
   .dn-bind-picker select{width:100%;box-sizing:border-box;font-size:13px;padding:7px 12px;border:1px solid ${C.border2};border-radius:4px;background:#fff;font-family:inherit;color:${C.text}}
   .dn-bind-picker select:focus{outline:none;border-color:${C.primary};box-shadow:0 0 0 1px ${C.primary}}
   /* 富文本编辑器：工具栏 + contentEditable 编辑区；两个说明区等高 280px 固定、超出各自滚动 */
-  .dn-editor-wrap{border:1px solid ${C.border2};border-radius:4px;background:#fff}
+  .dn-editor-wrap{border:1px solid ${C.border2};border-radius:4px;background:#fff;height:100%;display:flex;flex-direction:column;min-height:0;flex:1;width:100%;min-width:0;box-sizing:border-box}
   .dn-editor-wrap:focus-within{border-color:${C.primary};box-shadow:0 0 0 1px ${C.primary}}
   .dn-editor-toolbar{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;padding:6px 8px;border-bottom:1px solid ${C.border};background:#faf9f8;border-radius:4px 4px 0 0}
   .dn-editor-btn{height:26px;min-width:28px;padding:0 9px;font-size:12px;color:${C.text2};background:#fff;border:1px solid ${C.border2};border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit;transition:all .15s;user-select:none}
   .dn-editor-btn:hover{color:${C.primary};border-color:${C.primary};background:${C.active}}
   .dn-toolbar-sep{width:1px;height:16px;background:${C.border2};margin:0 2px;flex-shrink:0}
-  /* 字体颜色按钮：Word 风格「A + 色条」，内嵌透明 color input 触发系统取色器；色条用 currentColor 跟随所选颜色 */
-  .dn-color-btn{position:relative;overflow:hidden}
+  /* 字体颜色：Word 风格「A + 色条」按钮，点开固定色卡（不用系统取色器）；色条用 currentColor 跟随所选颜色 */
+  .dn-color-wrap{position:relative;display:inline-flex}
   .dn-color-btn .dn-color-a{font-size:13px;font-weight:700;line-height:1;padding-bottom:2px;border-bottom:3px solid currentColor}
-  .dn-color-btn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none;padding:0}
-  .dn-editor{height:280px;min-height:280px;max-height:280px;overflow-y:auto;font-size:13px;line-height:1.7;padding:10px 12px;border-radius:0 0 4px 4px;outline:none;white-space:pre-wrap;word-break:break-word;color:${C.text}}
+  .dn-color-pop{position:absolute;top:calc(100% + 6px);left:-4px;z-index:20;display:grid;grid-template-columns:repeat(7,20px);gap:7px;padding:9px;background:#fff;border:1px solid ${C.border2};border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.16)}
+  .dn-color-chip{width:20px;height:20px;padding:0;border:1px solid rgba(0,0,0,.14);border-radius:4px;cursor:pointer;transition:transform .12s}
+  .dn-color-chip:hover{transform:scale(1.12)}
+  .dn-color-chip.on{box-shadow:0 0 0 2px #fff,0 0 0 3px ${C.primary}}
+  .dn-editor{flex:1;min-height:120px;overflow-y:auto;font-size:13px;line-height:1.7;padding:10px 12px;border-radius:0 0 4px 4px;outline:none;white-space:pre-wrap;word-break:break-word;color:${C.text}}
   .dn-editor:empty::before{content:attr(data-placeholder);color:#a19f9d;pointer-events:none}
   .dn-editor:has(>br:only-child)::before{content:attr(data-placeholder);color:#a19f9d;pointer-events:none}
   .dn-editor ul{list-style:none;padding:0;margin:4px 0}
@@ -705,9 +736,12 @@ const DescStyle = `
   .dn-modal-title{font-size:16px;font-weight:600;color:${C.text}}
   .dn-modal-close{font-size:14px;color:${C.text3};background:transparent;border:none;cursor:pointer;padding:2px 6px;border-radius:4px}
   .dn-modal-close:hover{background:#f3f2f1;color:${C.text}}
-  .dn-modal-body{padding:14px 24px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:13px;flex:1;min-height:0}
+  .dn-modal-body{padding:14px 24px 18px;overflow:hidden;display:flex;flex-direction:column;gap:13px;flex:1;min-height:0}
   .dn-modal-field{display:flex;flex-direction:column;gap:6px}
   .dn-modal-label{font-size:12px;font-weight:600;color:${C.text2}}
+  .dn-modal-field.editor-field{flex:1;min-height:0}
+  .dn-editor-pane{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .dn-bind-hint{font-size:11px;color:#a19f9d;line-height:1.6}
   .dn-modal-field input,.dn-modal-field textarea{width:100%;box-sizing:border-box;font-size:13px;padding:7px 12px;border:1px solid ${C.border2};border-radius:4px;font-family:inherit;line-height:1.6;resize:vertical;background:#fff;color:${C.text}}
   .dn-modal-field input:focus,.dn-modal-field textarea:focus{outline:none;border-color:${C.primary};box-shadow:0 0 0 1px ${C.primary}}
   .dn-modal-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 24px;border-top:1px solid #e1e1e1;background:#faf9f8;flex-shrink:0}

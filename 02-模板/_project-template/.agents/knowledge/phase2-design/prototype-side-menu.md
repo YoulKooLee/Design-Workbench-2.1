@@ -506,5 +506,4 @@ export default function App() {
 
 ## 附：配套规范
 
-- 《2026-10-31-设计说明卡片编写规范-单卡双页签.md》：每个主功能页右侧说明卡片的写法
-- 《2026-10-30-原型设计说明打标规范.md》：页面区域 `data-proto-id` 与卡片连线规则
+- 设计说明模块《规范.md》v3.0（`src/common/design-notes/规范.md`，三份合一）：Part B 打标三步法（`data-proto-id` 与卡片连线）、Part C 卡片编写（含 §8.1 内容来源红线）

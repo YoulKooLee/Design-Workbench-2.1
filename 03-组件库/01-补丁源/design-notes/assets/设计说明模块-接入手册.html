@@ -146,7 +146,7 @@
       </tr>
     </tbody>
   </table>
-  <p>命名规则、必标区块清单、给 AI 的提示词模板与自查清单见 <code>设计说明打标规范.md</code>（AI 生成页面时把这份文档一并喂给它）。</p>
+  <p>命名规则、必标区块清单、提示词模板与自查清单见 <code>规范.md</code> Part B；卡片写法与内容来源红线见 Part C（v3.0 起三份合一，规范.md 为唯一真源）。</p>
   <div class="callout">
     <strong>人怎么用面板：</strong>悬浮左侧已打标区域 → 未写显示蓝「+ 说明」建卡、已写显示绿「✓ 已说明」跳卡；卡片上只有「标题 + 状态 + 内容 + ✎ 编辑」，<strong>关联了哪个页面模块、删除操作都在「✎ 编辑」弹窗里</strong>；删除点弹窗左下「删除这张卡片」，弹窗内二次确认后才执行。
   </div>
@@ -272,7 +272,7 @@ const onSave = createAxhubDesignNotesAdapter(); // 默认对接 Axhub 预览服�
   onSave={onSave}
   contentKey={activeSub}   // 子页或左侧 DOM 大范围重渲染时变化，触发重扫
   title="设计说明"          // 可选，默认「设计说明」
-  hint="自定义顶部提示语"    // 可选，不传用内置提示
+  hint="自定义顶部提示语"    // 可选，不传则不显示提示行
 /&gt;</code></pre>
   <p>有 <code>MutationObserver</code> 兜底后，弹窗 / 页签 / 异步数据引起的 DOM 变化会自动重扫；<code>contentKey</code> 主要用于整块子页切换。</p>
 </section>
@@ -317,7 +317,7 @@ const onSave = createAxhubDesignNotesAdapter(); // 默认对接 Axhub 预览服�
   <h2>适配到新项目的清单</h2>
   <ul class="checklist">
     <li>拷贝 <code>DesignNotesPanel.tsx</code> + <code>designNotesTypes.ts</code>（最小可运行集）</li>
-    <li>按《设计说明打标规范.md》给区块打 <code>data-proto-id</code> + <code>data-proto-label</code></li>
+    <li>按《规范.md》Part B 给区块打 <code>data-proto-id</code> + <code>data-proto-label</code></li>
     <li>三栏 flex 布局里把面板挂右侧，传 <code>leftContentRef</code>、<code>pageKey</code></li>
     <li>需要落盘：拷贝 <code>axhubSaveAdapter.ts</code> 并对接自家接口，或自己实现 <code>onSave</code></li>
     <li>纯预览 / 暂存：不传 <code>onSave</code>，自动进入 localStorage 本地草稿模式</li>
@@ -334,7 +334,7 @@ const onSave = createAxhubDesignNotesAdapter(); // 默认对接 Axhub 预览服�
   ├── axhubSaveAdapter.ts    <span style="color:#646a73"># Axhub 落盘参考实现，可照搬或改写</span>
   └── design-notes/          <span style="color:#646a73"># 模块自带文档，落 src/common/design-notes/，不进项目 docs/</span>
       ├── demo.html          <span style="color:#646a73"># 运行演示（可直接打开）</span>
-      ├── 规范.md            <span style="color:#646a73"># 能力 / 契约 / 接入 / 踩坑（Markdown 源）</span>
+      ├── 规范.md            <span style="color:#646a73"># 唯一真源（v3.0 三份合一：接入/打标/卡片编写/自查）</span>
       ├── 设计说明打标规范.md <span style="color:#646a73"># 生成页面时怎么打标、卡片怎么写、空卡怎么后补</span>
       └── 设计说明模块-接入手册.html</div>
 </section>

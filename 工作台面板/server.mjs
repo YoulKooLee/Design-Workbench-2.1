@@ -389,6 +389,10 @@ function upsertProject(ctx, rel, status, extra = {}) {
     relative: rel2,
     status,
     ts: now,
+    // 家规指针（2026-11-04）：WorkBuddy 宿主不加载项目 hook、也不自动读 AGENTS.md，
+    // 故在此给出项目级规则文件路径，供读取本文件的智能体自行 Read。文件不存在时为 null。
+    agentsMd: fs.existsSync(path.join(full, 'AGENTS.md')) ? rel2 + '/AGENTS.md' : null,
+    projectMemory: fs.existsSync(path.join(full, 'project-memory.md')) ? rel2 + '/project-memory.md' : null,
   }, extra);
   if (status === 'active' && old && old.startedAt) entry.startedAt = old.startedAt;
   else if (status === 'active') entry.startedAt = entry.startedAt || now;
@@ -2236,6 +2240,30 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // Make 功能删减补丁：读取 / 保存「隔离 or 共享」开关（06-运行脚本/make功能删减/patch-config.json）
+  if (p === '/api/make-patch/config' && method === 'GET') {
+    const cfgPath = path.join(AXHUB_ROOT, '06-运行脚本', 'make功能删减', 'patch-config.json');
+    let cfg = { mode: 'isolate' };
+    try { cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8')); } catch { /* 缺文件按默认 */ }
+    const mode = cfg && cfg.mode === 'share' ? 'share' : 'isolate';
+    return send(res, 200, { ok: true, mode, path: cfgPath });
+  }
+  if (p === '/api/make-patch/config' && method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const mode = String((body && body.mode) || '');
+      if (mode !== 'isolate' && mode !== 'share') return sendError(res, 'mode 只能是 isolate 或 share');
+      const cfgPath = path.join(AXHUB_ROOT, '06-运行脚本', 'make功能删减', 'patch-config.json');
+      let cfg = {};
+      try { cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8')); } catch { /* 新建 */ }
+      cfg.mode = mode;
+      fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + '\n', 'utf8');
+      return send(res, 200, { ok: true, mode, path: cfgPath });
+    } catch (e) {
+      return sendError(res, '保存失败：' + e.message, 500);
+    }
+  }
+
   // 启动所有智能体监听（等价于 09-协作/messages/tools/启动所有智能体监听.bat，直接 spawn node 避免 bat 编码问题）
   if (p === '/api/listen/start' && method === 'POST') {
     try { fs.rmSync(LISTEN_DISABLED_FLAG, { force: true }); } catch {}
@@ -2907,6 +2935,92 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {
       return send(res, 500, { ok: false, msg: e.message });
     }
+    return send(res, 200, out);
+  }
+
+  // GET /api/collab/dms?limit=20：聚合 inbox/outbox 里所有私信线程（按 thread_id 分组）
+  if (p === '/api/collab/dms' && method === 'GET') {
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const limit = Math.min(50, Number(url.searchParams.get('limit') || 20));
+    const groups = new Map();
+    try {
+      for (const box of ['inbox', 'outbox']) {
+        const boxDir = path.join(colRoot, 'messages', box);
+        if (!fs.existsSync(boxDir)) continue;
+        for (const agentDir of fs.readdirSync(boxDir, { withFileTypes: true }).filter(d => d.isDirectory())) {
+          const dir = path.join(boxDir, agentDir.name);
+          for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json'))) {
+            try {
+              const msg = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+              const tid = msg.thread_id || msg.message_id || f;
+              if (!groups.has(tid)) groups.set(tid, { thread_id: tid, participants: new Set(), count: 0, lastTs: '', lastSubject: '', lastFrom: '', lastType: '' });
+              const g = groups.get(tid);
+              g.count++;
+              if (msg.from) g.participants.add(msg.from);
+              if (msg.to) g.participants.add(msg.to);
+              if (Array.isArray(msg.cc)) for (const c of msg.cc) if (c) g.participants.add(c);
+              const ts = msg.timestamp || '';
+              if (ts > g.lastTs) {
+                g.lastTs = ts;
+                g.lastSubject = msg.subject || '';
+                g.lastFrom = msg.from || '';
+                g.lastType = msg.type || '';
+              }
+            } catch { /* 跳过坏 json */ }
+          }
+        }
+      }
+    } catch (e) { return send(res, 500, { ok: false, msg: e.message }); }
+    const list = [...groups.values()]
+      .sort((a, b) => (b.lastTs || '').localeCompare(a.lastTs || ''))
+      .slice(0, limit)
+      .map(g => ({
+        thread_id: g.thread_id,
+        participants: [...g.participants].filter(x => x && x !== 'user'),
+        count: g.count,
+        lastTs: g.lastTs,
+        lastSubject: g.lastSubject,
+        lastFrom: g.lastFrom,
+        lastType: g.lastType
+      }));
+    return send(res, 200, { ok: true, dms: list, total: list.length });
+  }
+
+  // GET /api/collab/dm?thread=<thread_id>：返回某个私信线程的完整消息
+  if (p === '/api/collab/dm' && method === 'GET') {
+    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const tid = url.searchParams.get('thread') || '';
+    if (!tid) return sendError(res, '缺少 thread', 400);
+    const out = { ok: true, thread_id: tid, messages: [] };
+    const seen = new Set();
+    try {
+      for (const box of ['inbox', 'outbox']) {
+        const boxDir = path.join(colRoot, 'messages', box);
+        if (!fs.existsSync(boxDir)) continue;
+        for (const agentDir of fs.readdirSync(boxDir, { withFileTypes: true }).filter(d => d.isDirectory())) {
+          const dir = path.join(boxDir, agentDir.name);
+          for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json'))) {
+            try {
+              const msg = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+              if ((msg.thread_id || msg.message_id) !== tid) continue;
+              const dedupKey = msg.message_id || (msg.timestamp + '|' + msg.from + '|' + (msg.subject || ''));
+              if (seen.has(dedupKey)) continue;
+              seen.add(dedupKey);
+              out.messages.push({
+                ts: msg.timestamp || '',
+                from: msg.from || '',
+                to: msg.to || '',
+                intent: msg.type || '',
+                subject: msg.subject || '',
+                content: msg.body || '',
+                direction: box
+              });
+            } catch { /* 跳过坏 json */ }
+          }
+        }
+      }
+      out.messages.sort((a, b) => (a.ts || '').localeCompare(b.ts || ''));
+    } catch (e) { return send(res, 500, { ok: false, msg: e.message }); }
     return send(res, 200, out);
   }
 

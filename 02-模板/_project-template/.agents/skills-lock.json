@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-27T01:32:03.369Z",
-  "count": 52,
-  "hash": "815f68083a59a9a1",
+  "generatedAt": "2026-11-03T08:35:39.567Z",
+  "count": 54,
+  "hash": "7ac7d358ddf4a94a",
   "skills": {
     "annotation": "annotation",
     "brainstorming": "brainstorming",
@@ -20,6 +20,7 @@
     "frontend-design": "frontend-design",
     "handle-comments": "handle-comments",
     "hld-design": "hld-design",
+    "humanizer-zh": "humanizer-zh",
     "lld-design": "lld-design",
     "page-generator": "page-generator",
     "plan-prds": "plan-prds",
@@ -46,6 +47,7 @@
     "screenshot-to-prototype": "screenshot-to-prototype",
     "search-design-system": "search-design-system",
     "skill-creator": "skill-creator",
+    "system-architecture-design": "system-architecture-design",
     "systematic-debugging": "systematic-debugging",
     "test-driven-development": "test-driven-development",
     "ui-design-image": "ui-design-image",

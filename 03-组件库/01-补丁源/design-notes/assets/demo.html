@@ -218,6 +218,17 @@ function DescCard({ m, index, onEdit }) {
 }
 
 /* ---------- 模块编辑大弹窗（页面说明 + 接口说明 两个编辑区） ---------- */
+// 字体颜色卡：固定 7 色（与面板 Fluent 配色同源），替代系统取色器，避免选到过浅/过艳的颜色
+const TEXT_COLORS = [
+  { name: '正文黑', value: '#242424' },
+  { name: '警示红', value: '#d13438' },
+  { name: '提醒橙', value: '#ca5010' },
+  { name: '通过绿', value: '#107c10' },
+  { name: '主题蓝', value: '#0067b8' },
+  { name: '强调紫', value: '#5c2d91' },
+  { name: '次要灰', value: '#797775' },
+];
+
 function DescModal({ initial, onSave, onClose, bindOptions, onDelete }) {
   const [title, setTitle] = useState(initial.title);
   const [status, setStatus] = useState(initial.status ?? 'designing');
@@ -229,6 +240,8 @@ function DescModal({ initial, onSave, onClose, bindOptions, onDelete }) {
   const apiEditorRef = useRef(null);
   const savedRangeRef = useRef(null);
   const [color, setColor] = useState('#0067b8');
+  // 颜色卡弹层开关（固定色板，点色块即应用并收起）
+  const [colorOpen, setColorOpen] = useState(false);
   const [mtab, setMtab] = useState('overview');
 
   useEffect(() => {
@@ -238,10 +251,25 @@ function DescModal({ initial, onSave, onClose, bindOptions, onDelete }) {
 
   useEffect(() => {
     // 删除确认层开着时，Esc 只关确认层（由 ConfirmDelete 处理），不要连编辑弹窗一起关掉
-    const onKey = (e) => { if (e.key === 'Escape' && !confirmDelRef.current) onClose(); };
+    const onKey = (e) => {
+      if (e.key !== 'Escape' || confirmDelRef.current) return;
+      // 颜色卡弹层开着时，Esc 只收弹层，不关编辑弹窗
+      if (colorOpen) { setColorOpen(false); return; }
+      onClose();
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose, colorOpen]);
+
+  // 点弹层外面收起颜色卡（工具栏已 preventDefault 保住选区，这里只负责关闭）
+  useEffect(() => {
+    if (!colorOpen) return;
+    const onDown = (e) => {
+      if (!e.target.closest('.dn-color-wrap')) setColorOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [colorOpen]);
 
   const saveSelection = (ref) => {
     const sel = window.getSelection();
@@ -341,10 +369,23 @@ function DescModal({ initial, onSave, onClose, bindOptions, onDelete }) {
                   <button type="button" className="dn-editor-btn" title="斜体" onClick={() => exec(editorRef, 'italic')}><i>I</i></button>
                   <button type="button" className="dn-editor-btn" title="下划线" onClick={() => exec(editorRef, 'underline')}><u>U</u></button>
                   <span className="dn-toolbar-sep" />
-                  <label className="dn-editor-btn dn-color-btn" title={`字体颜色：${color}`} onMouseDown={() => saveSelection(editorRef)}>
-                    <span className="dn-color-a" style={{ color }}>A</span>
-                    <input type="color" value={color} onChange={(e) => { setColor(e.target.value); exec(editorRef, 'foreColor', e.target.value); }} />
-                  </label>
+                  <div className="dn-color-wrap">
+                    <button type="button" className="dn-editor-btn dn-color-btn"
+                      title={`字体颜色（当前 ${(TEXT_COLORS.find((c) => c.value === color) || {}).name || color}）`}
+                      onClick={() => setColorOpen((v) => !v)}>
+                      <span className="dn-color-a" style={{ color }}>A</span>
+                    </button>
+                    {colorOpen && (
+                      <div className="dn-color-pop">
+                        {TEXT_COLORS.map((c) => (
+                          <button key={c.value} type="button" title={c.name}
+                            className={`dn-color-chip${color === c.value ? ' on' : ''}`}
+                            style={{ background: c.value }}
+                            onClick={() => { setColor(c.value); exec(editorRef, 'foreColor', c.value); setColorOpen(false); }} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <button type="button" className="dn-editor-btn" title="项目符号" onClick={() => exec(editorRef, 'insertUnorderedList')}>• 列表</button>
                   <button type="button" className="dn-editor-btn" title="清除所选格式" onClick={() => exec(editorRef, 'removeFormat')}>清除格式</button>
                 </div>
@@ -481,9 +522,12 @@ const DescStyle = `
   .dn-editor-btn{height:26px;min-width:28px;padding:0 9px;font-size:12px;color:${C.text2};background:#fff;border:1px solid ${C.border2};border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit;transition:all .15s;user-select:none}
   .dn-editor-btn:hover{color:${C.primary};border-color:${C.primary};background:${C.active}}
   .dn-toolbar-sep{width:1px;height:16px;background:${C.border2};margin:0 2px;flex-shrink:0}
-  .dn-color-btn{position:relative;overflow:hidden}
+  .dn-color-wrap{position:relative;display:inline-flex}
   .dn-color-btn .dn-color-a{font-size:13px;font-weight:700;line-height:1;padding-bottom:2px;border-bottom:3px solid currentColor}
-  .dn-color-btn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none;padding:0}
+  .dn-color-pop{position:absolute;top:calc(100% + 6px);left:-4px;z-index:20;display:grid;grid-template-columns:repeat(7,20px);gap:7px;padding:9px;background:#fff;border:1px solid ${C.border2};border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.16)}
+  .dn-color-chip{width:20px;height:20px;padding:0;border:1px solid rgba(0,0,0,.14);border-radius:4px;cursor:pointer;transition:transform .12s}
+  .dn-color-chip:hover{transform:scale(1.12)}
+  .dn-color-chip.on{box-shadow:0 0 0 2px #fff,0 0 0 3px ${C.primary}}
   .dn-editor{height:280px;min-height:280px;max-height:280px;overflow-y:auto;font-size:13px;line-height:1.7;padding:10px 12px;border-radius:0 0 4px 4px;outline:none;white-space:pre-wrap;word-break:break-word;color:${C.text}}
   .dn-editor:empty::before{content:attr(data-placeholder);color:#a19f9d;pointer-events:none}
   .dn-editor:has(>br:only-child)::before{content:attr(data-placeholder);color:#a19f9d;pointer-events:none}
@@ -792,7 +836,7 @@ function DesignNotesPanel({ modules, pageKey, pageSub, leftContentRef, onSave, t
                 <button className="dn-collapse-btn" onClick={() => setCollapsed(true)} title="收起设计说明，把宽度让给页面">» 收起</button>
               </div>
             </div>
-            <p className="dn-rd-hint">{hint ?? '鼠标悬浮左侧带标注的区域：未写说明的显示「+ 说明」点击即建卡片，已写的显示「✓ 已说明」点击跳到卡片。卡片可以先放空，之后点卡片补写，或直接在对话里让 AI 按区域补上；编辑、关联与删除都在卡片底部「✎ 编辑说明」弹窗里。'}</p>
+            {hint ? <p className="dn-rd-hint">{hint}</p> : null}
             {(() => {
               const counts = STATUS_ORDER.map((k) => ({ k: k, n: displayModules.filter((m) => m.status === k).length })).filter((x) => x.n > 0);
               if (!counts.length) return null;
