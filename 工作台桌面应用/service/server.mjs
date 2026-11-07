@@ -10,6 +10,8 @@ import { cleanEnvForSpawn, send, sendError, readBody, safeName, parseFrontmatter
 import { dwsTodoWatcher } from './dws-todo-watcher.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// 内聚改造（2026-11-07）：本服务位于 工作台桌面应用/service/，工作台根＝上两级
+const AXHUB_ROOT = path.resolve(__dirname, '..', '..');
 
 // 杀子进程树：spawn(shell:true) 拿到的 pid 是 cmd 外壳，只 kill 外壳会把真正的
 // codebuddy 子进程留在后台，且它的 stdout 不关闭 → 'close' 事件永远不触发、请求挂死。
@@ -132,7 +134,7 @@ const cliProbeCacheSet = (r) => { __cliProbeCache = { at: Date.now(), r }; };
 
 // ===== 全局异常兜底：EPIPE 自激防护 =====
 // EPIPE 自激防护（deepseek 诊断）：管道断裂时 console.error 写坏管道会再次触发 uncaughtException -> 自激循环
-const crashLogPath = path.join(__dirname, '..', '91-运行状态', 'server-crash.log');
+const crashLogPath = path.join(AXHUB_ROOT, '91-运行状态', 'server-crash.log');
 let crashLogStream = null;
 try { fs.mkdirSync(path.dirname(crashLogPath), { recursive: true }); crashLogStream = fs.createWriteStream(crashLogPath, { flags: 'a' }); } catch {}
 const safeLog = (tag, data) => {
@@ -153,7 +155,6 @@ const PUBLIC = path.join(__dirname, 'public');
 // ===== 路径配置 =====
 // 由 server.mjs 自身位置自动推导（Axhub 根目录 = 工作台面板 的上一级），
 // 便于整个文件夹复制到任意机器/路径后直接运行，无需改硬编码。
-const AXHUB_ROOT = path.dirname(__dirname);
 const TEMPLATE_DIR = path.join(AXHUB_ROOT, '02-模板', '_project-template');
 const LIBRARY_DIR = path.join(TEMPLATE_DIR, '.agents');
 const SKILLS_DIR = path.join(LIBRARY_DIR, 'skills');
@@ -3927,7 +3928,7 @@ const server = http.createServer(async (req, res) => {
     } catch { return null; }
   };
   // 连通测试留痕：91-运行状态 已被忽略规则排除、不入库；只记模型与结果片段，绝不写 key
-  const AI_TEST_LOG = path.join(__dirname, '..', '91-运行状态', 'ai-test-history.jsonl');
+  const AI_TEST_LOG = path.join(AXHUB_ROOT, '91-运行状态', 'ai-test-history.jsonl');
   const appendAiTestRecord = (rec) => {
     try {
       fs.mkdirSync(path.dirname(AI_TEST_LOG), { recursive: true });

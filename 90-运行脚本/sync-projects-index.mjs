@@ -37,7 +37,7 @@ const TREE_NOTE = {
   '08-文档': '迭代过程文档 / 打包输出',
   '07-协作': '多智能体协作根（messages / rooms / agents / docs / 用户操作）',
   '06-智能体记忆': '工作台层记忆（000~004 + rules/ + skills/ + router.md + agents/）',
-  '工作台面板': '工作台管理端代码（server.mjs，旧名 axhub-manager）',
+  '工作台桌面应用/service': '工作台管理端代码（server.mjs，旧名 axhub-manager）',
   '工作台桌面应用': 'Electron 桌面壳',
 };
 

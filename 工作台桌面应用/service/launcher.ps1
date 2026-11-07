@@ -6,7 +6,7 @@
 $ErrorActionPreference = 'Continue'
 $OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-$root = Split-Path $PSScriptRoot -Parent       # launcher.ps1 位于 工作台面板/，工作台根为上一级
+$root = Split-Path $PSScriptRoot -Parent       # launcher.ps1 位于 工作台桌面应用\service/，工作台根为上一级
 # 端口监听查询（netstat 解析：部分环境 NetTCPIP 模块异常导致 Get-NetTCPConnection 失效，改用系统自带 netstat，跨机器稳定）
 function Get-ListenPids([int]$Port) {
     $pids = @()
@@ -77,7 +77,7 @@ if ($listen) {
 }
 
 # ---------- 4) 启动后端服务（独立最小化窗口，日志落盘）----------
-$panelDir = Join-Path $root '工作台面板'
+$panelDir = Join-Path $root '工作台桌面应用\service'
 $logDir = Join-Path $root '91-运行状态'
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
 $logFile = Join-Path $logDir 'server-console.log'

@@ -1,6 +1,6 @@
 // 产品设计工作台 · Electron 主进程
 // 职责：无边框窗口 + 自定义标题栏窗口控制；代理渲染进程的 7788 面板 API 请求（规避 file:// 跨域与 CSRF）；
-//       面板未启动时自动拉起 工作台面板/server.mjs。
+//       面板未启动时自动拉起 service/server.mjs。
 import { app, BrowserWindow, ipcMain, shell, clipboard, dialog } from 'electron';
 import { spawn, execFileSync } from 'node:child_process';
 import path from 'node:path';
@@ -17,7 +17,7 @@ const WORKBENCH_ROOT = app.isPackaged
 const BUNDLED_NODE_DIR = app.isPackaged ? path.join(process.resourcesPath, 'tools', 'node') : '';
 const NODE_BIN = BUNDLED_NODE_DIR ? path.join(BUNDLED_NODE_DIR, 'node.exe') : 'node';
 const PANEL_URL = 'http://localhost:7788';
-const PANEL_SCRIPT = path.join(WORKBENCH_ROOT, '工作台面板', 'server.mjs');
+const PANEL_SCRIPT = path.join(__dirname, 'service', 'server.mjs'); // 内聚改造：服务随桌面应用工程维护
 
 let mainWindow = null;
 let panelProc = null;

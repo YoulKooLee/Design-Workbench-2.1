@@ -60,7 +60,7 @@ foreach ($p in $ports) {
       $cmd = [string]$proc.CommandLine
     } catch { $cmd = '' }
     $known = $false
-    if ($cmd -match 'server\.mjs') { $known = $true; $who = '工作台面板' }
+    if ($cmd -match 'server\.mjs') { $known = $true; $who = '工作台桌面应用/service' }
     elseif ($cmd -match 'axhub[\\/]make|axhub-make|cli\.mjs.*make|@axhub/make') { $known = $true; $who = 'Axhub Make' }
     # ACP 共享服务（@axhub/acp，随 Make 单例启动）属本工作台栈，占用其端口不算冲突
     elseif ($cmd -match '@axhub[\\/]acp|node_modules[\\/]@axhub[\\/]acp') { $known = $true; $who = 'Axhub ACP' }

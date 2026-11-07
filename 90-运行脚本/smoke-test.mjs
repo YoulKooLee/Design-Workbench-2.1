@@ -12,8 +12,8 @@ import { spawnSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
-// 配置真源在 工作台面板\workbench.config.json（其内路径字段均相对工作台根）
-const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, '工作台面板', 'workbench.config.json'), 'utf8'));
+// 配置真源在 工作台桌面应用/service\workbench.config.json（其内路径字段均相对工作台根）
+const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, '工作台桌面应用/service', 'workbench.config.json'), 'utf8'));
 
 const results = [];
 function check(name, ok, detail = '') {
@@ -23,12 +23,12 @@ function check(name, ok, detail = '') {
 
 // 1. 目录结构
 console.log('\n[1/5] 目录结构');
-const dirs = ['01-项目', '02-模板', '03-组件库', '99-回收站', '90-运行脚本', '91-运行状态', '08-文档', '07-协作', '06-智能体记忆', '92-维护台账', '工作台面板'];
+const dirs = ['01-项目', '02-模板', '03-组件库', '99-回收站', '90-运行脚本', '91-运行状态', '08-文档', '07-协作', '06-智能体记忆', '92-维护台账', '工作台桌面应用/service'];
 for (const d of dirs) check(`目录 ${d}`, fs.existsSync(path.join(ROOT, d)));
-check('工作台面板/server.mjs 在位', fs.existsSync(path.join(ROOT, '工作台面板', 'server.mjs')));
-check('工作台面板/public/index.html 在位', fs.existsSync(path.join(ROOT, '工作台面板', 'public', 'index.html')));
-check('工作台面板/启动工作台.cmd 在位', fs.existsSync(path.join(ROOT, '工作台面板', '启动工作台.cmd')));
-check('工作台面板/停止工作台.cmd 在位', fs.existsSync(path.join(ROOT, '工作台面板', '停止工作台.cmd')));
+check('工作台桌面应用/service/server.mjs 在位', fs.existsSync(path.join(ROOT, '工作台桌面应用/service', 'server.mjs')));
+check('工作台桌面应用/service/public/index.html 在位', fs.existsSync(path.join(ROOT, '工作台桌面应用/service', 'public', 'index.html')));
+check('工作台桌面应用/service/启动工作台.cmd 在位', fs.existsSync(path.join(ROOT, '工作台桌面应用/service', '启动工作台.cmd')));
+check('工作台桌面应用/service/停止工作台.cmd 在位', fs.existsSync(path.join(ROOT, '工作台桌面应用/service', '停止工作台.cmd')));
 
 // 2. 配置与组件库 JSON
 console.log('\n[2/5] 配置与组件库');
@@ -36,7 +36,7 @@ const clRoot = path.join(ROOT, CFG.componentLibrary.rootDir);
 const reg = JSON.parse(fs.readFileSync(path.join(clRoot, 'component-registry.json'), 'utf8'));
 const libRootOf = (end) => path.dirname(path.join(clRoot, end.source)); // source 的上级 = 库根（如 Vibe Design Pro/）
 const jsons = [
-  path.join('工作台面板', 'workbench.config.json'),
+  path.join('工作台桌面应用/service', 'workbench.config.json'),
   path.join('03-组件库', 'component-registry.json'),
 ];
 // 动态：每个带 catalog 的端 → catalog JSON；每个库根存在 index.json 时一并校验
@@ -120,7 +120,7 @@ try {
   check('registry pageTypeCount = catalog 实际页数', bad.length === 0, bad.length ? bad.join('; ') : (endsWithCatalog.length ? `${endsWithCatalog.map((e) => e.id + '=' + e.pageTypeCount).join(' / ')}` : '无 catalog 端'));
 } catch (e) { check('registry pageTypeCount = catalog 实际页数', false, e.message); }
 try {
-  const srv = fs.readFileSync(path.join(ROOT, '工作台面板', 'server.mjs'), 'utf8');
+  const srv = fs.readFileSync(path.join(ROOT, '工作台桌面应用/service', 'server.mjs'), 'utf8');
   const bindDef = srv.match(/const BIND_HOST = .*CFG\.workbench\?\.bindHost/);
   const listenM = srv.match(/server\.listen\(\s*PORT\s*,\s*BIND_HOST/);
   const bindOk = !!(bindDef && listenM);
@@ -138,7 +138,7 @@ try {
 // 4.6 安全守卫（WorkBuddy 审查修复：safeResolve 路径穿越+命令注入防线）
 console.log('\n[4.6/5] 安全守卫');
 try {
-  const srv = fs.readFileSync(path.join(ROOT, '工作台面板', 'server.mjs'), 'utf8');
+  const srv = fs.readFileSync(path.join(ROOT, '工作台桌面应用/service', 'server.mjs'), 'utf8');
   const hasFn = srv.includes('function safeResolve(relative)');
   // 必须拒绝的：裸 path.join(AXHUB_ROOT, relative) 拼接（relative 来自请求参数）
   const bareJoin = /path\.join\(AXHUB_ROOT,\s*relative\)/.test(srv);
@@ -152,7 +152,7 @@ try {
 // 4.7 CSRF / DNS 重绑定防护（WorkBuddy 审查：恶意网页借浏览器触发本地命令）
 console.log('\n[4.7/5] CSRF 防护');
 try {
-  const srv = fs.readFileSync(path.join(ROOT, '工作台面板', 'server.mjs'), 'utf8');
+  const srv = fs.readFileSync(path.join(ROOT, '工作台桌面应用/service', 'server.mjs'), 'utf8');
   const hasGuard = srv.includes('CSRF / DNS 重绑定防护');
   const hostCheck = /req\.headers\['host'\]/.test(srv) && /localhost|127\.0\.0\.1/.test(srv);
   const refCheck = /req\.headers\['origin'\]/.test(srv) && /req\.headers\['referer'\]/.test(srv);
