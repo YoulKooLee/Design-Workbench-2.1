@@ -4,6 +4,10 @@ description: 该技能用于快速创建带手机设备外框的 APP 原型（�
 user-invocable: true
 ---
 
+## vendor 装配说明
+
+本技能第三方库源目录 `assets/vendor/`（vant/f2 或 vue/element-plus/g2plot/fontawesome）不随模板入库（体积原因外置于 `02-模板/vendor/`）；**由工作台面板建项时自动装配到项目内**。在模板目录内直接试运行本技能时，先手动执行：cp -r ../../vendor/vibepm-app ./assets/vendor
+
 ## 目标
 
 - 保持所有原型页面的设备外框与结构一致。

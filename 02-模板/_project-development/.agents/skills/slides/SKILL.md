@@ -1,5 +1,5 @@
 ---
-name: ckm:slides
+name: slides
 description: 创建战略性 HTML 演示文稿，支持 Chart.js 数据可视化、设计令牌、响应式布局、文案公式和情境化幻灯片策略。
 argument-hint: "[主题] [幻灯片数量]"
 metadata:

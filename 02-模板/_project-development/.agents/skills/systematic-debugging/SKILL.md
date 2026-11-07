@@ -111,7 +111,7 @@ You MUST complete each phase before proceeding to the next.
 
    **WHEN error is deep in call stack:**
 
-   See `root-cause-tracing.md` in this directory for the complete backward tracing technique.
+   （技法文件 root-cause-tracing.md 未随导入件带入；完整方法即下方 Quick version 逐层上溯，另见 `.agents/knowledge/conventions/debugging.md`）
 
    **Quick version:**
    - Where does bad value originate?
@@ -275,13 +275,11 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 
 **But:** 95% of "no root cause" cases are incomplete investigation.
 
-## Supporting Techniques
+## Supporting Techniques（内联摘要；原独立技法文件未随导入件带入）
 
-These techniques are part of systematic debugging and available in this directory:
-
-- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
-- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
-- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **root-cause-tracing**：从报错层沿调用栈逐层上溯，直到找到坏值的产生点，在源头修，不在症状处修。
+- **defense-in-depth**：找到根因后，在入口、边界、核心逻辑多层同时加校验，任何一层都能独立挡住同类错误。
+- **condition-based-waiting**：用条件轮询（等待「状态 X 达成」）替换固定时长 sleep，消除时序抖动类假失败。
 
 **Related skills:**
 - **superpowers:test-driven-development** - For creating failing test case (Phase 4, Step 1)

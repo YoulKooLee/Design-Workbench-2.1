@@ -46,7 +46,7 @@
 | --- | --- |
 | **转换与编码** | `knowledge/conventions/react-to-vue.md`（写页面必读）、`coding.md`、`frontend.md`、`security.md`、`testing.md`、`debugging.md`、`verification.md`、`git.md`、`mock.md`、`typescript.md` |
 | **UI 库** | `knowledge/ui-libs/README.md` → `element-plus/`（多栈按 package.json 只加载对应一套） |
-| **画图工具** | `../../../../08-办公/画图/README.md`（工作台层 D2，命令行渲 SVG / PNG） |
+| **画图工具** | `.agents/skills/d2-diagram/SKILL.md`（d2 预检与降级）与 `.agents/knowledge/diagram/`（绘图规范）；旧机「08-办公/画图」目录在本机不存在 |
 | **文档规范** | `knowledge/phase1-requirements/prd-language.md`、`section-format.md`；`phase2-design/hld-spec.md`、`lld-spec.md`；索引 `knowledge/catalog.json` |
 | **工作流规则** | `.agents/rules/req-doc-routing.md`（需求文档路由）、`context-budget.md`（预算禁读清单 · 最高铁律）、`context-assembly.md`（装配协议）、`compaction-recovery.md`（压缩恢复）、`prd-to-srs-gate.md`（转写门禁）、`delivery-and-hooks.md`（交付模式与 Hook）、`agent-runtime.md`、`role-dispatch.md`、`soft-gates.md`、`ade-compat.md`、`nav-map.md`（本文件） |
 | **模板** | `templates/交接清单模板.md`、`README-DEV.template.md`、`project-init.md`、`PACKAGING.md` |

@@ -1,11 +1,10 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-03T09:32:04.357Z",
+  "generatedAt": "2026-11-07T14:33:45.416Z",
   "count": 17,
-  "hash": "e855368bafc97910",
+  "hash": "6d670b5ebf8a9a94",
   "skills": {
     "brainstorming": "brainstorming",
-    "slides": "ckm:slides",
     "d2-diagram": "d2-diagram",
     "delivery-plan": "delivery-plan",
     "diagram-generator": "diagram-generator",
@@ -17,6 +16,7 @@
     "lld-design": "lld-design",
     "prd-writer": "prd-writer",
     "skill-creator": "skill-creator",
+    "slides": "slides",
     "srs-writer": "srs-writer",
     "systematic-debugging": "systematic-debugging",
     "test-driven-development": "test-driven-development",

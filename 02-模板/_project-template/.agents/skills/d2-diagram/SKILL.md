@@ -28,12 +28,10 @@ description: >
 1. **定图型**：架构 / 流程 / 时序 / 关系——决定布局（见基线第三节）。
 2. **读源**：从 `docs/` 的 PRD / SRS / HLD 或代码里抽节点与关系；**不要凭印象画**。读哪份要能说出路径。
 3. **写 `.d2`**：套 `diagram-baseline.md` 的 classes 段；节点文字 ≤12 汉字。
-4. **渲染**：
-   ```powershell
-   $d2 = "<工作台根>\08-办公\画图\d2.cmd"
-   & $d2 --layout=tala --pad=24 <名字>.d2 <名字>.svg
-   & $d2 --layout=tala --pad=24 <名字>.d2 <名字>.png
-   ```
+4. **渲染（先预检，无 d2 走降级，不卡任务）**：
+   - 预检：`where.exe d2`（或 git-bash `command -v d2`）。命中 → 直接 `d2 --layout=tala --pad=24 <名字>.d2 <名字>.svg/.png`；
+   - 未命中 → 探测本机安装位（`%LOCALAPPDATA%\Programs\d2*`、`~\bin\d2.exe`、工作台根的 `d2-v0.9.0/bin/d2.exe`），找到用绝对路径；
+   - 仍无 → **降级**：告知用户 d2 未装（装法：GitHub releases 下载 d2 windows 单文件 exe 放入 PATH），本轮改由 `drawio-generator` 出可编辑 .drawio 交付，.d2 源文件保留待渲染。
 5. **看结果**：打开 PNG 自查（有没有压字、交叉线、孤立节点、>3 种颜色）。
 6. **落盘**：见下。
 
@@ -45,7 +43,7 @@ description: >
 | 渲染 | 同目录 `.svg`（进文档）、`.png`（进汇报） |
 | Make 预览副本 | `<项目>/src/resources/` |
 
-样式规范：`<工作台根>/08-办公/画图/diagram-baseline.md`（单一真源，别在单张图里另设风格）。
+样式规范：`diagram-baseline.md`（旧机工作台层真源，本机暂无此件）。降级顺序：① 工作台根 `03-知识库/` 下同名词（若已同步）→ ② `.agents/knowledge/diagram/common-rules.md`（通用规范，配色与字号约定可迁移套用）→ ③ 本技能「自检」的色彩/节点约束。同一项目内多张图必须用同一档来源，别混。
 
 ## 坑
 

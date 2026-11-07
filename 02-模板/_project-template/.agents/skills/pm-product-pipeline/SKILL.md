@@ -307,8 +307,8 @@ TaskCreate: 阶段9 - 发版说明
 
 ### Step 6.1 — 选定视觉规范
 
-- 用户已指定 → 读取 `.style/*-style.md`
-- 用户未指定 → 询问或推荐 `.style` 预置规范
+- 用户已指定 → 读取 `.style/*-style.md`（项目运行时产物，先确认存在；不存在时告知用户并从主题库/项目 DESIGN.md 取值）
+- 用户未指定 → 询问或推荐 `.style` 预置规范（同样先验存在性）
 - 需对齐外部站点 → 可先调用 `vibepm-style-extractor`
 
 ### Step 6.2 — 逐页面生成
