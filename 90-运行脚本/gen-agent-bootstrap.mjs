@@ -19,6 +19,18 @@ const WB_SECTION = `
 - 检测到上下文压缩，立即补一份 ≤300 字模块快照到项目 \`project-memory.md\`「模块快照」节。
 `;
 
+// 工作空间统一绑定 01-项目/{项目}（2026-11-08 用户拍板）：找任一带 AGENTS.md 的项目作为核验样本
+function findSampleProjectAgents() {
+  const projRoot = path.join(ROOT, '01-项目');
+  if (!fs.existsSync(projRoot)) return null;
+  for (const n of fs.readdirSync(projRoot, { withFileTypes: true })) {
+    if (!n.isDirectory()) continue;
+    const p = path.join(projRoot, n.name, 'AGENTS.md');
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+
 const HOSTS = [
   {
     id: 'workbuddy',
@@ -34,14 +46,20 @@ const HOSTS = [
   {
     id: 'codebuddy',
     detect: () => fs.existsSync(path.join(HOME, '.codebuddy')),
-    channel: '项目目录绑定 + project-rules（需绑到含 AGENTS.md 的目录）',
-    plan: () => [{ file: path.join(ROOT, 'AGENTS.md'), mode: 'verify-exists', note: '根 AGENTS.md 已在则 CodeBuddy 绑定工作台根即可读到；零写入' }],
+    channel: '项目目录绑定 + project-rules（绑 01-项目/{项目}，读项目 AGENTS.md）',
+    plan: () => {
+      const f = findSampleProjectAgents();
+      return [{ file: f || '(无可用项目)', mode: 'verify-exists', note: 'CodeBuddy 绑定任一项目目录即可读项目 AGENTS.md；零写入' }];
+    },
   },
   {
     id: 'qianwen',
     detect: () => true, // 千问工作助理：以会话当前项目根为准，无需宿主目录
-    channel: '项目/工作台根 AGENTS.md（会话注入）',
-    plan: () => [{ file: path.join(ROOT, 'AGENTS.md'), mode: 'verify-exists', note: '同上' }],
+    channel: '项目 AGENTS.md（01-项目/{项目}/AGENTS.md，会话注入）',
+    plan: () => {
+      const f = findSampleProjectAgents();
+      return [{ file: f || '(无可用项目)', mode: 'verify-exists', note: '同上' }];
+    },
   },
 ];
 
@@ -60,7 +78,7 @@ for (const h of HOSTS) {
     if (item.mode === 'verify-exists') {
       const ok = fs.existsSync(item.file);
       console.log(`[核验] ${h.id}: ${item.file} ${ok ? '存在' : '缺失!'} — ${item.note || ''}`);
-      rows.push({ id: h.id, installed: true, action: ok ? '根 AGENTS.md 核验通过' : '根 AGENTS.md 缺失', status: ok ? '可用' : '异常' });
+      rows.push({ id: h.id, installed: true, action: ok ? '项目 AGENTS.md 核验通过' : '项目 AGENTS.md 缺失', status: ok ? '可用' : '异常' });
       continue;
     }
     if (item.skip) { console.log(`[已接] ${h.id}: ${item.file} — ${item.skip}`); rows.push({ id: h.id, installed: true, action: item.skip, status: '已接' }); continue; }
@@ -91,7 +109,7 @@ const table = `
 ${rows.map((r) => `| ${r.id} | ${r.installed ? '是' : '否'} | ${HOSTS.find((h) => h.id === r.id).channel} | ${r.action} | ${r.status} | 待零提示实测 |`).join('\n')}
 `;
 if (WRITE) {
-  const head = fs.existsSync(ledger) ? fs.readFileSync(ledger, 'utf8') : '# 智能体接入名册\n\n> 各宿主注入通道与实测状态台账。生成段由 gen-agent-bootstrap 维护，人工段在下方「通道史」。\n\n## 通道史\n\n- WorkBuddy：不读项目 AGENTS.md，唯一保证通道 ~\\.workbuddy\\MEMORY.md（交接包 §一.1 实证）\n- 豆包/CodeBuddy：project-rules 需会话绑定含 AGENTS.md 的目录；豆包另有 mem://preference 通道（交接包 §一.2）\n- 千问：直接读项目/工作台根 AGENTS.md\n- DeepSeek：走 07-协作 收件箱（inbox-watcher），无宿主注入通道\n';
+  const head = fs.existsSync(ledger) ? fs.readFileSync(ledger, 'utf8') : '# 智能体接入名册\n\n> 各宿主注入通道与实测状态台账。生成段由 gen-agent-bootstrap 维护，人工段在下方「通道史」。\n\n## 通道史\n\n- **智能体工作空间统一绑定 01-项目/{项目}**（2026-11-08 用户拍板）：工作台根目录不再放 AGENTS.md，项目级 AGENTS.md 是唯一强制入口。\n- WorkBuddy：不读项目 AGENTS.md，唯一保证通道 ~\\.workbuddy\\MEMORY.md（交接包 §一.1 实证）\n- 豆包/CodeBuddy：project-rules 需会话绑定含 AGENTS.md 的目录（绑 01-项目/{项目}）；豆包另有 mem://preference 通道（交接包 §一.2）\n- 千问：直接读项目 AGENTS.md（01-项目/{项目}/AGENTS.md）\n- DeepSeek：走 07-协作 收件箱（inbox-watcher），无宿主注入通道\n';
   const body = head.replace(/\n## 接入台账[\s\S]*$/, '') + table;
   fs.writeFileSync(ledger, body, 'utf8');
   console.log(`\n名册已更新: ${ledger}`);

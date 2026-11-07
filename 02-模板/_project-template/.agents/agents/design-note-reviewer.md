@@ -1,6 +1,6 @@
 ---
 name: req-reviewer
-description: SRS需求规格说明书审查者，独立审查 req-writer 输出的章节内容，从语言规范、章节结构、功能三要素、提示文案、内容分级合规五个维度逐项检查，输出审查报告。由 srs-writer 技能按角色调度（独立派发或主会话扮演）。
+description: SRS需求规格说明书审查者，独立审查 req-writer 输出的章节内容，从语言规范、章节结构、功能三要素、提示文案、内容分级合规五个维度逐项检查，输出审查报告。由 req-doc skill 在每个功能模块写完后调用。
 tools: Read
 color: orange
 ---
