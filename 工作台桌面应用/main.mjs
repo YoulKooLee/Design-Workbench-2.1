@@ -23,7 +23,7 @@ let mainWindow = null;
 let panelProc = null;
 
 // ===== 协作直连（v0.3）：随桌面应用常驻 agent-hub-watcher，智能体消息免人工自动处理 =====
-const WATCHER_DIR = path.join(WORKBENCH_ROOT, '09-协作', 'messages', 'tools');
+const WATCHER_DIR = path.join(WORKBENCH_ROOT, '07-协作', 'messages', 'tools');
 const WATCHER_SCRIPT = path.join(WATCHER_DIR, 'agent-hub-watcher.mjs');
 const WATCHER_PID_FILE = path.join(WATCHER_DIR, 'agent-hub-watcher.pid');
 let watcherProc = null;
@@ -257,12 +257,12 @@ ipcMain.handle('folder:pick', async (event) => {
   return { ok: false, outside: true, picked };
 });
 
-// 打开协作房间产物文件夹（09-协作/rooms/<房间名>/产物）
+// 打开协作房间产物文件夹（07-协作/rooms/<房间名>/产物）
 ipcMain.handle('folder:open-artifacts', async (_e, roomName) => {
   if (typeof roomName !== 'string' || !roomName || /[\\/]|\.\./.test(roomName)) {
     return { ok: false, msg: '非法房间名' };
   }
-  const dir = path.join(WORKBENCH_ROOT, '09-协作', 'rooms', roomName, '产物');
+  const dir = path.join(WORKBENCH_ROOT, '07-协作', 'rooms', roomName, '产物');
   try {
     if (!fs.existsSync(dir)) return { ok: false, msg: '该房间暂无产物目录' };
     const err = await shell.openPath(dir);

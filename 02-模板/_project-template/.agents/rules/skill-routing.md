@@ -24,8 +24,8 @@
 |A `diagram-generator` / B `drawio-generator`|产物**格式与落点**|图要嵌进 Markdown 文档做插图（流程/架构/时序/泳道）|要可编辑的 `.drawio` XML 源文件，或用户提到 draw.io / diagrams.net / 思维导图 / BPMN / ER 图|
 |A `brainstorming` / B `requirements-exploration`|是否**用户显式点名**|默认选 A。任何创建功能/组件/改行为前的意图与方案对齐|用户显式说「需求探索 / 需求细化」或调用 `$requirements-exploration`，或要求产出确认版需求文档。**严禁自动触发**|
 |A `brainstorming` / B `explore-options`|对齐「做什么」还是「怎么做」|目标、范围、验收标准尚未确定|目标已定，需在 2–3 个 UI / 实现方向间比稿并做设计决策|
-|A `page-generator` / B `vibepm-web-generator`、`vibepm-app-generator`|**交付层**：开发层还是原型层|产出进 `admin/`（Vue3 正式开发页面），输入须为 SRS|产出留在原型层快速验证：企业官网/落地页选 web，带手机外框的 App 原型选 app|
-|A `frontend-design` / B `vibepm-web-generator`|定制还是**套模板**|仪表盘、组件、海报等非标结构，需定制化高质量实现|企业官网、产品介绍页、投放落地页等标准结构，需统一模板骨架与样式体系|
+|A `page-generator` / B `vibepm-web-generator`（已外置 05-技能库）、`vibepm-app-generator`|**交付层**：开发层还是原型层|产出进 `admin/`（Vue3 正式开发页面），输入须为 SRS|产出留在原型层快速验证：企业官网/落地页选 web，带手机外框的 App 原型选 app|
+|A `frontend-design` / B `vibepm-web-generator`（已外置 05-技能库）|定制还是**套模板**|仪表盘、组件、海报等非标结构，需定制化高质量实现|企业官网、产品介绍页、投放落地页等标准结构，需统一模板骨架与样式体系|
 |A `screenshot-to-prototype` / B `ui-design-image`|图片**方向相反**|用户给出截图/设计稿，要**还原成**可运行原型|用户没有图，要**生成** UI 设计图、整页界面稿、图标或占位图|
 |A `prototype-comments` / B `prototype-annotation`|批注是**输入**还是**输出**|原型上已有批注要求修改，读取后定位元素改文案/样式/布局，完成即删批注|要往原型新增说明层（页面目录、组件说明、状态说明）沉淀为交付文档|
 

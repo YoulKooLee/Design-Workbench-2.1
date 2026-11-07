@@ -144,7 +144,7 @@ web / app 扩展同理：根下新目录 + 挂到对应 `ends.web` / `ends.app`�
 - 改后台母版：直接编辑 `frame/admin/`（优化落在 theme CSS / `boot.js` 等，勿改 `vendor/arco` 源码）。改完后按需把视觉同步到各项目 `src/assets/style/`。
 - **生成业务页时禁止改本母版**（各项目规范见其 `README-DEV.md`）。
 - 预览 admin 母版：打开 `frame/admin/login-cover.html`（演示账号 `admin` / `123456`）；浏览多页样板打开 `frame/gallery.html`。仅 `file://` 异常时再起静态服务。官方库增页后若要上墙，同步改 Gallery 手写清单（见「Gallery 预览」）。
-- 端状态变更后：同步 `index.json` + `component-registry.json` + 本 README「目录与当前库」表，跑 `06-运行脚本/smoke-test.mjs` 验收。
+- 端状态变更后：同步 `index.json` + `component-registry.json` + 本 README「目录与当前库」表，跑 `90-运行脚本/smoke-test.mjs` 验收。
 
 ## 维护核对
 

@@ -26,7 +26,7 @@ git clone https://github.com/YoulKooLee/Design-Workbench-2.1.git
 cd Design-Workbench-2.1
 
 # 2. 首次部署引导（自动：Node 探测、Git 行尾规范、pnpm、@axhub/make 预装、编码体检、冒烟自检）
-powershell -ExecutionPolicy Bypass -File 06-运行脚本/bootstrap.ps1
+powershell -ExecutionPolicy Bypass -File 90-运行脚本/bootstrap.ps1
 
 # 3. 一键启动
 双击 启动工作台.cmd
@@ -48,13 +48,15 @@ npm run dist         # 打包 Windows 安装包（nsis / portable）
 首次启动后建议跑一遍自检：
 
 ```bash
-powershell -File 06-运行脚本/env-doctor.ps1        # 环境体检
-node 06-运行脚本/smoke-test.mjs                    # 冒烟自测
+powershell -File 90-运行脚本/env-doctor.ps1        # 环境体检
+node 90-运行脚本/smoke-test.mjs                    # 冒烟自测
 ```
 
 ---
 
 ## 三、启动与停止
+
+> 主推入口：**桌面应用**（双击 启动桌面应用.cmd 或 工作台启动程序.exe，自动拉起 7788 面板服务）；浏览器直接开 http://localhost:7788 降级为兼容/调试口（面板后端 server.mjs 仍是桌面应用的能力真源，不可删）。
 
 ```
 双击 启动工作台.cmd     # 启动面板（自动探测 Node，拉起 7788）
@@ -89,13 +91,13 @@ node 06-运行脚本/smoke-test.mjs                    # 冒烟自测
 │   ├── 02-页面模板/        # 原型框架·页面模板
 │   ├── 03-页面组件/        # 原型框架·组件库
 │   └── 03-UI风格/          # UI 风格知识库
-├── 05-回收站/            # 删除的项目（可还原）
-├── 06-运行脚本/          # launch-project / env-doctor / smoke-test / bootstrap
-├── 07-日志/              # 工作台运行日志
+├── 99-回收站/            # 删除的项目（可还原）
+├── 90-运行脚本/          # launch-project / env-doctor / smoke-test / bootstrap
+├── 91-运行状态/              # 工作台运行日志
 ├── 08-文档/              # 手册 / 答疑 / 排错 / 架构 / 未来计划
-├── 09-协作/              # 智能体通信（消息总线 / 房间 / 交接包）
-├── 10-智能体记忆/         # 智能体记忆主干（BOOTSTRAP 自举）
-└── 04-维护台账/           # 补丁立账 + 工具
+├── 07-协作/              # 智能体通信（消息总线 / 房间 / 交接包）
+├── 06-智能体记忆/         # 智能体记忆主干（BOOTSTRAP 自举）
+└── 92-维护台账/           # 补丁立账 + 工具
 ```
 
 ---
@@ -107,8 +109,8 @@ node 06-运行脚本/smoke-test.mjs                    # 冒烟自测
 | 启动报「未找到 Node.js」 | 安装 Node ≥ 18 后重试 |
 | 端口被占用（7788/53817/32124） | 双击 停止工作台.cmd 一键清理后重启 |
 | 知识库/工作规则面板为空 | 确认从 GitHub 克隆最新版 |
-| admin 项目首次启动慢 | 首次后台 `pnpm install`，日志在 `07-日志/` |
-| 智能体新会话不知从何开始 | 读 `10-智能体记忆/BOOTSTRAP.md` |
+| admin 项目首次启动慢 | 首次后台 `pnpm install`，日志在 `91-运行状态/` |
+| 智能体新会话不知从何开始 | 读 `06-智能体记忆/BOOTSTRAP.md` |
 
 ---
 

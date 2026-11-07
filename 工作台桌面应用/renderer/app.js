@@ -681,7 +681,7 @@ async function loadServiceCards(projOk, ctxCache) {
   // 智能体监听：启动/关闭 可切换
   const listenBtn = wrap.querySelector('#scListen');
   if (listenBtn) {
-    listenBtn.title = listening ? '关闭智能体监听（agent-hub-watcher + inbox-watcher）' : '启动所有智能体监听（09-协作/messages/tools/启动所有智能体监听.bat）';
+    listenBtn.title = listening ? '关闭智能体监听（agent-hub-watcher + inbox-watcher）' : '启动所有智能体监听（07-协作/messages/tools/启动所有智能体监听.bat）';
     listenBtn.onclick = async () => {
       const wasRunning = listening;
       listenBtn.disabled = true;
@@ -778,7 +778,7 @@ async function renderProjects(search) {
     '<div><h2>项目管理</h2><div class="summary" id="projSummary">加载中…</div></div>' +
     '<div class="page-actions">' +
       '<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="projSearch" placeholder="搜索项目…" value="' + esc(kw0) + '"></div>' +
-      '<button class="btn" id="trashBtn" title="查看 05-回收站 中已删除的项目并还原">回收站</button>' +
+      '<button class="btn" id="trashBtn" title="查看 99-回收站 中已删除的项目并还原">回收站</button>' +
       '<button class="btn btn-primary" id="newProjectBtn" title="快捷键 Ctrl+N"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>新建项目</button>' +
     '</div>';
   $('#main').appendChild(head);
@@ -2028,7 +2028,7 @@ let dailyWeekOffset = 0, dailyMonthOffset = 0, dailyQuarterOffset = 0;
 let dailyAllProjects = [];
 let dailyEditDate = null;
 let reqFilter = '0';
-// 周报/季报/年报文本：改存服务端（08-办公/reports.json）。
+// 周报/季报/年报文本：改存服务端（91-运行状态/办公数据/reports.json）。
 // 原因：桌面端跑 file://、Web 端跑 http://localhost:7788，两个来源的 localStorage 完全隔离，
 // 桌面端写的周报在 Web 端看不到，清缓存还会丢。统一走 /api/reports。
 let reportsData = { weekly: {}, quarterly: {}, yearly: {} };
@@ -2402,10 +2402,10 @@ async function renderDaily() {
   if (dailyEditDate === null && !(dailyData.reports || []).some(x => x.date === dailySel)) dailyEditDate = dailySel;
   $('#main').innerHTML = '';
   $('#main').appendChild(pageHead('工作日报 · 周报 · 统计', '每天记录工作、关联项目与加班；每周自动生成周报，月底/季度/年底生成统计与总结'));
-  // 数据备份条：日报/需求池/报告文本都在本机 08-办公 下，目录一坏就全失，必须给显式出口
+  // 数据备份条：日报/需求池/报告文本都在本机 91-运行状态/办公数据 下，目录一坏就全失，必须给显式出口
   $('#main').insertAdjacentHTML('beforeend',
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;font-size:12px;color:#6b7280">' +
-      '<span>数据存在本机 08-办公 下，建议每周导出一次备份</span>' +
+      '<span>数据存在本机 91-运行状态/办公数据 下，建议每周导出一次备份</span>' +
       '<span style="flex:1"></span>' +
       '<button class="btn btn-ghost btn-sm" id="expJson">导出全部（JSON）</button>' +
       '<button class="btn btn-ghost btn-sm" id="expCsv">导出日报（CSV）</button>' +
@@ -2759,7 +2759,7 @@ async function showTrash() {
   const clearBtn = $('#trashClearBtn');
   clearBtn.disabled = items.length === 0;
   if (items.length === 0) {
-    $('#trashBody').innerHTML = '<div class="empty">回收站为空</div><div style="text-align:center;color:var(--text-3);font-size:12px;margin-top:6px">删除项目会移入 05-回收站（非彻底删除），可在此还原</div>';
+    $('#trashBody').innerHTML = '<div class="empty">回收站为空</div><div style="text-align:center;color:var(--text-3);font-size:12px;margin-top:6px">删除项目会移入 99-回收站（非彻底删除），可在此还原</div>';
     return;
   }
   const rows = items.map((it) => {
@@ -2767,7 +2767,7 @@ async function showTrash() {
     return '<tr><td><b>' + esc(it.name) + '</b></td><td style="color:var(--text-3)">' + delTxt + '</td>' +
       '<td style="text-align:right"><button class="op-btn" data-restore="' + esc(it.id) + '">还原</button></td></tr>';
   }).join('');
-  $('#trashBody').innerHTML = '<div style="color:var(--text-3);font-size:12px;margin:2px 0 10px">已删除项目（05-回收站），点击「还原」移回 01-项目；若已有同名目录将拒绝还原。清空将彻底删除，不可恢复。</div>' +
+  $('#trashBody').innerHTML = '<div style="color:var(--text-3);font-size:12px;margin:2px 0 10px">已删除项目（99-回收站），点击「还原」移回 01-项目；若已有同名目录将拒绝还原。清空将彻底删除，不可恢复。</div>' +
     '<table><thead><tr><th>项目</th><th>删除时间</th><th style="text-align:right">操作</th></tr></thead><tbody>' + rows + '</tbody></table>';
   clearBtn.onclick = () => {
     confirmModal('清空回收站', '将彻底删除回收站中全部 <b>' + items.length + '</b> 个回收项，此操作不可恢复。确定清空吗？', async () => {

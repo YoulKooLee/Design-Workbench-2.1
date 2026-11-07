@@ -43,7 +43,7 @@ description: >
 | 渲染 | 同目录 `.svg`（进文档）、`.png`（进汇报） |
 | Make 预览副本 | `<项目>/src/resources/` |
 
-样式规范：`diagram-baseline.md`（旧机工作台层真源，本机暂无此件）。降级顺序：① 工作台根 `03-知识库/` 下同名词（若已同步）→ ② `.agents/knowledge/diagram/common-rules.md`（通用规范，配色与字号约定可迁移套用）→ ③ 本技能「自检」的色彩/节点约束。同一项目内多张图必须用同一档来源，别混。
+样式规范：`diagram-baseline.md`（旧机工作台层真源，本机暂无此件）。降级顺序：① 工作台根 `04-知识库/` 下同名词（若已同步）→ ② `.agents/knowledge/diagram/common-rules.md`（通用规范，配色与字号约定可迁移套用）→ ③ 本技能「自检」的色彩/节点约束。同一项目内多张图必须用同一档来源，别混。
 
 ## 坑
 

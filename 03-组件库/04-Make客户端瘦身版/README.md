@@ -35,7 +35,7 @@
 
 或使用补丁脚本：
 ```bash
-python 06-运行脚本/make功能删减/apply_make_patch.py --project "<项目根目录>" --write
+python 90-运行脚本/make功能删减/apply_make_patch.py --project "<项目根目录>" --write
 ```
 
 ## 版本

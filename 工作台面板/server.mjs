@@ -132,7 +132,7 @@ const cliProbeCacheSet = (r) => { __cliProbeCache = { at: Date.now(), r }; };
 
 // ===== 全局异常兜底：EPIPE 自激防护 =====
 // EPIPE 自激防护（deepseek 诊断）：管道断裂时 console.error 写坏管道会再次触发 uncaughtException -> 自激循环
-const crashLogPath = path.join(__dirname, '..', '07-日志', 'server-crash.log');
+const crashLogPath = path.join(__dirname, '..', '91-运行状态', 'server-crash.log');
 let crashLogStream = null;
 try { fs.mkdirSync(path.dirname(crashLogPath), { recursive: true }); crashLogStream = fs.createWriteStream(crashLogPath, { flags: 'a' }); } catch {}
 const safeLog = (tag, data) => {
@@ -183,8 +183,8 @@ function appendLogRotate(file, text) {
   } catch { /* 日志失败不致命 */ }
 }
 const BIND_HOST = CFG.workbench?.bindHost || '127.0.0.1';
-// 智能体监听禁用标记：用户显式「关闭监听」后，自动保活不再拉起（本机 07-日志，非共享目录）
-const LISTEN_DISABLED_FLAG = path.join(AXHUB_ROOT, '07-日志', 'listen-disabled.flag');
+// 智能体监听禁用标记：用户显式「关闭监听」后，自动保活不再拉起（本机 91-运行状态，非共享目录）
+const LISTEN_DISABLED_FLAG = path.join(AXHUB_ROOT, '91-运行状态', 'listen-disabled.flag');
 // Make-Template 页面模板目录（新增项目可选模板；可经 workbench.config.json 的 workbench.makeTemplatesDir 覆盖）
 const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench?.makeTemplatesDir || path.join(AXHUB_ROOT, '03-组件库', '02-页面模板');
 
@@ -201,8 +201,8 @@ const MAKE_TEMPLATES_DIR = process.env.AXHUB_MAKE_TEMPLATES_DIR || CFG.workbench
 // 多智能体互斥：同一项目同一时刻只能被一个智能体 editing。
 const WORKSPACE_DIR = path.join(AXHUB_ROOT, '.workbuddy');
 const WORKSPACE_CTX_FILE = path.join(WORKSPACE_DIR, 'workspace.json');
-// 办公数据目录：日报、需求池、更新检查状态（用户指定 08-办公）
-const OFFICE_DIR = path.join(AXHUB_ROOT, '08-办公');
+// 办公数据目录：日报、需求池、更新检查状态（用户指定 91-运行状态/办公数据）
+const OFFICE_DIR = path.join(AXHUB_ROOT, '91-运行状态/办公数据');
 
 // ===== 更新检查（多电脑 GitHub 同步）=====
 // 面板左上角「检查更新」：点击主动 git fetch 对比远端；每天 5 点 + 面板启动后各被动检查一次；
@@ -259,7 +259,7 @@ function resolvePowerShellExe() {
 }
 
 // ===== 智能体在线判定（心跳机制，支持任意智能体）=====
-// 约定：智能体活跃时向 09-协作/agents/<id>/heartbeat.json 写 { at, pid, host }；
+// 约定：智能体活跃时向 07-协作/agents/<id>/heartbeat.json 写 { at, pid, host }；
 // 面板按心跳新鲜度判定在线（TTL 内视为在线）。任何 agents 目录下的智能体均适用。
 const HEARTBEAT_TTL_MS = 5 * 60 * 1000; // 心跳有效期：5 分钟
 function readAgentHeartbeat(agentDir) {
@@ -367,7 +367,7 @@ function writeWorkspaceCtx(ctx) {
   try {
     fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
 // 启动保障：标准目录缺失时自动重建（下载版/新环境无需手工建目录）
-for (const d of ['01-项目','02-模板','03-组件库','04-维护台账','05-回收站','06-运行脚本','07-日志','08-文档','09-协作','10-智能体记忆']) {
+for (const d of ['01-项目','02-模板','03-组件库','92-维护台账','99-回收站','90-运行脚本','91-运行状态','08-文档','07-协作','06-智能体记忆']) {
   try { fs.mkdirSync(path.join(AXHUB_ROOT, d), { recursive: true }); } catch {}
 }
     fs.writeFileSync(WORKSPACE_CTX_FILE, JSON.stringify(ctx, null, 2), 'utf8');
@@ -660,7 +660,7 @@ function writeProjectOwner(dir, owner) {
 // 扫描项目时跳过的目录名（含整理后的分类文件夹，避免误扫/慢扫）
 const EXCLUDE_DIRS = new Set([
   '_backups', 'tmp', '工作台面板', '.workbuddy', 'node_modules',
-  '03-组件库', '04-维护台账', '05-回收站', '06-运行脚本', '07-日志', '08-文档', '09-协作', '10-智能体记忆',
+  '03-组件库', '92-维护台账', '99-回收站', '90-运行脚本', '91-运行状态', '08-文档', '07-协作', '06-智能体记忆',
 ]);
 // 递归扫描时不再深入这些子目录（性能 + 正确性）
 const SKIP_SUBDIRS = new Set(['node_modules', '.git', '.vite', '.axhub', '.workbuddy']);
@@ -1247,7 +1247,7 @@ function moveToTrash(src) {
   if (!fs.existsSync(src)) return null;
   const ts = new Date().toISOString().replace(/[:.]/g, '-');
   const name = path.basename(src);
-  const trashBase = path.join(AXHUB_ROOT, '05-回收站');
+  const trashBase = path.join(AXHUB_ROOT, '99-回收站');
   fs.mkdirSync(trashBase, { recursive: true });
   const trashDir = path.join(trashBase, `.deleted-${ts}`);
   fs.mkdirSync(trashDir, { recursive: true });
@@ -1475,7 +1475,7 @@ const server = http.createServer(async (req, res) => {
     for (const p of projects) {
       try {
         const lb = safeName(p.relative).replace(/[\\/]+/g, '-') || 'project';
-        const lf = path.join(AXHUB_ROOT, '07-日志', `launch-${lb}.log`);
+        const lf = path.join(AXHUB_ROOT, '91-运行状态', `launch-${lb}.log`);
         if (fs.existsSync(lf)) {
           const txt = fs.readFileSync(lf, 'utf8');
           const startIdx = txt.lastIndexOf(`启动 ${p.relative}`);
@@ -1504,7 +1504,7 @@ const server = http.createServer(async (req, res) => {
 
   // ===== 回收站（C1：有进有出）=====
   if (p === '/api/trash' && method === 'GET') {
-    const trashBase = path.join(AXHUB_ROOT, '05-回收站');
+    const trashBase = path.join(AXHUB_ROOT, '99-回收站');
     const items = [];
     if (fs.existsSync(trashBase)) {
       for (const d of fs.readdirSync(trashBase, { withFileTypes: true })) {
@@ -1530,7 +1530,7 @@ const server = http.createServer(async (req, res) => {
   if (p === '/api/trash/restore' && method === 'POST') {
     const { id } = await readBody(req);
     if (!id || !/^\.deleted-[A-Za-z0-9-]+$/.test(String(id))) return sendError(res, '无效的回收项标识');
-    const trashDir = path.join(AXHUB_ROOT, '05-回收站', String(id));
+    const trashDir = path.join(AXHUB_ROOT, '99-回收站', String(id));
     if (!fs.existsSync(trashDir)) return sendError(res, '回收项不存在');
     // 目录内应恰好一个项目目录（.deleted-<ts>/<name>）
     const entries = fs.readdirSync(trashDir, { withFileTypes: true }).filter((e) => e.isDirectory());
@@ -1567,14 +1567,14 @@ const server = http.createServer(async (req, res) => {
 
   // 回收站：清空（彻底删除所有 .deleted-* 回收项，不可恢复；大目录含 node_modules 时删除耗时，后台异步执行不阻塞面板）
   if (p === '/api/trash/clear' && method === 'POST') {
-    const trashBase = path.join(AXHUB_ROOT, '05-回收站');
+    const trashBase = path.join(AXHUB_ROOT, '99-回收站');
     if (!fs.existsSync(trashBase)) return send(res, 200, { ok: true, msg: '回收站已为空' });
     const dirs = fs.readdirSync(trashBase, { withFileTypes: true })
       .filter((d) => d.isDirectory() && d.name.startsWith('.deleted-'));
     if (dirs.length === 0) return send(res, 200, { ok: true, msg: '回收站已为空' });
     // 子进程异步删除（Windows 上目录被进程占用时 fs.rm 会 EPERM，force + 子进程隔离避免误伤服务自身）
     const payload = dirs.map((d) => path.join(trashBase, d.name));
-    const clearLog = path.join(AXHUB_ROOT, '07-日志', 'trash-clear.log');
+    const clearLog = path.join(AXHUB_ROOT, '91-运行状态', 'trash-clear.log');
     appendLogRotate(clearLog, `\n[${new Date().toISOString()}] 清空回收站：${dirs.length} 项\n`);
     const child = spawn(process.execPath, ['-e', `
       const fs = require('fs');
@@ -1789,11 +1789,12 @@ const server = http.createServer(async (req, res) => {
         }
       };
       try {
-        const vendorSrc = path.join(AXHUB_ROOT, '02-模板', 'vendor');
+        const vendorSrc = path.join(AXHUB_ROOT, '05-技能库', 'vendor');
+        // 技能分批（2026-11-07）：vibepm 两技能已移 05-技能库，仅当项目内确实装载了该技能才装配 vendor
         const vendorMap = [
           ['vibepm-web', path.join(dst, '.agents', 'skills', 'vibepm-web-generator', 'assets', 'vendor')],
           ['vibepm-app', path.join(dst, '.agents', 'skills', 'vibepm-app-generator', 'assets', 'vendor')],
-        ];
+        ].filter(([, target]) => fs.existsSync(path.dirname(path.dirname(target))));
         for (const [vn2, vdst] of vendorMap) {
           const vsrc = path.join(vendorSrc, vn2);
           if (fs.existsSync(vsrc)) await cpRetry(vsrc, vdst, 'vendor-assemble');
@@ -1891,7 +1892,7 @@ const server = http.createServer(async (req, res) => {
       (() => {
         try {
           const logBase = safeName(`01-项目/${projName}`).replace(/[\\/]+/g, '-') || 'project';
-          const logFile = path.join(AXHUB_ROOT, '07-日志', `launch-${logBase}.log`);
+          const logFile = path.join(AXHUB_ROOT, '91-运行状态', `launch-${logBase}.log`);
           fs.mkdirSync(path.dirname(logFile), { recursive: true });
           fs.writeFileSync(logFile, '\uFEFF' + `[${new Date().toISOString()}] 启动 01-项目/${projName}\n`, 'utf8');
           const pnpmCjs = path.join(process.env.APPDATA || '', 'npm', 'node_modules', 'pnpm', 'bin', 'pnpm.cjs');
@@ -1921,7 +1922,7 @@ const server = http.createServer(async (req, res) => {
     if (isDemoRelative(relative)) return sendError(res, DEMO_GUARD_MSG);
     if (!fs.existsSync(dir)) return sendError(res, '项目不存在');
     // 禁止删除模板、面板自身或分类目录
-    const CATEGORY_NAMES = new Set(['01-项目','02-模板','03-组件库','04-维护台账','05-回收站','06-运行脚本','07-日志','08-文档','09-协作','10-智能体记忆','_backups','tmp']);
+    const CATEGORY_NAMES = new Set(['01-项目','02-模板','03-组件库','92-维护台账','99-回收站','90-运行脚本','91-运行状态','08-文档','07-协作','06-智能体记忆','_backups','tmp']);
     if (relative.includes('_project-template') || relative.startsWith('工作台面板') || CATEGORY_NAMES.has(relative)) {
       return sendError(res, '不允许删除模板、管理面板或分类目录');
     }
@@ -1996,7 +1997,7 @@ const server = http.createServer(async (req, res) => {
       if (isAdminStaticProject(dir)) {
         // 标准产品框架：静态母版画廊，无需依赖/构建，浏览器直接打开 index.html（file:// 下画廊自动降级为新窗口预览）
         const logBase = safeName(relative).replace(/[\\/]+/g, '-') || 'project';
-        const logFile = path.join(AXHUB_ROOT, '07-日志', `launch-${logBase}.log`);
+        const logFile = path.join(AXHUB_ROOT, '91-运行状态', `launch-${logBase}.log`);
         fs.mkdirSync(path.dirname(logFile), { recursive: true });
         fs.appendFileSync(logFile, `\n启动 ${relative} [admin-static] @ ${new Date().toISOString()}\n`, 'utf8');
         const openUrl = 'file:///' + path.join(dir, 'index.html').replace(/\\/g, '/');
@@ -2006,7 +2007,7 @@ const server = http.createServer(async (req, res) => {
         return send(res, 200, { ok: true, msg: '已打开标准产品框架母版画廊（静态预览，无需构建）', openUrl, hasNodeModules: true, framework: 'admin-static' });
       }
       const logBase = safeName(relative).replace(/[\\/]+/g, '-') || 'project';
-      const logFile = path.join(AXHUB_ROOT, '07-日志', `launch-${logBase}.log`);
+      const logFile = path.join(AXHUB_ROOT, '91-运行状态', `launch-${logBase}.log`);
       fs.mkdirSync(path.dirname(logFile), { recursive: true });
       fs.appendFileSync(logFile, `\n启动 ${relative} [admin-vue] @ ${new Date().toISOString()}\n`, 'utf8');
       const adminPort = readAdminPort(dir);
@@ -2105,7 +2106,7 @@ const server = http.createServer(async (req, res) => {
       return { applied };
     }
 
-    const ps1 = path.join(AXHUB_ROOT, '06-运行脚本', 'launch-project.ps1');
+    const ps1 = path.join(AXHUB_ROOT, '90-运行脚本', 'launch-project.ps1');
     if (!fs.existsSync(ps1)) return sendError(res, '找不到 launch-project.ps1');
     try {
             // PowerShell 参数需要反斜杠路径
@@ -2114,7 +2115,7 @@ const server = http.createServer(async (req, res) => {
             // 导致 "01-项目/学校卫生" 和 "01-项目/健康档案" 等多个项目映射到同一个 log 文件，
             // 读到的 openUrl 全部错乱。现改为：保留中英文数字 + `-_`、只把分隔符 `/` 和 `\` 替成 `-`。
             const logBase = safeName(relative).replace(/[\\/]+/g, '-') || 'project';
-            const logDir = path.join(AXHUB_ROOT, '07-日志');
+            const logDir = path.join(AXHUB_ROOT, '91-运行状态');
             fs.mkdirSync(logDir, { recursive: true });
             const logFile = path.join(logDir, `launch-${logBase}.log`);
             const stamp = `[${new Date().toISOString()}] 启动 ${relative}\n`;
@@ -2182,7 +2183,7 @@ const server = http.createServer(async (req, res) => {
     if (!relative) return sendError(res, '缺少 relative');
     // 与 POST /api/projects/open 一致：保留中文，把 / 和 \ 替成 -
     const logBase = safeName(relative).replace(/[\\/]+/g, '-') || 'project';
-    const logFile = path.join(AXHUB_ROOT, '07-日志', `launch-${logBase}.log`);
+    const logFile = path.join(AXHUB_ROOT, '91-运行状态', `launch-${logBase}.log`);
     if (!fs.existsSync(logFile)) return send(res, 200, { ok: true, status: 'pending', lines: [] });
     const txt = fs.readFileSync(logFile, 'utf8');
     // 关键：launch-log 是 append 模式，旧启动的 done 标记会一直在。必须从最近一次「启动 X」分割，
@@ -2240,9 +2241,9 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // Make 功能删减补丁：读取 / 保存「隔离 or 共享」开关（06-运行脚本/make功能删减/patch-config.json）
+  // Make 功能删减补丁：读取 / 保存「隔离 or 共享」开关（90-运行脚本/make功能删减/patch-config.json）
   if (p === '/api/make-patch/config' && method === 'GET') {
-    const cfgPath = path.join(AXHUB_ROOT, '06-运行脚本', 'make功能删减', 'patch-config.json');
+    const cfgPath = path.join(AXHUB_ROOT, '90-运行脚本', 'make功能删减', 'patch-config.json');
     let cfg = { mode: 'isolate' };
     try { cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8')); } catch { /* 缺文件按默认 */ }
     const mode = cfg && cfg.mode === 'share' ? 'share' : 'isolate';
@@ -2253,7 +2254,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const mode = String((body && body.mode) || '');
       if (mode !== 'isolate' && mode !== 'share') return sendError(res, 'mode 只能是 isolate 或 share');
-      const cfgPath = path.join(AXHUB_ROOT, '06-运行脚本', 'make功能删减', 'patch-config.json');
+      const cfgPath = path.join(AXHUB_ROOT, '90-运行脚本', 'make功能删减', 'patch-config.json');
       let cfg = {};
       try { cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8')); } catch { /* 新建 */ }
       cfg.mode = mode;
@@ -2264,10 +2265,10 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // 启动所有智能体监听（等价于 09-协作/messages/tools/启动所有智能体监听.bat，直接 spawn node 避免 bat 编码问题）
+  // 启动所有智能体监听（等价于 07-协作/messages/tools/启动所有智能体监听.bat，直接 spawn node 避免 bat 编码问题）
   if (p === '/api/listen/start' && method === 'POST') {
     try { fs.rmSync(LISTEN_DISABLED_FLAG, { force: true }); } catch {}
-    const toolsDir = path.join(AXHUB_ROOT, '09-协作', 'messages', 'tools');
+    const toolsDir = path.join(AXHUB_ROOT, '07-协作', 'messages', 'tools');
     const node = process.env.NODE_BIN || 'C:\\Program Files\\nodejs\\node.exe';
     const started = [];
     for (const m of ['agent-hub-watcher.mjs', 'inbox-watcher.mjs']) {
@@ -2282,7 +2283,7 @@ const server = http.createServer(async (req, res) => {
         sendError(res, `启动 ${m} 失败：${e.message}`, 500); return;
       }
     }
-    return send(res, 200, { ok: true, msg: `已启动智能体监听（${started.join(' + ')}，隐藏窗口常驻），日志见 09-协作/messages/tools/agent-hub-watcher.log` });
+    return send(res, 200, { ok: true, msg: `已启动智能体监听（${started.join(' + ')}，隐藏窗口常驻），日志见 07-协作/messages/tools/agent-hub-watcher.log` });
   }
 
   // 查询智能体监听运行状态
@@ -2755,9 +2756,9 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // ===== 通信看板概览（09-协作） =====
+  // ===== 通信看板概览（07-协作） =====
   if (p === '/api/collab/overview' && method === 'GET') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const out = { ok: true, rooms: [], agents: [], messages: { inbox: {}, outbox: {}, unread: {} }, roomsTotal: 0, messagesTotal: { inbox: 0, outbox: 0, unread: 0 } };
     try {
       // 房间：名称 + 任务说明 + 消息条数（messages.jsonl 行数）+ 产物目录
@@ -2858,7 +2859,7 @@ const server = http.createServer(async (req, res) => {
   // GET /api/collab/room?name=<房间名>：返回该房间 messages.jsonl + 参与方间私信的完整对话
   if (p === '/api/collab/room' && method === 'GET') {
     const name = url.searchParams.get('name') || '';
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const roomsDir = path.join(colRoot, 'rooms');
     // 防目录穿越：只允许直接房间名
     if (!name || name.includes('/') || name.includes('\\') || name.includes('..')) {
@@ -2940,7 +2941,7 @@ const server = http.createServer(async (req, res) => {
 
   // GET /api/collab/dms?limit=20：聚合 inbox/outbox 里所有私信线程（按 thread_id 分组）
   if (p === '/api/collab/dms' && method === 'GET') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const limit = Math.min(50, Number(url.searchParams.get('limit') || 20));
     const groups = new Map();
     try {
@@ -2988,7 +2989,7 @@ const server = http.createServer(async (req, res) => {
 
   // GET /api/collab/dm?thread=<thread_id>：返回某个私信线程的完整消息
   if (p === '/api/collab/dm' && method === 'GET') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const tid = url.searchParams.get('thread') || '';
     if (!tid) return sendError(res, '缺少 thread', 400);
     const out = { ok: true, thread_id: tid, messages: [] };
@@ -3027,7 +3028,7 @@ const server = http.createServer(async (req, res) => {
   // POST /api/collab/reply：用户在房间对话内回复（仲裁确认，confirm 类型）
   // 1) 追加到房间 messages.jsonl（from=user, intent=confirm）2) 给参与该对话的智能体 inbox 各发一份 confirm 消息
   if (p === '/api/collab/reply' && method === 'POST') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const KNOWN_AGENTS = ['codebuddy', 'workbuddy', 'deepseek', 'qwen', 'doubao'];
     try {
       const bd = await readBody(req);
@@ -3101,7 +3102,7 @@ const server = http.createServer(async (req, res) => {
   //   ② 僵持：末尾 6 条全是智能体、≥2 个不同智能体、ask/review ≥3 轮，且最近 3 天内还在动
   // 7~30 天内曾点名但此后没动静的房间 → 只计入 staleCount（折叠，不占版面）。
   if ((p === '/api/collab/arbitration' || p === '/api/collab/todo') && method === 'GET') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const roomsDir = path.join(colRoot, 'rooms');
     const limit = Math.min(50, Math.max(1, parseInt(url.searchParams.get('limit') || '20', 10) || 20));
     const STRONG = /(请|待|需|由|交)\s*(用户|你)\s*.{0,10}(裁定|决定|确认|拍板|仲裁|定夺|选择)/;
@@ -3183,7 +3184,7 @@ const server = http.createServer(async (req, res) => {
   // POST /api/collab/ack  { box, file }：把本方收件箱里的一条消息标记为已处理（read）
   // 通道纪律：只允许改 user / workbuddy 自己的 inbox 副本，不碰其他智能体的邮箱与任何 outbox。
   if (p === '/api/collab/ack' && method === 'POST') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     try {
       const bd = await readBody(req);
       const box = String((bd && bd.box) || '').trim();
@@ -3855,8 +3856,8 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true, imported, skipped });
   }
 
-  // ===== 数据导出备份：日报 / 需求池 / 报告文本全部落在本机 08-办公 下，损坏即全失，
-  // 因此提供两条出口：GET 走浏览器下载（Web 端用），POST 直接落盘到 08-办公/exports（桌面端用）。
+  // ===== 数据导出备份：日报 / 需求池 / 报告文本全部落在本机 91-运行状态/办公数据 下，损坏即全失，
+  // 因此提供两条出口：GET 走浏览器下载（Web 端用），POST 直接落盘到 91-运行状态/办公数据/exports（桌面端用）。
   if (p === '/api/export/all' && method === 'GET') {
     const payload = {
       schema: 'workbench-backup/1',
@@ -3906,7 +3907,7 @@ const server = http.createServer(async (req, res) => {
       fs.mkdirSync(dir, { recursive: true });
       const fp = path.join(dir, name);
       fs.writeFileSync(fp, content, 'utf8');
-      return send(res, 200, { ok: true, msg: '已导出到 08-办公/exports/' + name, path: fp, name, dir });
+      return send(res, 200, { ok: true, msg: '已导出到 91-运行状态/办公数据/exports/' + name, path: fp, name, dir });
     } catch (e) {
       return sendError(res, '导出失败：' + e.message, 500);
     }
@@ -3925,8 +3926,8 @@ const server = http.createServer(async (req, res) => {
       return null;
     } catch { return null; }
   };
-  // 连通测试留痕：07-日志 已被忽略规则排除、不入库；只记模型与结果片段，绝不写 key
-  const AI_TEST_LOG = path.join(__dirname, '..', '07-日志', 'ai-test-history.jsonl');
+  // 连通测试留痕：91-运行状态 已被忽略规则排除、不入库；只记模型与结果片段，绝不写 key
+  const AI_TEST_LOG = path.join(__dirname, '..', '91-运行状态', 'ai-test-history.jsonl');
   const appendAiTestRecord = (rec) => {
     try {
       fs.mkdirSync(path.dirname(AI_TEST_LOG), { recursive: true });
@@ -4020,7 +4021,7 @@ const server = http.createServer(async (req, res) => {
     try { child.stdin.write(prompt); child.stdin.end(); } catch {}
   });
 
-  // 每次生成都留档：08-办公/汇报/<kind>-<时间戳>.md（用户要求产物落本地，方便直接打开/发给别人）
+  // 每次生成都留档：91-运行状态/办公数据/汇报/<kind>-<时间戳>.md（用户要求产物落本地，方便直接打开/发给别人）
   const archiveReport = (kind, range, text, source) => {
     try {
       const d = path.join(OFFICE_DIR, '汇报');
@@ -4222,7 +4223,7 @@ const server = http.createServer(async (req, res) => {
 
   // GET /api/collab/assistant?name=：读取最新小结 + 房间状态 + 委派候选（无小结返回空态，不报错）
   if (p === '/api/collab/assistant' && method === 'GET') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const name = url.searchParams.get('name') || '';
     const rp = collabSafeRoom(colRoot, name);
     if (!rp) return send(res, 404, { ok: false, msg: '房间不存在' });
@@ -4240,7 +4241,7 @@ const server = http.createServer(async (req, res) => {
 
   // POST /api/collab/assistant/generate {name}：收集上下文 → 三级通路 → 覆盖最新稿 + 旧稿存档
   if (p === '/api/collab/assistant/generate' && method === 'POST') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const bd = await readBody(req);
     const name = String((bd && bd.name) || '').trim();
     const rp = collabSafeRoom(colRoot, name);
@@ -4297,7 +4298,7 @@ const server = http.createServer(async (req, res) => {
 
   // POST /api/collab/state {name,status,note}：六态枚举校验，history 追加留痕、不覆盖旧记录
   if (p === '/api/collab/state' && method === 'POST') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const bd = await readBody(req);
     const name = String((bd && bd.name) || '').trim();
     const status = String((bd && bd.status) || '').trim();
@@ -4323,7 +4324,7 @@ const server = http.createServer(async (req, res) => {
 
   // POST /api/collab/delegate {name,to,summary}：单选单发；原子写入目标收件箱，房间时间线追加，outbox 留档
   if (p === '/api/collab/delegate' && method === 'POST') {
-    const colRoot = path.join(AXHUB_ROOT, '09-协作');
+    const colRoot = path.join(AXHUB_ROOT, '07-协作');
     const bd = await readBody(req);
     const name = String((bd && bd.name) || '').trim();
     const to = String((bd && bd.to) || '').trim();
@@ -4528,7 +4529,7 @@ const server = http.createServer(async (req, res) => {
       const r = spawnSync(resolvePowerShellExe(), ['-NoProfile', '-Command', `Compress-Archive -Path '${src}' -DestinationPath '${dst}' -Force`], { encoding: 'utf8', timeout: 180000, windowsHide: true });
       if (!fs.existsSync(zip)) return send(res, 200, { ok: false, msg: '打包失败：' + String((r && r.stderr) || '').slice(0, 200) });
       const size = fs.statSync(zip).size;
-      return send(res, 200, { ok: true, msg: '已打包（' + (size / 1024 / 1024).toFixed(1) + 'MB）到 08-办公/exports/' + path.basename(zip), path: zip, size });
+      return send(res, 200, { ok: true, msg: '已打包（' + (size / 1024 / 1024).toFixed(1) + 'MB）到 91-运行状态/办公数据/exports/' + path.basename(zip), path: zip, size });
     } catch (e) {
       return send(res, 200, { ok: false, msg: '打包失败：' + e.message });
     }
@@ -4720,7 +4721,7 @@ function pidAlive(pid) {
 function ensureAgentWatchers() {
   if (fs.existsSync(LISTEN_DISABLED_FLAG)) return; // 用户已手动关闭，尊重关闭意图
   try {
-    const toolsDir = path.join(AXHUB_ROOT, '09-协作', 'messages', 'tools');
+    const toolsDir = path.join(AXHUB_ROOT, '07-协作', 'messages', 'tools');
     const node = process.env.NODE_BIN || process.execPath || 'C:\\Program Files\\nodejs\\node.exe';
     const hubPidFile = path.join(toolsDir, 'agent-hub-watcher.pid');
     // 1) 以 watcher 自己写出的 PID 文件为准做单例判定，避免每个定时器周期都串行调用
@@ -4748,7 +4749,7 @@ function startProjectIndexSync() {
     if (running) return;
     running = true;
     try {
-      const mod = await import(new URL('../06-运行脚本/sync-projects-index.mjs', import.meta.url));
+      const mod = await import(new URL('../90-运行脚本/sync-projects-index.mjs', import.meta.url));
       const r = mod.syncProjectIndex({ quiet: true });
       if (r.changed.length) { try { console.log('[index-sync] 已同步:', r.changed.join(', ')); } catch {} }
     } catch (e) {
@@ -4776,7 +4777,7 @@ server.listen(PORT, BIND_HOST, () => {
   // 智能体监听自动拉起 + 保活：工作台运行期间 watcher 常驻，心跳持续写入，看板在线判定真实可用
   ensureAgentWatchers();
   setInterval(ensureAgentWatchers, 60000);
-  // 项目总表 / 目录树实时同步（01-项目 变动 → 去抖 3s 重写 09-协作/docs 下两个自动块）
+  // 项目总表 / 目录树实时同步（01-项目 变动 → 去抖 3s 重写 07-协作/docs 下两个自动块）
   startProjectIndexSync();
   // 钉钉待办长连接订阅守护（失败不阻塞面板，dws 未装/未登录时后台自动重试）
   process.env.WORKBENCH_OFFICE_DIR = OFFICE_DIR;

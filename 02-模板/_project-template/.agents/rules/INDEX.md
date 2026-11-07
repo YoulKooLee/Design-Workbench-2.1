@@ -60,7 +60,7 @@
 
 | 什么时候用 | 读哪里 | 一句话 |
 |-|-|-|
-| 画图（架构 / 流程 / 时序 / 思维导图） | `.agents/skills/d2-diagram/SKILL.md` | d2 渲染技能；旧机「08-办公/画图」目录在本机不存在 |
+| 画图（架构 / 流程 / 时序 / 思维导图） | `.agents/skills/d2-diagram/SKILL.md` | d2 渲染技能；旧机「91-运行状态/办公数据/画图」目录在本机不存在 |
 | SRS 语言与章节格式 | `.agents/knowledge/phase1-requirements/` | 需求文档写作口径 |
 | 需求文档路由与 PRD→SRS 转写门禁 | `req-doc-workflow.md`、`prd-to-srs-gate.md` | 先路由再动笔 |
 | UI 库参考（4 套，按 package.json 只读一套） | `.agents/knowledge/ui-libs/` | 禁整目录读 |
@@ -70,4 +70,8 @@
 | 子 Agent 编排与调用标准 | `subagent-orchestration.md`、`agent-orchestration.md`、`spawn-subagent.md`、`subagent-stop.md` | 当前停用筛选期，未经用户点名不得调用 |
 | 项目结构与路径约定 | `project-structure.md` | 目录树与别名 |
 | 全部「为什么这么定」 | `AGENTS-rationale.md` | 规则依据 |
-| 维护者须知（写规则 / 迁移判据） | `../templates/project-init.md` | 模板维护 |
+| 维护者须知（写规则 / 迁移判据） | `../../templates/project-init.md` | 模板维护 |
+
+## 工作台级技能（不随工程包注入，按需取用）
+
+长尾技能（PM 方法论重件 / 外部工具接入 / 大型生成器 18 个）已移 `../../../../05-技能库/`（工作台根），含 vendor 素材；任务命中时到该库读对应 SKILL.md 执行。

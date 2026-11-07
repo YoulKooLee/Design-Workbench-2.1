@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('workbench', {
   copyText: (text) => ipcRenderer.invoke('clipboard:write', text),
   // 选择文件夹（知识库存放位置；默认定位知识库根目录，返回相对路径）
   pickFolder: () => ipcRenderer.invoke('folder:pick'),
-  // 打开协作房间产物文件夹（09-协作/rooms/<房间名>/产物）
+  // 打开协作房间产物文件夹（07-协作/rooms/<房间名>/产物）
   openRoomArtifacts: (roomName) => ipcRenderer.invoke('folder:open-artifacts', roomName),
   // 更新（打包版）：检查 / 下载 / 安装重启
   checkUpdate: () => ipcRenderer.invoke('update:check'),

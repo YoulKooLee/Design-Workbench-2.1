@@ -95,8 +95,8 @@ ls {PROJECT_PATH}/src/views/{ModuleDir}/
 ### 步骤 1：检查并注入标注组件
 
 1. 读取 `{PROJECT_PATH}/package.json`，识别框架：
-  - `dependencies` 含 `"vue"` → Vue 项目 → 使用 `templates/vue/`
-  - `dependencies` 含 `"react"` → React 项目 → 使用 `templates/react/`
+  - `dependencies` 含 `"vue"` → Vue 项目 → 使用 `.agents/skills/annotation/templates/vue/`
+  - `dependencies` 含 `"react"` → React 项目 → 使用 `.agents/skills/annotation/templates/react/`
   - 两者都不含 → 询问用户
 2. **版本比对（决定是否覆盖组件，每次都做）**：
   - 读取技能版本：`.agents/skills/annotation/version.json` 的 `version`（全局唯一版本号）
@@ -117,7 +117,7 @@ ls {PROJECT_PATH}/src/views/{ModuleDir}/
   - 首次安装时：在根布局组件中挂载 `<AnnotationOverlay />`、创建 `{PROJECT_PATH}/public/annotations/` 目录
 2. 检查并安装依赖，每次都检查（即使组件已存在）
 3. **注册标注保存中间件（Vite 项目必做，每次都检查 —— 缺失则标注只能显示、无法保存）**：
-  - 将对应框架模板目录下的 `viteAnnotationPlugin.ts`（`templates/vue/` 或 `templates/react/`，两份内容相同、框架无关）复制到 `{PROJECT_PATH}/viteAnnotationPlugin.ts`（版本落后时一并覆盖）
+  - 将对应框架模板目录下的 `viteAnnotationPlugin.ts`（`.agents/skills/annotation/templates/vue/` 或 `.agents/skills/annotation/templates/react/`，两份内容相同、框架无关）复制到 `{PROJECT_PATH}/viteAnnotationPlugin.ts`（版本落后时一并覆盖）
   - 在 `vite.config.ts` 顶部 `import { annotationPlugin } from './viteAnnotationPlugin'`
   - 在 `plugins: [` 数组首项加入 `annotationPlugin()`
   - **校验**：复制组件后立即确认 `vite.config.ts` 已注册插件。只注入组件、不注册插件 = 流程未完成（这是常见遗漏点）。
@@ -302,14 +302,14 @@ python3 -c "import json; json.load(open('{文件路径}')); print('JSON 语法�
 
 ## 组件模板
 
-- Vue 模板：`templates/vue/`（含 AnnotationOverlay、AnnotationDot、AnnotationPanel、AnnotationEditor、useAnnotation、annotationTracker、annotationRegistry、types、**viteAnnotationPlugin**）
-- React 模板：`templates/react/`（含 AnnotationOverlay、AnnotationDot、AnnotationPanel、AnnotationEditor、useAnnotation、annotationTracker、annotationRegistry、types、annotation.css、**viteAnnotationPlugin**）
+- Vue 模板：`.agents/skills/annotation/templates/vue/`（含 AnnotationOverlay、AnnotationDot、AnnotationPanel、AnnotationEditor、useAnnotation、annotationTracker、annotationRegistry、types、**viteAnnotationPlugin**）
+- React 模板：`.agents/skills/annotation/templates/react/`（含 AnnotationOverlay、AnnotationDot、AnnotationPanel、AnnotationEditor、useAnnotation、annotationTracker、annotationRegistry、types、annotation.css、**viteAnnotationPlugin**）
 
 ### 版本维护约定（改组件必读）
 
 <EXTREMELY-IMPORTANT>
 标注组件用 `.agents/skills/annotation/version.json` 的单一全局版本号管理（Vue/React 共用）。
-**改动 **`templates/vue/`** 或 **`templates/react/`** 下任何组件（含 css、插件）后，必须把 version +1。**
+**改动 **`.agents/skills/annotation/templates/vue/`** 或 **`.agents/skills/annotation/templates/react/`** 下任何组件（含 css、插件）后，必须把 version +1。**
 不升版本 = 已装项目无法感知更新，下次标注仍用旧组件，已修的 bug 会复现。
 version 是「组件契约版本」，不是 npm 包版本，只用于判断新旧、触发覆盖。
 </EXTREMELY-IMPORTANT>
@@ -335,4 +335,4 @@ function App() {
 
 React 版使用 `react-router-dom` 的 `useLocation()` 和 `useMatches()` 获取路由信息，项目需已安装 `react-router-dom`。
 
-**同样需注册保存中间件**：将 `templates/react/viteAnnotationPlugin.ts` 复制到项目根目录，在 `vite.config.ts` 的 `plugins` 数组首项加入 `annotationPlugin()`（详见步骤 1 第 5 点）。缺失则编辑模式无法保存标注。
+**同样需注册保存中间件**：将 `.agents/skills/annotation/templates/react/viteAnnotationPlugin.ts` 复制到项目根目录，在 `vite.config.ts` 的 `plugins` 数组首项加入 `annotationPlugin()`（详见步骤 1 第 5 点）。缺失则编辑模式无法保存标注。

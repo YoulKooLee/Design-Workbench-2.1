@@ -14,11 +14,11 @@
 
 ```bash
 # A. 打补丁时带开关
-node 06-运行脚本/apply-project-patches.mjs <项目目录> --with-mem
+node 90-运行脚本/apply-project-patches.mjs <项目目录> --with-mem
 
 # B. 项目里放开关文件后，常规打补丁即可
 #    <项目>/.codebuddy/ENABLE-MEM
-node 06-运行脚本/apply-project-patches.mjs <项目目录>
+node 90-运行脚本/apply-project-patches.mjs <项目目录>
 ```
 
 ## 验证

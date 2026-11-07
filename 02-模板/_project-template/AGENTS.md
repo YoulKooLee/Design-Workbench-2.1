@@ -42,7 +42,7 @@
 | 规则索引（先定位再读全文，低频条目已并入） | `.agents/rules/INDEX.md` |
 | 原型探索五步 / 研发主链路展开 | `.agents/rules/core-workflow.md` |
 | 上下文装配 / 禁读清单 / 压缩恢复 / 记忆门禁 | `.agents/rules/context-assembly.md`、`context-budget.md`、`compaction-recovery.md`、`memory-gates.md` |
-| 交付三档 / 十条原则与交付铁律 | `.agents/rules/delivery-modes.md`、`work-principles.md` |
+| 交付模式三档 / 十条原则与交付铁律 | `.agents/rules/delivery-modes.md`、`work-principles.md` |
 | 画原型规范（主）与侧栏生成 | `.agents/knowledge/phase2-design/prototype-interaction-and-content.md`（主）、`prototype-side-menu.md` |
 | 原型右侧设计说明面板接入（真源） | `src/common/design-notes/规范.md` |
 | 技能索引（会话开始自动注入）与同类裁决 | `.agents/skills/INDEX.md`、`.agents/rules/skill-routing.md` |

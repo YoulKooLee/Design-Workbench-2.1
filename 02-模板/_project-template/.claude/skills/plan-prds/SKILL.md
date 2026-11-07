@@ -65,7 +65,7 @@ src/resources/prd/
 
 仅针对新增或创作需求，询问用户是否开启以下能力。两项独立选择，可以多选，也可以全部跳过；本步骤只记录选择，第 4 步登记后再执行：
 
-- **互联网调研**：选择后在第 4 步执行，**REQUIRED SUB-SKILL:** Use `china-customer-research`。具体处理方式见 `references/source-handlers.md`。
+- **互联网调研**：选择后在第 4 步执行；本机未装 china-customer-research 技能时，用宿主自带搜索能力完成调研，结果处理方式见 `references/source-handlers.md`。
 - **需求拷问**：选择后读取 `references/requirements-interrogation.md` 执行。
 
 ### 4. 采集并登记来源

@@ -30,7 +30,7 @@ Write-Host '============================================'
 Write-Host ''
 
 # ---------- 0) 编码自检（方案A校验：.cmd/.bat 纯ASCII、.ps1 UTF-8 BOM）----------
-$healthScript = Join-Path $root '09-协作\messages\tools\编码体检.ps1'
+$healthScript = Join-Path $root '07-协作\messages\tools\编码体检.ps1'
 if (Test-Path $healthScript) {
     try { & powershell -NoProfile -ExecutionPolicy Bypass -File $healthScript -silent 2>$null | Out-Null } catch {}
 }
@@ -78,7 +78,7 @@ if ($listen) {
 
 # ---------- 4) 启动后端服务（独立最小化窗口，日志落盘）----------
 $panelDir = Join-Path $root '工作台面板'
-$logDir = Join-Path $root '07-日志'
+$logDir = Join-Path $root '91-运行状态'
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
 $logFile = Join-Path $logDir 'server-console.log'
 $errFile = Join-Path $logDir 'server-error.log'

@@ -1,7 +1,7 @@
 // 钉钉待办守护（dws CLI）
 // 1) 启动时全量拉取 executor 待办（todo task list，分页）填充本地 todos.json
 // 2) 长连接增量订阅 user_todo_task_create / update / delete（--role-types executor, --flatten, NDJSON）
-// 3) 进程退出自动重连；dws 路径从 08-办公/todos-config.json 读取
+// 3) 进程退出自动重连；dws 路径从 91-运行状态/办公数据/todos-config.json 读取
 // 本地 todos.json 中 source=dingtalk 由本模块维护；source=manual（旧需求池手动项）原样保留
 import fs from 'node:fs';
 import path from 'node:path';

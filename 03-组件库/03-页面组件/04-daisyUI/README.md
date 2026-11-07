@@ -64,7 +64,7 @@ node _meta/build-preview.mjs     # dist + demo → preview.html（内联，可�
 
 不是"能不能接"，已经接进去了，走的是 **Tailwind 插件**方式（不是拷预编译 CSS），原因是只有这样 daisyUI 才能**按页面用量产出组件**，而不是一接就背 372 KB。
 
-改动了 3 处（均已备份到 `04-维护台账/archive/2026-11-05-daisyui-接入/`）：
+改动了 3 处（均已备份到 `92-维护台账/archive/2026-11-05-daisyui-接入/`）：
 
 | # | 文件 | 改动 |
 | --- | --- | --- |

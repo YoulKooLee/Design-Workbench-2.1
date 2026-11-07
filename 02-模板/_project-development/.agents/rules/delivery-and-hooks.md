@@ -73,7 +73,7 @@ IDE **不会**自动读 `.agents/settings.json`，须把薄接线复制到它认
 
 > ⚠️ **宿主决定 Hook 是否生效，不要假设护栏在跑。**
 
-**2026-09-22 实测**（MarkDesk 项目，证据 `09-协作/agents/workbuddy/上下文实测-证据/T-2-*`）：
+**2026-09-22 实测**（MarkDesk 项目，证据 `07-协作/agents/workbuddy/上下文实测-证据/T-2-*`）：
 
 - **WorkBuddy 宿主未接线时不加载项目内 `.agents/hooks/`** → 8 个 hook 全不执行；
 - 连锁后果：`session-start` 不注入 `INDEX.md` → **技能路由入口整个断掉**（执行者不知有哪些技能，凭通用能力直接写，出现"未走 prd-writer 技能路由"的真实偏差）；
@@ -82,7 +82,7 @@ IDE **不会**自动读 `.agents/settings.json`，须把薄接线复制到它认
 **2026-10-30 已补接线（但生效性尚未证实）**：
 
 - 根因不是「宿主不支持 hook」，而是**从没放过宿主会读的薄接线**——`.agents/settings.json` 是配置真源，但 WorkBuddy/CodeBuddy 读的是 `<项目>/.codebuddy/settings.local.json`（依据：`03-组件库/01-补丁源/mem-hooks/README.md`「只对 CodeBuddy 系宿主生效，其他宿主不读 `.codebuddy/`」）。
-- 已用 `06-运行脚本/wire-hooks.mjs` 给两模板（生成 `.agents/adapters/codebuddy/` 样板）与 7 个项目（真接线）补齐，格式对齐 mem-hooks 这个**唯一经验证可跑的样本**：绝对路径 `$CODEBUDDY_PROJECT_DIR/.agents/hooks/run.cjs`、SessionStart matcher `startup|resume`、timeout 单位秒。脚本幂等，重跑替换自身条目、**保留 mem-hooks**。
+- 已用 `90-运行脚本/wire-hooks.mjs` 给两模板（生成 `.agents/adapters/codebuddy/` 样板）与 7 个项目（真接线）补齐，格式对齐 mem-hooks 这个**唯一经验证可跑的样本**：绝对路径 `$CODEBUDDY_PROJECT_DIR/.agents/hooks/run.cjs`、SessionStart matcher `startup|resume`、timeout 单位秒。脚本幂等，重跑替换自身条目、**保留 mem-hooks**。
 - hook 逻辑本身经宿主式 spawn + stdin 实测**正常**：`config-protection` 改 tsconfig 真返回 `deny`；`context-budget` 命中高危目录给提醒、精确单文件放行。（此前 PowerShell 管道下测出「无输出」是管道编码问题，非 hook 缺陷。）
 
 **⚠️ 接线 ≠ 已生效**：宿主是否真的读 `.codebuddy/settings.local.json` 并 spawn hook，**尚无实测证据**。必须新开一次会话确认：

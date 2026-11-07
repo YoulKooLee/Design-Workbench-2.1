@@ -921,7 +921,7 @@ async function openAiSetupDialog(btn){
 }
 const aiSetupGlobalEl=$('#aiSetupGlobal'); if(aiSetupGlobalEl) aiSetupGlobalEl.addEventListener('click',()=>openAiSetupDialog(aiSetupGlobalEl));
 
-// Make 功能删减补丁：隔离 / 共享 开关（写 06-运行脚本/make功能删减/patch-config.json）
+// Make 功能删减补丁：隔离 / 共享 开关（写 90-运行脚本/make功能删减/patch-config.json）
 async function openMakePatchDialog(){
   let mode='isolate';
   try{ const r=await fetch('/api/make-patch/config'); const j=await r.json(); if(j&&j.mode) mode=j.mode; }catch(e){}
@@ -932,7 +932,7 @@ async function openMakePatchDialog(){
     +'<div style="color:#666;margin-bottom:10px">控制「功能删减」补丁（更多菜单 / 规格 / PRD 标注 / 发布组 / 设置 tab / 管理技能）打下去时，是否只作用于当前项目。</div>'
     +'<label style="display:block;margin:10px 0;cursor:pointer"><input type="radio" name="mpMode" value="isolate" '+(mode==='isolate'?'checked':'')+'> <b>隔离</b>（推荐）：打补丁前先断开 pnpm 硬链接，只影响当前项目</label>'
     +'<label style="display:block;margin:10px 0;cursor:pointer"><input type="radio" name="mpMode" value="share" '+(mode==='share'?'checked':'')+'> <b>共享</b>：不断链，同版本项目一起变；任一项目重装依赖会全部回退</label>'
-    +'<div style="color:#888;font-size:12px;margin-top:8px">配置文件：06-运行脚本/make功能删减/patch-config.json</div>'
+    +'<div style="color:#888;font-size:12px;margin-top:8px">配置文件：90-运行脚本/make功能删减/patch-config.json</div>'
     +'<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">'
     +'<button class="btn ghost sm" id="mpCancel">取消</button>'
     +'<button class="btn sm" id="mpSave">保存</button></div></div>';
@@ -1063,7 +1063,7 @@ async function renderProjects(){
       <div class="kpi-head"><span class="ico ico-amber">🔔</span>待办提醒</div>
       <div class="kpi-value">${inboxTotal} <small>条收件消息</small></div>
       <div class="kpi-sub">${(collab && collab.messagesTotal && collab.messagesTotal.unread) ? ('其中 <b style="color:#e24b4a">' + collab.messagesTotal.unread + '</b> 条未读') : '全部已处理'}</div>
-      <div class="kpi-actions"><button class="btn sm" id="gotoCollabBtn" title="启动所有智能体监听（09-协作/messages/tools/启动所有智能体监听.bat：通知 hub + DeepSeek 自动处理）">▶ 启动监听</button></div>
+      <div class="kpi-actions"><button class="btn sm" id="gotoCollabBtn" title="启动所有智能体监听（07-协作/messages/tools/启动所有智能体监听.bat：通知 hub + DeepSeek 自动处理）">▶ 启动监听</button></div>
     </div>
     <div class="kpi">
       <div class="kpi-head"><span class="ico ico-green">⚙</span>Make 管理端</div>
@@ -1092,7 +1092,7 @@ async function renderProjects(){
     <div class="spacer"></div>
     <div class="search"><input id="projSearch" placeholder="搜索项目名称 / 路径…"></div>
     <button class="btn primary" id="newProjBtn">＋ 新增项目</button>
-    <button class="btn" id="trashBtn" title="查看 05-回收站 中已删除的项目并还原">回收站</button>
+    <button class="btn" id="trashBtn" title="查看 99-回收站 中已删除的项目并还原">回收站</button>
   </div>`;
 
   if(projects.length===0) html += '<div class="empty">未检测到 Axhub Make 项目</div>';
@@ -1155,7 +1155,7 @@ async function renderProjects(){
     b.dataset.running = running ? '1' : '0';
     b.innerHTML = running ? '⏹ 关闭监听' : '▶ 启动监听';
     b.classList.toggle('danger', running);
-    b.title = running ? '关闭智能体监听（agent-hub-watcher + inbox-watcher）' : '启动所有智能体监听（09-协作/messages/tools/启动所有智能体监听.bat）';
+    b.title = running ? '关闭智能体监听（agent-hub-watcher + inbox-watcher）' : '启动所有智能体监听（07-协作/messages/tools/启动所有智能体监听.bat）';
     b.onclick = async ()=>{
       if(b.disabled) return;
       const wasRunning = b.dataset.running === '1';
@@ -1305,8 +1305,8 @@ function pollLaunch(rel, b, isFirst){
     clearInterval(iv);
     b.disabled=false; b.textContent='启动开发栈';
     toast(isFirst
-      ? '首次安装依赖可能较慢，已恢复按钮，请耐心等待或查看 07-日志'
-      : '启动时间超过 20 秒，已恢复按钮；后台仍在继续，可查看 07-日志', 'info');
+      ? '首次安装依赖可能较慢，已恢复按钮，请耐心等待或查看 91-运行状态'
+      : '启动时间超过 20 秒，已恢复按钮；后台仍在继续，可查看 91-运行状态', 'info');
   }, 20000);
 }
 
@@ -2035,7 +2035,7 @@ function showNewProject(){
             const s = await api('/api/projects/launch-log?relative='+encodeURIComponent(rel), {silent:true});
             if(s.status==='done' || s.status==='failed' || polls>=120){
               clearInterval(iv);
-              if(s.status==='failed') toast('依赖安装失败，请查看 07-日志','err');
+              if(s.status==='failed') toast('依赖安装失败，请查看 91-运行状态','err');
             }
           }catch(e){}
           render();
@@ -2045,12 +2045,12 @@ function showNewProject(){
   };
 }
 
-// 删除确认（v4 设计稿形态：输入项目名才能确认；后端实际为移入 05-回收站，可还原）
+// 删除确认（v4 设计稿形态：输入项目名才能确认；后端实际为移入 99-回收站，可还原）
 function confirmDeleteProject(name, rel){
   openModal(`<div class="modal-head"><h3 style="color:var(--red)">删除项目</h3><button class="modal-x" onclick="closeModal()">✕</button></div>
     <div class="modal-body">
       <div class="alert alert-danger" style="line-height:1.6">
-        <div style="font-weight:700;margin-bottom:6px">⚠️ 此操作将把 <b>${escapeHtml(name)}</b> 移入回收站 <span class="path">05-回收站</span></div>
+        <div style="font-weight:700;margin-bottom:6px">⚠️ 此操作将把 <b>${escapeHtml(name)}</b> 移入回收站 <span class="path">99-回收站</span></div>
         <ul style="margin:0;padding-left:20px;color:var(--muted);font-size:12px">
           <li>删除后可到「回收站」中还原</li>
           <li>删除前会自动停掉该项目的开发栈进程，释放目录占用</li>
@@ -2078,7 +2078,7 @@ function confirmDeleteProject(name, rel){
             const s = await api('/api/projects/launch-log?relative='+encodeURIComponent(rel), {silent:true});
             if(s.status==='done' || s.status==='failed' || polls>=120){
               clearInterval(iv);
-              if(s.status==='failed') toast('依赖安装失败，请查看 07-日志','err');
+              if(s.status==='failed') toast('依赖安装失败，请查看 91-运行状态','err');
             }
           }catch(e){}
           render();
@@ -2146,7 +2146,7 @@ async function showTrash(){
   clearBtn.disabled = items.length === 0;
   if(items.length === 0){
     $('#trashBody').innerHTML = `<div class="empty">回收站为空。</div>
-      <div class="hint" style="margin-top:6px">删除项目会移入 <span class="path">05-回收站</span>（非彻底删除），可在此还原。</div>`;
+      <div class="hint" style="margin-top:6px">删除项目会移入 <span class="path">99-回收站</span>（非彻底删除），可在此还原。</div>`;
     return;
   }
   let rows = '';
@@ -2158,10 +2158,10 @@ async function showTrash(){
       <td><button class="btn sm primary" data-restore="${escapeHtml(it.id)}">还原</button></td>
     </tr>`;
   }
-  $('#trashBody').innerHTML = `<div class="hint" style="margin:4px 0 10px">已删除项目（<span class="path">05-回收站</span>），点击「还原」移回 <span class="path">01-项目</span>；若 01-项目 已有同名目录将拒绝还原。「清空回收站」将彻底删除全部回收项，不可恢复。</div>
+  $('#trashBody').innerHTML = `<div class="hint" style="margin:4px 0 10px">已删除项目（<span class="path">99-回收站</span>），点击「还原」移回 <span class="path">01-项目</span>；若 01-项目 已有同名目录将拒绝还原。「清空回收站」将彻底删除全部回收项，不可恢复。</div>
     <div class="card"><table><thead><tr><th>项目</th><th>删除时间</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
   clearBtn.onclick = () => {
-    confirmModal('清空回收站', `将彻底删除回收站中全部 ${items.length} 个回收项（<span class="path">05-回收站</span>），<b>此操作不可恢复</b>。确定清空吗？`, async () => {
+    confirmModal('清空回收站', `将彻底删除回收站中全部 ${items.length} 个回收项（<span class="path">99-回收站</span>），<b>此操作不可恢复</b>。确定清空吗？`, async () => {
       const rr = await api('/api/trash/clear', { method:'POST' });
       toast(rr.msg, rr.ok?'ok':'err');
       // 后端后台异步删除（大目录需数十秒），稍后自动刷新
@@ -2579,7 +2579,7 @@ function editorHtml(date){
     '<button class="btn sm" id="dProjMaint">项目维护</button></div>'+
     '<div class="ed-scroll">'+rows+'</div>'+ops;
 }
-// ===== 周报/季报/年报文本：改存服务端（08-办公/reports.json）=====
+// ===== 周报/季报/年报文本：改存服务端（91-运行状态/办公数据/reports.json）=====
 // 原因：Web 端跑 http://localhost:7788、桌面端跑 file://，两个来源的 localStorage 完全隔离，
 // 同一篇周报在两端互相看不到，清缓存还会丢。统一走 /api/reports。
 let reportsData={weekly:{},quarterly:{},yearly:{}};
@@ -2808,7 +2808,7 @@ async function renderDaily(){
   if (dailyEditDate===null && !(dailyData.reports||[]).some(x=>x.date===sel)) dailyEditDate=sel;
   view.innerHTML = remind +
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;font-size:12px;color:#6b7280">'+
-      '<span>数据存在本机 08-办公 下，建议每周导出一次备份</span><span style="flex:1"></span>'+
+      '<span>数据存在本机 91-运行状态/办公数据 下，建议每周导出一次备份</span><span style="flex:1"></span>'+
       '<button class="btn sm" id="expJson">导出全部（JSON）</button><button class="btn sm" id="expCsv">导出日报（CSV）</button><button class="btn sm" id="aiSetup">AI 设置</button></div>'+
     '<div class="daily-row two">' +
       '<div class="daily-card">'+calHtml()+'</div>' +

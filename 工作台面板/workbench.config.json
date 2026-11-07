@@ -41,31 +41,31 @@
     "validateOnBoot": true
   },
   "collaboration": {
-    "rootDir": "09-协作",
+    "rootDir": "07-协作",
     "panelUrl": "http://127.0.0.1:8899",
     "sessionHandoffDoc": "docs/01-协作规范/session-handoff.md",
     "handoffLocalFile": "handoff.md"
   },
   "memory": {
-    "rootDir": "10-智能体记忆",
+    "rootDir": "06-智能体记忆",
     "agentDirs": ["豆包", "CodeBuddy", "WorkBuddy", "DeepSeek", "千问"],
     "bootstrapFile": "BOOTSTRAP.md",
     "rulesDir": "rules",
     "skillsDir": "skills"
   },
   "manager": {
-    "rootDir": "04-维护台账",
+    "rootDir": "92-维护台账",
     "patchesDir": "patches",
     "toolsDir": "tools"
   },
   "logging": {
-    "dir": "07-日志",
+    "dir": "91-运行状态",
     "rotateSizeKB": 1024
   },
   "scripts": {
-    "launch": "06-运行脚本/launch-project.ps1",
-    "envDoctor": "06-运行脚本/env-doctor.ps1",
-    "smokeTest": "06-运行脚本/smoke-test.mjs",
+    "launch": "90-运行脚本/launch-project.ps1",
+    "envDoctor": "90-运行脚本/env-doctor.ps1",
+    "smokeTest": "90-运行脚本/smoke-test.mjs",
     "startPanel": "启动工作台.cmd",
     "stopPanel": "停止工作台.cmd"
   }

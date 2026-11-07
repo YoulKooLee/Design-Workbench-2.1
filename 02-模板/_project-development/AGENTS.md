@@ -30,7 +30,7 @@
 
 `.agents/knowledge/`：`conventions/`（编码·前端·安全·测试·调试，含写页面必读的 `react-to-vue.md`）｜`phase1-requirements/`（SRS 格式）｜`phase2-design/`、`phase3-development/`（HLD/LLD·后端·数据库·交付计划）｜`ui-libs/README.md`（多栈，按 `package.json` 只读一套）｜`catalog.json`（索引，增删知识文件后跑 `build-knowledge-catalog.mjs`）
 
-工程根：`project-memory.md`（进度 / 决策 / 快照 / 留痕）、`templates/`（交接 / 初始化 / 打包）、画图见 `../../08-办公/画图/`。
+工程根：`project-memory.md`（进度 / 决策 / 快照 / 留痕）、`templates/`（交接 / 初始化 / 打包）、画图见 `.agents/skills/d2-diagram/SKILL.md`（预检与降级）与 `.agents/knowledge/diagram/`（旧机「08-办公/画图」目录在本机不存在）。
 
 ---
 
