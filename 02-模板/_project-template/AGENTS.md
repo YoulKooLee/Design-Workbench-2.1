@@ -35,38 +35,20 @@
 
 ---
 
-## 三、按需读取地图
+## 三、按需读取地图（高频 10 项，其余全在规则索引）
 
 | 要用什么 | 读哪里 |
 |-|-|
-| 规则索引（先定位再读全文） | `.agents/rules/INDEX.md` |
-| 原型探索五步展开 | `.agents/rules/core-workflow.md` |
-| 画原型规范（主）与 UI 视觉取值参考（辅） | `.agents/knowledge/phase2-design/prototype-interaction-and-content.md`（主）、`prototype-design-baseline.md`（辅，源自 open-design） |
-| 多页面原型侧栏导航生成（单一数据源 + 三方同步自检） | `.agents/knowledge/phase2-design/prototype-side-menu.md` |
-| 原型页面右侧设计说明面板接入 | `src/common/design-notes/规范.md`（建项随补丁注入） |
-| 上下文装配协议（每次装什么） | `.agents/rules/context-assembly.md` |
-| 禁读清单与越界自检 | `.agents/rules/context-budget.md` |
-| 压缩后怎么恢复、模块快照模板 | `.agents/rules/compaction-recovery.md` |
-| 记忆分层与三问门禁 | `.agents/rules/memory-gates.md` |
-| 系统化调试（修 bug 四阶段） | `.agents/knowledge/conventions/debugging.md` |
-| 技能索引与同类技能裁决 | `.agents/skills/INDEX.md`、`.agents/rules/skill-routing.md` |
-| 交付模式三档（快速 / 标准 / 严格） | `.agents/rules/delivery-modes.md` |
-| 子 Agent 编排与调用标准 | `.agents/rules/subagent-orchestration.md`、`agent-orchestration.md` |
-| 编码 / 前端 / 安全规范 | `.agents/knowledge/conventions/` |
-| 语言、安全、编码底线全文 | `.agents/rules/write-safety.md` |
-| 十条重要原则 + 五条交付铁律 + 基线链术语 | `.agents/rules/work-principles.md` |
-| 8 个 Hook 的真实强制力与无 Hook 兜底、catalog 维护、admin 实现规范 | `.agents/rules/knowledge-and-hooks.md` |
-| SRS 语言与章节格式 | `.agents/knowledge/phase1-requirements/` |
-| UI 库参考（4 套，按 `package.json` 只读一套） | `.agents/knowledge/ui-libs/` |
-| daisyUI 语义类名组件（CSS，非 React；展示道具/主题用） | `src/component-templates/daisyui/README.md` |
-| 需求文档路由与 PRD→SRS 转写门禁 | `.agents/rules/req-doc-workflow.md`、`prd-to-srs-gate.md` |
-| 项目结构与路径约定 | `.agents/rules/project-structure.md` |
+| 规则索引（先定位再读全文，低频条目已并入） | `.agents/rules/INDEX.md` |
+| 原型探索五步 / 研发主链路展开 | `.agents/rules/core-workflow.md` |
+| 上下文装配 / 禁读清单 / 压缩恢复 / 记忆门禁 | `.agents/rules/context-assembly.md`、`context-budget.md`、`compaction-recovery.md`、`memory-gates.md` |
+| 交付三档 / 十条原则与交付铁律 | `.agents/rules/delivery-modes.md`、`work-principles.md` |
+| 画原型规范（主）与侧栏生成 | `.agents/knowledge/phase2-design/prototype-interaction-and-content.md`（主）、`prototype-side-menu.md` |
+| 原型右侧设计说明面板接入（真源） | `src/common/design-notes/规范.md` |
+| 技能索引（会话开始自动注入）与同类裁决 | `.agents/skills/INDEX.md`、`.agents/rules/skill-routing.md` |
+| 编码 / 前端 / 安全 / git 规范 | `.agents/rules/coding-conventions.md`、`frontend-conventions.md`、`write-safety.md`、`git-workflow.md` |
 | 业务规范（原型 / 主题 / 资源 / Review） | `rules/`（入口 `rules/README.md`） |
-| 画图（架构图 / 流程图 / 时序图） | `../../08-办公/画图/README.md` |
 | 项目记忆（进度 / 决策 / 快照 / 留痕） | `project-memory.md` |
-| 知识库索引（增删知识文件后重建） | `.agents/knowledge/catalog.json` ← `node .agents/scripts/build-knowledge-catalog.mjs` |
-| 全部「为什么这么定」 | `.agents/rules/AGENTS-rationale.md` |
-| 维护者须知（写规则 / 迁移判据） | `templates/project-init.md` |
 
 ---
 
@@ -130,9 +112,11 @@
 2. 同一条数据跨页是否同源，汇总与明细是否对得上；
 3. 异常路径（空态、失败、权限不足）是否有交代。
 
-只检查「有没有这个页面」不算验证。宣称完成前跑构建或类型检查，以运行结果为准。验收前把可打开的预览链接给用户（Make 管理端 `http://localhost:53817/`；`check-app-ready` 返回 `serverUrl` 时以实际值为准）。
+只检查「有没有这个页面」不算验证。宣称完成前跑构建或类型检查，以运行结果为准。
 
-### 4.6 修 bug 的方法
+**验证红线（2026-11-07 补）**：④ 构建/类型检查变绿 ≠ 浏览器渲染正确——交付前必须打开页面截图目视关键模块，不看截图不宣称「显示正确」；⑤ 逐页验证必须用项目真实注册的页面标识（router / app-registry / menu 数据源）逐条核对，禁止凭页面名臆造标识造成误报。验收前把可打开的预览链接给用户（Make 管理端 `http://localhost:53817/`；`check-app-ready` 返回 `serverUrl` 时以实际值为准）。
+
+### 4.7 修 bug 的方法
 
 四阶段，不可跳步；未完成根因调查前不得提出修复：
 
@@ -143,10 +127,10 @@
 
 **同一方向失败 3 次就停止修补，质疑架构**，向用户说明后再动。禁止改配置来消除报错。全文见 `conventions/debugging.md`。
 
-### 4.7 技能与子 Agent
+### 4.8 技能与子 Agent
 
 技能索引 `.agents/skills/INDEX.md` 会话开始时注入；命中才加载对应 `SKILL.md`，未命中用通用能力并在回复中说明。**严禁遍历技能目录**（数 MB，一次读进来就爆窗口）。名称相近的技能按 `skill-routing.md` 的裁决表选，不要随机挑。
 
 需求文档类（PRD / SRS / 说明书）先读 `req-doc-workflow.md` 与 `prd-to-srs-gate.md` 按表选技能。只有 PRD 却要进研发链路时，先走转写门禁，不得静默用 PRD。
 
-子 Agent 只做「盘点取结论」——把几十 KB 的文件换成几 KB 结论；**不做审查**，审查必须自己读改动点。
+子 Agent（当前处于停用筛选期，未经用户点名启用前不得调用，见 §4.8 与 INDEX）只做「盘点取结论」——把几十 KB 的文件换成几 KB 结论；**不做审查**，审查必须自己读改动点。

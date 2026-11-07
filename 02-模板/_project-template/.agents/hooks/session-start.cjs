@@ -31,6 +31,18 @@ function loadSkillIndex() {
   }
 }
 
+// 常驻预算如实输出（2026-11-07，复盘 P3-3）：把「声明」变成「事实」，AGENTS.md 是否真被宿主全量注入取决于宿主通道。
+function residentBudget() {
+  try {
+    const projRoot = path.join(__dirname, '..', '..');
+    const agentsN = fs.readFileSync(path.join(projRoot, 'AGENTS.md'), 'utf8').length;
+    const idxN = fs.readFileSync(path.join(__dirname, '..', 'skills', 'INDEX.md'), 'utf8').length;
+    return '\n【常驻预算】本会话常驻约 ' + (agentsN + idxN).toLocaleString() + ' 字符（AGENTS.md ' + agentsN.toLocaleString() + ' + 技能索引 ' + idxN.toLocaleString() + '；AGENTS 实际注入量以宿主通道为准，超 8,000 会被截尾）。';
+  } catch (e) {
+    return '';
+  }
+}
+
 exports.run = () => {
   // 清理上一个会话的状态文件
   clearState('edited-files.txt');
@@ -44,9 +56,9 @@ exports.run = () => {
         '【会话初始化完成】状态文件已清理。\n' +
         '强制执行清单：\n' +
         '1. 技能检查 — 用下方「技能索引」匹配触发词，命中即加载该技能执行\n' +
-        '2. code-reviewer — 写完代码后立即调用，无例外\n' +
+        '2. 代码自查 — 修改 src/prototypes/ 或 src/admin/ 后，宣称完成前必须自读改动点做针对性审查（宿主支持子 Agent 且用户已启用时才用 code-reviewer）\n' +
         '3. 验证 — 完成声明前必须运行构建/测试命令' +
-        loadSkillIndex()
+        loadSkillIndex() + residentBudget()
     }
   };
 };

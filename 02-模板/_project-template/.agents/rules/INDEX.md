@@ -46,7 +46,7 @@
 |-|-|-|
 | 写需求说明书 / 选文档技能 | `req-doc-workflow.md` | 三体系路由表与选择规则 |
 | 只有 PRD 却要转 SRS | `prd-to-srs-gate.md` | 转写门禁与步骤 |
-| 写原型「设计说明」 | `design-notes-conventions.md` | 必须用 `PrototypeLayout.tsx` 渲染，禁止手写内联说明层 |
+| 写原型「设计说明」 | `design-notes-conventions.md`（真源 `src/common/design-notes/规范.md`） | 新页按 v3.0 接 DesignNotesPanel（打标→卡片→落盘），PrototypeLayout/description 仅旧页兼容 |
 | 查 Hook 强制力与知识库维护 | `knowledge-and-hooks.md` | 8 个 Hook 真实强制力、无 Hook 兜底、catalog 维护、admin 实现规范 |
 
 ## 依据与结构
@@ -55,3 +55,19 @@
 |-|-|-|
 | 想查规则依据 | `AGENTS-rationale.md` | 每条规则为什么这么定 |
 | 查目录树与路径约定 | `project-structure.md` | 项目结构、路径别名、各层职责 |
+
+## 低频与专项（2026-11-07 自 AGENTS.md §三 地图并入）
+
+| 什么时候用 | 读哪里 | 一句话 |
+|-|-|-|
+| 画图（架构 / 流程 / 时序 / 思维导图） | `.agents/skills/d2-diagram/SKILL.md` | d2 渲染技能；旧机「08-办公/画图」目录在本机不存在 |
+| SRS 语言与章节格式 | `.agents/knowledge/phase1-requirements/` | 需求文档写作口径 |
+| 需求文档路由与 PRD→SRS 转写门禁 | `req-doc-workflow.md`、`prd-to-srs-gate.md` | 先路由再动笔 |
+| UI 库参考（4 套，按 package.json 只读一套） | `.agents/knowledge/ui-libs/` | 禁整目录读 |
+| daisyUI 语义类名组件（展示道具/主题用） | `src/component-templates/daisyui/README.md` | CSS 组件，非 React |
+| 系统化调试四阶段全文 | `.agents/knowledge/conventions/debugging.md` | AGENTS §4.7 的展开 |
+| Hook 真实强制力 / catalog 维护 / admin 实现规范 | `knowledge-and-hooks.md` | 8 个 hook 的兜底口径 |
+| 子 Agent 编排与调用标准 | `subagent-orchestration.md`、`agent-orchestration.md`、`spawn-subagent.md`、`subagent-stop.md` | 当前停用筛选期，未经用户点名不得调用 |
+| 项目结构与路径约定 | `project-structure.md` | 目录树与别名 |
+| 全部「为什么这么定」 | `AGENTS-rationale.md` | 规则依据 |
+| 维护者须知（写规则 / 迁移判据） | `../templates/project-init.md` | 模板维护 |
