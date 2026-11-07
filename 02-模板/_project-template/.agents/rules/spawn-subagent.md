@@ -1,4 +1,4 @@
-# 子 Agent 调用规则
+# 子 Agent 调用规则（3+3 精简版 · 2026-11-08）
 
 ## 规则
 
@@ -12,9 +12,12 @@ spawn 任何子 Agent 时，必须在 prompt 开头注入以下强制指令：
 
 ## 适用范围
 
-所有通过 Agent 工具 spawn 的子 Agent，包括但不限于：
-- code-reviewer
-- planner
+当前 3 个审查者子 Agent（详见 `subagent-orchestration.md`）：
+- **design-reviewer** — HLD/LLD 设计文档审查
+- **design-note-reviewer** — 页面设计说明卡片审查
+- **page-reviewer** — 生成页面代码审查
+
+也适用于：
 - 任何临时创建的 general-purpose agent
 
 ## Prompt 结构要求
@@ -23,7 +26,7 @@ spawn 任何子 Agent 时，必须在 prompt 开头注入以下强制指令：
 1. 强制前置步骤（上方模板）
 2. 明确的任务范围（具体文件、具体问题）
 3. 所需上下文（不要让子 Agent 自己去找）
-4. 期望的输出格式（四状态报告）
+4. 期望的输出格式（四状态报告：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED）
 5. 约束条件（不能修改哪些文件）
 
 ## 原因

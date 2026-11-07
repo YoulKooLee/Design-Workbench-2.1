@@ -62,7 +62,7 @@
 
 | 情况 | 扫描范围 |
 | --- | --- |
-| **当次会话 A6/B6/C/D 已跑 req-reviewer**（标准/严格） | 仅对 **A6 之后新增/修改的段落** 做禁用词 grep + 交叉一致性；**不重复**全章 req-reviewer |
+| **当次会话 A6/B6/C/D 已跑 design-note-reviewer**（标准/严格） | 仅对 **A6 之后新增/修改的段落** 做禁用词 grep + 交叉一致性；**不重复**全章 req-reviewer |
 | **快速模式** 或 **仅主流程 Edit 小改** | 完整禁用词扫描 + 交叉一致性（主流程自行执行，不调用 agent） |
 | **用户手动 Edit SRS、未走 req-doc** | 完整扫描（门禁 2–4 全部执行） |
 
@@ -154,9 +154,9 @@
 | 产出路径 | `docs/01-需求与规划/*-SRS需求规格说明书-V*.md` | `docs/YYYY-MM-DD-<主题>-概念版.md` + `*-PRD.md` |
 | 语言规范 | `.agents/knowledge/phase1-requirements/prd-language.md` | 技能内 `references/`，含交互/状态/ASCII 线框 |
 | 下游 | `feature-list`、`hld-design`、`page-generator`、`annotation` | `diagram-generator`、静态原型、测试/手册（按需） |
-| 子 Agent | req-analyzer → **req-writer**（子 Agent）→ req-reviewer | 无；主 Agent 按 `references/` 执行 |
+| 子 Agent | 主 Agent 按 `req-doc-writing` skill（整合原 req-analyzer + req-writer）一气呵成；审查走 design-note-reviewer | 无；主 Agent 按 `references/` 执行 |
 
-> **命名区分**：子 Agent `req-writer`（`.agents/agents/req-writer.md`）仅服务于 `req-doc`；技能 `prd-writer` 是独立技能目录，二者不可互换。
+> **命名区分**（2026-11-08）：原 req-analyzer / req-writer 两个子 Agent 已合并为 `req-doc-writing` skill（主 Agent 一气呵成）；`prd-writer` 仍是独立技能目录，与 `req-doc` 不可混为同一真源。
 
 ### 触发路由（按优先级）
 

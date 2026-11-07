@@ -16,7 +16,7 @@ description: >
 
 > **重要**：本 skill 是通用工作流框架，不绑定任何特定项目或框架。
 > 项目特有约定（目录结构、命名规范、路由方式、导航方式、全局样式、Mock 等）
-> 由步骤 2 的 `page-spec-loader` 从 `{PROJECT_PATH}/README-DEV.md` 加载（优先），
+> 由步骤 2 的 `page-spec-loading` skill 从 `{PROJECT_PATH}/README-DEV.md` 加载（优先），
 > 并辅以 `{WORKSPACE_PATH}/.agents/knowledge/` 中的通用规范。
 > 若 README-DEV.md 不存在，则通过读取项目文件自行推断。
 
@@ -144,10 +144,10 @@ Read `.agents/rules/prd-to-srs-gate.md`，执行检测：
 
 ## 步骤 2：规范加载与组件规划
 
-**目标**：调用 `page-spec-loader` agent 按需加载规范并规划组件，只读取当前功能实际需要的内容。
+**目标**：按 `page-spec-loading` skill 规范按需加载规范并规划组件，只读取当前功能实际需要的内容。
 
 执行动作：
-使用 `Agent` 工具，`subagent_type: "page-spec-loader"`，传入以下 prompt（将占位符替换为实际值）：
+主 Agent 自己执行（按 `page-spec-loading` skill 流程），不派子 Agent。传入以下参数（将占位符替换为实际值）：
 
 ```
 PROJECT_PATH：{子项目根目录绝对路径}
@@ -157,7 +157,7 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 {步骤 1 输出的完整需求理解内容}
 ```
 
-> `page-spec-loader` agent 定义在 `.agents/agents/page-spec-loader.md`，
+> `page-spec-loading` skill 定义在 `.agents/skills/page-spec-loading/SKILL.md`，
 > 它会自动检测 UI 库、按需加载对应规范、规划组件，返回结构化摘要。
 
 **输出格式**：

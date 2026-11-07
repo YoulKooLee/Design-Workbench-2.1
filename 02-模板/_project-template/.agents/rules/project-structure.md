@@ -25,7 +25,7 @@
 ├── vite-plugins/              # 原型工程 Vite 插件集（Make 协作/预览/HMR/IIFE）— 工程基建，勿改
 ├── scripts/                   # 工程脚本（主题捕获、入口扫描、metadata 同步等）— 工程基建，勿改
 ├── .agents/                   # Agent 编排配置
-│   ├── agents/                # 18 个子 Agent 定义（req-writer、code-reviewer 等）
+│   ├── agents/                # 3 个审查者子 Agent 定义（design-reviewer、design-note-reviewer、page-reviewer；3+3 精简版 2026-11-08）
 │   ├── skills/                # 51 个工作流技能 + common/ 共享脚本（按触发词自动匹配）
 │   ├── rules/                 # 工作流铁律（子 Agent 调度、Git 流程等）
 │   ├── hooks/                 # Hook 脚本（GateGuard、审查提醒等）
