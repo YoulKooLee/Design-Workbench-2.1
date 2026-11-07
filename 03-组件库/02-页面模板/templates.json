@@ -1256,5 +1256,28 @@
         "previewUrl": "/make-preview/od-social-media-matrix-tracker/index.html",
         "extraDependencies": [],
         "requiresDependencyInstall": false
+    },
+    {
+        "id": "shadcn-admin-dashboard",
+        "title": "Shadcn 后台管理仪表盘",
+        "slug": "shadcn-admin-dashboard",
+        "sourcePath": "templates/shadcn-admin-dashboard",
+        "coverPath": "",
+        "description": "基于 satnaing/shadcn-admin 剥离的后台管理模板，含侧边栏、数据卡片、表格、按钮组等常用 shadcn 组件。",
+        "author": "satnaing",
+        "authorUrl": "https://github.com/satnaing/shadcn-admin",
+        "previewUrl": "",
+        "extraDependencies": [
+            "@radix-ui/react-avatar",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-label",
+            "@radix-ui/react-separator",
+            "@radix-ui/react-slot",
+            "@radix-ui/react-tabs",
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+        ],
+        "requiresDependencyInstall": true
     }
 ]

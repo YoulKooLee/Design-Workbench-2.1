@@ -1,0 +1,236 @@
+{
+  "libraryId": "daisyui",
+  "version": "5.7.50",
+  "syncedAt": "2026-11-05",
+  "total": 37,
+  "note": "35 套内置 + 2 套自定义（axhub / axhub-dark）。换主题 = 给 <html> 或任意容器加 data-theme，HTML 结构不改；也可用 theme-controller 的 radio/checkbox 免 JS 切换。",
+  "groups": {
+    "浅": 21,
+    "深": 15,
+    "彩": 1
+  },
+  "themes": [
+    {
+      "name": "axhub",
+      "tone": "浅",
+      "origin": "自定义",
+      "use": "贴合 Codebuddy Design / Arco 色板（#165dff），默认主题"
+    },
+    {
+      "name": "axhub-dark",
+      "tone": "深",
+      "origin": "自定义",
+      "use": "axhub 的夜间版，用于深色大屏/后台"
+    },
+    {
+      "name": "light",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "最通用，接近 shadcn 观感"
+    },
+    {
+      "name": "dark",
+      "tone": "深",
+      "origin": "内置",
+      "use": "通用深色"
+    },
+    {
+      "name": "cupcake",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "柔和粉彩，轻消费"
+    },
+    {
+      "name": "bumblebee",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "黄黑高对比，活动页"
+    },
+    {
+      "name": "emerald",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "清爽绿，医疗/环保/园区"
+    },
+    {
+      "name": "corporate",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "蓝白商务，企业后台（与现有风格最接近）"
+    },
+    {
+      "name": "synthwave",
+      "tone": "深",
+      "origin": "内置",
+      "use": "紫粉霓虹，赛博展示"
+    },
+    {
+      "name": "retro",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "米黄复古，怀旧专题"
+    },
+    {
+      "name": "cyberpunk",
+      "tone": "彩",
+      "origin": "内置",
+      "use": "荧光黄粉，强对比演示"
+    },
+    {
+      "name": "valentine",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "粉红，节日营销"
+    },
+    {
+      "name": "halloween",
+      "tone": "深",
+      "origin": "内置",
+      "use": "橙紫，活动氛围"
+    },
+    {
+      "name": "garden",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "花园绿，生活服务"
+    },
+    {
+      "name": "forest",
+      "tone": "深",
+      "origin": "内置",
+      "use": "深绿，农林/自然"
+    },
+    {
+      "name": "aqua",
+      "tone": "深",
+      "origin": "内置",
+      "use": "青蓝，水务/海洋"
+    },
+    {
+      "name": "lofi",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "灰调极简，文档站"
+    },
+    {
+      "name": "pastel",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "柔彩，儿童/教育"
+    },
+    {
+      "name": "fantasy",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "渐变幻想，创意提案"
+    },
+    {
+      "name": "wireframe",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "纯线框灰，低保真原型（PM 画线框首选）"
+    },
+    {
+      "name": "black",
+      "tone": "深",
+      "origin": "内置",
+      "use": "纯黑极简"
+    },
+    {
+      "name": "luxury",
+      "tone": "深",
+      "origin": "内置",
+      "use": "黑金高端"
+    },
+    {
+      "name": "dracula",
+      "tone": "深",
+      "origin": "内置",
+      "use": "深紫，开发者工具"
+    },
+    {
+      "name": "cmyk",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "青品黄印刷感"
+    },
+    {
+      "name": "autumn",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "秋橙，季节活动"
+    },
+    {
+      "name": "business",
+      "tone": "深",
+      "origin": "内置",
+      "use": "商务灰蓝，报表"
+    },
+    {
+      "name": "acid",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "荧光绿，潮流"
+    },
+    {
+      "name": "lemonade",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "柠檬黄，清新"
+    },
+    {
+      "name": "night",
+      "tone": "深",
+      "origin": "内置",
+      "use": "深夜蓝，大屏夜间模式"
+    },
+    {
+      "name": "coffee",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "咖啡棕，生活/餐饮"
+    },
+    {
+      "name": "winter",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "冷蓝白，冬季"
+    },
+    {
+      "name": "dim",
+      "tone": "深",
+      "origin": "内置",
+      "use": "暗灰，长时间阅读"
+    },
+    {
+      "name": "nord",
+      "tone": "深",
+      "origin": "内置",
+      "use": "北欧蓝灰，工具型"
+    },
+    {
+      "name": "sunset",
+      "tone": "深",
+      "origin": "内置",
+      "use": "日落橙紫，展示页"
+    },
+    {
+      "name": "caramellatte",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "焦糖奶油，温馨"
+    },
+    {
+      "name": "abyss",
+      "tone": "深",
+      "origin": "内置",
+      "use": "深海蓝，科技大屏（对比度够）"
+    },
+    {
+      "name": "silk",
+      "tone": "浅",
+      "origin": "内置",
+      "use": "丝绸米，文案页"
+    }
+  ]
+}

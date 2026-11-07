@@ -43,16 +43,12 @@
 
 <!-- AUTO-SYNC:tree START（由 06-运行脚本/sync-projects-index.mjs 自动生成） -->
 ```
-C:\Users\游翔\Documents\AI work\01 产品设计工作台\
+D:\产品设计工作台\
 ├── 01-项目\                ← 所有原型项目（核心）
-│   ├── Dingcan_app\
-│   ├── Markdown 轻量编辑器\
-│   ├── 崂山国家实验室项目\
-│   ├── 指标管理平台\
-│   ├── 数字孪生\
+│   ├── AI漫剧工作台\
+│   ├── Shadcn 后台管理仪表盘\
 │   ├── 测试\
-│   ├── 结构监测\
-│   └── 翔安南区新城\
+│   └── 漫剧工作台\
 ├── 02-模板\                ← _project-template（React 原型骨架）/ _project-development（研发工程模板）
 ├── 03-知识库\              ← 业务知识库
 ├── 03-组件库\              ← 组件模板 / 页面模板 / ui-libs
@@ -64,9 +60,9 @@ C:\Users\游翔\Documents\AI work\01 产品设计工作台\
 ├── 08-文档\                ← 迭代过程文档 / 打包输出
 ├── 09-协作\                ← 多智能体协作根（messages / rooms / agents / docs / 用户操作）
 ├── 10-智能体记忆\          ← 工作台层记忆（000~004 + rules/ + skills/ + router.md + agents/）
-├── _tmp\
 ├── 工作台面板\             ← 工作台管理端代码（server.mjs，旧名 axhub-manager）
-└── 工作台桌面应用\         ← Electron 桌面壳
+├── 工作台桌面应用\         ← Electron 桌面壳
+└── 新版本\
 ```
 <!-- AUTO-SYNC:tree END -->
 

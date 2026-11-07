@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="axhub">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卡片 · daisyUI</title>
+<link rel="stylesheet" href="../../_kit/theme.css">
+<style>
+  body{margin:0;padding:24px 28px;font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--color-base-100);color:var(--color-base-content)}
+  a.back{font-size:12px;opacity:.65;text-decoration:none;display:inline-block;margin-bottom:10px}
+  h1{font-size:16px;margin:0 0 4px;font-weight:600}
+  .meta{font-size:12px;opacity:.65;margin-bottom:6px;line-height:1.9}
+  .meta code{background:var(--color-base-200);padding:1px 5px;border-radius:4px;font-size:11px}
+  .demo{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:16px;border:1px solid var(--color-base-300);border-radius:10px;margin-bottom:14px;min-width:min-content}
+  .usage{background:var(--color-base-200);border-radius:8px;padding:10px 14px;font-size:11px;opacity:.8;margin-top:4px;white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body>
+<a class="back" href="../index.html">← 返回 daisyUI 目录</a>
+<h1>card · 卡片</h1>
+<div class="meta">主类 <code>card</code>　修饰 <code>card-border</code> <code>card-dash</code> <code>card-side</code> <code>image-full</code> <code>card-xs~xl</code><br>场景：内容分组：KPI、设备卡、图文块；image-full 可做图底文覆盖</div>
+<div class="demo"><div class="card bg-base-200 w-64"><div class="card-body"><h3 class="card-title text-sm">A 栋机房</h3><p class="text-xs opacity-70">温度 23.6℃ · 湿度 41% · 空调 3 台运行</p><div class="card-actions justify-end"><button class="btn btn-primary btn-xs">查看详情</button></div></div></div><div class="card card-border border-primary bg-base-100 w-64"><div class="card-body"><h3 class="card-title text-sm">B 栋配电室</h3><p class="text-xs opacity-70">负载 78% · 阈值 85%</p><div class="card-actions justify-end"><button class="btn btn-error btn-xs">告警</button></div></div></div></div>
+<div class="usage">写类名即用，不 import：&lt;div class="card …"&gt;…&lt;/div&gt;
+对应 Codebuddy Design：基础/Card</div>
+</body>
+</html>

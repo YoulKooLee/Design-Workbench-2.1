@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* 扫描范围：仅本试点目录（不要扫全工作台，避免生成巨量无用工具类） */
+@source "../demo/**/*.html";
+
+/*
+ * 04-daisyUI 试点 · 构建入口
+ * ---------------------------------------------------------------
+ * daisyUI 5 是 Tailwind 4 的插件：类名（btn / card / modal …）+ 主题（data-theme）。
+ * 与 Codebuddy Design 的差别：那边是 React 源码组件（tsx），这边是纯 CSS 类名，
+ * 无 JS 运行时、无框架绑定，HTML / React / Vue 都能直接用。
+ */
+
+@plugin "daisyui" {
+  /* 35 套内置主题全开（试点目的：验证换肤能力） */
+  themes: all;
+  logs: false;
+}
+
+/*
+ * 自定义主题 axhub：把 daisyUI 拉到与 Codebuddy Design / Arco 同一套色板，
+ * 用来验证「换主题 = 换一组 CSS 变量」，页面 HTML 不用改。
+ * 色值来源：03-组件库/03-页面组件/Codebuddy Design/_kit/theme.css（Arco 色板）
+ */
+@plugin "daisyui/theme" {
+  name: "axhub";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #f7f8fa;
+  --color-base-300: #e5e6eb;
+  --color-base-content: #1d2129;
+  --color-primary: #165dff;
+  --color-primary-content: #ffffff;
+  --color-secondary: #722ed1;
+  --color-secondary-content: #ffffff;
+  --color-accent: #0fc6c2;
+  --color-accent-content: #ffffff;
+  --color-neutral: #4e5969;
+  --color-neutral-content: #ffffff;
+  --color-info: #165dff;
+  --color-info-content: #ffffff;
+  --color-success: #00b42a;
+  --color-success-content: #ffffff;
+  --color-warning: #ff7d00;
+  --color-warning-content: #ffffff;
+  --color-error: #f53f3f;
+  --color-error-content: #ffffff;
+
+  --radius-selector: 0.25rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* 深色主题 axhub-dark：同一业务页切到夜间，验证「不改结构只改属性」 */
+@plugin "daisyui/theme" {
+  name: "axhub-dark";
+  default: false;
+  prefersdark: false;
+  color-scheme: dark;
+
+  --color-base-100: #17171a;
+  --color-base-200: #1f1f23;
+  --color-base-300: #2e2e33;
+  --color-base-content: #e5e6eb;
+  --color-primary: #4080ff;
+  --color-primary-content: #ffffff;
+  --color-secondary: #8d4eda;
+  --color-secondary-content: #ffffff;
+  --color-accent: #33d1c9;
+  --color-accent-content: #06251f;
+  --color-neutral: #c9cdd4;
+  --color-neutral-content: #17171a;
+  --color-info: #4080ff;
+  --color-info-content: #ffffff;
+  --color-success: #23c343;
+  --color-success-content: #06280f;
+  --color-warning: #ff9a2e;
+  --color-warning-content: #2b1600;
+  --color-error: #f76560;
+  --color-error-content: #2b0505;
+
+  --radius-selector: 0.25rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* 试点自用：区分区块边界，不覆盖任何 daisyUI 组件样式 */
+.pilot-block {
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  background: var(--color-base-100);
+}

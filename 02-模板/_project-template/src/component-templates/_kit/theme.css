@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* daisyUI 5（试点）：语义类名 + 主题。配置在 ../daisyui/theme.css，
+ * 删掉下面这一行即整体停用（不影响其它任何组件）。详见 ../daisyui/README.md */
+@import "../daisyui/theme.css";
+
 /*
  * Axhub 组件库 · 主题 token（Tailwind v4 @theme）
  * 视觉对齐 03-组件库/frame/admin 母版（Vibe Design Pro / Arco Design 色板）。

@@ -1,0 +1,1232 @@
+{
+  "libraryId": "daisyui",
+  "label": "daisyUI 5 · 语义类名组件库（试点）",
+  "version": "5.7.50",
+  "license": "MIT",
+  "source": "https://github.com/saadeghi/daisyui",
+  "docs": "https://daisyui.com",
+  "syncedAt": "2026-11-05",
+  "status": "pilot",
+  "description": "daisyUI 5 的 68 个组件 → 类名 / 结构 / 适用场景 / 与 Codebuddy Design 的对应关系。daisyUI 不是源码组件，是纯 CSS 类名：消费方式为「引一份构建产物 + 按类名写 HTML」，没有 import 步骤。",
+  "layout": {
+    "howToUse": "写 HTML 时给元素加语义类名（btn / card / modal …），组合 part 与 color/size 修饰类；数量不够再加 Tailwind 工具类（如 btn px-10）。",
+    "partRule": "component = 必备类；part = 子结构类；style/color/size/placement = 修饰类，每类挑一个。",
+    "overrideRule": "需要全局改组件样式时用 @utility btn { @apply rounded-full }；单点覆盖用 Tailwind 工具类加 !（btn bg-red-500!），不要写裸 CSS 覆盖。",
+    "noJsRule": "除 modal(dialog)、dropdown(details/details+popover)、theme-controller(radio/checkbox) 借用原生能力外，组件无 JS 依赖。"
+  },
+  "groups": [
+    {
+      "id": "button",
+      "zh": "按钮",
+      "note": "语义色 × 样式 × 五档尺寸"
+    },
+    {
+      "id": "form",
+      "zh": "表单",
+      "note": "输入、选择、校验、开关"
+    },
+    {
+      "id": "nav",
+      "zh": "导航",
+      "note": "菜单、页签、步骤、面包屑"
+    },
+    {
+      "id": "overlay",
+      "zh": "浮层",
+      "note": "弹窗、下拉、提示"
+    },
+    {
+      "id": "display",
+      "zh": "展示",
+      "note": "表格、统计、进度、时间轴"
+    },
+    {
+      "id": "mockup",
+      "zh": "展示道具",
+      "note": "提案用外框，放截图即成情境"
+    },
+    {
+      "id": "base",
+      "zh": "基础",
+      "note": "排版与辅助件"
+    }
+  ],
+  "components": [
+    {
+      "id": "button",
+      "zh": "按钮",
+      "group": "button",
+      "cls": [
+        "btn"
+      ],
+      "parts": [],
+      "mods": [
+        "btn-primary",
+        "btn-outline",
+        "btn-soft",
+        "btn-ghost",
+        "btn-link",
+        "btn-xs~xl",
+        "btn-wide",
+        "btn-block",
+        "btn-square",
+        "btn-circle"
+      ],
+      "scene": "任何触发动作的位置；语义色直接对应主/次/危险操作",
+      "cb": "基础/Button",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "fieldset",
+      "zh": "表单分组",
+      "group": "form",
+      "cls": [
+        "fieldset",
+        "label"
+      ],
+      "parts": [
+        "fieldset-legend"
+      ],
+      "mods": [],
+      "scene": "一组表单字段加标题与说明",
+      "cb": "表单/FormField",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "label",
+      "zh": "标签/浮动标签",
+      "group": "form",
+      "cls": [
+        "label",
+        "floating-label"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "字段标题、说明文字、浮动标签容器",
+      "cb": "表单/FormField",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "input",
+      "zh": "输入框",
+      "group": "form",
+      "cls": [
+        "input"
+      ],
+      "parts": [],
+      "mods": [
+        "input-ghost",
+        "input-primary",
+        "input-xs~xl"
+      ],
+      "scene": "单行文本、数字、密码；配 validator 做校验态",
+      "cb": "表单/Input",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "textarea",
+      "zh": "多行文本",
+      "group": "form",
+      "cls": [
+        "textarea"
+      ],
+      "parts": [],
+      "mods": [
+        "textarea-ghost",
+        "textarea-xs~xl"
+      ],
+      "scene": "备注、意见、长说明",
+      "cb": "表单/Input(textarea)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "select",
+      "zh": "下拉选择",
+      "group": "form",
+      "cls": [
+        "select"
+      ],
+      "parts": [],
+      "mods": [
+        "select-ghost",
+        "select-primary",
+        "select-xs~xl"
+      ],
+      "scene": "原生 select，选项少时最稳（无 JS）",
+      "cb": "表单/Select",
+      "verdict": "覆盖（无搜索/多选）"
+    },
+    {
+      "id": "checkbox",
+      "zh": "复选框",
+      "group": "form",
+      "cls": [
+        "checkbox"
+      ],
+      "parts": [],
+      "mods": [
+        "checkbox-primary",
+        "checkbox-xs~xl"
+      ],
+      "scene": "多选、权限勾选、行选择",
+      "cb": "表单/Choice",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "radio",
+      "zh": "单选框",
+      "group": "form",
+      "cls": [
+        "radio"
+      ],
+      "parts": [],
+      "mods": [
+        "radio-primary",
+        "radio-xs~xl"
+      ],
+      "scene": "互斥选项（≤5 项）",
+      "cb": "表单/Choice",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "toggle",
+      "zh": "开关",
+      "group": "form",
+      "cls": [
+        "toggle"
+      ],
+      "parts": [],
+      "mods": [
+        "toggle-primary",
+        "toggle-xs~xl"
+      ],
+      "scene": "设置项即时生效，如自动派单",
+      "cb": "表单/Choice(switch)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "range",
+      "zh": "滑块",
+      "group": "form",
+      "cls": [
+        "range"
+      ],
+      "parts": [],
+      "mods": [
+        "range-primary",
+        "range-xs~xl",
+        "range-vertical"
+      ],
+      "scene": "阈值、亮度、比例调节",
+      "cb": "表单/Slider",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "rating",
+      "zh": "评分",
+      "group": "form",
+      "cls": [
+        "rating"
+      ],
+      "parts": [],
+      "mods": [
+        "rating-half",
+        "rating-xs~xl"
+      ],
+      "scene": "满意度、优先级打分",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "file-input",
+      "zh": "文件上传",
+      "group": "form",
+      "cls": [
+        "file-input"
+      ],
+      "parts": [],
+      "mods": [
+        "file-input-ghost",
+        "file-input-xs~xl"
+      ],
+      "scene": "附件、票据、图片导入入口",
+      "cb": "表单/Upload",
+      "verdict": "补充（无拖拽/列表）"
+    },
+    {
+      "id": "validator",
+      "zh": "校验提示",
+      "group": "form",
+      "cls": [
+        "validator"
+      ],
+      "parts": [
+        "validator-hint"
+      ],
+      "mods": [],
+      "scene": "必填、邮箱、长度的即时错误提示（纯 CSS :user-invalid）",
+      "cb": "表单/FormField(error)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "otp",
+      "zh": "验证码",
+      "group": "form",
+      "cls": [
+        "otp"
+      ],
+      "parts": [],
+      "mods": [
+        "otp-joined",
+        "otp-xs~xl"
+      ],
+      "scene": "短信/邮件验证码",
+      "cb": "表单/VerificationCode",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "calendar",
+      "zh": "日历",
+      "group": "form",
+      "cls": [
+        "cally",
+        "react-day-picker"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "需要日历时接 Cally / DayPicker 的样式皮肤",
+      "cb": "数据展示/Calendar",
+      "verdict": "补充（依赖第三方日历）"
+    },
+    {
+      "id": "menu",
+      "zh": "菜单",
+      "group": "nav",
+      "cls": [
+        "menu"
+      ],
+      "parts": [
+        "menu-title",
+        "menu-dropdown"
+      ],
+      "mods": [
+        "menu-active",
+        "menu-xs~xl",
+        "menu-horizontal"
+      ],
+      "scene": "侧边导航、下拉项、右键菜单",
+      "cb": "布局/SideMenu",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "navbar",
+      "zh": "顶栏",
+      "group": "nav",
+      "cls": [
+        "navbar"
+      ],
+      "parts": [
+        "navbar-start",
+        "navbar-center",
+        "navbar-end"
+      ],
+      "mods": [],
+      "scene": "站点顶栏：品牌 + 导航 + 操作区",
+      "cb": "布局/Layout(header)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "tab",
+      "zh": "页签",
+      "group": "nav",
+      "cls": [
+        "tabs"
+      ],
+      "parts": [
+        "tab",
+        "tab-content"
+      ],
+      "mods": [
+        "tabs-box",
+        "tabs-border",
+        "tabs-lift",
+        "tab-active",
+        "tabs-xs~xl"
+      ],
+      "scene": "同层内容切换（实时/历史/对比）",
+      "cb": "布局/Tabs",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "breadcrumbs",
+      "zh": "面包屑",
+      "group": "nav",
+      "cls": [
+        "breadcrumbs"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "多层级页面定位",
+      "cb": "布局/Breadcrumb",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "steps",
+      "zh": "步骤条",
+      "group": "nav",
+      "cls": [
+        "steps"
+      ],
+      "parts": [
+        "step",
+        "step-icon"
+      ],
+      "mods": [
+        "step-primary",
+        "steps-vertical"
+      ],
+      "scene": "审批流、向导表单进度",
+      "cb": "布局/Steps",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "pagination",
+      "zh": "分页",
+      "group": "nav",
+      "cls": [
+        "join"
+      ],
+      "parts": [
+        "join-item"
+      ],
+      "mods": [],
+      "scene": "列表翻页（用 join 拼按钮组）",
+      "cb": "数据展示/Pagination",
+      "verdict": "补充（需自己算页码）"
+    },
+    {
+      "id": "join",
+      "zh": "按钮组",
+      "group": "nav",
+      "cls": [
+        "join"
+      ],
+      "parts": [
+        "join-item"
+      ],
+      "mods": [
+        "join-vertical",
+        "join-horizontal"
+      ],
+      "scene": "相邻按钮/输入框缝合，做分段控件",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "drawer",
+      "zh": "抽屉布局",
+      "group": "nav",
+      "cls": [
+        "drawer"
+      ],
+      "parts": [
+        "drawer-toggle",
+        "drawer-content",
+        "drawer-side",
+        "drawer-overlay",
+        "drawer-button"
+      ],
+      "mods": [
+        "drawer-end",
+        "drawer-open"
+      ],
+      "scene": "移动端侧滑菜单；桌面可常开当侧栏",
+      "cb": "反馈/Drawer",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "dock",
+      "zh": "底部图标栏",
+      "group": "nav",
+      "cls": [
+        "dock"
+      ],
+      "parts": [
+        "dock-label"
+      ],
+      "mods": [
+        "dock-active",
+        "dock-xs~xl"
+      ],
+      "scene": "移动端底部主导航（App 壳）",
+      "cb": "页面模式/MobileFrameIos",
+      "verdict": "独有"
+    },
+    {
+      "id": "footer",
+      "zh": "页脚",
+      "group": "nav",
+      "cls": [
+        "footer"
+      ],
+      "parts": [
+        "footer-title"
+      ],
+      "mods": [
+        "footer-center",
+        "footer-horizontal"
+      ],
+      "scene": "官网/门户页脚",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "megamenu",
+      "zh": "巨型菜单",
+      "group": "nav",
+      "cls": [
+        "megamenu"
+      ],
+      "parts": [
+        "megamenu-active"
+      ],
+      "mods": [
+        "megamenu-wide",
+        "megamenu-full",
+        "megamenu-vertical"
+      ],
+      "scene": "多列大导航（官网产品线）",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "filter",
+      "zh": "筛选组",
+      "group": "nav",
+      "cls": [
+        "filter"
+      ],
+      "parts": [
+        "filter-reset"
+      ],
+      "mods": [],
+      "scene": "单选式筛选标签（radio 驱动）",
+      "cb": "业务组件/FilterBar",
+      "verdict": "补充"
+    },
+    {
+      "id": "modal",
+      "zh": "弹窗",
+      "group": "overlay",
+      "cls": [
+        "modal"
+      ],
+      "parts": [
+        "modal-box",
+        "modal-action",
+        "modal-backdrop"
+      ],
+      "mods": [
+        "modal-open",
+        "modal-top",
+        "modal-bottom"
+      ],
+      "scene": "确认、表单弹窗；用原生 dialog，关闭不改状态",
+      "cb": "反馈/Modal",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "dropdown",
+      "zh": "下拉",
+      "group": "overlay",
+      "cls": [
+        "dropdown"
+      ],
+      "parts": [
+        "dropdown-content"
+      ],
+      "mods": [
+        "dropdown-end",
+        "dropdown-hover",
+        "dropdown-top"
+      ],
+      "scene": "行操作菜单、列设置；用 details 免 JS",
+      "cb": "基础/Overlay(Dropdown)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "tooltip",
+      "zh": "文字提示",
+      "group": "overlay",
+      "cls": [
+        "tooltip"
+      ],
+      "parts": [
+        "tooltip-content"
+      ],
+      "mods": [
+        "tooltip-top",
+        "tooltip-primary",
+        "tooltip-open"
+      ],
+      "scene": "图标按钮解释、指标口径说明",
+      "cb": "基础/Overlay(Tooltip)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "toast",
+      "zh": "轻提示容器",
+      "group": "overlay",
+      "cls": [
+        "toast"
+      ],
+      "parts": [],
+      "mods": [
+        "toast-end",
+        "toast-top",
+        "toast-bottom"
+      ],
+      "scene": "右下角消息堆叠，内部放 alert",
+      "cb": "反馈/Message",
+      "verdict": "补充（无自动消失）"
+    },
+    {
+      "id": "fab",
+      "zh": "悬浮操作球",
+      "group": "overlay",
+      "cls": [
+        "fab"
+      ],
+      "parts": [
+        "fab-close",
+        "fab-main-action"
+      ],
+      "mods": [
+        "fab-flower"
+      ],
+      "scene": "移动端主操作（新建/扫码）",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "alert",
+      "zh": "提示条",
+      "group": "overlay",
+      "cls": [
+        "alert"
+      ],
+      "parts": [],
+      "mods": [
+        "alert-info",
+        "alert-success",
+        "alert-warning",
+        "alert-error",
+        "alert-soft",
+        "alert-outline"
+      ],
+      "scene": "页面内提示、异常说明",
+      "cb": "反馈/Alert",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "swap",
+      "zh": "图标互换",
+      "group": "overlay",
+      "cls": [
+        "swap"
+      ],
+      "parts": [
+        "swap-on",
+        "swap-off"
+      ],
+      "mods": [
+        "swap-rotate",
+        "swap-flip",
+        "swap-active"
+      ],
+      "scene": "展开/收起、开/关按钮的图标切换",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "card",
+      "zh": "卡片",
+      "group": "display",
+      "cls": [
+        "card"
+      ],
+      "parts": [
+        "card-title",
+        "card-body",
+        "card-actions"
+      ],
+      "mods": [
+        "card-border",
+        "card-dash",
+        "card-side",
+        "image-full",
+        "card-xs~xl"
+      ],
+      "scene": "内容分组：KPI、设备卡、图文块；image-full 可做图底文覆盖",
+      "cb": "基础/Card",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "table",
+      "zh": "表格",
+      "group": "display",
+      "cls": [
+        "table"
+      ],
+      "parts": [],
+      "mods": [
+        "table-zebra",
+        "table-pin-rows",
+        "table-pin-cols",
+        "table-xs~xl"
+      ],
+      "scene": "列表数据；斑马纹、表头固定",
+      "cb": "数据展示/DataTable",
+      "verdict": "补充（无排序/选择/虚拟滚动）"
+    },
+    {
+      "id": "stat",
+      "zh": "统计块",
+      "group": "display",
+      "cls": [
+        "stats"
+      ],
+      "parts": [
+        "stat",
+        "stat-title",
+        "stat-value",
+        "stat-desc",
+        "stat-figure"
+      ],
+      "mods": [
+        "stats-horizontal",
+        "stats-vertical"
+      ],
+      "scene": "KPI 卡片条（首页/大屏头部）",
+      "cb": "业务组件/KpiRow",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "badge",
+      "zh": "徽标",
+      "group": "display",
+      "cls": [
+        "badge"
+      ],
+      "parts": [],
+      "mods": [
+        "badge-primary",
+        "badge-soft",
+        "badge-outline",
+        "badge-xs~xl"
+      ],
+      "scene": "状态、数量、标签",
+      "cb": "基础/Badge + 业务组件/StatusTag",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "avatar",
+      "zh": "头像",
+      "group": "display",
+      "cls": [
+        "avatar",
+        "avatar-group"
+      ],
+      "parts": [],
+      "mods": [
+        "avatar-online",
+        "avatar-placeholder"
+      ],
+      "scene": "人员头像、在线态、头像组",
+      "cb": "基础/Avatar",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "status",
+      "zh": "状态点",
+      "group": "display",
+      "cls": [
+        "status"
+      ],
+      "parts": [],
+      "mods": [
+        "status-success",
+        "status-error",
+        "status-xs~xl"
+      ],
+      "scene": "在线/离线/告警的小圆点",
+      "cb": "业务组件/StatusTag(点状)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "progress",
+      "zh": "进度条",
+      "group": "display",
+      "cls": [
+        "progress"
+      ],
+      "parts": [],
+      "mods": [
+        "progress-primary",
+        "progress-success",
+        "progress-warning"
+      ],
+      "scene": "任务完成度、采集进度",
+      "cb": "数据展示/Progress",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "radial-progress",
+      "zh": "圆环进度",
+      "group": "display",
+      "cls": [
+        "radial-progress"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "仪表式占比；用 --value/--size/--thickness 变量",
+      "cb": "数据展示/Progress(circle)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "loading",
+      "zh": "加载指示",
+      "group": "display",
+      "cls": [
+        "loading"
+      ],
+      "parts": [],
+      "mods": [
+        "loading-spinner",
+        "loading-dots",
+        "loading-bars",
+        "loading-xs~xl"
+      ],
+      "scene": "按钮内、区块加载",
+      "cb": "反馈/Spin",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "skeleton",
+      "zh": "骨架屏",
+      "group": "display",
+      "cls": [
+        "skeleton"
+      ],
+      "parts": [],
+      "mods": [
+        "skeleton-text"
+      ],
+      "scene": "数据未到的占位",
+      "cb": "无（Spin 替代）",
+      "verdict": "独有"
+    },
+    {
+      "id": "timeline",
+      "zh": "时间轴",
+      "group": "display",
+      "cls": [
+        "timeline"
+      ],
+      "parts": [
+        "timeline-start",
+        "timeline-middle",
+        "timeline-end"
+      ],
+      "mods": [
+        "timeline-vertical",
+        "timeline-compact",
+        "timeline-box"
+      ],
+      "scene": "审批流、告警处置、操作日志",
+      "cb": "数据展示/Timeline",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "list",
+      "zh": "列表行",
+      "group": "display",
+      "cls": [
+        "list",
+        "list-row"
+      ],
+      "parts": [],
+      "mods": [
+        "list-col-wrap",
+        "list-col-grow"
+      ],
+      "scene": "人员/条目列表（比 table 轻）",
+      "cb": "数据展示/List",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "collapse",
+      "zh": "折叠面板",
+      "group": "display",
+      "cls": [
+        "collapse"
+      ],
+      "parts": [
+        "collapse-title",
+        "collapse-content"
+      ],
+      "mods": [
+        "collapse-arrow",
+        "collapse-plus",
+        "collapse-open"
+      ],
+      "scene": "参数详情、FAQ；radio 版可做手风琴",
+      "cb": "数据展示/Collapse",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "accordion",
+      "zh": "手风琴",
+      "group": "display",
+      "cls": [
+        "collapse"
+      ],
+      "parts": [
+        "collapse-title",
+        "collapse-content"
+      ],
+      "mods": [
+        "collapse-arrow",
+        "collapse-plus"
+      ],
+      "scene": "同时只开一项（radio 分组）",
+      "cb": "数据展示/Collapse",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "carousel",
+      "zh": "轮播",
+      "group": "display",
+      "cls": [
+        "carousel"
+      ],
+      "parts": [
+        "carousel-item"
+      ],
+      "mods": [
+        "carousel-center",
+        "carousel-vertical"
+      ],
+      "scene": "图片横滑、卡片横滑",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "chat",
+      "zh": "对话气泡",
+      "group": "display",
+      "cls": [
+        "chat"
+      ],
+      "parts": [
+        "chat-image",
+        "chat-header",
+        "chat-bubble",
+        "chat-footer"
+      ],
+      "mods": [
+        "chat-start",
+        "chat-end",
+        "chat-bubble-primary"
+      ],
+      "scene": "IM、客服、AI 对话记录",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "diff",
+      "zh": "拖动对比",
+      "group": "display",
+      "cls": [
+        "diff"
+      ],
+      "parts": [
+        "diff-item-1",
+        "diff-item-2",
+        "diff-resizer"
+      ],
+      "mods": [],
+      "scene": "改版前后、换肤前后对比（提案演示）",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "stack",
+      "zh": "层叠",
+      "group": "display",
+      "cls": [
+        "stack"
+      ],
+      "parts": [],
+      "mods": [
+        "stack-top",
+        "stack-bottom",
+        "stack-start",
+        "stack-end"
+      ],
+      "scene": "卡片堆叠、多图叠放",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "mask",
+      "zh": "形状裁剪",
+      "group": "display",
+      "cls": [
+        "mask"
+      ],
+      "parts": [],
+      "mods": [
+        "mask-circle",
+        "mask-squircle",
+        "mask-hexagon",
+        "mask-star",
+        "mask-triangle"
+      ],
+      "scene": "异形头像、装饰图形",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "indicator",
+      "zh": "角标定位",
+      "group": "display",
+      "cls": [
+        "indicator"
+      ],
+      "parts": [
+        "indicator-item"
+      ],
+      "mods": [
+        "indicator-top",
+        "indicator-end"
+      ],
+      "scene": "按钮右上角未读数、图标红点",
+      "cb": "基础/Badge(角标)",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "countdown",
+      "zh": "倒计时",
+      "group": "display",
+      "cls": [
+        "countdown"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "支付倒计时、活动截止（--value 驱动）",
+      "cb": "付款/PaymentCountdown",
+      "verdict": "补充"
+    },
+    {
+      "id": "kbd",
+      "zh": "键帽",
+      "group": "base",
+      "cls": [
+        "kbd"
+      ],
+      "parts": [],
+      "mods": [
+        "kbd-xs~xl"
+      ],
+      "scene": "快捷键提示",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "divider",
+      "zh": "分割线",
+      "group": "base",
+      "cls": [
+        "divider"
+      ],
+      "parts": [],
+      "mods": [
+        "divider-horizontal",
+        "divider-vertical",
+        "divider-start"
+      ],
+      "scene": "区块分隔、带文字分隔",
+      "cb": "基础/Divider",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "link",
+      "zh": "链接",
+      "group": "base",
+      "cls": [
+        "link"
+      ],
+      "parts": [],
+      "mods": [
+        "link-hover",
+        "link-primary"
+      ],
+      "scene": "正文内跳转、语义色链接",
+      "cb": "基础/Typography",
+      "verdict": "覆盖"
+    },
+    {
+      "id": "hero",
+      "zh": "首屏区",
+      "group": "base",
+      "cls": [
+        "hero"
+      ],
+      "parts": [
+        "hero-content",
+        "hero-overlay"
+      ],
+      "mods": [],
+      "scene": "官网首页大图区",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "theme-controller",
+      "zh": "主题开关",
+      "group": "base",
+      "cls": [
+        "theme-controller"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "dark/light 切换：checkbox 或 radio 的 value 即主题名",
+      "cb": "无（自研）",
+      "verdict": "独有"
+    },
+    {
+      "id": "text-rotate",
+      "zh": "文字轮播",
+      "group": "base",
+      "cls": [
+        "text-rotate"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "首页标语滚动换词",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "aura",
+      "zh": "光效边框",
+      "group": "base",
+      "cls": [
+        "aura"
+      ],
+      "parts": [],
+      "mods": [
+        "aura-glow",
+        "aura-rainbow",
+        "aura-dual",
+        "aura-xs~xl"
+      ],
+      "scene": "强调卡片的动态描边（页面内只用一处）",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "hover-3d",
+      "zh": "悬停 3D 卡片",
+      "group": "base",
+      "cls": [
+        "hover-3d"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "静态图加透视/光影，让截图“活”起来",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "hover-gallery",
+      "zh": "悬停图集",
+      "group": "base",
+      "cls": [
+        "hover-gallery"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "一张主图悬停换图",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "mockup-browser",
+      "zh": "浏览器外框",
+      "group": "mockup",
+      "cls": [
+        "mockup-browser"
+      ],
+      "parts": [
+        "mockup-browser-toolbar"
+      ],
+      "mods": [],
+      "scene": "把后台截图放进浏览器壳，提案更像真站",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "mockup-window",
+      "zh": "窗口外框",
+      "group": "mockup",
+      "cls": [
+        "mockup-window"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "桌面应用/系统窗口情境",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "mockup-code",
+      "zh": "代码外框",
+      "group": "mockup",
+      "cls": [
+        "mockup-code"
+      ],
+      "parts": [],
+      "mods": [],
+      "scene": "展示配置、SQL、接口示例",
+      "cb": "无",
+      "verdict": "独有"
+    },
+    {
+      "id": "mockup-phone",
+      "zh": "手机外框",
+      "group": "mockup",
+      "cls": [
+        "mockup-phone"
+      ],
+      "parts": [
+        "mockup-phone-camera",
+        "mockup-phone-display"
+      ],
+      "mods": [],
+      "scene": "移动端页面情境（默认 462×978）",
+      "cb": "页面模式/MobileFrame*",
+      "verdict": "覆盖"
+    }
+  ],
+  "coverage": {
+    "total": 68,
+    "note": "components 按分组列出全部组件（accordion 与 collapse 同源、pagination 复用 join，各计 1）。verdict 口径：覆盖=Codebuddy Design 有等价组件；补充=有但能力更弱/不完整；独有=Codebuddy Design 没有。",
+    "vsCodebuddyDesign": {
+      "覆盖": 38,
+      "独有": 23,
+      "补充": 7
+    }
+  }
+}

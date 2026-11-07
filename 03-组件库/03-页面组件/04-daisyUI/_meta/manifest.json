@@ -1,0 +1,102 @@
+{
+  "id": "daisyui",
+  "label": "daisyUI 5 · CSS 类名组件库（试点）",
+  "end": "css-classes",
+  "runtime": "纯 CSS（需 Tailwind v4 构建）",
+  "theme": "axhub",
+  "upstreamTheme": "daisyui 内置 35 套 + 自定义 2 套",
+  "version": "5.7.50",
+  "status": "pilot",
+  "syncedAt": "2026-11-05",
+  "license": "MIT",
+  "source": "https://github.com/saadeghi/daisyui",
+  "docs": "https://daisyui.com",
+  "componentsCatalog": "components.catalog.json",
+  "themesCatalog": "themes.json",
+  "categories": {
+    "按钮": "Button",
+    "表单": "Fieldset/Label/Input/Textarea/Select/Checkbox/Radio/Toggle/Range/Rating/FileInput/Validator/OTP/Calendar",
+    "导航": "Menu/Navbar/Tab/Breadcrumbs/Steps/Pagination(join)/Join/Drawer/Dock/Footer/Megamenu/Filter",
+    "浮层": "Modal/Dropdown/Tooltip/Toast/FAB/Alert/Swap",
+    "展示": "Card/Table/Stat/Badge/Avatar/Status/Progress/RadialProgress/Loading/Skeleton/Timeline/List/Collapse(Accordion)/Carousel/Chat/Diff/Stack/Mask/Indicator/Countdown",
+    "展示道具": "MockupBrowser/MockupWindow/MockupPhone/MockupCode",
+    "基础": "Kbd/Divider/Link/Hero/ThemeController/TextRotate/Aura/Hover3D/HoverGallery"
+  },
+  "consumption": {
+    "default": "link-css-then-classes",
+    "rules": [
+      "把 dist/daisyui-lite.css（或 daisyui.css）放进工程样式目录，<link> 或 @import 引入一次",
+      "工程必须已是 Tailwind CSS 4；daisyUI 5 不支持 Tailwind 3 的 tailwind.config.js 写法",
+      "先用语义类名（btn / card / table），不够再用 Tailwind 工具类补齐（btn px-10）",
+      "全局改组件样式用 @utility，单点覆盖用工具类加 !，不要写裸 CSS 选择器覆盖",
+      "业务列表 / 审批 / 订单 / CMS 类页面仍用 Codebuddy Design 的 React 组件，不要用 daisyUI 的 table 重造"
+    ]
+  },
+  "build": {
+    "install": "npm install",
+    "full": "npx tailwindcss -i ./src/input.css -o ./dist/daisyui.css --minify",
+    "lite": "npx tailwindcss -i ./src/input-lite.css -o ./dist/daisyui-lite.css --minify",
+    "preview": "node _meta/build-preview.mjs"
+  },
+  "size": {
+    "full": {
+      "raw": 216673,
+      "gzip": 32483
+    },
+    "lite": {
+      "raw": 178371,
+      "gzip": 26029
+    },
+    "note": "以 dist 实际文件为准（npm run build 后 node _meta/build-preview.mjs 会打印）"
+  },
+  "agentSkill": "agent-skill/llms.txt",
+  "preview": "preview.html",
+  "doc": "README.md",
+  "mapping": "对照表.md",
+  "knownLimits": [
+    "组件只到「外观层」：表格无排序/多选/虚拟滚动，分页要自己算",
+    "依赖 @scope / corner-shape 等新特性，需 Chrome 118+",
+    "必须 Tailwind 4，老工程要先升级",
+    "37 套主题是 daisyUI 的视觉语言，1:1 复刻 Arco 仍需逐组件微调"
+  ],
+  "stackIntegration": {
+    "path": "02-模板/_project-template/src/component-templates/daisyui",
+    "mode": "tailwind-plugin",
+    "why": "拷预编译 CSS 会一次性背 372KB；插件方式由 Tailwind 按页面用量产出组件",
+    "entry": "src/component-templates/_kit/theme.css 顶部 @import \"../daisyui/theme.css\"",
+    "dependency": "02-模板/_project-template/package.json devDependencies.daisyui ^5.7.50",
+    "themes": [
+      "axhub",
+      "axhub-dark",
+      "light",
+      "dark",
+      "…35 内置全开（2026-11-06）"
+    ],
+    "excludedModules": [
+      "rootcolor"
+    ],
+    "optOut": "删掉 _kit/theme.css 中那一行 @import 即整体停用",
+    "sizeDelta": {
+      "lightPage": {
+        "rawKb": 25,
+        "gzipKb": 4
+      },
+      "showcasePage": {
+        "rawKb": 77,
+        "gzipKb": 13
+      },
+      "allComponents": {
+        "rawKb": 372,
+        "gzipKb": 45
+      }
+    },
+    "tokenParity": "axhub 主题与 Arco token 逐值一致（#165dff/#00b42a/#ff7d00/#f53f3f/#f7f8fa/#1d2129）",
+    "verifiedAt": "2026-11-05",
+    "evidence": [
+      "_meta/stack-page.png",
+      "_meta/stack-token-check.png"
+    ],
+    "backup": "04-维护台账/archive/2026-11-05-daisyui-接入/",
+    "allThemesAt": "2026-11-06"
+  }
+}

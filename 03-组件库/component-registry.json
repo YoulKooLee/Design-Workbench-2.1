@@ -138,5 +138,42 @@
       "@xyflow/react": "^12.11.6"
     },
     "dependencyPolicy": "组件库默认零第三方依赖。唯一例外：工作流/WorkflowCanvas 需要 @xyflow/react（MIT）。为免污染未用画布的工程，该组件不在 index.ts 统一出口导出，必须按路径引入；装配方式（写入工程 package.json 还是按组件合并）待豆包裁定。"
-  }
+  },
+  "pilotLibs": [
+    {
+      "id": "daisyui",
+      "label": "daisyUI 5 · CSS 类名组件库（试点）",
+      "source": "03-页面组件/04-daisyUI",
+      "framework": "纯 CSS（构建期需 Tailwind v4）",
+      "status": "pilot",
+      "version": "5.7.50",
+      "license": "MIT",
+      "updatedAt": "2026-11-05",
+      "owner": "WorkBuddy",
+      "catalog": "_meta/components.catalog.json",
+      "themes": "_meta/themes.json",
+      "manifest": "_meta/manifest.json",
+      "preview": "preview.html",
+      "doc": "README.md",
+      "mapping": "对照表.md",
+      "agentSkill": "agent-skill/llms.txt",
+      "componentCount": 68,
+      "themeCount": 37,
+      "note": "试点库，不进 smoke-test 的 ready 校验、不进任何工程运行时依赖。定位与 Codebuddy Design 互补：本库负责主题系统（37 套）与展示道具（mockup/diff/aura），业务组件仍走 Codebuddy Design。68 组件逐条对照见 04-daisyUI/对照表.md（覆盖 38 / 补充 7 / 独有 23）。",
+      "stackIntegration": {
+        "path": "02-模板/_project-template/src/component-templates/daisyui",
+        "mode": "tailwind-plugin",
+        "entry": "src/component-templates/_kit/theme.css → @import \"../daisyui/theme.css\"",
+        "dependency": "devDependencies.daisyui ^5.7.50",
+        "themes": [
+          "37 套全开（2026-11-06 起 themes: all）：axhub 默认 + axhub-dark + 35 内置"
+        ],
+        "optOut": "删 _kit/theme.css 那一行 @import",
+        "status": "ready-for-prototype",
+        "sizeDelta": "轻量页 +25KB raw/+4KB gzip；展示页 +77KB/+13KB；全量 +372KB/+45KB；主题全开另 +33KB raw/+7KB gzip（纯变量块）",
+        "integratedAt": "2026-11-05",
+        "backup": "04-维护台账/archive/2026-11-05-daisyui-接入/"
+      }
+    }
+  ]
 }

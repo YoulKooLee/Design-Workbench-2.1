@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="axhub">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>daisyUI 5 试点 · 组件与主题实测</title>
+<link rel="stylesheet" href="../dist/daisyui.css" />
+</head>
+<body class="bg-base-200 text-base-content">
+
+<div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-30">
+  <div class="navbar-start gap-2">
+    <span class="badge badge-primary badge-sm">试点</span>
+    <span class="font-semibold">daisyUI 5 · 组件与主题实测</span>
+  </div>
+  <div class="navbar-end gap-2">
+    <span class="text-xs opacity-60 hidden md:inline">换主题：整页配色跟着变，HTML 一个字母不改</span>
+    <select id="theme-picker" class="select select-sm w-40" aria-label="切换主题"></select>
+  </div>
+</div>
+
+<main class="mx-auto max-w-7xl p-4 md:p-6 space-y-6">
+
+  <!-- 概览 -->
+  <section class="stats stats-vertical sm:stats-horizontal w-full border border-base-300 bg-base-100">
+    <div class="stat">
+      <div class="stat-title">库版本</div>
+      <div class="stat-value text-primary text-3xl">5.7.50</div>
+      <div class="stat-desc">MIT · 纯 CSS，无 JS 运行时</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">组件</div>
+      <div class="stat-value text-3xl">68</div>
+      <div class="stat-desc">本页实测 45+ 个</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">主题</div>
+      <div class="stat-value text-3xl">37</div>
+      <div class="stat-desc">35 内置 + axhub / axhub-dark</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">构建产物</div>
+      <div class="stat-value text-3xl" id="css-size">—</div>
+      <div class="stat-desc">dist/daisyui.css（含 37 主题）</div>
+    </div>
+  </section>
+
+  <!-- 1 按钮 -->
+  <section class="pilot-block p-5">
+    <h2 class="text-lg font-semibold mb-1">1 · 按钮 <span class="text-xs font-normal opacity-60">btn</span></h2>
+    <p class="text-sm opacity-70 mb-4">语义色 × 样式 × 五档尺寸，全部是类名组合，不需要写一行 CSS。</p>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button class="btn">默认</button>
+      <button class="btn btn-primary">主要</button>
+      <button class="btn btn-secondary">次要</button>
+      <button class="btn btn-accent">强调</button>
+      <button class="btn btn-neutral">中性</button>
+      <button class="btn btn-info">信息</button>
+      <button class="btn btn-success">成功</button>
+      <button class="btn btn-warning">警告</button>
+      <button class="btn btn-error">危险</button>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button class="btn btn-outline btn-primary">描边</button>
+      <button class="btn btn-dash btn-primary">虚线</button>
+      <button class="btn btn-soft btn-primary">浅色</button>
+      <button class="btn btn-ghost">幽灵</button>
+      <button class="btn btn-link">链接</button>
+      <button class="btn btn-primary" disabled>禁用</button>
+      <button class="btn btn-primary"><span class="loading loading-spinner loading-sm"></span>提交中</button>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+      <button class="btn btn-xs btn-primary">xs</button>
+      <button class="btn btn-sm btn-primary">sm</button>
+      <button class="btn btn-md btn-primary">md</button>
+      <button class="btn btn-lg btn-primary">lg</button>
+      <button class="btn btn-xl btn-primary">xl</button>
+      <button class="btn btn-circle btn-outline btn-sm">＋</button>
+      <button class="btn btn-square btn-outline btn-sm">⋯</button>
+      <button class="btn btn-block btn-outline sm:w-48">block（撑满）</button>
+    </div>
+  </section>
+
+  <!-- 2 表单 -->
+  <section class="pilot-block p-5">
+    <h2 class="text-lg font-semibold mb-1">2 · 表单 <span class="text-xs font-normal opacity-60">input / select / checkbox / toggle / range / rating / validator</span></h2>
+    <p class="text-sm opacity-70 mb-4">校验态、禁用态、尺寸档都在类里，不用额外写错误态样式。</p>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">设备名称</legend>
+        <input type="text" class="input w-full" placeholder="如：A 栋 3F 空调机组" />
+        <p class="label">用于列表检索与告警定位</p>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">所属区域</legend>
+        <select class="select w-full">
+          <option>园区 · A 栋</option>
+          <option>园区 · B 栋</option>
+          <option>园区 · 能源站</option>
+        </select>
+        <p class="label">设备归属的物理位置</p>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">邮箱（校验态）</legend>
+        <input type="email" class="input validator w-full" required placeholder="mail@axhub.cn" />
+        <p class="validator-hint">请输入合法邮箱地址</p>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">备注</legend>
+        <textarea class="textarea w-full" rows="2" placeholder="补充说明"></textarea>
+        <p class="label">200 字以内</p>
+      </fieldset>
+    </div>
+
+    <div class="divider my-2"></div>
+
+    <div class="grid gap-5 md:grid-cols-3">
+      <div class="space-y-2">
+        <label class="label"><input type="checkbox" class="checkbox checkbox-primary checkbox-sm" checked /> 启用告警推送</label>
+        <label class="label"><input type="checkbox" class="checkbox checkbox-sm" /> 加入巡检计划</label>
+        <label class="label"><input type="checkbox" class="checkbox checkbox-error checkbox-sm" checked /> 高危设备（只读）</label>
+      </div>
+      <div class="space-y-3">
+        <label class="flex items-center gap-2 text-sm"><input type="toggle" class="toggle toggle-primary toggle-sm" checked /> 自动派单</label>
+        <label class="flex items-center gap-2 text-sm"><input type="radio" name="rg1" class="radio radio-primary radio-sm" checked /> 按小时采集</label>
+        <label class="flex items-center gap-2 text-sm"><input type="radio" name="rg1" class="radio radio-sm" /> 按天采集</label>
+      </div>
+      <div class="space-y-3">
+        <input type="range" class="range range-primary range-sm" min="0" max="100" value="65" />
+        <div class="rating rating-sm">
+          <input type="radio" name="star" class="mask mask-star" checked />
+          <input type="radio" name="star" class="mask mask-star" />
+          <input type="radio" name="star" class="mask mask-star" />
+          <input type="radio" name="star" class="mask mask-star" />
+          <input type="radio" name="star" class="mask mask-star" />
+        </div>
+        <input type="file" class="file-input file-input-sm w-full" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 数据展示 -->
+  <section class="pilot-block p-5">
+    <h2 class="text-lg font-semibold mb-1">3 · 数据展示 <span class="text-xs font-normal opacity-60">table / badge / progress / timeline / collapse / list</span></h2>
+    <p class="text-sm opacity-70 mb-4">表格斑马纹、行固定、圆环进度、时间轴，都是单个修饰类。</p>
+
+    <div class="overflow-x-auto rounded-box border border-base-300 mb-5">
+      <table class="table table-zebra table-sm">
+        <thead>
+          <tr><th>设备</th><th>位置</th><th>状态</th><th class="text-right">负载</th><th>最近上报</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>空调机组 A-03</td><td>A 栋 3F</td>
+            <td><span class="badge badge-success badge-sm badge-soft">运行</span></td>
+            <td class="text-right">62%</td><td>12:04:31</td>
+          </tr>
+          <tr>
+            <td>水泵 B-11</td><td>B 栋 B1</td>
+            <td><span class="badge badge-warning badge-sm badge-soft">亚健康</span></td>
+            <td class="text-right">88%</td><td>12:04:28</td>
+          </tr>
+          <tr>
+            <td>配电柜 C-02</td><td>能源站</td>
+            <td><span class="badge badge-error badge-sm badge-soft">故障</span></td>
+            <td class="text-right">—</td><td>11:58:02</td>
+          </tr>
+          <tr>
+            <td>门禁 D-07</td><td>C 栋 1F</td>
+            <td><span class="badge badge-ghost badge-sm">离线</span></td>
+            <td class="text-right">—</td><td>10:31:11</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-3">
+      <div class="space-y-3">
+        <div class="text-sm font-medium">进度</div>
+        <progress class="progress progress-primary" value="72" max="100"></progress>
+        <progress class="progress progress-warning" value="45" max="100"></progress>
+        <progress class="progress progress-success" value="90" max="100"></progress>
+        <div class="flex items-center gap-4">
+          <div class="radial-progress text-primary" style="--value:76;--size:4.5rem;--thickness:6px" role="progressbar">76%</div>
+          <div class="radial-progress text-success" style="--value:92;--size:4.5rem;--thickness:6px" role="progressbar">92%</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="text-sm font-medium mb-2">时间轴</div>
+        <ul class="timeline timeline-vertical timeline-compact timeline-snap-icon">
+          <li>
+            <div class="timeline-middle"><span class="status status-primary"></span></div>
+            <div class="timeline-end mb-3"><div class="text-sm">12:04 触发告警</div><div class="text-xs opacity-60">配电柜 C-02 温度超阈值</div></div>
+          </li>
+          <li>
+            <div class="timeline-middle"><span class="status status-warning"></span></div>
+            <div class="timeline-end mb-3"><div class="text-sm">12:05 自动派单</div><div class="text-xs opacity-60">指派给 运维一组 · 张工</div></div>
+          </li>
+          <li>
+            <div class="timeline-middle"><span class="status status-success"></span></div>
+            <div class="timeline-end"><div class="text-sm">12:19 已处理</div><div class="text-xs opacity-60">更换散热风扇，温度回落</div></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="space-y-3">
+        <div class="text-sm font-medium">折叠面板</div>
+        <div class="collapse collapse-arrow bg-base-200">
+          <input type="radio" name="acc" checked />
+          <div class="collapse-title text-sm">采集参数</div>
+          <div class="collapse-content text-xs opacity-70"><p>间隔 60s · 超时 5s · 重试 2 次</p></div>
+        </div>
+        <div class="collapse collapse-arrow bg-base-200">
+          <input type="radio" name="acc" />
+          <div class="collapse-title text-sm">告警策略</div>
+          <div class="collapse-content text-xs opacity-70"><p>连续 3 次超阈值才告警，避免抖动误报</p></div>
+        </div>
+        <ul class="list bg-base-200 rounded-box">
+          <li class="list-row"><div class="avatar avatar-placeholder"><div class="bg-primary text-primary-content w-8 rounded-full"><span class="text-xs">张</span></div></div><div class="text-sm">张工 · 运维一组</div></li>
+          <li class="list-row"><div class="avatar avatar-placeholder"><div class="bg-neutral text-neutral-content w-8 rounded-full"><span class="text-xs">李</span></div></div><div class="text-sm">李工 · 能源组</div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 导航 -->
+  <section class="pilot-block p-5">
+    <h2 class="text-lg font-semibold mb-1">4 · 导航 <span class="text-xs font-normal opacity-60">menu / tabs / steps / breadcrumbs / pagination</span></h2>
+    <p class="text-sm opacity-70 mb-4">左侧菜单、页签、步骤条开箱即用，选中态由 active 类控制。</p>
+
+    <div class="grid gap-5 md:grid-cols-3">
+      <div>
+        <div class="text-sm font-medium mb-2">菜单</div>
+        <ul class="menu bg-base-200 rounded-box w-full">
+          <li class="menu-title text-xs">园区运营</li>
+          <li><a class="menu-active">总览</a></li>
+          <li><a>设备管理</a></li>
+          <li><a>告警中心 <span class="badge badge-error badge-xs">6</span></a></li>
+          <li><a>能耗分析</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="text-sm font-medium mb-2">页签</div>
+        <div role="tablist" class="tabs tabs-border mb-3">
+          <a role="tab" class="tab tab-active">实时</a>
+          <a role="tab" class="tab">历史</a>
+          <a role="tab" class="tab">对比</a>
+        </div>
+        <div role="tablist" class="tabs tabs-box">
+          <a role="tab" class="tab tab-active">日</a>
+          <a role="tab" class="tab">周</a>
+          <a role="tab" class="tab">月</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="text-sm font-medium mb-2">步骤条</div>
+        <ul class="steps steps-vertical">
+          <li class="step step-primary">提交申请</li>
+          <li class="step step-primary">部门审批</li>
+          <li class="step">采购复核</li>
+          <li class="step">完成</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="divider my-3"></div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="breadcrumbs text-sm">
+        <ul><li><a>首页</a></li><li><a>园区</a></li><li>设备详情</li></ul>
+      </div>
+      <div class="join">
+        <button class="join-item btn btn-sm">上一页</button>
+        <button class="join-item btn btn-sm btn-active">1</button>
+        <button class="join-item btn btn-sm">2</button>
+        <button class="join-item btn btn-sm">3</button>
+        <button class="join-item btn btn-sm">下一页</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 浮层与反馈 -->
+  <section class="pilot-block p-5">
+    <h2 class="text-lg font-semibold mb-1">5 · 浮层与反馈 <span class="text-xs font-normal opacity-60">modal / dropdown / tooltip / alert</span></h2>
+    <p class="text-sm opacity-70 mb-4">弹窗用原生 dialog，打开关闭不用写 JS 状态机。</p>
+
+    <div class="flex flex-wrap items-center gap-3 mb-5">
+      <button class="btn btn-primary btn-sm" onclick="dlg_confirm.showModal()">打开弹窗</button>
+
+      <details class="dropdown">
+        <summary class="btn btn-sm">下拉菜单</summary>
+        <ul class="dropdown-content menu bg-base-100 rounded-box w-48 p-2 shadow-lg border border-base-300 z-10">
+          <li><a>导出 Excel</a></li>
+          <li><a>批量派单</a></li>
+          <li><a class="text-error">删除</a></li>
+        </ul>
+      </details>
+
+      <div class="tooltip" data-tip="最近 5 分钟无上报">
+        <button class="btn btn-sm btn-ghost">悬停看提示</button>
+      </div>
+
+      <span class="badge badge-outline">outline</span>
+      <span class="badge badge-dash badge-primary">dash</span>
+      <span class="status status-success"></span><span class="text-xs">在线</span>
+      <span class="status status-error"></span><span class="text-xs">离线</span>
+    </div>
+
+    <div class="grid gap-3 md:grid-cols-2">
+      <div role="alert" class="alert alert-info alert-soft">
+        <span>本周巡检计划已完成 12/15。</span>
+      </div>
+      <div role="alert" class="alert alert-warning alert-soft">
+        <span>B 栋水泵负载连续 2 小时高于 85%。</span>
+      </div>
+      <div role="alert" class="alert alert-error alert-soft">
+        <span>配电柜 C-02 通讯中断，已自动派单。</span>
+      </div>
+      <div role="alert" class="alert alert-success alert-soft">
+        <span>设备台账导入成功，共 248 条。</span>
+      </div>
+    </div>
+
+    <dialog id="dlg_confirm" class="modal">
+      <div class="modal-box">
+        <h3 class="text-base font-semibold">确认批量派单？</h3>
+        <p class="py-3 text-sm opacity-70">已选 6 台设备，将指派给「运维一组」，预计 2 小时内上门。</p>
+        <div class="modal-action">
+          <form method="dialog"><button class="btn btn-sm">取消</button></form>
+          <form method="dialog"><button class="btn btn-sm btn-primary">确认派单</button></form>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
+  </section>
+
+  <!-- 6 展示道具 -->
+  <section class="pilot-block p-5">
+    <h2 class="text-lg font-semibold mb-1">6 · 展示道具 <span class="text-xs font-normal opacity-60">mockup-browser / code / phone / window / diff</span></h2>
+    <p class="text-sm opacity-70 mb-4">给提案用的成套外框：截图放进去就有完整情境，不用另外拼图。</p>
+
+    <div class="grid gap-5 lg:grid-cols-2">
+      <div class="mockup-browser border border-base-300 w-full">
+        <div class="mockup-browser-toolbar">
+          <div class="input input-sm">https://axhub.local/energy</div>
+        </div>
+        <div class="bg-base-200 p-4">
+          <div class="stats w-full bg-base-100">
+            <div class="stat py-3"><div class="stat-title text-xs">今日用电</div><div class="stat-value text-xl text-primary">3,842<span class="text-sm font-normal"> kWh</span></div></div>
+            <div class="stat py-3"><div class="stat-title text-xs">较昨日</div><div class="stat-value text-xl text-success">-6.2%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mockup-code w-full">
+        <pre data-prefix="1"><code>&lt;button class="btn btn-primary"&gt;</code></pre>
+        <pre data-prefix="2" class="text-success"><code>  提交审批</code></pre>
+        <pre data-prefix="3"><code>&lt;/button&gt;</code></pre>
+      </div>
+
+      <div class="flex flex-wrap items-start gap-6">
+        <div class="w-52 shrink-0">
+          <div class="mockup-phone">
+            <div class="mockup-phone-camera"></div>
+            <div class="mockup-phone-display bg-base-100 px-3 pt-12">
+              <div class="text-[10px] font-semibold mb-1">今日待办</div>
+              <div class="space-y-1">
+                <div class="rounded-box bg-base-200 p-1 text-[10px] leading-snug">审批 · 采购申请 2 条</div>
+                <div class="rounded-box bg-base-200 p-1 text-[10px] leading-snug">巡检 · A 栋 3F 待打卡</div>
+                <div class="rounded-box bg-base-200 p-1 text-[10px] leading-snug">告警 · 1 条待确认</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mockup-window border border-base-300 flex-1 min-w-56">
+          <div class="bg-base-100 p-3">
+            <table class="table table-xs">
+              <thead><tr><th>工单</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td>空调保养</td><td><span class="badge badge-success badge-xs">完成</span></td></tr>
+                <tr><td>灯具更换</td><td><span class="badge badge-warning badge-xs">处理中</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="diff aspect-video rounded-box overflow-hidden">
+          <div class="diff-item-1">
+            <img alt="换肤后" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='800' height='450' fill='%23165dff'/%3E%3Cg stroke='%23ffffff' stroke-opacity='0.22'%3E%3Cpath d='M0 75h800M0 150h800M0 225h800M0 300h800M0 375h800'/%3E%3Cpath d='M100 0v450M200 0v450M300 0v450M400 0v450M500 0v450M600 0v450M700 0v450'/%3E%3C/g%3E%3C/svg%3E" />
+          </div>
+          <div class="diff-item-2">
+            <img alt="换肤前" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='800' height='450' fill='%234e5969'/%3E%3Cg stroke='%23ffffff' stroke-opacity='0.22' stroke-dasharray='8 10'%3E%3Cpath d='M0 75h800M0 150h800M0 225h800M0 300h800M0 375h800'/%3E%3Cpath d='M100 0v450M200 0v450M300 0v450M400 0v450M500 0v450M600 0v450M700 0v450'/%3E%3C/g%3E%3C/svg%3E" />
+          </div>
+          <div class="diff-resizer"></div>
+        </div>
+        <div class="text-xs opacity-60 mt-2">← 拖动中间的把手，对比"换肤前 / 换肤后"</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 局部换肤 -->
+  <section class="pilot-block p-5">
+    <h2 class="text-lg font-semibold mb-1">7 · 局部换肤 <span class="text-xs font-normal opacity-60">data-theme 嵌套</span></h2>
+    <p class="text-sm opacity-70 mb-4">同一段 HTML，只改容器上的 data-theme，就能做「浅色主站 + 深色大屏」同页共存。</p>
+
+    <div class="grid gap-4 md:grid-cols-3">
+      <div data-theme="axhub" class="rounded-box border border-base-300 bg-base-100 p-4">
+        <div class="text-xs opacity-60 mb-2">data-theme="axhub"</div>
+        <button class="btn btn-primary btn-sm">主要按钮</button>
+        <div class="mt-3 text-sm">正文文字</div>
+      </div>
+      <div data-theme="axhub-dark" class="rounded-box border border-base-300 bg-base-100 p-4">
+        <div class="text-xs opacity-60 mb-2">data-theme="axhub-dark"</div>
+        <button class="btn btn-primary btn-sm">主要按钮</button>
+        <div class="mt-3 text-sm">正文文字</div>
+      </div>
+      <div data-theme="cyberpunk" class="rounded-box border border-base-300 bg-base-100 p-4">
+        <div class="text-xs opacity-60 mb-2">data-theme="cyberpunk"</div>
+        <button class="btn btn-primary btn-sm">主要按钮</button>
+        <div class="mt-3 text-sm">正文文字</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="text-xs opacity-50 py-4">
+    04-daisyUI 试点 · 构建产物 dist/daisyui.css · 类名清单见 _meta/components.catalog.json · 官方 Agent 技能见 agent-skill/llms.txt
+  </footer>
+</main>
+
+<script>
+// 主题下拉：35 套内置 + 2 套自定义
+const THEMES = ['axhub','axhub-dark','light','dark','cupcake','bumblebee','emerald','corporate','synthwave','retro','cyberpunk','valentine','halloween','garden','forest','aqua','lofi','pastel','fantasy','wireframe','black','luxury','dracula','cmyk','autumn','business','acid','lemonade','night','coffee','winter','dim','nord','sunset','caramellatte','abyss','silk'];
+const picker = document.getElementById('theme-picker');
+const html = document.documentElement;
+const saved = localStorage.getItem('pilot-theme');
+if (saved && THEMES.includes(saved)) html.dataset.theme = saved;
+picker.innerHTML = THEMES.map(t => `<option value="${t}">${t}</option>`).join('');
+picker.value = html.dataset.theme;
+picker.addEventListener('change', () => {
+  html.dataset.theme = picker.value;
+  localStorage.setItem('pilot-theme', picker.value);
+});
+// 构建产物体积（file:// 下 fetch 不可用，构建脚本会回填真实值）
+</script>
+</body>
+</html>

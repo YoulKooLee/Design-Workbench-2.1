@@ -1,0 +1,30 @@
+{
+  "version": "5.7.50",
+  "description": "页面组件 · daisyUI 5 试点库（纯 CSS 语义类名，非源码组件）。与 03-页面组件/Codebuddy Design 并列，定位互补：本库负责主题与展示道具，业务组件仍走 Codebuddy Design。消费方式为「引一份构建产物 + 按类名写 HTML」，无 import 步骤、无 JS 运行时。",
+  "status": "pilot",
+  "ends": {
+    "css-classes": {
+      "outputDir": "src/styles/daisyui",
+      "defaultFramework": "daisyui",
+      "frameworks": {
+        "daisyui": {
+          "path": ".",
+          "theme": "axhub",
+          "capability": "css-classes",
+          "label": "HTML/Vue/React 通用 · daisyUI 5（试点）",
+          "status": "pilot",
+          "componentCount": 68,
+          "themeCount": 37,
+          "catalog": "_meta/components.catalog.json",
+          "themes": "_meta/themes.json",
+          "manifest": "_meta/manifest.json",
+          "dist": "dist/daisyui.css",
+          "distLite": "dist/daisyui-lite.css",
+          "preview": "preview.html",
+          "pilotOnly": true
+        }
+      }
+    }
+  },
+  "syncedAt": "2026-11-05"
+}

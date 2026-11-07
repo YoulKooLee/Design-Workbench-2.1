@@ -58,6 +58,7 @@
 | 8 个 Hook 的真实强制力与无 Hook 兜底、catalog 维护、admin 实现规范 | `.agents/rules/knowledge-and-hooks.md` |
 | SRS 语言与章节格式 | `.agents/knowledge/phase1-requirements/` |
 | UI 库参考（4 套，按 `package.json` 只读一套） | `.agents/knowledge/ui-libs/` |
+| daisyUI 语义类名组件（CSS，非 React；展示道具/主题用） | `src/component-templates/daisyui/README.md` |
 | 需求文档路由与 PRD→SRS 转写门禁 | `.agents/rules/req-doc-workflow.md`、`prd-to-srs-gate.md` |
 | 项目结构与路径约定 | `.agents/rules/project-structure.md` |
 | 业务规范（原型 / 主题 / 资源 / Review） | `rules/`（入口 `rules/README.md`） |

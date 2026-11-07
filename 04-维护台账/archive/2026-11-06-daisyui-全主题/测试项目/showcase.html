@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="axhub">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>daisyUI 5 · 语义类名组件（原型栈）</title>
+<link rel="stylesheet" href="../_kit/theme.css">
+<style>
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .sec { border: 1px solid var(--color-base-300); border-radius: var(--radius-box); background: var(--color-base-100); padding: 16px; margin-bottom: 16px; }
+  .sec h2 { margin: 0 0 4px; font-size: 15px; }
+  .sec p.hint { margin: 0 0 12px; font-size: 12px; opacity: .65; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .grid2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+</style>
+</head>
+<body class="bg-neutral-1 text-neutral-10">
+
+<div class="wrap">
+  <div style="margin-bottom:10px"><a href="./index.html" style="font-size:12px;opacity:.7">← 返回 daisyUI 目录</a></div>
+
+  <div class="row" style="justify-content:space-between;margin-bottom:16px">
+    <div>
+      <div style="font-size:18px;font-weight:600">daisyUI 5 · 语义类名组件</div>
+      <div style="font-size:12px;opacity:.65;margin-top:4px">
+        写类名即用（btn / card / mockup-browser…），无 React 组件、无 JS 运行时；主题与 Arco 色板已对齐
+      </div>
+    </div>
+    <select id="theme" class="select select-sm w-40">
+      <option value="axhub">axhub（默认）</option>
+      <option value="axhub-dark">axhub-dark</option>
+      <option value="light">light</option>
+      <option value="dark">dark</option>
+    </select>
+  </div>
+
+  <div class="sec" id="s1">
+    <h2>1 · 语义类名速览</h2>
+    <p class="hint">同一套类名在 4 个主题下都成立；颜色不写死，跟着主题走。</p>
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn btn-sm btn-primary">主要操作</button>
+      <button class="btn btn-sm btn-error">危险操作</button>
+      <button class="btn btn-sm btn-soft btn-primary">浅色</button>
+      <button class="btn btn-sm btn-outline">描边</button>
+      <button class="btn btn-sm btn-ghost">幽灵</button>
+      <button class="btn btn-sm" disabled>禁用</button>
+      <span class="badge badge-success badge-soft badge-sm">运行</span>
+      <span class="badge badge-warning badge-soft badge-sm">亚健康</span>
+      <span class="badge badge-error badge-soft badge-sm">故障</span>
+      <span class="status status-success"></span><span style="font-size:12px">在线</span>
+      <span class="status status-error"></span><span style="font-size:12px">离线</span>
+    </div>
+    <div class="row">
+      <input type="text" class="input input-sm w-44" placeholder="输入框" />
+      <select class="select select-sm w-32"><option>A 栋</option><option>B 栋</option></select>
+      <label class="label" style="gap:6px;font-size:12px"><input type="checkbox" class="checkbox checkbox-sm checkbox-primary" checked /> 启用告警</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px"><input type="radio" class="radio radio-sm radio-primary" checked /> 按小时</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" class="toggle toggle-sm toggle-primary" checked /> 自动派单</label>
+      <span class="kbd kbd-sm">Ctrl</span><span class="kbd kbd-sm">K</span>
+    </div>
+  </div>
+
+  <div class="sec" id="s2">
+    <h2>2 · 展示道具（现有库没有的那部分）</h2>
+    <p class="hint">提案页专用外框：把截图塞进去就有完整情境。拖动第 3 块中间的把手可左右对比。</p>
+    <div class="grid2">
+      <div class="mockup-browser border border-base-300">
+        <div class="mockup-browser-toolbar"><div class="input input-sm">https://axhub.local/energy</div></div>
+        <div class="bg-base-200 p-4" style="font-size:12px">今日用电 3,842 kWh，较昨日 -6.2%</div>
+      </div>
+
+      <div class="mockup-window border border-base-300">
+        <div class="bg-base-200 p-4" style="font-size:12px">窗口外框 · 放后台截图</div>
+      </div>
+
+      <div class="diff aspect-video rounded-box overflow-hidden" style="max-height:160px">
+        <div class="diff-item-1">
+          <img alt="换肤后" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='800' height='450' fill='%23165dff'/%3E%3Cg stroke='%23ffffff' stroke-opacity='0.22'%3E%3Cpath d='M0 75h800M0 150h800M0 225h800M0 300h800M0 375h800'/%3E%3Cpath d='M100 0v450M200 0v450M300 0v450M400 0v450M500 0v450M600 0v450M700 0v450'/%3E%3C/g%3E%3C/svg%3E" />
+        </div>
+        <div class="diff-item-2">
+          <img alt="换肤前" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='800' height='450' fill='%234e5969'/%3E%3Cg stroke='%23ffffff' stroke-opacity='0.22' stroke-dasharray='8 10'%3E%3Cpath d='M0 75h800M0 150h800M0 225h800M0 300h800M0 375h800'/%3E%3Cpath d='M100 0v450M200 0v450M300 0v450M400 0v450M500 0v450M600 0v450M700 0v450'/%3E%3C/g%3E%3C/svg%3E" />
+        </div>
+        <div class="diff-resizer"></div>
+      </div>
+
+      <div class="mockup-code">
+        <pre data-prefix="1"><code>&lt;button class="btn btn-primary"&gt;</code></pre>
+        <pre data-prefix="2" class="text-success"><code>  提交审批</code></pre>
+        <pre data-prefix="3"><code>&lt;/button&gt;</code></pre>
+      </div>
+
+      <div class="mockup-phone" style="width:160px">
+        <div class="mockup-phone-camera"></div>
+        <div class="mockup-phone-display bg-base-100 px-2 pt-8">
+          <div style="font-size:10px;font-weight:600;margin-bottom:4px">今日待办</div>
+          <div class="rounded-box bg-base-200 p-1" style="font-size:9px">审批 · 2 条</div>
+          <div class="rounded-box bg-base-200 p-1 mt-1" style="font-size:9px">巡检 · 1 条</div>
+        </div>
+      </div>
+
+      <div class="hero rounded-box bg-base-200" style="min-height:150px">
+        <div class="hero-content text-center">
+          <div>
+            <div style="font-size:14px;font-weight:600">园区数字孪生</div>
+            <div style="font-size:11px;opacity:.7;margin:4px 0 8px">首屏大图区 · 放摄影图或大屏截图</div>
+            <button class="btn btn-primary btn-xs">进入总览</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="s3">
+    <h2>3 · 现有库没有的小件</h2>
+    <p class="hint">这些是 daisyUI 独有、Codebuddy Design 里没有对应组件的：chat / swap / countdown / carousel / avatar 角标 / skeleton。</p>
+    <div class="grid2">
+      <div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">对话气泡</div>
+        <div class="chat chat-start">
+          <div class="chat-header" style="font-size:11px">张工 12:04</div>
+          <div class="chat-bubble chat-bubble-primary" style="font-size:12px">C-02 温度超阈值，已派单</div>
+        </div>
+        <div class="chat chat-end">
+          <div class="chat-header" style="font-size:11px">我 12:06</div>
+          <div class="chat-bubble" style="font-size:12px">收到，我看下现场</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">倒计时 / 加载 / 骨架</div>
+        <div class="row" style="margin-bottom:8px">
+          <span class="countdown font-mono text-xl"><span style="--value:12;">12</span></span>
+          <span style="font-size:12px">: </span>
+          <span class="countdown font-mono text-xl"><span style="--value:45;">45</span></span>
+          <span class="loading loading-spinner loading-sm"></span>
+          <span class="loading loading-dots loading-sm"></span>
+        </div>
+        <div class="skeleton skeleton-text" style="height:10px;width:70%"></div>
+        <div class="skeleton skeleton-text mt-1" style="height:10px;width:45%"></div>
+      </div>
+
+      <div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">角标 / 图标互换</div>
+        <div class="row">
+          <div class="indicator">
+            <span class="indicator-item badge badge-error badge-xs">6</span>
+            <button class="btn btn-sm btn-outline">告警中心</button>
+          </div>
+          <label class="swap swap-rotate btn btn-sm btn-ghost">
+            <input type="checkbox" />
+            <span class="swap-off">展开</span>
+            <span class="swap-on">收起</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">横向滑动卡</div>
+        <div class="carousel carousel-center rounded-box gap-2" style="width:100%">
+          <div class="carousel-item"><div class="card bg-base-200" style="width:120px"><div class="card-body p-2" style="font-size:11px">A 栋能耗</div></div></div>
+          <div class="carousel-item"><div class="card bg-base-200" style="width:120px"><div class="card-body p-2" style="font-size:11px">B 栋能耗</div></div></div>
+          <div class="carousel-item"><div class="card bg-base-200" style="width:120px"><div class="card-body p-2" style="font-size:11px">C 栋能耗</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="s4">
+    <h2>4 · 与 Codebuddy Design 混排</h2>
+    <p class="hint">同一页里两套写法并存不冲突：daisyUI 的卡片外壳 + 现有库的工具类与配色，按钮颜色完全一致（同为 #165dff）。</p>
+    <div class="grid2">
+      <div class="card bg-base-100 border border-base-300">
+        <div class="card-body p-4">
+          <div class="card-title" style="font-size:14px">3 号配电柜</div>
+          <p style="font-size:12px;margin:0">温度 42℃，负载 68%</p>
+          <div class="row" style="margin-top:8px">
+            <button class="bg-primary text-white h-7 px-3 text-xs rounded-sm">查看（工具类）</button>
+            <button class="btn btn-primary btn-xs">查看（daisyUI）</button>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-base-100 border border-base-300">
+        <div class="card-body p-4">
+          <div class="card-title" style="font-size:14px">局部换肤</div>
+          <p style="font-size:12px;margin:0">同一段 HTML，容器加 data-theme 即换一套配色。</p>
+          <div class="row" style="margin-top:8px">
+            <div data-theme="axhub" class="bg-base-100 text-base-content" style="padding:8px;border-radius:8px;border:1px solid var(--color-base-300)">
+              <button class="btn btn-primary btn-xs">axhub</button>
+            </div>
+            <div data-theme="axhub-dark" class="bg-base-100 text-base-content" style="padding:8px;border-radius:8px;border:1px solid var(--color-base-300)">
+              <button class="btn btn-primary btn-xs">axhub-dark</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:11px;opacity:.5;padding:8px 0">
+    daisyUI 5.7.50 · MIT · 用法见同目录 README.md · 68 组件类名清单见 03-组件库/04-daisyUI/_meta/components.catalog.json
+  </div>
+</div>
+
+<script>
+  const KEY = 'axhub-daisy-theme';
+  const el = document.documentElement;
+  const sel = document.getElementById('theme');
+  try { const s = localStorage.getItem(KEY); if (s) el.setAttribute('data-theme', s); } catch (e) {}
+  sel.value = el.getAttribute('data-theme') || 'axhub';
+  sel.addEventListener('change', () => {
+    el.setAttribute('data-theme', sel.value);
+    try { localStorage.setItem(KEY, sel.value); } catch (e) {}
+  });
+</script>
+</body>
+</html>

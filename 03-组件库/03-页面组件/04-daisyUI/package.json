@@ -1,0 +1,17 @@
+{
+  "name": "axhub-daisyui-pilot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "04-daisyUI 试点：daisyUI 5 + Tailwind CSS 4 构建入口（仅用于生成 dist/daisyui.css，不进入任何工程运行时）",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./dist/daisyui.css --minify",
+    "self": "node ./_meta/build-preview.mjs",
+    "all": "npm run build && npm run self"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "daisyui": "^5.7.50",
+    "tailwindcss": "^4.1.0"
+  }
+}

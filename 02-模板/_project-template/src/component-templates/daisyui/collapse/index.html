@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="axhub">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>折叠面板 · daisyUI</title>
+<link rel="stylesheet" href="../../_kit/theme.css">
+<style>
+  body{margin:0;padding:24px 28px;font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--color-base-100);color:var(--color-base-content)}
+  a.back{font-size:12px;opacity:.65;text-decoration:none;display:inline-block;margin-bottom:10px}
+  h1{font-size:16px;margin:0 0 4px;font-weight:600}
+  .meta{font-size:12px;opacity:.65;margin-bottom:6px;line-height:1.9}
+  .meta code{background:var(--color-base-200);padding:1px 5px;border-radius:4px;font-size:11px}
+  .demo{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:16px;border:1px solid var(--color-base-300);border-radius:10px;margin-bottom:14px;min-width:min-content}
+  .usage{background:var(--color-base-200);border-radius:8px;padding:10px 14px;font-size:11px;opacity:.8;margin-top:4px;white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body>
+<a class="back" href="../index.html">← 返回 daisyUI 目录</a>
+<h1>collapse · 折叠面板</h1>
+<div class="meta">主类 <code>collapse</code>　修饰 <code>collapse-arrow</code> <code>collapse-plus</code> <code>collapse-open</code><br>场景：参数详情、FAQ；radio 版可做手风琴</div>
+<div class="demo"><div class="collapse collapse-arrow bg-base-200 rounded-box mb-2"><input type="checkbox" checked=""/><div class="collapse-title text-sm">A 栋空调机组（点击展开/收起）</div><div class="collapse-content text-xs"><p>3 台外机，1 台报 E4，检修工单已派发。</p></div></div><div class="collapse collapse-arrow bg-base-200 rounded-box"><input type="checkbox"/><div class="collapse-title text-sm">B 栋新风系统</div><div class="collapse-content text-xs"><p>滤网更换周期剩余 12 天。</p></div></div></div>
+<div class="usage">写类名即用，不 import：&lt;div class="collapse …"&gt;…&lt;/div&gt;
+对应 Codebuddy Design：数据展示/Collapse</div>
+</body>
+</html>
