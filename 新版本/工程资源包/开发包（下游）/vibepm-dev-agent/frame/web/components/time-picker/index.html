@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>时间选择 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./select-range/component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="time-picker">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">time-picker</p>
+          <h1 class="wa-fam-title">时间选择</h1>
+          <p class="wa-fam-lead">表单选择时刻、时段或固定时间点，用于预约到点、营业时段与排班。</p>
+          <p class="wa-fam-lead">组件类型：default / range / select-default / select-range / hour12 / disabled</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="time-picker-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">时间选择</span><span class="wa-comp-meta__slug">time-picker-default</span></div>
+              <a-tooltip :content="famCopyTip('time-picker-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('time-picker-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('time-picker-default')"
+                :aria-label="famCopyTip('time-picker-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('time-picker-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-time-picker
+                  v-model="time"
+                  format="HH:mm:ss"
+                  placeholder="请选择时间"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="time-picker-range">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">时间范围</span><span class="wa-comp-meta__slug">time-picker-range</span></div>
+              <a-tooltip :content="famCopyTip('time-picker-range')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('time-picker-range') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('time-picker-range')"
+                :aria-label="famCopyTip('time-picker-range')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('time-picker-range')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-time-picker
+                  v-model="timeRange"
+                  type="time-range"
+                  format="HH:mm"
+                  :placeholder="['开始时间', '结束时间']"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="time-picker-select">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">固定时间点</span><span class="wa-comp-meta__slug">time-picker-select</span></div>
+              <a-tooltip :content="famCopyTip('time-picker-select')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('time-picker-select') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('time-picker-select')"
+                :aria-label="famCopyTip('time-picker-select')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('time-picker-select')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-select
+                  v-model="timeSelect"
+                  :options="timeSelectOptions"
+                  placeholder="请选择时间"
+                  allow-clear
+                >
+                  <template #arrow-icon>
+                    <icon-clock-circle />
+                  </template>
+                </a-select>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="time-picker-select-range">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">固定时间点范围</span><span class="wa-comp-meta__slug">time-picker-select-range</span></div>
+              <a-tooltip :content="famCopyTip('time-picker-select-range')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('time-picker-select-range') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('time-picker-select-range')"
+                :aria-label="famCopyTip('time-picker-select-range')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('time-picker-select-range')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="tp-select-range">
+                  <a-select
+                    v-model="timeSelectStart"
+                    :options="timeSelectOptions"
+                    placeholder="开始时间"
+                    allow-clear
+                    @change="onTimeSelectStartChange"
+                  >
+                    <template #arrow-icon><span></span></template>
+                  </a-select>
+                  <span class="tp-select-range__sep">-</span>
+                  <a-select
+                    v-model="timeSelectEnd"
+                    :options="timeSelectEndOptions"
+                    placeholder="结束时间"
+                    allow-clear
+                  >
+                    <template #arrow-icon>
+                      <icon-clock-circle />
+                    </template>
+                  </a-select>
+                </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="time-picker-hour12">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">12 小时时间选择</span><span class="wa-comp-meta__slug">time-picker-hour12</span></div>
+              <a-tooltip :content="famCopyTip('time-picker-hour12')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('time-picker-hour12') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('time-picker-hour12')"
+                :aria-label="famCopyTip('time-picker-hour12')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('time-picker-hour12')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-time-picker
+                  v-model="timeHour12"
+                  use12-hours
+                  format="hh:mm:ss a"
+                  placeholder="请选择时间"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="time-picker-disabled">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">禁用时间选择</span><span class="wa-comp-meta__slug">time-picker-disabled</span></div>
+              <a-tooltip :content="famCopyTip('time-picker-disabled')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('time-picker-disabled') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('time-picker-disabled')"
+                :aria-label="famCopyTip('time-picker-disabled')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('time-picker-disabled')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-time-picker
+                  v-model="disabledTime"
+                  format="HH:mm:ss"
+                  placeholder="请选择时间"
+                  disabled
+                />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'time-picker',
+      members: [
+        'time-picker-default',
+        'time-picker-range',
+        'time-picker-select',
+        'time-picker-select-range',
+        'time-picker-hour12',
+        'time-picker-disabled',
+      ],
+      setup: function (api) {
+        function buildTimeOptions(start, end, stepMinutes) {
+          function toMin(s) {
+            var p = String(s || '').split(':')
+            return Number(p[0]) * 60 + Number(p[1] || 0)
+          }
+          function pad(n) {
+            return String(n).padStart(2, '0')
+          }
+          var from = toMin(start)
+          var to = toMin(end)
+          var step = Math.max(1, Number(stepMinutes) || 15)
+          var list = []
+          for (var m = from; m <= to; m += step) {
+            var label = pad(Math.floor(m / 60)) + ':' + pad(m % 60)
+            list.push({ label: label, value: label })
+          }
+          return list
+        }
+        function toMin(s) {
+          if (!s) return NaN
+          var p = String(s).split(':')
+          return Number(p[0]) * 60 + Number(p[1] || 0)
+        }
+        var timeSelectOptions = buildTimeOptions('08:30', '18:00', 15)
+        var timeSelectStart = api.ref()
+        var timeSelectEnd = api.ref()
+        var timeSelectEndOptions = api.computed(function () {
+          if (!timeSelectStart.value) return timeSelectOptions
+          var min = toMin(timeSelectStart.value)
+          return timeSelectOptions.filter(function (o) {
+            return toMin(o.value) >= min
+          })
+        })
+        return {
+          time: api.ref(),
+          timeRange: api.ref(),
+          timeSelect: api.ref(),
+          timeSelectOptions: timeSelectOptions,
+          timeSelectStart: timeSelectStart,
+          timeSelectEnd: timeSelectEnd,
+          timeSelectEndOptions: timeSelectEndOptions,
+          onTimeSelectStartChange: function (v) {
+            if (v && timeSelectEnd.value && toMin(timeSelectEnd.value) < toMin(v)) {
+              timeSelectEnd.value = undefined
+            }
+          },
+          timeHour12: api.ref(),
+          disabledTime: api.ref('14:30:00'),
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

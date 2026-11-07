@@ -1,0 +1,11 @@
+slug: input-range
+label: 数值范围
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/input/range

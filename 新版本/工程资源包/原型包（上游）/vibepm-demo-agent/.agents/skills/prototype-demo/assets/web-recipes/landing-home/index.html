@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+<script src="./assets/common/js/theme.js?v=20261016f"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lumen · Customer Success</title>
+  <link rel="stylesheet" href="./vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="./assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="./assets/common/css/global.css" />
+  <link rel="stylesheet" href="./vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="./assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="./assets/common/css/components.css" />
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <div class="wa-layout wa-layout--site-marketing">
+      <header class="wa-layout__navbar">
+        <div class="wa-layout__navbar-inner">
+          <a class="wa-layout__brand" href="#hero" @click.prevent="goNav('hero')">
+            <span class="wa-layout__brand-mark" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>
+            <span>Lumen</span>
+          </a>
+          <nav class="wa-layout__site-nav" aria-label="主导航">
+            <a
+              v-for="item in navItems"
+              :key="item.key"
+              :href="'#' + item.key"
+              :class="{ 'is-active': activeNav === item.key }"
+              @click.prevent="goNav(item.key)"
+            >{{ item.label }}</a>
+          </nav>
+          <div class="wa-layout__actions">
+            <a-tooltip position="bottom" :content="themeDark ? '切换为亮色' : '切换为暗色'">
+              <button type="button" class="wa-layout__icon-btn" :aria-label="themeDark ? '切换为亮色' : '切换为暗色'" data-wa-theme-toggle>
+                <i :class="themeDark ? 'fa-light fa-sun-bright' : 'fa-light fa-moon'" aria-hidden="true"></i>
+              </button>
+            </a-tooltip>
+            <a-button type="outline" class="wa-layout__cta-ghost" @click="onCta('登录')">登录</a-button>
+            <a-button type="primary" class="wa-layout__cta-primary" @click="onCta('试用')">试用</a-button>
+          </div>
+        </div>
+      </header>
+
+      <main class="wa-layout__main">
+        <div class="wa-layout__site-stack">
+          <section class="wa-layout__site-section" id="hero" aria-label="主视觉">
+            <div class="wa-layout__site-row wa-layout__site-row--hero">
+              <a href="#features" class="wa-layout__hero-badge" @click.prevent="goNav('features')">
+                <span>面向 SaaS 团队的 AI 客户健康分析</span>
+                <i class="fa-light fa-arrow-right" aria-hidden="true"></i>
+              </a>
+              <h1 class="wa-layout__page-title">
+                把产品数据，变成
+                <span class="wa-layout__page-title-accent">增长续约决策</span>
+              </h1>
+              <p class="wa-layout__page-lead">打通产品用量、账单与工单，在一张工作台上看清试用、流失与扩容机会。几分钟读懂续约漏斗，而不是几天对表。</p>
+              <div class="wa-layout__guide-cta">
+                <a-button type="primary" size="large" class="wa-layout__hero-cta" @click="onCta('开始免费试用')">
+                  <span>开始免费试用</span>
+                  <i class="fa-light fa-arrow-right" aria-hidden="true"></i>
+                </a-button>
+              </div>
+              <div class="wa-layout__metric-grid" aria-label="试点成果">
+                <article v-for="m in metrics" :key="m.key">
+                  <strong>{{ m.value }}</strong>
+                  <span>{{ m.label }}</span>
+                </article>
+              </div>
+              <figure class="wa-layout__site-hero-visual" aria-hidden="true">
+                <div class="wa-layout__site-stage">
+                  <div class="wa-layout__site-dash">
+                    <aside class="wa-layout__site-dash-side">
+                      <i class="wa-layout__site-dash-logo"></i>
+                      <em class="is-on"></em>
+                      <em></em><em></em><em></em><em></em><em></em><em></em>
+                    </aside>
+                    <div class="wa-layout__site-dash-main">
+                      <header class="wa-layout__site-dash-bar">
+                        <b></b><b></b>
+                        <span></span>
+                      </header>
+                      <div class="wa-layout__site-dash-kpis">
+                        <i><strong>92</strong><small>组合健康分</small></i>
+                        <i><strong>18</strong><small>风险客户</small></i>
+                        <i><strong>+14%</strong><small>净续约</small></i>
+                        <i><strong>6</strong><small>待跟进</small></i>
+                      </div>
+                      <div class="wa-layout__site-dash-panels">
+                        <div class="wa-layout__site-dash-chart">
+                          <svg viewBox="0 0 320 120" preserveAspectRatio="none">
+                            <path class="is-area" d="M0 90 C40 80, 70 40, 110 55 S170 100, 210 70 S270 30, 320 45 L320 120 L0 120 Z" />
+                            <path class="is-line" d="M0 90 C40 80, 70 40, 110 55 S170 100, 210 70 S270 30, 320 45" fill="none" />
+                          </svg>
+                        </div>
+                        <div class="wa-layout__site-dash-aside-charts">
+                          <div class="wa-layout__site-dash-bars" aria-hidden="true">
+                            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                          </div>
+                          <div class="wa-layout__site-dash-mix">
+                            <span class="wa-layout__site-dash-donut" aria-hidden="true"></span>
+                            <div class="wa-layout__site-dash-rows">
+                              <i></i><i></i><i></i>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+            </div>
+          </section>
+
+          <section class="wa-layout__site-section" id="logos" aria-label="客户品牌">
+            <div class="wa-layout__site-row wa-layout__logos">
+              <p class="wa-layout__logos-label">已服务成长型 SaaS 团队</p>
+              <ul>
+                <li v-for="name in logos" :key="name">{{ name }}</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="wa-layout__site-section" id="features" aria-labelledby="features-title">
+            <div class="wa-layout__site-row">
+              <header class="wa-layout__site-head">
+                <p class="wa-layout__slot-kicker">Product</p>
+                <h2 class="wa-layout__site-title" id="features-title">核心能力</h2>
+                <p class="wa-layout__site-lead">收拢分散信息，打开即知该先帮谁。</p>
+              </header>
+              <div class="wa-layout__feature-grid">
+                <article v-for="f in features" :key="f.key" class="wa-layout__feature-card">
+                  <div class="wa-layout__feature-head">
+                    <span class="wa-layout__feature-icon" aria-hidden="true"><i :class="['fa-regular', f.icon]"></i></span>
+                    <p class="wa-layout__feature-tag">{{ f.tag }}</p>
+                  </div>
+                  <h3>{{ f.title }}</h3>
+                  <p class="wa-layout__feature-desc">{{ f.desc }}</p>
+                  <ul class="wa-layout__feature-points">
+                    <li v-for="(p, pi) in f.points" :key="pi">{{ p }}</li>
+                  </ul>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="wa-layout__site-section" id="workflow" aria-labelledby="workflow-title">
+            <div class="wa-layout__site-row">
+              <header class="wa-layout__site-head">
+                <p class="wa-layout__slot-kicker">Workflow</p>
+                <h2 class="wa-layout__site-title" id="workflow-title">落地流程</h2>
+                <p class="wa-layout__site-lead">六步落地：规则配好，跟进与复盘自动运转。</p>
+              </header>
+              <ol class="wa-layout__steps">
+                <li v-for="(s, i) in steps" :key="s.key" class="wa-layout__step-card">
+                  <div class="wa-layout__step-top">
+                    <span class="wa-layout__steps-n">{{ i + 1 }}</span>
+                    <span class="wa-layout__step-time">{{ s.time }}</span>
+                  </div>
+                  <h3>{{ s.title }}</h3>
+                  <p>{{ s.desc }}</p>
+                  <p class="wa-layout__step-meta">{{ s.meta }}</p>
+                </li>
+              </ol>
+            </div>
+          </section>
+
+          <section class="wa-layout__site-section" id="pricing" aria-labelledby="pricing-title">
+            <div class="wa-layout__site-row">
+              <header class="wa-layout__site-head">
+                <p class="wa-layout__slot-kicker">Pricing</p>
+                <h2 class="wa-layout__site-title" id="pricing-title">套餐价格</h2>
+                <p class="wa-layout__site-lead">先从专业版跑通流程，再按席位与客户量扩展。年付可省两月。</p>
+              </header>
+              <div class="wa-layout__price-grid">
+                <article
+                  v-for="plan in plans"
+                  :key="plan.key"
+                  class="wa-layout__price-card"
+                  :class="{ 'is-featured': plan.featured }"
+                >
+                  <span v-if="plan.badge" class="wa-layout__price-badge">{{ plan.badge }}</span>
+                  <h3>{{ plan.name }}</h3>
+                  <p class="wa-layout__price-desc">{{ plan.desc }}</p>
+                  <p class="wa-layout__price-num">
+                    <strong>{{ plan.price }}</strong><span v-if="plan.unit">{{ plan.unit }}</span>
+                  </p>
+                  <ul>
+                    <li v-for="(f, fi) in plan.features" :key="fi">
+                      <i class="fa-solid fa-check" aria-hidden="true"></i>
+                      <span>{{ f }}</span>
+                    </li>
+                  </ul>
+                  <a-button
+                    :type="plan.primary ? 'primary' : 'outline'"
+                    long
+                    @click="onCta(plan.cta)"
+                  >{{ plan.cta }}</a-button>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="wa-layout__site-section" id="voices" aria-labelledby="voices-title">
+            <div class="wa-layout__site-row">
+              <header class="wa-layout__site-head">
+                <p class="wa-layout__slot-kicker">Customers</p>
+                <h2 class="wa-layout__site-title" id="voices-title">用户评价</h2>
+                <p class="wa-layout__site-lead">来自成长型 SaaS 团队的真实反馈。</p>
+              </header>
+              <div class="wa-layout__voice-grid">
+                <article v-for="t in testimonials" :key="t.key" class="wa-layout__voice-card">
+                  <div class="wa-layout__voice-stars" aria-label="五星评价">
+                    <i v-for="n in t.score" :key="n" class="fa-solid fa-star" aria-hidden="true"></i>
+                  </div>
+                  <p class="wa-layout__voice-quote">{{ t.quote }}</p>
+                  <div class="wa-layout__voice-author">
+                    <span class="wa-layout__voice-avatar" aria-hidden="true">{{ t.name.slice(0, 1) }}</span>
+                    <span class="wa-layout__voice-meta">
+                      <strong>{{ t.name }}</strong>
+                      <em>{{ t.role }} · {{ t.company }}</em>
+                    </span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="wa-layout__site-section" id="faq" aria-labelledby="faq-title">
+            <div class="wa-layout__site-row">
+              <header class="wa-layout__site-head">
+                <p class="wa-layout__slot-kicker">FAQ</p>
+                <h2 class="wa-layout__site-title" id="faq-title">帮助中心</h2>
+                <p class="wa-layout__site-lead">接入前最常被问到的几件事。</p>
+              </header>
+              <a-collapse
+                :bordered="false"
+                expand-icon-position="right"
+                :default-active-key="['q1']"
+                class="wa-layout__faq"
+              >
+                <a-collapse-item v-for="item in faqs" :key="item.key" :header="item.q">
+                  <p>{{ item.a }}</p>
+                </a-collapse-item>
+              </a-collapse>
+            </div>
+          </section>
+
+          <section class="wa-layout__site-section" id="cta" aria-labelledby="cta-title">
+            <div class="wa-layout__site-row wa-layout__site-row--cta">
+              <header class="wa-layout__site-head">
+                <p class="wa-layout__slot-kicker">Next step</p>
+                <h2 class="wa-layout__site-title" id="cta-title">立刻开始</h2>
+                <p class="wa-layout__site-lead">14 天完整体验，导入现有客户表即可上手。需要迁移协助时，顾问会在 1 个工作日内联系你。</p>
+              </header>
+              <div class="wa-layout__guide-cta">
+                <a-button type="primary" size="large" class="wa-layout__hero-cta" @click="onCta('免费试用')">
+                  <span>免费试用</span>
+                  <i class="fa-light fa-arrow-right" aria-hidden="true"></i>
+                </a-button>
+                <a-button type="outline" size="large" class="wa-layout__hero-cta" @click="onCta('预约演示')">
+                  <i class="fa-light fa-calendar" aria-hidden="true"></i>
+                  <span>预约演示</span>
+                </a-button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="wa-layout__site-footer">
+        <div class="wa-layout__site-footer-inner">
+          <span>© 2026 Lumen</span>
+          <span class="wa-layout__footer-links">
+            <a href="#faq" @click.prevent="goNav('faq')">帮助中心</a>
+            <a href="#" @click.prevent="onCta('隐私政策')">隐私政策</a>
+            <a href="#" @click.prevent="onCta('服务条款')">服务条款</a>
+          </span>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <script src="./vendor/vue/vue.global.prod.js"></script>
+  <script src="./vendor/arco/arco-vue.min.js"></script>
+  <script src="./assets/common/js/fa-icons.js"></script>
+  <script src="./assets/common/js/boot.js"></script>
+  <script src="./js/index.js"></script>
+</body>
+</html>

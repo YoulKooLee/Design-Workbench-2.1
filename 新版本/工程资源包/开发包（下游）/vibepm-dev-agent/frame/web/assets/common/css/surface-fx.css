@@ -1,0 +1,8 @@
+/**
+ * Compat shim -> components/surface-fx/component.css
+ * (.wa-spotlight / .wa-shine / .wa-border-flow / .wa-lift)
+ *
+ * Prefer linking the family CSS directly on new pages.
+ * Spotlight JS: assets/common/js/spotlight.js or components/surface-fx/spotlight.js
+ */
+@import url("../../../components/surface-fx/component.css");

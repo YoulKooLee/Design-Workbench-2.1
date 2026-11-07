@@ -1,0 +1,12 @@
+{
+  "recipe": "product-home",
+  "layout": "app-sidebar",
+  "source": "frame/web/layouts/app-sidebar/",
+  "deliver": [
+    "index.html",
+    "css/index.css",
+    "css/layout-app-sidebar.css",
+    "js/index.js"
+  ],
+  "note": "拷到交付根后改品牌/槽位；删预览引导与画廊专用控件。路径已是 ./vendor ./assets。"
+}

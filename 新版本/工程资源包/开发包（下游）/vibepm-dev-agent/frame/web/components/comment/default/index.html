@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>评论 · comment-default</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="comment-default">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">评论</span>
+        <span class="wa-comp-meta__slug">comment-default</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-comment class="wa-comment" author="李明" datetime="刚刚">
+          <template #avatar>
+            <a-avatar class="wa-comment-avatar" :size="36"><img alt="" src="../../../assets/images/avatar_01.jpg" /></a-avatar>
+          </template>
+          <template #content>
+            <p class="wa-comment__body">这个方案看起来不错，建议补充验收标准。</p>
+          </template>
+          <template #actions>
+            <span class="wa-comment-action"><icon-star></icon-star><span>12</span></span>
+            <span class="wa-comment-action"><icon-message></icon-message><span>回复</span></span>
+          </template>
+        </a-comment>
+        <a-comment class="wa-comment" author="王芳" datetime="5 分钟前">
+          <template #avatar>
+            <a-avatar class="wa-comment-avatar" :size="36"><img alt="" src="../../../assets/images/avatar_02.jpg" /></a-avatar>
+          </template>
+          <template #content>
+            <p class="wa-comment__body">同意，里程碑节点也写清楚会更好落地。</p>
+          </template>
+          <template #actions>
+            <span class="wa-comment-action"><icon-star></icon-star><span>8</span></span>
+            <span class="wa-comment-action"><icon-message></icon-message><span>回复</span></span>
+          </template>
+        </a-comment>
+        <a-comment class="wa-comment" author="陈浩" datetime="20 分钟前">
+          <template #avatar>
+            <a-avatar class="wa-comment-avatar" :size="36"><img alt="" src="../../../assets/images/avatar_03.jpg" /></a-avatar>
+          </template>
+          <template #content>
+            <p class="wa-comment__body">风险项我这边再核对一遍后再同步。</p>
+          </template>
+          <template #actions>
+            <span class="wa-comment-action"><icon-star></icon-star><span>3</span></span>
+            <span class="wa-comment-action"><icon-message></icon-message><span>回复</span></span>
+          </template>
+        </a-comment>
+        <a-comment class="wa-comment" author="赵敏" datetime="1 小时前">
+          <template #avatar>
+            <a-avatar class="wa-comment-avatar" :size="36"><img alt="" src="../../../assets/images/avatar_04.jpg" /></a-avatar>
+          </template>
+          <template #content>
+            <p class="wa-comment__body">文案语气可以再收敛一点，偏产品口径。</p>
+          </template>
+          <template #actions>
+            <span class="wa-comment-action"><icon-star></icon-star><span>6</span></span>
+            <span class="wa-comment-action"><icon-message></icon-message><span>回复</span></span>
+          </template>
+        </a-comment>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

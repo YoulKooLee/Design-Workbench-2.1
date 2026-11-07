@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>多选日期 · date-picker-multiple</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="date-picker-multiple">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">多选日期</span>
+        <span class="wa-comp-meta__slug">date-picker-multiple</span>
+      </div>
+      <div class="wa-embed__stage">
+        <div class="dp-multi" ref="multiRoot">
+          <a-date-picker
+            v-model="draft"
+            v-model:popup-visible="panelOpen"
+            :popup-container="popupContainer"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            show-confirm-btn
+            :show-now-btn="false"
+            @select-default="onSelect"
+            @ok="onConfirm"
+            @popup-visible-change="onPopupChange"
+          >
+            <template #cell="{ date }">
+              <div class="arco-picker-date">
+                <div
+                  class="arco-picker-date-value"
+                  :class="{ 'dp-multi-cell--picked': isPicked(date) }"
+                >{{ cellDay(date) }}</div>
+              </div>
+            </template>
+            <div
+              class="dp-multi__field"
+              :class="{ 'dp-multi__field--open': panelOpen, 'dp-multi__field--has-value': value.length }"
+              tabindex="0"
+              role="button"
+              :aria-expanded="panelOpen ? 'true' : 'false'"
+            >
+              <div class="dp-multi__tags" v-if="value.length">
+                <a-tag
+                  v-for="d in value"
+                  :key="d"
+                  closable
+                  @click.stop
+                  @close.stop="onRemove(d)"
+                >
+                  <template #close-icon><icon-close /></template>
+                  {{ d }}
+                </a-tag>
+              </div>
+              <span v-else class="dp-multi__placeholder">请选择多个日期</span>
+              <span class="dp-multi__suffix">
+                <span
+                  v-if="value.length"
+                  class="arco-icon-hover arco-picker-clear-icon"
+                  role="button"
+                  aria-label="清除"
+                  title="清除"
+                  @click.stop="onClearAll"
+                >
+                  <icon-close></icon-close>
+                </span>
+                <span class="arco-picker-suffix-icon">
+                  <icon-calendar></icon-calendar>
+                </span>
+              </span>
+            </div>
+          </a-date-picker>
+        </div>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

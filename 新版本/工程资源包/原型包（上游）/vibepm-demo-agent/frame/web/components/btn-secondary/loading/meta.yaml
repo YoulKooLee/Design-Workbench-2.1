@@ -1,0 +1,11 @@
+slug: btn-secondary-loading
+label: 加载中中性按钮
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: basic
+tags:
+  - secondary
+path: components/btn-secondary/loading

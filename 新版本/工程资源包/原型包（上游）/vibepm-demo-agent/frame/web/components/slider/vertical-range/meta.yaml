@@ -1,0 +1,11 @@
+slug: slider-vertical-range
+label: 纵向区间滑块
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags:
+  - input
+path: components/slider/vertical-range

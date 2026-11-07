@@ -1,0 +1,24 @@
+/* 区域加载：卡片水平居中，高度随内容 */
+.wa-spin-area-demo {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+.wa-spin-area-demo > .arco-spin {
+  display: block;
+  width: 100%;
+}
+
+.wa-spin-area-demo .wa-acard {
+  width: 100%;
+}
+
+.wa-spin-area-demo .wa-acard-desc {
+  margin: 0;
+  color: var(--color-text-3);
+  font-size: 13px;
+  line-height: 1.55;
+}

@@ -1,0 +1,40 @@
+/* 带边框选项（对照常见 border 形态；Arco Vue 无 border prop，用组 class） */
+.wa-bordered.arco-radio-group,
+.wa-bordered.arco-checkbox-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 100%;
+  gap: 12px;
+}
+
+.wa-bordered > .arco-radio,
+.wa-bordered > .arco-checkbox {
+  margin-right: 0 !important;
+  padding: 7px 12px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-small, 2px);
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+.wa-bordered > .arco-radio:hover:not(.arco-radio-disabled),
+.wa-bordered > .arco-checkbox:hover:not(.arco-checkbox-disabled) {
+  border-color: rgb(var(--primary-6));
+}
+
+.wa-bordered > .arco-radio-checked,
+.wa-bordered > .arco-checkbox-checked {
+  border-color: rgb(var(--primary-6));
+  background-color: rgba(var(--primary-6), 0.06);
+}
+
+.wa-bordered > .arco-radio-checked .arco-radio-label,
+.wa-bordered > .arco-checkbox-checked .arco-checkbox-label {
+  color: rgb(var(--primary-6));
+}
+
+.wa-bordered > .arco-radio-disabled,
+.wa-bordered > .arco-checkbox-disabled {
+  border-color: var(--color-border-1);
+  opacity: 0.6;
+}

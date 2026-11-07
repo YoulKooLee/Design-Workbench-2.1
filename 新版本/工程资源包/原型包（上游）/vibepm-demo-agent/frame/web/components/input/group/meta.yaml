@@ -1,0 +1,11 @@
+slug: input-group
+label: 电话组合
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/input/group

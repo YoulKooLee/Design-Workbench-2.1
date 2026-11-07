@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="default" data-density="compact">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js?v=20261016f"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>文字双轨 · app-icon-rail</title>
+  <link rel="icon" href="../../assets/images/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../assets/effects/dashed-orbit/dashed-orbit.css" />
+  <link rel="stylesheet" href="./layout.css?v=11" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <div :class="pageBarClass" :style="pageBarStyle" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="页面加载"></div>
+    <div class="wa-layout wa-layout--side wa-layout--dual wa-layout--icon-rail" :data-density="panelCompact ? 'compact' : 'comfortable'" :class="{ 'is-sider-collapsed': collapsed && !isNarrow, 'is-sider-primary': siderPrimary, 'is-mobile-menu-open': mobileOpen, 'is-narrow': isNarrow, 'is-mod-cal': moduleKey === 'calendar', 'is-mod-list': moduleKey !== 'calendar', 'is-rail-icon-only': !keepRailCaption }">
+      <div v-if="isNarrow && mobileOpen" class="wa-layout__mask" @click="mobileOpen = false"></div>
+      <div class="wa-layout__body">
+        <aside class="wa-layout__sider" aria-label="侧栏导航">
+          <div class="wa-layout__rail">
+            <a class="wa-layout__brand wa-layout__brand--rail" href="./index.html" aria-label="Vibe Design">
+              <span class="wa-layout__brand-mark" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span>
+            </a>
+            <nav class="wa-layout__rail-nav" aria-label="模块">
+              <button
+                v-for="item in modules"
+                :key="item.key"
+                type="button"
+                class="wa-layout__rail-item wa-layout__rail-item--caption"
+                :class="{ 'is-active': moduleKey === item.key }"
+                :aria-label="item.label"
+                :aria-current="moduleKey === item.key ? 'page' : null"
+                @click="selectModule(item.key)"
+              >
+                <i :class="['wa-layout__nav-icon', 'fa-regular', item.icon]" aria-hidden="true"></i>
+                <span class="wa-layout__rail-caption">{{ item.label }}</span>
+              </button>
+            </nav>
+            <button type="button" class="wa-layout__icon-btn wa-layout__collapse-desktop wa-layout__rail-collapse" :aria-label="collapsed ? '展开侧栏' : '收起侧栏'" @click="setCollapsed(!collapsed)">
+              <i :class="collapsed ? 'fa-light fa-sidebar' : 'fa-light fa-sidebar-flip'" aria-hidden="true"></i>
+            </button>
+            <div class="wa-layout__user wa-layout__user--rail">
+            <a-dropdown trigger="click" position="rt" unmount-on-close content-class="wa-layout-user-dropdown wa-layout-user-dropdown--sider" :popup-translate="[8, 0]">
+              <button type="button" class="wa-layout__user-trigger" aria-label="用户菜单">
+                <span class="wa-layout__avatar" aria-hidden="true">
+                  <img :src="userInfo.avatar" alt="" />
+                </span>
+              </button>
+              <template #content>
+                <div class="wa-layout__user-panel-head">
+                  <span class="wa-layout__avatar wa-layout__avatar--lg" aria-hidden="true">
+                    <img :src="userInfo.avatar" alt="" />
+                  </span>
+                  <span class="wa-layout__user-meta">
+                    <span class="wa-layout__user-name">{{ userInfo.name }}</span>
+                    <span class="wa-layout__user-email">{{ userInfo.email }}</span>
+                  </span>
+                </div>
+                <a-doption
+                  v-for="m in userMenus"
+                  :key="m.key"
+                  class="wa-layout__doption"
+                  :class="{ 'is-danger': m.danger }"
+                  @click="goUser(m.key)"
+                >
+                  <i :class="['wa-layout__nav-icon', 'fa-light', m.icon]" aria-hidden="true"></i>
+                  <span>{{ m.label }}</span>
+                </a-doption>
+              </template>
+            </a-dropdown>
+            </div>
+          </div>
+          <div class="wa-layout__panel">
+          <div class="wa-layout__sider-head">
+            <div class="wa-layout__panel-title">{{ moduleLabel }}</div>
+            <span
+              v-if="moduleKey === 'members'"
+              class="wa-layout__panel-meta"
+            >共 {{ siderMembers.length }} 人 · 在线 {{ siderOnline }}</span>
+            <button
+              v-else-if="panelAction"
+              type="button"
+              class="wa-layout__panel-action"
+              @click="onSiderCreate"
+            >{{ panelAction }}</button>
+          </div>
+          <div class="wa-layout__sider-inner">
+            <div class="wa-layout__sider-scroll" ref="siderScroll" @scroll="onSiderScroll">
+            <div v-if="moduleKey === 'calendar'" class="wa-layout__sider-cal" aria-label="日程待办">
+              <div class="wa-layout__agenda">
+                <div class="wa-layout__agenda-cal">
+                  <div class="wa-layout__agenda-nav">
+                    <div class="wa-layout__agenda-nav-group">
+                      <button type="button" class="wa-layout__agenda-nav-btn" aria-label="上一年" @click="shiftAgendaYear(-1)">
+                        <i class="fa-light fa-angles-left" aria-hidden="true"></i>
+                      </button>
+                      <button type="button" class="wa-layout__agenda-nav-btn" aria-label="上一月" @click="shiftAgendaMonth(-1)">
+                        <i class="fa-light fa-angle-left" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <div class="wa-layout__agenda-label">{{ agendaTitle }}</div>
+                    <div class="wa-layout__agenda-nav-group">
+                      <button type="button" class="wa-layout__agenda-nav-btn" aria-label="下一月" @click="shiftAgendaMonth(1)">
+                        <i class="fa-light fa-angle-right" aria-hidden="true"></i>
+                      </button>
+                      <button type="button" class="wa-layout__agenda-nav-btn" aria-label="下一年" @click="shiftAgendaYear(1)">
+                        <i class="fa-light fa-angles-right" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="wa-layout__agenda-weekdays">
+                    <span v-for="day in agendaWeekdays" :key="day">{{ day }}</span>
+                  </div>
+                  <div class="wa-layout__agenda-grid">
+                    <button
+                      v-for="cell in agendaCells"
+                      :key="cell.key + (cell.muted ? '-m' : '')"
+                      type="button"
+                      class="wa-layout__agenda-cell"
+                      :class="{ 'is-muted': cell.muted, 'is-selected': cell.selected, 'has-event': cell.hasEvent }"
+                      @click="selectAgendaDay(cell)"
+                    >
+                      <span class="wa-layout__agenda-day">{{ cell.day }}</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="wa-layout__agenda-list-head">
+                  <h4 class="wa-layout__agenda-list-title">待办事项</h4>
+                  <div class="wa-layout__agenda-list-actions">
+                    <button type="button" class="wa-layout__agenda-link" @click="goAgendaToday">
+                      <icon-refresh></icon-refresh>
+                      <span>返回今日</span>
+                    </button>
+                    <button type="button" class="wa-layout__agenda-link" @click="onSiderCreate">
+                      <icon-plus-circle></icon-plus-circle>
+                      <span>新建待办</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="wa-layout__agenda-list">
+                  <button
+                    v-for="item in selectedAgendaTodos"
+                    :key="item.id"
+                    type="button"
+                    class="wa-layout__agenda-item"
+                    @click="onSiderCreate"
+                  >
+                    <span class="wa-layout__agenda-tag" :class="agendaTagClass(item.tag)">{{ item.tag }}</span>
+                    <div class="wa-layout__agenda-item-body">
+                      <div class="wa-layout__agenda-item-title">{{ item.title }}</div>
+                      <div class="wa-layout__agenda-item-time">{{ item.timeRange }}</div>
+                    </div>
+                    <span class="wa-layout__agenda-item-chevron" aria-hidden="true"><i class="fa-light fa-angle-right" aria-hidden="true"></i></span>
+                  </button>
+                  <div v-if="!selectedAgendaTodos.length" class="wa-layout__agenda-empty">当日暂无待办</div>
+                </div>
+              </div>
+            </div>
+            <div v-if="moduleKey === 'members'" class="wa-layout__sider-people" aria-label="成员">
+              <button v-for="m in siderMembers" :key="m.key" type="button" class="wa-layout__sider-person" @click="onSiderCreate">
+                <span class="wa-layout__avatar" :class="{ 'is-off': !m.online }" aria-hidden="true">
+                  <img :src="m.avatar" alt="" />
+                </span>
+                <span class="wa-layout__sider-person-meta">
+                  <span class="wa-layout__sider-person-name">{{ m.name }}</span>
+                  <span class="wa-layout__sider-person-role">{{ m.dept }}</span>
+                </span>
+                <span class="wa-layout__sider-status" :class="{ 'is-on': m.online }">
+                  <span class="wa-layout__sider-dot" :class="{ 'is-on': m.online }" aria-hidden="true"></span>
+                  {{ m.online ? '在线' : '离线' }}
+                </span>
+              </button>
+            </div>
+            <div v-if="moduleKey === 'notify'" class="wa-layout__card-list" aria-label="通知摘要">
+              <div class="wa-layout__sider-notify-head">
+                <span>未读</span>
+                <span class="wa-layout__sider-notify-badge">{{ siderUnread }}</span>
+              </div>
+              <button v-for="n in siderNotices" :key="n.key" type="button" class="wa-layout__card-item" @click="onSiderCreate">
+                <span class="wa-layout__card-icon"><i :class="['fa-regular', n.icon]" aria-hidden="true"></i></span>
+                <span class="wa-layout__card-body">
+                  <span class="wa-layout__card-title">{{ n.title }}</span>
+                  <span class="wa-layout__card-desc">{{ n.desc }}</span>
+                </span>
+                <span class="wa-layout__card-chevron" aria-hidden="true"><i class="fa-light fa-angle-right"></i></span>
+              </button>
+            </div>
+            <div v-if="moduleKey === 'board'" class="wa-layout__card-list" aria-label="看板摘要">
+              <div class="wa-layout__panel-section">本周</div>
+              <button v-for="b in siderBoard" :key="b.key" type="button" class="wa-layout__card-item" @click="onSiderCreate">
+                <span class="wa-layout__card-icon"><i :class="['fa-regular', b.icon]" aria-hidden="true"></i></span>
+                <span class="wa-layout__card-body">
+                  <span class="wa-layout__card-title">{{ b.title }}</span>
+                  <span class="wa-layout__card-desc">{{ b.desc }}</span>
+                </span>
+                <span class="wa-layout__card-chevron" aria-hidden="true"><i class="fa-light fa-angle-right"></i></span>
+              </button>
+            </div>
+            <div v-if="moduleKey === 'projects'" class="wa-layout__card-list" aria-label="项目">
+              <button v-for="p in siderProjects" :key="p.key" type="button" class="wa-layout__card-item" @click="onSiderCreate">
+                <span class="wa-layout__card-icon"><i :class="['fa-regular', p.icon]" aria-hidden="true"></i></span>
+                <span class="wa-layout__card-body">
+                  <span class="wa-layout__card-title">{{ p.title }}</span>
+                  <span class="wa-layout__card-desc">{{ p.desc }}</span>
+                </span>
+                <span class="wa-layout__card-chevron" aria-hidden="true"><i class="fa-light fa-angle-right"></i></span>
+              </button>
+            </div>
+            <div v-if="moduleKey === 'notes'" class="wa-layout__card-list" aria-label="笔记">
+              <div class="wa-layout__panel-section">最近笔记</div>
+              <button v-for="n in siderNotes" :key="n.key" type="button" class="wa-layout__card-item" @click="onSiderCreate">
+                <span class="wa-layout__card-icon"><i :class="['fa-regular', n.icon]" aria-hidden="true"></i></span>
+                <span class="wa-layout__card-body">
+                  <span class="wa-layout__card-title">{{ n.title }}</span>
+                  <span class="wa-layout__card-desc">{{ n.desc }}</span>
+                </span>
+                <span class="wa-layout__card-chevron" aria-hidden="true"><i class="fa-light fa-angle-right"></i></span>
+              </button>
+            </div>
+            <div v-if="moduleKey === 'settings'" class="wa-layout__panel-slot wa-layout__panel-settings" aria-label="设置">
+              <template v-for="group in settingGroups" :key="group.key">
+                <div class="wa-layout__setting-group">{{ group.label }}</div>
+                <label v-for="s in group.items" :key="s.key" class="wa-layout__setting">
+                  <span class="wa-layout__setting-meta">
+                    <span class="wa-layout__setting-title">{{ s.title }}</span>
+                    <span class="wa-layout__setting-desc">{{ s.desc }}</span>
+                  </span>
+                  <a-switch v-model="s.on" size="small" @change="onSettingToggle(s.key, $event)" />
+                </label>
+              </template>
+            </div>
+            <div v-if="moduleKey === 'form'" class="wa-layout__panel-slot wa-layout__panel-form" aria-label="表单">
+              <div class="wa-layout__field">
+                <span class="wa-layout__field-label">任务名称</span>
+                <a-input v-model="formTitle" size="small" allow-clear placeholder="请输入任务名称"></a-input>
+              </div>
+              <div class="wa-layout__field">
+                <span class="wa-layout__field-label">状态</span>
+                <a-select v-model="filterStatus" size="small" placeholder="请选择状态" popup-container="body">
+                  <a-option value="全部">全部</a-option>
+                  <a-option value="进行中">进行中</a-option>
+                  <a-option value="已完成">已完成</a-option>
+                </a-select>
+              </div>
+              <div class="wa-layout__field">
+                <span class="wa-layout__field-label">负责人</span>
+                <a-select v-model="filterOwner" size="small" placeholder="请选择负责人" popup-container="body">
+                  <a-option value="全部">全部</a-option>
+                  <a-option value="我负责的">我负责的</a-option>
+                  <a-option value="我关注的">我关注的</a-option>
+                </a-select>
+              </div>
+              <div class="wa-layout__field">
+                <span class="wa-layout__field-label">优先级</span>
+                <a-select v-model="formPriority" size="small" placeholder="请选择优先级" popup-container="body">
+                  <a-option value="高">高</a-option>
+                  <a-option value="中">中</a-option>
+                  <a-option value="低">低</a-option>
+                </a-select>
+              </div>
+              <div class="wa-layout__field">
+                <span class="wa-layout__field-label">截止日期</span>
+                <a-date-picker v-model="formDue" size="small" placeholder="请选择日期" style="width: 100%" popup-container="body"></a-date-picker>
+              </div>
+              <div class="wa-layout__field">
+                <span class="wa-layout__field-label">关键词</span>
+                <a-input v-model="filterQuery" size="small" allow-clear placeholder="标题 / 描述"></a-input>
+              </div>
+              <div class="wa-layout__field wa-layout__field--check">
+                <a-checkbox v-model="filterOpenOnly">仅未完成</a-checkbox>
+              </div>
+              <div class="wa-layout__form-actions">
+                <a-button type="primary" long @click="onFormSubmit">查询</a-button>
+                <a-button long @click="onFormReset">重置</a-button>
+              </div>
+            </div>
+            </div>
+            <div
+              class="wa-layout__sider-bar"
+              :class="{ 'is-ready': siderThumbH > 0, 'is-on': siderBarOn }"
+              aria-hidden="true"
+            >
+              <div class="wa-layout__sider-thumb" :style="siderThumbStyle"></div>
+            </div>
+          </div>
+          </div>
+
+        </aside>
+        <div class="wa-layout__main">
+          <header class="wa-layout__navbar wa-layout__navbar--embedded" :class="{ 'is-scrolled': scrolled }">
+            <a v-if="isNarrow" class="wa-layout__navbar-brand" href="./index.html">
+              <span class="wa-layout__brand-mark" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span>
+              <span class="wa-layout__brand-text">Vibe Design</span>
+            </a>
+            <div v-if="!isNarrow" class="wa-layout__crumb">
+              <a-breadcrumb>
+                <a-breadcrumb-item><a href="javascript:;"><icon-home></icon-home>首页</a></a-breadcrumb-item>
+                <a-breadcrumb-item><a href="javascript:;">{{ currentGroup }}</a></a-breadcrumb-item>
+                <a-breadcrumb-item v-if="currentChild"><a href="javascript:;">{{ currentParent }}</a></a-breadcrumb-item>
+                <a-breadcrumb-item v-else>{{ currentParent }}</a-breadcrumb-item>
+                <a-breadcrumb-item v-if="currentChild">{{ currentChild }}</a-breadcrumb-item>
+              </a-breadcrumb>
+            </div>
+            <div class="wa-layout__actions">
+              <a-tooltip position="bottom" content="打开菜单" :disabled="mobileOpen">
+                <button type="button" class="wa-layout__icon-btn wa-layout__mobile-toggle" :aria-label="mobileOpen ? '关闭菜单' : '打开菜单'" @click="mobileOpen = !mobileOpen">
+                  <i class="fa-light fa-bars" aria-hidden="true"></i>
+                </button>
+              </a-tooltip>
+              <a-tooltip position="bottom" content="切换框架页面" :disabled="mobileOpen">
+                <button type="button" class="wa-layout__icon-btn" aria-label="切换框架页面" @click="shellDrawer = true">
+                  <i class="fa-light fa-table-layout" aria-hidden="true"></i>
+                </button>
+              </a-tooltip>
+              <a-tooltip position="bottom" content="搜索页面" :disabled="mobileOpen">
+                <button type="button" class="wa-layout__icon-btn" aria-label="搜索页面" @click="openCommand">
+                  <i class="fa-light fa-magnifying-glass" aria-hidden="true"></i>
+                </button>
+              </a-tooltip>
+              <a-tooltip position="bottom" :content="themeDark ? '切换为亮色' : '切换为暗色'" :disabled="mobileOpen">
+                <button type="button" class="wa-layout__icon-btn" data-wa-theme-toggle :aria-label="themeDark ? '切换为亮色' : '切换为暗色'">
+                  <i :class="themeDark ? 'fa-light fa-sun-bright' : 'fa-light fa-moon'" aria-hidden="true"></i>
+                </button>
+              </a-tooltip>
+              <a-tooltip position="bottom" :content="siderPrimary ? '切换为浅色导航' : '切换为主色导航'" :disabled="mobileOpen">
+                <button type="button" class="wa-layout__icon-btn" :aria-label="siderPrimary ? '切换为浅色导航' : '切换为主色导航'" @click="toggleSiderPrimary">
+                  <i :class="siderPrimary ? 'fa-light fa-swatchbook' : 'fa-light fa-fill-drip'" aria-hidden="true"></i>
+                </button>
+              </a-tooltip>
+
+              <a-dropdown trigger="click" position="br" unmount-on-close content-class="wa-layout-user-dropdown">
+                <button type="button" class="wa-layout__user-chip" aria-label="用户菜单">
+                  <span class="wa-layout__avatar" aria-hidden="true">
+                    <img :src="userInfo.avatar" alt="" />
+                  </span>
+                  <span class="wa-layout__user-chip-name">{{ userInfo.name }}</span>
+                  <span class="wa-layout__user-caret" aria-hidden="true">
+                    <i class="fa-regular fa-chevron-up"></i>
+                    <i class="fa-regular fa-chevron-down"></i>
+                  </span>
+                </button>
+                <template #content>
+                  <div class="wa-layout__user-panel-head">
+                    <span class="wa-layout__avatar wa-layout__avatar--lg" aria-hidden="true">
+                      <img :src="userInfo.avatar" alt="" />
+                    </span>
+                    <span class="wa-layout__user-meta">
+                      <span class="wa-layout__user-name">{{ userInfo.name }}</span>
+                      <span class="wa-layout__user-email">{{ userInfo.email }}</span>
+                    </span>
+                  </div>
+                  <a-doption
+                    v-for="m in userMenus"
+                    :key="m.key"
+                    class="wa-layout__doption"
+                    :class="{ 'is-danger': m.danger }"
+                    @click="goUser(m.key)"
+                  >
+                    <i :class="['wa-layout__nav-icon', 'fa-light', m.icon]" aria-hidden="true"></i>
+                    <span>{{ m.label }}</span>
+                  </a-doption>
+                </template>
+              </a-dropdown>
+
+            </div>
+          </header>
+          <main class="wa-layout__content">
+            <div v-if="isNarrow" class="wa-layout__page-crumb">
+              <a-breadcrumb>
+                <a-breadcrumb-item><a href="javascript:;"><icon-home></icon-home>首页</a></a-breadcrumb-item>
+                <a-breadcrumb-item><a href="javascript:;">{{ currentGroup }}</a></a-breadcrumb-item>
+                <a-breadcrumb-item v-if="currentChild"><a href="javascript:;">{{ currentParent }}</a></a-breadcrumb-item>
+                <a-breadcrumb-item v-else>{{ currentParent }}</a-breadcrumb-item>
+                <a-breadcrumb-item v-if="currentChild">{{ currentChild }}</a-breadcrumb-item>
+              </a-breadcrumb>
+            </div>
+            <div v-if="toolbarOn" class="wa-layout__toolbar">
+              <div class="wa-layout__toolbar-filters">
+                <a-select v-model="toolbarStatus" size="small" placeholder="状态">
+                  <a-option value="全部">全部</a-option>
+                  <a-option value="进行中">进行中</a-option>
+                  <a-option value="已完成">已完成</a-option>
+                </a-select>
+                <a-select v-model="toolbarOwner" size="small" placeholder="负责人">
+                  <a-option value="全部">全部</a-option>
+                  <a-option value="我负责的">我负责的</a-option>
+                  <a-option value="已关注">已关注</a-option>
+                </a-select>
+                <a-select v-model="toolbarPriority" size="small" placeholder="优先级">
+                  <a-option value="全部">全部</a-option>
+                  <a-option value="高">高</a-option>
+                  <a-option value="中">中</a-option>
+                  <a-option value="低">低</a-option>
+                </a-select>
+                <a-select v-model="toolbarType" size="small" placeholder="类型">
+                  <a-option value="全部">全部</a-option>
+                  <a-option value="需求">需求</a-option>
+                  <a-option value="缺陷">缺陷</a-option>
+                  <a-option value="任务">任务</a-option>
+                </a-select>
+                <a-date-picker v-model="toolbarDate" size="small" placeholder="更新日期" allow-clear style="width: 132px" />
+                <a-input-search v-model="toolbarQuery" size="small" placeholder="筛选当前页" allow-clear />
+              </div>
+              <div class="wa-layout__toolbar-actions">
+                <div class="wa-layout__toolbar-view" role="group" aria-label="视图">
+                  <button type="button" :class="{ 'is-on': toolbarView === 'list' }" aria-label="列表" @click="toolbarView = 'list'"><i class="fa-light fa-list" aria-hidden="true"></i></button>
+                  <button type="button" :class="{ 'is-on': toolbarView === 'board' }" aria-label="看板" @click="toolbarView = 'board'"><i class="fa-light fa-table-columns" aria-hidden="true"></i></button>
+                </div>
+                <a-dropdown trigger="click" position="br" unmount-on-close>
+                  <a-button size="small" class="wa-layout__toolbar-batch">
+                    批量操作
+                    <i class="fa-light fa-chevron-down" aria-hidden="true"></i>
+                  </a-button>
+                  <template #content>
+                    <a-doption>导出选中</a-doption>
+                    <a-doption>批量分配</a-doption>
+                    <a-doption>批量改状态</a-doption>
+                    <a-doption class="wa-layout__doption is-danger">批量删除</a-doption>
+                  </template>
+                </a-dropdown>
+              </div>
+            </div>
+            <div class="wa-layout__slot">
+              <a-card class="wa-acard wa-layout__guide-card">
+                <div class="wa-layout__guide-split">
+                <div class="wa-layout__guide-copy">
+                    <header class="wa-layout__page-head">
+                      <span class="wa-layout__slot-kicker"><i class="fa-regular fa-grid-2" aria-hidden="true"></i>文字双轨</span>
+                      <h1 class="wa-layout__page-title">将<span class="wa-mark">业务视图</span>接入主内容区</h1>
+                      <p class="wa-layout__page-lead">最左一轨八个模块入口（看板 / 日历 / 项目 / 笔记 / 成员 / 通知 / 表单 / 设置），图标下方带文字。点击只切换第二列面板，不改主列框架。与默认图标双轨的分组菜单轨分开使用。</p>
+                    </header>
+                    <ol class="wa-layout__guide-steps">
+                      <li>
+                        <span class="wa-layout__guide-item-n" aria-hidden="true">1</span>
+                        <div class="wa-layout__guide-item-body">
+                          <h2>对齐信息结构</h2>
+                          <p>分组只做分区。父级展开/收起，子级才进页面。把当前选中项映射到本槽页头与正文。</p>
+                        </div>
+                      </li>
+                      <li>
+                        <span class="wa-layout__guide-item-n" aria-hidden="true">2</span>
+                        <div class="wa-layout__guide-item-body">
+                          <h2>适合放的内容</h2>
+                          <p>功能说明、上手步骤、权限提示、空状态与下一步。需要数据时再换成表格或详情。</p>
+                        </div>
+                      </li>
+                      <li>
+                        <span class="wa-layout__guide-item-n" aria-hidden="true">3</span>
+                        <div class="wa-layout__guide-item-body">
+                          <h2>窄屏怎么用</h2>
+                          <p>顶栏出产品名与菜单，侧栏变抽屉。点父级只展开，点子项再跳转。面包屑过长会单行截断。</p>
+                        </div>
+                      </li>
+                      <li>
+                        <span class="wa-layout__guide-item-n" aria-hidden="true">4</span>
+                        <div class="wa-layout__guide-item-body">
+                          <h2>落地时删掉说明</h2>
+                          <p>复制骨架后用产品页替换本区。顶栏布局图标只切页面框架，与业务导航无关。</p>
+                        </div>
+                      </li>
+                    </ol>
+                    <div class="wa-layout__guide-cta">
+                      <a-button type="primary" shape="round" size="large" href="../index.html">
+                        <i class="fa-regular fa-grid-2" aria-hidden="true"></i>
+                        查看全部框架
+                      </a-button>
+                    </div>
+                  </div>
+                                  <aside class="wa-layout__guide-decor" aria-hidden="true">
+                    <span class="wa-layout__guide-orbit wa-layout__guide-orbit--lg"></span>
+                    <span class="wa-layout__guide-orbit wa-layout__guide-orbit--md"></span>
+                    <span class="wa-layout__guide-orbit wa-layout__guide-orbit--sm"></span>
+                    <div class="wa-layout__guide-orbit-host" ref="guideOrbit" v-once></div>
+                    <div class="wa-layout__guide-mock">
+                      <div class="wa-layout__guide-mock-sider">
+                        <span class="wa-layout__guide-mock-mark"></span>
+                        <span class="wa-layout__guide-mock-bar is-on"></span>
+                        <span class="wa-layout__guide-mock-bar"></span>
+                        <span class="wa-layout__guide-mock-bar"></span>
+                        <span class="wa-layout__guide-mock-bar"></span>
+                      </div>
+                      <div class="wa-layout__guide-mock-main">
+                        <span class="wa-layout__guide-mock-nav"></span>
+                        <span class="wa-layout__guide-mock-slot">
+                          <span class="wa-layout__guide-mock-line is-title"></span>
+                          <span class="wa-layout__guide-mock-line"></span>
+                          <span class="wa-layout__guide-mock-line is-short"></span>
+                        </span>
+                      </div>
+                    </div>
+                    <p class="wa-layout__guide-decor-cap">侧栏框架 · 结构示意</p>
+                  </aside>
+                </div>
+                <p class="wa-layout__guide-note"><i class="fa-regular fa-circle-info" aria-hidden="true"></i>落地时删除本引导，将当前路由的业务视图接入此内容区即可。</p>
+              </a-card>
+            </div>
+            <footer class="wa-layout__footer">© 2026 VibePM 产品协作与设计资产分享平台</footer>
+          </main>
+        </div>
+      </div>
+    </div>
+    <a-drawer
+      v-model:visible="shellDrawer"
+      placement="right"
+      :width="380"
+      :closable="false"
+      body-class="wa-drawer-float wa-drawer-float--right"
+      unmount-on-close
+      @cancel="shellDrawer = false"
+    >
+      <template #title>
+        <div>
+          <p class="wa-drawer-float__title">切换框架页面</p>
+          <p class="wa-drawer-float__desc">点选框架，再点「应用」切换预览。</p>
+        </div>
+      </template>
+      <div class="wa-drawer-float__paras">
+        <button
+          v-for="s in shellPresets"
+          :key="s.key"
+          type="button"
+          class="wa-layout__shell-pick"
+          :class="{ 'is-active': shellPick === s.key, 'is-placeholder': !s.href }"
+          @click="shellPick = s.key"
+        >
+          <i class="wa-layout__nav-icon fa-light fa-table-layout" aria-hidden="true"></i>
+          <span class="wa-layout__shell-pick-meta">
+            <span class="wa-layout__shell-pick-name">{{ s.label }}</span>
+            <span class="wa-layout__shell-pick-desc">{{ s.desc }}</span>
+          </span>
+          <span v-if="!s.href" class="wa-layout__shell-pick-tag">占位</span>
+        </button>
+      </div>
+      <template #footer>
+        <a-button type="primary" shape="round" @click="applyShell">应用</a-button>
+        <a-button type="secondary" shape="round" @click="shellDrawer = false">取消</a-button>
+      </template>
+    </a-drawer>
+    <div v-if="commandOpen" class="wa-layout-command" @click.self="closeCommand">
+      <div class="wa-command" role="dialog" aria-modal="true" aria-label="命令菜单" @keydown="onCommandKey">
+        <div class="wa-command__search">
+          <span class="wa-command__search-icon"><icon-search :size="15"></icon-search></span>
+          <input ref="commandInput" class="wa-command__input" v-model="commandQuery" type="text" placeholder="搜索页面或命令…" autocomplete="off" />
+          <button type="button" class="wa-command__clear" v-show="commandQuery" @click="commandQuery = ''" aria-label="清除"><icon-close :size="12"></icon-close></button>
+        </div>
+        <div class="wa-command__list">
+          <template v-if="commandGroups.length">
+            <div class="wa-command__group" v-for="g in commandGroups" :key="g.heading">
+              <div class="wa-command__heading">{{ g.heading }}</div>
+              <button
+                type="button"
+                class="wa-command__item"
+                v-for="item in g.items"
+                :key="item.key"
+                :class="{ 'is-active': commandActiveKey === item.key }"
+                @mouseenter="hoverCommand(item)"
+                @click="runCommand(item)"
+              >
+                <span class="wa-command__item-icon"><i :class="['fa-light', item.icon]" aria-hidden="true"></i></span>
+                <span class="wa-command__item-label">{{ item.label }}</span>
+              </button>
+            </div>
+          </template>
+          <div class="wa-command__empty" v-else>未找到匹配结果</div>
+        </div>
+        <div class="wa-command__footer">
+          <span><span class="wa-command__kbd">↑</span><span class="wa-command__kbd">↓</span> 导航</span>
+          <span><span class="wa-command__kbd">↵</span> 确认</span>
+          <span><span class="wa-command__kbd">esc</span> 关闭</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../assets/effects/dashed-orbit/dashed-orbit.js"></script>
+  <script src="./layout.js"></script>
+</body>
+</html>

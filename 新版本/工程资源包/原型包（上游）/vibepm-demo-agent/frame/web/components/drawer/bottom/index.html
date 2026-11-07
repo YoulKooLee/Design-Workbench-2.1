@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>底部抽屉 · drawer-bottom</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css?v=20261015demo3" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="drawer-bottom">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">底部抽屉</span>
+        <span class="wa-comp-meta__slug">drawer-bottom</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-button type="secondary" @click="visible = true">快捷操作</a-button>
+        <a-drawer
+          v-model:visible="visible"
+          title="快捷操作"
+          placement="bottom"
+          :height="260"
+          unmount-on-close
+          @cancel="visible = false"
+        >
+          <p class="wa-drawer-lead">选择一项操作继续。</p>
+          <div class="wa-drawer-actions">
+            <a-button type="secondary" long @click="visible = false">拍照</a-button>
+            <a-button type="secondary" long @click="visible = false">选择文件</a-button>
+            <a-button type="secondary" long @click="visible = false">定位</a-button>
+            <a-button type="secondary" long @click="visible = false">编辑</a-button>
+          </div>
+          <template #footer>
+            <a-button type="secondary" shape="round" @click="visible = false">取消</a-button>
+          </template>
+        </a-drawer>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

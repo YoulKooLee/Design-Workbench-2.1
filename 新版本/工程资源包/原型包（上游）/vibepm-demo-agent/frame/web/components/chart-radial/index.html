@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>径向图 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="../../assets/common/charts/shadcn-chart.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="chart-radial">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">chart-radial</p>
+          <h1 class="wa-fam-title">径向图</h1>
+          <p class="wa-fam-lead">径向弧段展示占比或进度，适合支付方式与目标达成。</p>
+          <p class="wa-fam-lead">组件类型：simple / label / text / shape / stacked</p>
+        </header>
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card shadcn-donut-card" data-slug="chart-radial-simple">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">基础径向图</span><span class="wa-comp-meta__slug">chart-radial-simple</span></div>
+              <a-tooltip :content="famCopyTip('chart-radial-simple')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('chart-radial-simple') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('chart-radial-simple')"
+                :aria-label="famCopyTip('chart-radial-simple')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('chart-radial-simple')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="shadcn-donut-layout">
+                <div class="shadcn-donut-chart">
+                  <div id="host-chart-radial-simple" class="shadcn-chart-host shadcn-chart-host--radial shadcn-radial-host"></div>
+                </div>
+                <div class="shadcn-donut-legend-wrap">
+                  <ul class="shadcn-donut-legend shadcn-donut-legend--inline" data-legend-for="chart-radial-simple"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card shadcn-donut-card" data-slug="chart-radial-label">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">标签径向图</span><span class="wa-comp-meta__slug">chart-radial-label</span></div>
+              <a-tooltip :content="famCopyTip('chart-radial-label')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('chart-radial-label') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('chart-radial-label')"
+                :aria-label="famCopyTip('chart-radial-label')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('chart-radial-label')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="shadcn-donut-layout">
+                <div class="shadcn-donut-chart">
+                  <div id="host-chart-radial-label" class="shadcn-chart-host shadcn-chart-host--radial shadcn-radial-host"></div>
+                </div>
+                <div class="shadcn-donut-legend-wrap">
+                  <ul class="shadcn-donut-legend shadcn-donut-legend--inline" data-legend-for="chart-radial-label"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="chart-radial-text">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">文字径向图</span><span class="wa-comp-meta__slug">chart-radial-text</span></div>
+              <a-tooltip :content="famCopyTip('chart-radial-text')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('chart-radial-text') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('chart-radial-text')"
+                :aria-label="famCopyTip('chart-radial-text')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('chart-radial-text')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-chart-radial-fill">
+                <div id="host-chart-radial-text" class="shadcn-chart-host shadcn-chart-host--radial shadcn-radial-host"></div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="chart-radial-shape">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">形状径向图</span><span class="wa-comp-meta__slug">chart-radial-shape</span></div>
+              <a-tooltip :content="famCopyTip('chart-radial-shape')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('chart-radial-shape') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('chart-radial-shape')"
+                :aria-label="famCopyTip('chart-radial-shape')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('chart-radial-shape')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-chart-radial-fill">
+                <div id="host-chart-radial-shape" class="shadcn-chart-host shadcn-chart-host--radial shadcn-radial-host"></div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="chart-radial-stacked">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">堆叠径向图</span><span class="wa-comp-meta__slug">chart-radial-stacked</span></div>
+              <a-tooltip :content="famCopyTip('chart-radial-stacked')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('chart-radial-stacked') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('chart-radial-stacked')"
+                :aria-label="famCopyTip('chart-radial-stacked')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('chart-radial-stacked')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-chart-radial-fill">
+                <div id="host-chart-radial-stacked" class="shadcn-chart-host shadcn-chart-host--radial shadcn-radial-host"></div>
+              </div>
+              <div class="shadcn-chart-legend" data-legend-for="chart-radial-stacked"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../vendor/unovis/unovis.min.js"></script>
+  <script src="../../assets/common/charts/chart-palette.js"></script>
+  <script src="../../assets/common/charts/shadcn-charts.js"></script>
+  <script src="../../assets/common/charts/wa-chart-demos.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+  window.WA_FAMILY = {
+    id: 'chart-radial',
+    members: ['chart-radial-simple', 'chart-radial-label', 'chart-radial-text', 'chart-radial-shape', 'chart-radial-stacked'],
+    setup: function () {
+      var charts = []
+      Vue.onMounted(function () {
+        Vue.nextTick(function () {
+          if (!window.WaChartDemos) return
+          charts = WaChartDemos.mountFamily('chart-radial') || []
+        })
+      })
+      Vue.onBeforeUnmount(function () {
+        if (window.ProShadcnCharts) charts.forEach(function (c) { ProShadcnCharts.destroy(c) })
+      })
+      return {}
+    }
+  }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

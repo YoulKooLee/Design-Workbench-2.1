@@ -1,0 +1,11 @@
+slug: btn-secondary-default
+label: 中性按钮
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: basic
+tags:
+  - secondary
+path: components/btn-secondary/default

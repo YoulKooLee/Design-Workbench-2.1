@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>裁剪头像内容对话框 · modal-content-avatar-crop</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="modal-content-avatar-crop">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">裁剪头像内容对话框</span>
+        <span class="wa-comp-meta__slug">modal-content-avatar-crop</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-button type="secondary" @click="pickFile">打开示例</a-button>
+        <input
+          ref="cropFileInput"
+          class="wa-avatar-crop-input"
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          @change="onCropFileChange"
+        />
+        <a-modal
+          v-model:visible="cropVisible"
+          title="裁剪头像"
+          title-align="start"
+          :width="468"
+          :mask-closable="false"
+          unmount-on-close
+          modal-class="pro-content-modal wa-avatar-crop-modal"
+          @cancel="onCropCancel"
+        >
+          <div class="wa-avatar-crop">
+            <div
+              class="wa-avatar-crop__stage"
+              :class="{ 'is-dragging': cropDragging }"
+              @mousedown.prevent="onCropPointerDown"
+              @mousemove="onCropPointerMove"
+              @mouseup="onCropPointerUp"
+              @mouseleave="onCropPointerUp"
+              @wheel.prevent="onCropWheel"
+            >
+              <img
+                v-if="cropSourceUrl"
+                ref="cropImage"
+                class="wa-avatar-crop__image"
+                :src="cropSourceUrl"
+                :style="cropImageStyle"
+                alt="crop"
+                draggable="false"
+                @load="onCropImageLoad"
+              />
+              <div class="wa-avatar-crop__mask" aria-hidden="true"></div>
+            </div>
+            <div class="wa-avatar-crop__toolbar">
+              <span class="wa-avatar-crop__toolbar-label">缩放</span>
+              <a-slider v-model="cropZoom" :min="1" :max="3" :step="0.01" :show-tooltip="false" />
+            </div>
+          </div>
+          <template #footer>
+            <a-space>
+              <a-button type="secondary" shape="round" @click="onCropCancel">取消</a-button>
+              <a-button type="secondary" shape="round" @click="onCropReselect">重新选择</a-button>
+              <a-button shape="round" type="primary" :disabled="!cropReady" @click="onCropConfirm">确定</a-button>
+            </a-space>
+          </template>
+        </a-modal>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="./avatar-crop.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+/**
+ * hero-ai-prompt — 全高 AI 提示（对照 shadcnuikit hero4）
+ * 宽度节奏：section 通栏 → nav 通栏 + md/lg/xl 左右内边距 → 内容 max-w-xl(36rem) 居中
+ */
+section[data-slug="hero-ai-prompt"] {
+  --hero-ai-glow: color-mix(in srgb, var(--wa-color-primary) 42%, #d8c8f5);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 560px;
+  padding: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(125% 125% at 50% 90%, #ffffff 38%, var(--hero-ai-glow) 100%);
+}
+
+html[data-theme='dark'] section[data-slug="hero-ai-prompt"] {
+  --hero-ai-glow: color-mix(in srgb, var(--wa-color-primary) 55%, #1a1028);
+  background:
+    radial-gradient(125% 125% at 50% 90%, var(--wa-color-bg, #0d0d0d) 38%, var(--hero-ai-glow) 100%);
+}
+
+body:not(.wa-block-embed) section[data-slug="hero-ai-prompt"] {
+  min-height: 100vh;
+}
+
+section[data-slug="hero-ai-prompt"].wa-fade-in {
+  animation: hero-ai-fade 0.55s ease both;
+}
+
+@keyframes hero-ai-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  section[data-slug="hero-ai-prompt"].wa-fade-in {
+    animation: none;
+  }
+}
+
+/* 对齐源站：w-full + justify-between + md:px-16 lg:px-24 xl:px-32 */
+.hero-ai-prompt__nav {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 16px 24px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .hero-ai-prompt__nav {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-ai-prompt__nav {
+    padding-left: 96px;
+    padding-right: 96px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-ai-prompt__nav {
+    padding-left: 128px;
+    padding-right: 128px;
+  }
+}
+
+.hero-ai-prompt__brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* 默认 Logo：主色底 + fa-sparkles 实心，不加产品名 */
+.hero-ai-prompt__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--wa-color-on-primary, #fff);
+  background: var(--wa-color-primary);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.hero-ai-prompt__links {
+  display: none;
+  flex: 1 1 auto;
+  justify-content: center;
+  gap: 4px;
+}
+
+.hero-ai-prompt__links a {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--wa-color-text);
+  text-decoration: none;
+}
+
+.hero-ai-prompt__links a:hover {
+  background: color-mix(in srgb, var(--wa-color-text) 6%, transparent);
+}
+
+.hero-ai-prompt__nav-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-ai-prompt__nav-cta {
+  display: none;
+}
+
+.hero-ai-prompt__menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--wa-color-border-1);
+  border-radius: 999px;
+  background: color-mix(in srgb, #fff 70%, transparent);
+  color: var(--wa-color-text);
+  cursor: pointer;
+}
+
+@media (min-width: 860px) {
+  .hero-ai-prompt__links {
+    display: flex;
+  }
+
+  .hero-ai-prompt__nav-cta {
+    display: inline-flex;
+  }
+
+  .hero-ai-prompt__menu {
+    display: none;
+  }
+}
+
+/*
+ * 内容列与顶栏通栏分离。
+ * 源站 demo 为 max-w-xl(36rem)；类型页/宽屏预览下过窄，提到 48rem（max-w-3xl）
+ * 使提示框与建议行更接近画廊观感。
+ */
+.hero-ai-prompt,
+section[data-slug="hero-ai-prompt"] > .wa-section__inner.hero-ai-prompt {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+section[data-slug="hero-ai-prompt"] .wa-title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  color: var(--wa-color-text);
+}
+
+section[data-slug="hero-ai-prompt"] .wa-lead {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--wa-color-muted);
+  text-wrap: balance;
+}
+
+.hero-ai-prompt__box {
+  position: relative;
+  width: 100%;
+  margin-top: 28px;
+  padding: 14px 14px 52px;
+  border: 1px solid var(--wa-color-border-1);
+  border-radius: 20px;
+  background: color-mix(in srgb, #fff 86%, transparent);
+  box-shadow: 0 10px 40px rgba(15, 15, 30, 0.06);
+  text-align: left;
+  box-sizing: border-box;
+}
+
+html[data-theme='dark'] .hero-ai-prompt__box {
+  background: color-mix(in srgb, var(--wa-color-surface, #1a1a1a) 90%, transparent);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+.hero-ai-prompt__box .arco-textarea,
+.hero-ai-prompt__input.arco-textarea-wrapper,
+.hero-ai-prompt__box textarea {
+  width: 100%;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-size: 15px;
+  line-height: 1.55;
+  resize: none;
+}
+
+.hero-ai-prompt__box-bar {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.hero-ai-prompt__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.hero-ai-prompt__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid var(--wa-color-border-1);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--wa-color-text);
+  text-decoration: none;
+  background: color-mix(in srgb, #fff 70%, transparent);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.hero-ai-prompt__chip:hover {
+  color: var(--wa-color-primary);
+  background: color-mix(in srgb, var(--wa-color-primary) 8%, #fff);
+}
+
+.hero-ai-prompt__terms {
+  margin: 18px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--wa-color-muted);
+}
+
+.hero-ai-prompt__drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hero-ai-prompt__drawer a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--wa-color-text);
+  text-decoration: none;
+}
+
+.hero-ai-prompt__drawer a:hover {
+  background: var(--wa-color-fill-1, #f7f8fa);
+}

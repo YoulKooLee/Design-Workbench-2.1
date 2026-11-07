@@ -1,0 +1,144 @@
+/* timeline-icon-horizontal：与 wa-tl-horizontal 同构（均分 / 首左中居中尾右），仅圆点改为 32px 图标 */
+.wa-tl-icon-horizontal.arco-timeline {
+  display: flex;
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  overflow: visible;
+  box-sizing: border-box;
+  /* 与横向时间轴对齐文案下方空隙：(itemH+pb)-(contentTop+textH) ≈ 横轴 8px → pb=60 */
+  padding-bottom: 60px;
+}
+
+.wa-tl-icon-horizontal.arco-timeline::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  left: 16px;
+  z-index: 0;
+  height: 1px;
+  pointer-events: none;
+  background: var(--color-neutral-3);
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item,
+.wa-tl-icon-horizontal .arco-timeline-item:last-child {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  height: 32px;
+  overflow: visible;
+  --tl-p: 0;
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(1):nth-last-child(2) { --tl-p: 0; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(2):nth-last-child(1) { --tl-p: 1; }
+
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(1):nth-last-child(3) { --tl-p: 0; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(2):nth-last-child(2) { --tl-p: 0.5; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(3):nth-last-child(1) { --tl-p: 1; }
+
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(1):nth-last-child(4) { --tl-p: 0; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(2):nth-last-child(3) { --tl-p: 0.333333; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(3):nth-last-child(2) { --tl-p: 0.666667; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(4):nth-last-child(1) { --tl-p: 1; }
+
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(1):nth-last-child(5) { --tl-p: 0; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(2):nth-last-child(4) { --tl-p: 0.25; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(3):nth-last-child(3) { --tl-p: 0.5; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(4):nth-last-child(2) { --tl-p: 0.75; }
+.wa-tl-icon-horizontal .arco-timeline-item:nth-child(5):nth-last-child(1) { --tl-p: 1; }
+
+.wa-tl-icon-horizontal .arco-timeline-item-dot-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  overflow: visible;
+  z-index: 1;
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item-last .arco-timeline-item-dot-wrapper {
+  justify-content: flex-end;
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item-dot-wrapper .arco-timeline-item-dot-content {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item:not(:first-child):not(.arco-timeline-item-last) .arco-timeline-item-dot-content {
+  margin-left: calc(var(--tl-p) * 100% - 16px);
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item-dot-line {
+  display: none;
+}
+
+/* 与横向时间轴相同：首左 / 中居中 / 尾右 */
+.wa-tl-icon-horizontal .arco-timeline-item-content-wrapper {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: max-content;
+  max-width: 100%;
+  margin-top: 0;
+  margin-left: 0;
+  text-align: left;
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item:not(:first-child):not(.arco-timeline-item-last) .arco-timeline-item-content-wrapper {
+  left: calc(var(--tl-p) * 100%);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item-last .arco-timeline-item-content-wrapper {
+  right: 0;
+  left: auto;
+  text-align: right;
+  transform: none;
+}
+
+.wa-tl-icon-horizontal .arco-timeline-item-label {
+  text-align: inherit;
+}
+
+.wa-tl-icon-horizontal .wa-tl-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--wa-color-primary-soft, rgba(var(--primary-6), 0.12));
+  border: 1px solid var(--wa-color-primary, rgb(var(--primary-6)));
+  color: var(--wa-color-primary, rgb(var(--primary-6)));
+  box-shadow: 0 0 0 3px var(--color-bg-2);
+}
+
+.wa-tl-icon-horizontal .wa-tl-dot--danger {
+  background: rgba(var(--danger-6), 0.12);
+  border-color: rgb(var(--danger-6));
+  color: rgb(var(--danger-6));
+}
+
+.wa-tl-icon-horizontal .wa-tl-dot .pro-fa-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 1;
+}
+
+body.wa-preview-embed .wa-embed__stage .wa-tl-icon-horizontal {
+  width: 100%;
+}

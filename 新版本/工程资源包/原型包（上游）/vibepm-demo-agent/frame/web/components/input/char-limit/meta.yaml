@@ -1,0 +1,11 @@
+slug: input-char-limit
+label: 字数限制
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags:
+  - input
+path: components/input/char-limit

@@ -1,0 +1,160 @@
+/* 骨架屏布局：贴近真实内容轮廓 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.wa-skel {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.wa-skel-card {
+  width: 100%;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-medium, 6px);
+  background: var(--color-bg-2, #fff);
+  overflow: hidden;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.wa-skel-avatar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.wa-skel-avatar > .arco-skeleton-shape {
+  flex-shrink: 0;
+}
+
+.wa-skel-avatar__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 灰条在 flex 子项内须占满，否则会出现「缺条」 */
+.wa-skel-avatar__text .arco-skeleton-line,
+.wa-skel-list__main .arco-skeleton-line,
+.wa-skel-list__meta .arco-skeleton-line,
+.wa-skel-grid__title .arco-skeleton-line,
+.wa-skel-paras__block .arco-skeleton-line {
+  display: block;
+  width: 100%;
+}
+
+.wa-skel-avatar__text .arco-skeleton-line > li,
+.wa-skel-list__main .arco-skeleton-line > li,
+.wa-skel-list__meta .arco-skeleton-line > li,
+.wa-skel-grid__title .arco-skeleton-line > li,
+.wa-skel-paras__block .arco-skeleton-line > li {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.wa-skel-card--media {
+  padding: 0;
+}
+
+.wa-skel-card--media .wa-skel-card__body {
+  padding: 16px;
+}
+
+.wa-skel-media-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  overflow: hidden;
+  background: var(--color-fill-3);
+}
+
+.wa-skel-media-wrap .arco-skeleton-shape,
+.wa-skel-media-wrap .wa-skel-media {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+}
+
+.wa-skel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.wa-skel-list__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.wa-skel-list__row > .arco-skeleton-shape {
+  flex-shrink: 0;
+}
+
+.wa-skel-list__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.wa-skel-list__meta {
+  flex: 0 0 48px;
+  width: 48px;
+}
+
+.wa-skel-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.wa-skel-grid__title {
+  width: 40%;
+  max-width: 140px;
+}
+
+.wa-skel-grid__row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+}
+
+.wa-skel-grid__row > .arco-skeleton-shape {
+  flex-shrink: 0;
+}
+
+.wa-skel-paras {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+}
+
+.wa-skel-paras__block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}

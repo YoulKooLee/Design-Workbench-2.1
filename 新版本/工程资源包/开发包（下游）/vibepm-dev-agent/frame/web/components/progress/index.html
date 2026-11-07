@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>进度条 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="progress">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">progress</p>
+          <h1 class="wa-fam-title">进度条</h1>
+          <p class="wa-fam-lead">任务完成度展示，支持线形环形、上传用量、指标清单、配置步骤与项目状态。</p>
+          <p class="wa-fam-lead">组件类型：default / label / animation / success / warning / danger / color / steps / circle / mini / striped / upload / usage / metrics / setup / status</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="progress-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">进度条</span><span class="wa-comp-meta__slug">progress-default</span></div>
+              <a-tooltip :content="famCopyTip('progress-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-default')"
+                :aria-label="famCopyTip('progress-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress class="wa-progress-demo" :percent="percent" :stroke-width="6"></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-label">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">带标签进度条</span><span class="wa-comp-meta__slug">progress-label</span></div>
+              <a-tooltip :content="famCopyTip('progress-label')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-label') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-label')"
+                :aria-label="famCopyTip('progress-label')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-label')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-progress-label">
+                <div class="wa-progress-label__meta">
+                  <span>上传进度</span>
+                  <span class="wa-progress-label__value">75%</span>
+                </div>
+                <a-progress class="wa-progress-demo" :percent="0.75" :show-text="false" :stroke-width="6"></a-progress>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-animation">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">动画进度条</span><span class="wa-comp-meta__slug">progress-animation</span></div>
+              <a-tooltip :content="famCopyTip('progress-animation')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-animation') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-animation')"
+                :aria-label="famCopyTip('progress-animation')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-animation')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress class="wa-progress-demo" :percent="percent" :animation="true" :stroke-width="6"></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-success">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">成功进度条</span><span class="wa-comp-meta__slug">progress-success</span></div>
+              <a-tooltip :content="famCopyTip('progress-success')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-success') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-success')"
+                :aria-label="famCopyTip('progress-success')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-success')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress class="wa-progress-demo" :percent="0.72" status="success" :stroke-width="6"></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-warning">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">警告进度条</span><span class="wa-comp-meta__slug">progress-warning</span></div>
+              <a-tooltip :content="famCopyTip('progress-warning')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-warning') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-warning')"
+                :aria-label="famCopyTip('progress-warning')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-warning')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress class="wa-progress-demo" :percent="0.36" status="warning" :stroke-width="6"></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-danger">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">危险进度条</span><span class="wa-comp-meta__slug">progress-danger</span></div>
+              <a-tooltip :content="famCopyTip('progress-danger')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-danger') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-danger')"
+                :aria-label="famCopyTip('progress-danger')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-danger')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress class="wa-progress-demo" :percent="0.18" status="danger" :stroke-width="6"></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-color">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">自定义颜色进度条</span><span class="wa-comp-meta__slug">progress-color</span></div>
+              <a-tooltip :content="famCopyTip('progress-color')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-color') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-color')"
+                :aria-label="famCopyTip('progress-color')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-color')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress class="wa-progress-demo" :percent="0.62" color="#14C9C9" :stroke-width="8"></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-steps">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">步骤进度条</span><span class="wa-comp-meta__slug">progress-steps</span></div>
+              <a-tooltip :content="famCopyTip('progress-steps')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-steps') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-steps')"
+                :aria-label="famCopyTip('progress-steps')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-steps')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress class="wa-progress-demo" :steps="5" :percent="0.6" :stroke-width="6"></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-circle">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">环形进度条</span><span class="wa-comp-meta__slug">progress-circle</span></div>
+              <a-tooltip :content="famCopyTip('progress-circle')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-circle') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-circle')"
+                :aria-label="famCopyTip('progress-circle')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-circle')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress type="circle" :percent="percent" :width="64" :stroke-width="6" :path-stroke-width="6"></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-mini">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">内嵌百分比</span><span class="wa-comp-meta__slug">progress-mini</span></div>
+              <a-tooltip :content="famCopyTip('progress-mini')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-mini') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-mini')"
+                :aria-label="famCopyTip('progress-mini')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-mini')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-progress-mini" style="--wa-progress-pct: 70%">
+                <a-progress
+                  class="wa-progress-demo"
+                  :percent="0.7"
+                  :show-text="false"
+                  :stroke-width="18"
+                ></a-progress>
+                <span class="wa-progress-mini__text">70%</span>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-striped">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">条纹进度条</span><span class="wa-comp-meta__slug">progress-striped</span></div>
+              <a-tooltip :content="famCopyTip('progress-striped')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-striped') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-striped')"
+                :aria-label="famCopyTip('progress-striped')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-striped')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-progress
+                class="wa-progress-demo wa-progress-striped"
+                :percent="0.5"
+                :stroke-width="8"
+              ></a-progress>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-upload">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">上传进度</span><span class="wa-comp-meta__slug">progress-upload</span></div>
+              <a-tooltip :content="famCopyTip('progress-upload')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-upload') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-upload')"
+                :aria-label="famCopyTip('progress-upload')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-upload')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-progress-upload">
+                <div class="wa-progress-label__meta">
+                  <span>文件上传</span>
+                  <span class="wa-progress-label__value">{{ formatPct(uploadPercent) }}</span>
+                </div>
+                <a-progress
+                  class="wa-progress-demo"
+                  :percent="uploadPercent"
+                  :show-text="false"
+                  :animation="true"
+                  :stroke-width="10"
+                ></a-progress>
+                <a-button class="wa-progress-upload__action" type="primary" size="small" @click="startUpload">开始上传</a-button>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-usage">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">用量进度</span><span class="wa-comp-meta__slug">progress-usage</span></div>
+              <a-tooltip :content="famCopyTip('progress-usage')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-usage') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-usage')"
+                :aria-label="famCopyTip('progress-usage')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-usage')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-progress-usage">
+                <div class="wa-progress-usage__head">
+                  <span class="wa-progress-usage__title">存储用量</span>
+                  <a-tag size="small" color="gray">中等</a-tag>
+                </div>
+                <a-progress
+                  class="wa-progress-demo"
+                  :percent="0.75"
+                  :show-text="false"
+                  color="rgb(var(--primary-6))"
+                  track-color="var(--color-fill-3)"
+                  :stroke-width="10"
+                ></a-progress>
+                <div class="wa-progress-usage__foot">
+                  <span>已用 7.5 GB / 共 10 GB</span>
+                  <span class="wa-progress-usage__pct">75%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-metrics">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">指标进度</span><span class="wa-comp-meta__slug">progress-metrics</span></div>
+              <a-tooltip :content="famCopyTip('progress-metrics')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-metrics') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-metrics')"
+                :aria-label="famCopyTip('progress-metrics')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-metrics')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-progress-metrics">
+                <div class="wa-progress-metrics__item">
+                  <div class="wa-progress-label__meta">
+                    <span>CPU 使用率</span>
+                    <span class="wa-progress-label__value">45%</span>
+                  </div>
+                  <a-progress class="wa-progress-demo" :percent="0.45" :show-text="false" color="rgb(var(--primary-6))" :stroke-width="8"></a-progress>
+                </div>
+                <div class="wa-progress-metrics__item">
+                  <div class="wa-progress-label__meta">
+                    <span>内存使用率</span>
+                    <span class="wa-progress-label__value">62%</span>
+                  </div>
+                  <a-progress class="wa-progress-demo" :percent="0.62" :show-text="false" color="rgb(var(--success-6))" :stroke-width="8"></a-progress>
+                </div>
+                <div class="wa-progress-metrics__item">
+                  <div class="wa-progress-label__meta">
+                    <span>磁盘使用率</span>
+                    <span class="wa-progress-label__value">38%</span>
+                  </div>
+                  <a-progress class="wa-progress-demo" :percent="0.38" :show-text="false" color="rgb(var(--warning-6))" :stroke-width="8"></a-progress>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-setup">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">配置进度</span><span class="wa-comp-meta__slug">progress-setup</span></div>
+              <a-tooltip :content="famCopyTip('progress-setup')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-setup') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-setup')"
+                :aria-label="famCopyTip('progress-setup')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-setup')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-progress-setup">
+                <div class="wa-progress-setup__head">
+                  <span class="wa-progress-setup__title">配置进度</span>
+                  <span class="wa-progress-setup__count">2/4</span>
+                </div>
+                <a-progress class="wa-progress-demo" :percent="0.5" :show-text="false" color="rgb(var(--primary-6))" :stroke-width="8"></a-progress>
+                <ul class="wa-progress-setup__list">
+                  <li class="wa-progress-setup__item is-done">
+                    <icon-check class="wa-progress-setup__icon"></icon-check>
+                    <span>账号</span>
+                  </li>
+                  <li class="wa-progress-setup__item is-done">
+                    <icon-check class="wa-progress-setup__icon"></icon-check>
+                    <span>资料</span>
+                  </li>
+                  <li class="wa-progress-setup__item is-todo">
+                    <span class="wa-progress-setup__dot" aria-hidden="true"></span>
+                    <span>设置</span>
+                  </li>
+                  <li class="wa-progress-setup__item is-todo">
+                    <span class="wa-progress-setup__dot" aria-hidden="true"></span>
+                    <span>复核</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="progress-status">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">项目状态</span><span class="wa-comp-meta__slug">progress-status</span></div>
+              <a-tooltip :content="famCopyTip('progress-status')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('progress-status') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('progress-status')"
+                :aria-label="famCopyTip('progress-status')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('progress-status')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-progress-status">
+                <div class="wa-progress-status__title">项目状态</div>
+                <div class="wa-progress-metrics">
+                  <div class="wa-progress-metrics__item">
+                    <div class="wa-progress-label__meta">
+                      <span>设计阶段</span>
+                      <span class="wa-progress-label__value">85%</span>
+                    </div>
+                    <a-progress class="wa-progress-demo" :percent="0.85" :show-text="false" color="rgb(var(--success-6))" :stroke-width="8"></a-progress>
+                  </div>
+                  <div class="wa-progress-metrics__item">
+                    <div class="wa-progress-label__meta">
+                      <span>开发阶段</span>
+                      <span class="wa-progress-label__value">60%</span>
+                    </div>
+                    <a-progress class="wa-progress-demo" :percent="0.6" :show-text="false" color="rgb(var(--primary-6))" :stroke-width="8"></a-progress>
+                  </div>
+                  <div class="wa-progress-metrics__item">
+                    <div class="wa-progress-label__meta">
+                      <span>测试阶段</span>
+                      <span class="wa-progress-label__value">30%</span>
+                    </div>
+                    <a-progress class="wa-progress-demo" :percent="0.3" :show-text="false" color="rgb(var(--warning-6))" :stroke-width="8"></a-progress>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'progress',
+      members: ['progress-default', 'progress-label', 'progress-animation', 'progress-success', 'progress-warning', 'progress-danger', 'progress-color', 'progress-steps', 'progress-circle', 'progress-mini', 'progress-striped', 'progress-upload', 'progress-usage', 'progress-metrics', 'progress-setup', 'progress-status'],
+      setup: function (api) {
+        var uploadPercent = api.ref(0)
+        var uploadTimer = null
+        return {
+          percent: api.ref(0.48),
+          uploadPercent: uploadPercent,
+          formatPct: function (p) {
+            return Math.round((Number(p) || 0) * 100) + '%'
+          },
+          startUpload: function () {
+            if (uploadTimer) {
+              clearInterval(uploadTimer)
+              uploadTimer = null
+            }
+            uploadPercent.value = 0
+            uploadTimer = setInterval(function () {
+              if (uploadPercent.value >= 1) {
+                clearInterval(uploadTimer)
+                uploadTimer = null
+                uploadPercent.value = 1
+                return
+              }
+              uploadPercent.value = Math.min(1, Math.round((uploadPercent.value + 0.08) * 100) / 100)
+            }, 120)
+          },
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

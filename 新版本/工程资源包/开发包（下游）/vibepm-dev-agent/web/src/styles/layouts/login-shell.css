@@ -1,0 +1,441 @@
+﻿/* login-shell — 对齐 vibedesign/lite/login：洗染底 + 居中玻璃卡；theme.js 跟站主题，无页内切换 */
+.wa-layout--site-login {
+  --wa-login-card-max: 400px;
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--wa-color-text);
+  background-color: color-mix(in srgb, var(--wa-color-primary) 10%, #eef1f8);
+  font-family: var(--wa-font-sans);
+}
+.wa-layout--site-login *,
+.wa-layout--site-login *::before,
+.wa-layout--site-login *::after { box-sizing: border-box; }
+
+html[data-theme="dark"] .wa-layout--site-login {
+  background-color: color-mix(in srgb, var(--wa-color-primary) 4%, #0c0d10);
+}
+
+/* —— 氛围底（CSS 洗染，不依赖外链图） —— */
+.wa-layout--site-login .wa-layout__login-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.wa-layout--site-login .wa-layout__login-bg-glow,
+.wa-layout--site-login .wa-layout__login-bg-aura,
+.wa-layout--site-login .wa-layout__login-bg-dots {
+  position: absolute;
+  inset: 0;
+}
+.wa-layout--site-login .wa-layout__login-bg-glow {
+  z-index: 1;
+  opacity: 0.72;
+  background:
+    radial-gradient(
+      ellipse 100% 72% at 8% 0%,
+      color-mix(in srgb, var(--wa-color-primary) 34%, transparent),
+      transparent 56%
+    ),
+    radial-gradient(
+      ellipse 80% 60% at 100% 100%,
+      color-mix(in srgb, var(--wa-color-primary) 26%, transparent),
+      transparent 54%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 82% 16%,
+      color-mix(in srgb, var(--wa-color-primary) 18%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--wa-color-primary) 12%, transparent) 0%,
+      transparent 48%,
+      color-mix(in srgb, var(--wa-color-primary) 10%, transparent) 100%
+    );
+}
+.wa-layout--site-login .wa-layout__login-bg-aura {
+  z-index: 2;
+  opacity: 0.78;
+  background:
+    radial-gradient(ellipse 90% 70% at 8% -5%, color-mix(in srgb, var(--wa-color-primary) 14%, transparent), transparent 55%),
+    radial-gradient(ellipse 70% 55% at 98% 12%, rgba(255, 255, 255, 0.35), transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 105%, color-mix(in srgb, var(--wa-color-primary) 8%, transparent), transparent 55%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--wa-color-primary) 3%, #f5f6f8) 0%,
+      #f4f5f7 45%,
+      #f6f7f9 100%
+    );
+}
+.wa-layout--site-login .wa-layout__login-bg-dots {
+  z-index: 3;
+  opacity: 0.45;
+  background-image: radial-gradient(color-mix(in srgb, var(--wa-color-primary) 18%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 75%);
+}
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-bg-glow {
+  opacity: 0.42;
+}
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-bg-aura {
+  opacity: 0.82;
+  background:
+    radial-gradient(ellipse 90% 70% at 8% -5%, color-mix(in srgb, var(--wa-color-primary) 12%, transparent), transparent 55%),
+    radial-gradient(ellipse 70% 55% at 98% 12%, rgba(255, 255, 255, 0.04), transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 105%, color-mix(in srgb, var(--wa-color-primary) 8%, transparent), transparent 55%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--wa-color-primary) 3%, #141518) 0%,
+      #121316 45%,
+      #0e0f12 100%
+    );
+}
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-bg-dots {
+  opacity: 0.28;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+}
+
+/* —— 主列：居中卡 + 返回 —— */
+.wa-layout--site-login .wa-layout__login-main {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 72px 24px 48px;
+}
+.wa-layout--site-login .wa-layout__login-card {
+  width: 100%;
+  max-width: var(--wa-login-card-max);
+  padding: 36px 28px 28px;
+  border: none;
+  border-radius: var(--wa-radius-lg, 20px);
+  background: color-mix(in srgb, var(--wa-color-surface) 72%, transparent);
+  box-shadow: var(--wa-shadow-soft, 0 12px 40px rgba(0, 0, 0, 0.08));
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  isolation: isolate;
+}
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-card {
+  background: color-mix(in srgb, var(--wa-color-surface) 62%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent),
+    0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.wa-layout--site-login .wa-layout__login-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 0 0 24px;
+}
+.wa-layout--site-login .wa-layout__login-logo {
+  display: inline-flex;
+  margin: 0 0 10px;
+  text-decoration: none;
+}
+.wa-layout--site-login .wa-layout__brand-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wa-color-on-primary, #fff);
+  background: var(--wa-color-primary);
+  font-size: 1.2rem;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--wa-color-primary) 28%, transparent);
+  transition: background 0.15s ease;
+}
+.wa-layout--site-login .wa-layout__login-logo:hover .wa-layout__brand-mark {
+  background: color-mix(in srgb, var(--wa-color-primary) 88%, #000);
+}
+.wa-layout--site-login .wa-layout__login-title {
+  margin: 0 0 4px;
+  font-family: var(--wa-font-display, var(--wa-font-sans));
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--wa-color-text);
+}
+.wa-layout--site-login .wa-layout__login-lead {
+  margin: 0;
+  max-width: 18em;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--wa-color-muted);
+}
+
+.wa-layout--site-login .wa-layout__login-fields {
+  display: flex;
+  flex-direction: column;
+}
+.wa-layout--site-login .wa-layout__login-label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wa-color-text);
+}
+.wa-layout--site-login .wa-layout__login-field {
+  width: 100%;
+  margin-bottom: 14px;
+}
+.wa-layout--site-login .wa-layout__login-field--pwd {
+  margin-bottom: 12px;
+}
+.wa-layout--site-login .wa-layout__login-field.is-error,
+.wa-layout--site-login .wa-layout__login-field--pwd.is-error {
+  margin-bottom: 10px;
+}
+.wa-layout--site-login .wa-layout__login-error {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wa-color-danger, #cb272d);
+}
+
+/* 输入：半透明灰底，悬停/聚焦改描边（对齐 lite） */
+.wa-layout--site-login .wa-layout__login-fields .arco-input-wrapper,
+.wa-layout--site-login .wa-layout__login-fields .arco-input-password {
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--wa-color-text) 10%, transparent) !important;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--wa-color-text) 5%, transparent) !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.wa-layout--site-login .wa-layout__login-fields .arco-input-wrapper:not(.arco-input-focus):hover,
+.wa-layout--site-login .wa-layout__login-fields .arco-input-password:not(.arco-input-focus):hover {
+  background: color-mix(in srgb, var(--wa-color-text) 7%, transparent) !important;
+  border-color: color-mix(in srgb, var(--wa-color-primary) 42%, var(--wa-color-border-2)) !important;
+}
+.wa-layout--site-login .wa-layout__login-fields .arco-input-wrapper.arco-input-focus,
+.wa-layout--site-login .wa-layout__login-fields .arco-input-password.arco-input-focus {
+  background: color-mix(in srgb, var(--wa-color-text) 4%, transparent) !important;
+  border: 1px solid var(--wa-color-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wa-color-primary) 16%, transparent) !important;
+}
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-fields .arco-input-wrapper,
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-fields .arco-input-password {
+  background: color-mix(in srgb, #fff 8%, transparent) !important;
+  border-color: color-mix(in srgb, #fff 14%, transparent) !important;
+}
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-fields .arco-input-wrapper:not(.arco-input-focus):hover,
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-fields .arco-input-password:not(.arco-input-focus):hover {
+  background: color-mix(in srgb, #fff 11%, transparent) !important;
+}
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-fields .arco-input-wrapper.arco-input-focus,
+html[data-theme="dark"] .wa-layout--site-login .wa-layout__login-fields .arco-input-password.arco-input-focus {
+  background: color-mix(in srgb, #fff 6%, transparent) !important;
+}
+.wa-layout--site-login .wa-layout__login-field.is-error .arco-input-wrapper,
+.wa-layout--site-login .wa-layout__login-field.is-error .arco-input-password {
+  border-color: var(--wa-color-danger, #cb272d) !important;
+  background: color-mix(in srgb, var(--wa-color-danger, #cb272d) 8%, transparent) !important;
+}
+.wa-layout--site-login .wa-layout__login-fields .arco-input-wrapper .arco-input,
+.wa-layout--site-login .wa-layout__login-fields .arco-input-password .arco-input {
+  height: 100%;
+  padding: 0;
+  font-size: 14px;
+  background: transparent;
+}
+.wa-layout--site-login .wa-layout__login-fields .arco-input-prefix,
+.wa-layout--site-login .wa-layout__login-fields .arco-input-suffix {
+  padding: 0;
+  color: var(--wa-color-muted);
+  opacity: 0.85;
+}
+.wa-layout--site-login .wa-layout__login-fields .arco-input-prefix {
+  margin-right: 10px;
+}
+.wa-layout--site-login .wa-layout__login-fields .arco-input-suffix {
+  margin-left: 10px;
+  gap: 8px;
+}
+
+.wa-layout--site-login .wa-layout__login-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 2px 0 4px;
+  font-size: 14px;
+}
+.wa-layout--site-login .wa-layout__login-forget {
+  margin-left: auto;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  color: var(--wa-color-muted);
+}
+.wa-layout--site-login .wa-layout__login-forget:hover {
+  color: var(--wa-color-primary);
+}
+.wa-layout--site-login .wa-layout__login-submit {
+  margin-top: 10px;
+  height: 44px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.wa-layout--site-login .wa-layout__login-submit i {
+  font-size: 15px;
+}
+.wa-layout--site-login .wa-layout__login-register {
+  margin-top: 14px;
+  min-height: 36px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--wa-color-primary) !important;
+  border-radius: 8px;
+}
+.wa-layout--site-login .wa-layout__login-register:hover {
+  color: var(--wa-color-primary) !important;
+  background: color-mix(in srgb, var(--wa-color-primary) 6%, transparent) !important;
+}
+.wa-layout--site-login .wa-layout__login-social {
+  margin-top: 18px;
+  text-align: center;
+}
+.wa-layout--site-login .wa-layout__login-social-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--wa-color-muted);
+}
+.wa-layout--site-login .wa-layout__login-social-label::before,
+.wa-layout--site-login .wa-layout__login-social-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--wa-color-border-2) 70%, transparent);
+}
+.wa-layout--site-login .wa-layout__login-social-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.wa-layout--site-login .wa-layout__login-social-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid color-mix(in srgb, var(--wa-color-text) 10%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wa-color-text) 5%, transparent);
+  color: var(--wa-color-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  padding: 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.wa-layout--site-login .wa-layout__login-social-btn:hover {
+  color: var(--wa-color-primary);
+  border-color: color-mix(in srgb, var(--wa-color-primary) 40%, transparent);
+  background: color-mix(in srgb, var(--wa-color-primary) 10%, transparent);
+}
+
+.wa-layout--site-login .wa-layout__login-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  color: var(--wa-color-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.wa-layout--site-login .wa-layout__login-back:hover {
+  color: var(--wa-color-text);
+  transform: translateX(-2px);
+}
+.wa-layout--site-login .wa-layout__login-back i {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* 弹层内控件 */
+.wa-layout--site-login .wa-layout__login-email .arco-input-suffix {
+  padding-right: 2px;
+}
+.wa-layout--site-login .wa-layout__login-send.arco-btn {
+  height: 28px;
+  padding: 0 8px;
+  font-size: 13px;
+  color: var(--wa-color-primary);
+}
+.wa-layout--site-login .wa-layout__login-send.arco-btn:hover:not(.arco-btn-disabled) {
+  color: var(--wa-color-primary);
+  background: color-mix(in srgb, var(--wa-color-primary) 8%, transparent);
+}
+.wa-layout--site-login .wa-layout__login-send.arco-btn-disabled {
+  color: var(--wa-color-muted);
+}
+.wa-layout--site-login .wa-input-otp.arco-verification-code,
+.wa-layout--site-login .arco-verification-code.wa-input-otp {
+  width: max-content;
+  max-width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 8px;
+}
+.wa-layout--site-login .wa-input-otp.arco-verification-code .arco-input-wrapper,
+.wa-layout--site-login .arco-verification-code.wa-input-otp .arco-input-wrapper {
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  padding: 0;
+}
+.wa-layout--site-login .wa-input-otp.arco-verification-code .arco-input,
+.wa-layout--site-login .arco-verification-code.wa-input-otp .arco-input {
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  line-height: 44px;
+  text-align: center;
+  font-size: 14px;
+}
+
+@media (max-width: 520px) {
+  .wa-layout--site-login .wa-layout__login-main {
+    gap: 22px;
+    padding: 64px 16px 36px;
+  }
+  .wa-layout--site-login .wa-layout__login-card {
+    padding: 28px 20px 22px;
+  }
+  .wa-layout--site-login .wa-layout__login-head {
+    margin-bottom: 22px;
+  }
+}

@@ -1,0 +1,11 @@
+slug: select-multiple
+label: 多选下拉
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/select/multiple

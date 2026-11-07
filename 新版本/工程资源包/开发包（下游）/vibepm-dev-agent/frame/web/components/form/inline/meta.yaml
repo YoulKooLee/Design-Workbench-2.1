@@ -1,0 +1,11 @@
+slug: form-inline
+label: 行内表单
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input
+tags:
+  - input
+path: components/form/inline

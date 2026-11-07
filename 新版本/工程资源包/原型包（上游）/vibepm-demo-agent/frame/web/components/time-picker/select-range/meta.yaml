@@ -1,0 +1,12 @@
+slug: time-picker-select-range
+label: 固定时间点范围
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+  - datetime
+path: components/time-picker/select-range

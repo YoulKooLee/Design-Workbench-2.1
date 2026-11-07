@@ -1,0 +1,16 @@
+/* 省略预览：Typography 本身不设宽，跟父级走。
+   开了 showTooltip 时 Arco 会包一层 .arco-trigger-wrapper（默认 inline-block），
+   需改成块级并吃满父宽，否则 line-clamp 测不到容器宽度。 */
+.wa-typo-ellipsis {
+  min-width: 0;
+}
+
+.wa-typo-ellipsis .arco-trigger-wrapper {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.wa-typo-ellipsis .arco-typography {
+  margin: 0 !important;
+}

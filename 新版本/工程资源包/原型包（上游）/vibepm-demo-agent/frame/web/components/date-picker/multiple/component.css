@@ -1,0 +1,160 @@
+.dp-multi {
+  position: relative;
+  width: 100%;
+}
+
+/* 插槽触发器时，收掉原生 picker 描边（仅 .dp-multi 内，不影响其它控件） */
+.dp-multi > .arco-picker,
+.dp-multi > span > .arco-picker {
+  display: block;
+  width: 100%;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+.dp-multi > .arco-picker .arco-picker-input,
+.dp-multi > .arco-picker .arco-picker-start-time,
+.dp-multi > .arco-picker .arco-picker-suffix,
+.dp-multi > span > .arco-picker .arco-picker-input,
+.dp-multi > span > .arco-picker .arco-picker-start-time,
+.dp-multi > span > .arco-picker .arco-picker-suffix {
+  display: none !important;
+}
+
+/* 自定义触发器：始终保留描边（标签在框内） */
+.dp-multi__field {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 4px 36px 4px 8px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-small, 2px);
+  background-color: var(--color-fill-1);
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dp-multi__field:hover {
+  border-color: var(--color-border-3);
+}
+
+.dp-multi__field--open,
+.dp-multi__field:focus,
+.dp-multi__field:focus-within {
+  border-color: rgb(var(--primary-6));
+  background-color: var(--color-bg-2);
+  outline: none;
+}
+
+.dp-multi__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.dp-multi__placeholder {
+  flex: 1;
+  color: var(--color-text-3);
+  font-size: 14px;
+  line-height: 24px;
+  user-select: none;
+}
+
+.dp-multi__suffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  min-width: 12px;
+  height: 12px;
+}
+
+/* 与其它 DatePicker 同构：清除叠在日历位，悬停切换（样式复用 components.css） */
+.dp-multi__field .arco-picker-clear-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  display: none;
+  color: var(--color-text-2);
+  cursor: pointer;
+}
+
+.dp-multi__field--has-value:hover .arco-picker-clear-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.dp-multi__field .arco-picker-suffix-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-3);
+  pointer-events: none;
+}
+
+.dp-multi__field--has-value:hover .arco-picker-suffix-icon {
+  display: none !important;
+}
+
+.dp-multi__field .arco-picker-clear-icon .pro-fa-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 10px;
+}
+
+.dp-multi__field .arco-picker-suffix-icon .pro-fa-icon {
+  font-size: 12px;
+}
+
+.dp-multi__field .arco-picker-clear-icon.arco-icon-hover::before {
+  z-index: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.dp-multi__field .arco-picker-clear-icon.arco-icon-hover:hover::before {
+  background-color: var(--color-fill-3);
+}
+
+/* Tag 关闭：略小于正文，悬停灰圆勿盖住 FA（全局见 arco-controls） */
+.dp-multi__tags .arco-tag .arco-tag-icon-hover,
+.dp-multi__tags .arco-tag .arco-icon-hover {
+  font-size: 10px;
+  line-height: 10px;
+}
+
+.dp-multi__tags .arco-tag .pro-fa-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 10px;
+}
+
+.dp-multi__tags .arco-tag .arco-icon-hover::before {
+  z-index: 0;
+  width: 14px;
+  height: 14px;
+}
+
+/* 面板内：已选多日高亮（popup 挂在 .dp-multi 内） */
+.dp-multi .arco-picker-date-value.dp-multi-cell--picked {
+  background-color: rgb(var(--primary-6));
+  color: var(--color-white, #fff);
+}

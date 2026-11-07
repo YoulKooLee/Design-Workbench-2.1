@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>底栏键位 · command-footer</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="command-footer">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">底栏键位</span>
+        <span class="wa-comp-meta__slug">command-footer</span>
+      </div>
+      <div class="wa-embed__stage">
+        <div class="wa-command">
+          <div class="wa-command__header">
+            <span class="wa-command__search-icon"><icon-filter :size="15"></icon-filter></span>
+            <input class="wa-command__input" v-model="qFooter" type="text" placeholder="智能搜索…" autocomplete="off" />
+            <span class="wa-command__shortcut">⌘+M</span>
+            <button type="button" class="wa-command__clear" aria-label="关闭"><icon-close :size="12"></icon-close></button>
+          </div>
+          <div class="wa-command__list">
+            <div class="wa-command__group">
+              <div class="wa-command__heading">操作</div>
+              <button type="button" class="wa-command__item">
+                <span class="wa-command__item-lead"><a-avatar :size="24" style="background:#64748b;color:#fff;font-size:10px">斯</a-avatar></span>
+                <span class="wa-command__item-label">指派给斯蒙</span>
+              </button>
+              <button type="button" class="wa-command__item">
+                <span class="wa-command__item-lead"><icon-user :size="14"></icon-user></span>
+                <span class="wa-command__item-label">指派给…</span>
+                <span class="wa-command__shortcut">A</span>
+              </button>
+              <button type="button" class="wa-command__item">
+                <span class="wa-command__item-lead"><icon-close :size="14"></icon-close></span>
+                <span class="wa-command__item-label">取消指派</span>
+                <span class="wa-command__shortcut">U</span>
+              </button>
+            </div>
+            <div class="wa-command__sep"></div>
+            <div class="wa-command__group">
+              <div class="wa-command__heading">关键词</div>
+              <button type="button" class="wa-command__item">
+                <span class="wa-command__item-lead"><a-avatar :size="24" style="background:#475569;color:#fff;font-size:10px">斯</a-avatar></span>
+                <div class="wa-command__person-text">
+                  <span class="wa-command__person-name">斯蒙·普鲁辛</span>
+                  <span class="wa-command__person-email">simon@example.com</span>
+                </div>
+              </button>
+              <button type="button" class="wa-command__item">
+                <span class="wa-command__item-lead"><icon-file :size="14"></icon-file></span>
+                <span class="wa-command__item-label">注册流程</span>
+                <span class="wa-command__item-meta">Notion</span>
+              </button>
+              <button type="button" class="wa-command__item">
+                <span class="wa-command__item-lead"><icon-apps :size="14"></icon-apps></span>
+                <span class="wa-command__item-label">注册流程设计</span>
+                <span class="wa-command__item-meta">MSP-10</span>
+              </button>
+              <button type="button" class="wa-command__item">
+                <span class="wa-command__item-lead"><icon-exclamation-circle :size="14"></icon-exclamation-circle></span>
+                <span class="wa-command__item-label">注册错误</span>
+                <span class="wa-command__item-meta">MSD-10</span>
+              </button>
+            </div>
+          </div>
+          <div class="wa-command__footer">
+            <span><span class="wa-command__kbd">↑</span><span class="wa-command__kbd">↓</span> 导航</span>
+            <span><span class="wa-command__kbd">↵</span> 确认</span>
+            <span><span class="wa-command__kbd">esc</span> 关闭</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+slug: slider-output
+label: 数值输出滑块
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags:
+  - input
+path: components/slider/output

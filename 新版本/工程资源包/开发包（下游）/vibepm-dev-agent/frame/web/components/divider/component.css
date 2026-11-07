@@ -1,0 +1,19 @@
+/* 分割线家族：预览演示壳（上下文占位）。仅母版对照 / embed 使用，业务页无需落地。
+   线宽跟父级走（卡片 / stage 全宽），勿写死固定像素。 */
+
+.wa-divider-demo {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.wa-divider-demo__hint {
+  margin: 0;
+  color: var(--wa-color-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.wa-divider-demo .arco-divider-horizontal {
+  margin: 12px 0;
+}

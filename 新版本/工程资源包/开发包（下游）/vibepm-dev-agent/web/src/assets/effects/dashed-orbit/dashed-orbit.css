@@ -1,0 +1,339 @@
+/* Dashed Orbit Rings — Magic UI OrbitingCircles (Vetra hero) */
+.do-root {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background: hsl(240 10% 4%);
+  color: hsl(0 0% 98%);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* 源站 hero 仪表盘下方 / 顶部蓝光（无图时保留为氛围光晕） */
+.do-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  z-index: 0;
+}
+
+.do-glow-top {
+  top: 0;
+  left: 50%;
+  width: 10rem;
+  height: 10rem;
+  transform: translateX(-50%);
+  background: #3b82f6;
+  filter: blur(10rem);
+  opacity: 0.85;
+}
+
+.do-glow-mid {
+  top: 42%;
+  left: 50%;
+  width: 75%;
+  max-width: 48rem;
+  height: 25%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(to right, #0ea5e9, #2563eb);
+  filter: blur(10rem);
+  opacity: 0;
+  animation: do-image-glow 6s ease-out 0.6s forwards;
+}
+
+.do-glow-core {
+  top: 28%;
+  left: 50%;
+  width: 25%;
+  max-width: 16rem;
+  height: 25%;
+  transform: translate(-50%, -50%);
+  background: #2563eb;
+  filter: blur(10rem);
+  opacity: 0;
+  animation: do-image-glow 6s ease-out 0.6s forwards;
+}
+
+.do-glow-horizon {
+  bottom: -8%;
+  left: 50%;
+  width: 70%;
+  max-width: 42rem;
+  height: 12rem;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(56, 189, 248, 0.45) 0%,
+    rgba(37, 99, 235, 0.22) 40%,
+    transparent 70%
+  );
+  filter: blur(2rem);
+}
+
+@keyframes do-image-glow {
+  0% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
+  }
+  10% {
+    opacity: 0.5;
+    animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.do-orbits {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.do-orbits svg.do-path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.do-orbits svg.do-path circle {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+  stroke-dasharray: 5 5;
+}
+
+.do-orbit-item {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-size, 30px);
+  height: var(--icon-size, 30px);
+  border-radius: 9999px;
+  transform: translateZ(0);
+  animation: do-orbit calc(var(--duration) * 1s) linear infinite;
+  color: inherit;
+}
+
+.do-orbit-item svg {
+  display: block;
+}
+
+@keyframes do-orbit {
+  0% {
+    transform: rotate(calc(var(--angle) * 1deg))
+      translateY(calc(var(--radius) * 1px))
+      rotate(calc(var(--angle) * -1deg));
+  }
+  100% {
+    transform: rotate(calc(var(--angle) * 1deg + 360deg))
+      translateY(calc(var(--radius) * 1px))
+      rotate(calc((var(--angle) * -1deg) - 360deg));
+  }
+}
+
+.do-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 5rem 1.5rem 4rem;
+  max-width: 56rem;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 源码抽取自 vetra-app.vercel.app 编译 CSS（Magic UI spark） */
+.do-badge {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  border-radius: 9999px;
+  padding: 4px 8px;
+  margin: 0 auto 0.5rem;
+  border: 0;
+  cursor: default;
+  background: transparent;
+  color: #f5f5f5;
+  box-shadow: rgb(38, 38, 38) 0 1000px 0 0 inset;
+  font-size: 0.875rem;
+  line-height: 1.25;
+  transition: color 0.2s ease;
+}
+
+/* .spark.animate-flip + [mask:linear-gradient(white,transparent_50%)] */
+.do-badge-spark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask-image: linear-gradient(#fff, transparent 50%);
+  mask-image: linear-gradient(#fff, transparent 50%);
+  animation: do-flip 6s steps(2) infinite;
+}
+
+/*
+ * 源站编译规则（vetra-app.vercel.app）：
+ *   .before\:rotate-\[-90deg\]::before {
+ *     --tw-rotate: -90deg;
+ *     transform: ... rotate(var(--tw-rotate)) ...;
+ *   }
+ *   @keyframes rotate { 100% { transform: rotate(90deg); } }
+ *   .before\:animate-rotate::before { animation: 3s linear infinite both rotate; }
+ *   before:[translate:-50%_-15%] → 独立 translate（动画不覆盖）
+ *
+ * 关键：源站依赖「仅 to 关键帧 + both」从底层 transform(-90°) 插到 90°（共 180°）。
+ * 这里写成显式 from/to，避免部分浏览器对 var() 底层值插值失败只扫 90°。
+ */
+.do-badge-spark::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 50%;
+  aspect-ratio: 1 / 1;
+  width: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 340deg,
+    #fff 360deg
+  );
+  translate: -50% -15%;
+  transform: rotate(-90deg);
+  animation: do-spark-rotate 3s linear infinite both;
+}
+
+.do-badge-backdrop {
+  position: absolute;
+  inset: 1px;
+  border-radius: 9999px;
+  background: rgb(9, 9, 11);
+  z-index: 1;
+  transition: background-color 0.2s ease;
+}
+
+.do-badge:hover .do-badge-backdrop {
+  background: #262626;
+}
+
+.do-badge-label {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 0.125rem 0;
+  font-size: 0.875rem;
+  color: #f5f5f5;
+}
+
+.do-badge-new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(to right, #38bdf8, #2563eb);
+}
+
+.do-title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  max-width: 56rem;
+  letter-spacing: -0.02em;
+}
+
+.do-sub {
+  margin: 0.5rem 0 0;
+  max-width: 36rem;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  line-height: 1.6;
+  color: hsl(0 0% 63.9%);
+}
+
+.do-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem 2rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: hsl(0 0% 98%);
+  color: hsl(0 0% 9%);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.do-cta:hover {
+  opacity: 0.85;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+}
+
+.do-cta svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.do-cta:hover svg {
+  transform: translateX(4px);
+}
+
+/* 与源站 @keyframes flip / rotate 一致 */
+@keyframes do-flip {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes do-spark-rotate {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(90deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .do-orbit-item,
+  .do-badge-spark,
+  .do-badge-spark::before,
+  .do-glow-mid,
+  .do-glow-core {
+    animation: none !important;
+  }
+  .do-glow-mid,
+  .do-glow-core {
+    opacity: 0.85;
+  }
+}

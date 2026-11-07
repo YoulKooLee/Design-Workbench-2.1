@@ -1,0 +1,9 @@
+slug: app-dual-rail
+label: 图标双轨框架
+type: layout
+surface: app
+status: preview
+tier: free
+framework: web
+category: sidebar
+notes: 图标轨选分组；第二列面板为该组菜单槽；从 app-sidebar 分叉

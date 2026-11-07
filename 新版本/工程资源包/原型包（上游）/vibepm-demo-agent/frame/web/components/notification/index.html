@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>通知提醒 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="notification">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">notification</p>
+          <h1 class="wa-fam-title">通知提醒</h1>
+          <p class="wa-fam-lead">带标题的右上角通知，用于待办汇总与系统级消息推送。</p>
+          <p class="wa-fam-lead">组件类型：default / success / warning / error / closable / no-icon</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="notification-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">通知提醒</span><span class="wa-comp-meta__slug">notification-default</span></div>
+              <a-tooltip :content="famCopyTip('notification-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('notification-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('notification-default')"
+                :aria-label="famCopyTip('notification-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('notification-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-button type="secondary" @click="showNotification('info')">通知提醒</a-button>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="notification-success">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">成功通知</span><span class="wa-comp-meta__slug">notification-success</span></div>
+              <a-tooltip :content="famCopyTip('notification-success')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('notification-success') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('notification-success')"
+                :aria-label="famCopyTip('notification-success')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('notification-success')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-button type="secondary" status="success" @click="showNotification('success')">成功通知</a-button>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="notification-warning">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">警告通知</span><span class="wa-comp-meta__slug">notification-warning</span></div>
+              <a-tooltip :content="famCopyTip('notification-warning')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('notification-warning') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('notification-warning')"
+                :aria-label="famCopyTip('notification-warning')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('notification-warning')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-button type="secondary" status="warning" @click="showNotification('warning')">警告通知</a-button>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="notification-error">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">错误通知</span><span class="wa-comp-meta__slug">notification-error</span></div>
+              <a-tooltip :content="famCopyTip('notification-error')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('notification-error') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('notification-error')"
+                :aria-label="famCopyTip('notification-error')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('notification-error')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-button type="secondary" status="danger" @click="showNotification('error')">错误通知</a-button>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="notification-closable">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">可关闭通知</span><span class="wa-comp-meta__slug">notification-closable</span></div>
+              <a-tooltip :content="famCopyTip('notification-closable')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('notification-closable') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('notification-closable')"
+                :aria-label="famCopyTip('notification-closable')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('notification-closable')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-button type="secondary" @click="showNotification('closable')">可关闭通知</a-button>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="notification-no-icon">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">无图标通知</span><span class="wa-comp-meta__slug">notification-no-icon</span></div>
+              <a-tooltip :content="famCopyTip('notification-no-icon')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('notification-no-icon') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('notification-no-icon')"
+                :aria-label="famCopyTip('notification-no-icon')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('notification-no-icon')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-button type="secondary" @click="showNotification('no-icon')">无图标通知</a-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'notification',
+      members: [
+        'notification-default',
+        'notification-success',
+        'notification-warning',
+        'notification-error',
+        'notification-closable',
+        'notification-no-icon',
+      ],
+      setup: function (api) {
+        return {
+          showNotification(type) {
+            const N = window.ArcoVue && ArcoVue.Notification
+            if (!N) return
+            if (type === 'info') {
+              N.info({ title: '系统通知', content: '有 3 条待办事项需要处理' })
+            }
+            if (type === 'success') {
+              N.success({ title: '操作成功', content: '数据已保存，可在列表中查看最新状态。' })
+            }
+            if (type === 'warning') {
+              N.warning({ title: '风险提示', content: '当前环境为演示模式，部分操作不会真正生效。' })
+            }
+            if (type === 'error') {
+              N.error({ title: '操作失败', content: '提交失败，请检查网络后重试。' })
+            }
+            if (type === 'closable') {
+              N.info({
+                title: '重要通知',
+                content: '请确认后再关闭，此条不会自动消失。',
+                closable: true,
+                duration: 0,
+              })
+            }
+            if (type === 'no-icon') {
+              N.info({
+                title: '系统通知',
+                content: '有 3 条待办事项需要处理',
+                showIcon: false,
+              })
+            }
+          },
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

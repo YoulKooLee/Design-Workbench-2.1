@@ -1,0 +1,10 @@
+slug: transfer-oneway
+label: 单向穿梭
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags: []
+path: components/transfer/oneway

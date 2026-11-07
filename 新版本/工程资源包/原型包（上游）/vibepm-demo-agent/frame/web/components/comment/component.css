@@ -1,0 +1,104 @@
+/* comment family — readable thread layout + action chips */
+.wa-comment.arco-comment {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 多条评论必须竖排；舞台默认是横向 flex，会把兄弟 a-comment 挤成一行 */
+.wa-fam-section[data-family="comment"] .wa-fam-card__stage,
+body.wa-preview-embed .wa-preview-stage[data-slug^="comment-"] .wa-embed__stage {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+}
+
+.wa-fam-section[data-family="comment"] .wa-fam-card__stage > .wa-comment,
+body.wa-preview-embed .wa-preview-stage[data-slug^="comment-"] .wa-embed__stage > .wa-comment {
+  width: 100%;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+/* 顶层评论组之间、同层嵌套回复之间：分隔线 */
+.wa-fam-section[data-family="comment"] .wa-comment + .wa-comment,
+body.wa-preview-embed .wa-preview-stage[data-slug^="comment-"] .wa-comment + .wa-comment {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-2);
+}
+
+.wa-comment .arco-comment-avatar {
+  margin-right: 12px;
+}
+
+.wa-comment-avatar.arco-avatar {
+  flex-shrink: 0;
+  overflow: hidden;
+  background-color: var(--color-fill-2);
+}
+
+.wa-comment-avatar.arco-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wa-comment .arco-comment-author {
+  color: var(--color-text-1);
+  font-weight: 500;
+}
+
+.wa-comment .arco-comment-datetime {
+  color: var(--color-text-3);
+}
+
+.wa-comment__body {
+  margin: 0;
+  color: var(--color-text-1);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.wa-comment .arco-comment-actions {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.wa-comment-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-text-3);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+
+.wa-comment-action:hover {
+  color: var(--wa-color-primary);
+}
+
+.wa-comment-action .pro-fa-icon,
+.wa-comment-action i[class*="fa-"] {
+  font-size: 13px;
+  line-height: 1;
+  color: inherit;
+}
+
+.wa-comment .arco-comment-inner-comment {
+  margin-top: 16px;
+  padding-top: 4px;
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug^="comment-"].wa-embed {
+  width: min(440px, calc(100% - 32px));
+}

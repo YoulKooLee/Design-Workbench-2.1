@@ -1,0 +1,136 @@
+/* 自定义头部 / 下拉头：外置工具条 + 隐藏原生日历头；控件统一中性按钮观感 */
+.wa-cal-wrap {
+  --wa-cal-ctrl-h: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  border: 1px solid var(--color-neutral-3, var(--wa-color-border));
+  border-radius: var(--wa-radius-md, 8px);
+  overflow: hidden;
+  background: var(--color-bg-2, var(--wa-color-surface));
+}
+
+.wa-cal-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: none;
+}
+
+.wa-cal-toolbar__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-1);
+  line-height: 24px;
+}
+
+.wa-cal-toolbar__actions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+/* 翻月/年：分段中性描边 */
+.wa-cal-nav {
+  display: inline-flex;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--color-bg-popup, #fff);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--wa-input-radius, 8px);
+}
+
+.wa-cal-nav__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--wa-cal-ctrl-h);
+  padding: 0 14px;
+  color: var(--color-text-1);
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--color-border-2);
+  cursor: pointer;
+  transition: none;
+}
+
+.wa-cal-nav__item:last-child {
+  border-right: none;
+}
+
+.wa-cal-nav__item:hover {
+  color: var(--color-text-1);
+  background: var(--color-fill-1);
+}
+
+.wa-cal-nav__item:active {
+  background: var(--color-fill-2);
+}
+
+/* 「今天」：中性 secondary（白底描边）；高度与年月下拉对齐 */
+.wa-cal-today,
+.wa-cal-today.arco-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  height: var(--wa-cal-ctrl-h) !important;
+  min-height: var(--wa-cal-ctrl-h) !important;
+  padding: 0 14px !important;
+  color: var(--color-text-1) !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  background: var(--color-bg-popup, #fff) !important;
+  border: 1px solid var(--color-border-2) !important;
+  border-radius: var(--wa-input-radius, 8px) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: none !important;
+}
+
+.wa-cal-today:hover,
+.wa-cal-today.arco-btn:hover {
+  color: var(--color-text-1) !important;
+  background: var(--color-fill-1) !important;
+  border-color: var(--color-border-3) !important;
+  box-shadow: 0 0 0 var(--wa-ctrl-ring, 3px) var(--color-fill-2) !important;
+}
+
+.wa-cal-today:active,
+.wa-cal-today.arco-btn:active {
+  background: var(--color-fill-2) !important;
+  border-color: var(--color-border-3) !important;
+  box-shadow: none !important;
+}
+
+.wa-cal-wrap .arco-calendar {
+  border: none;
+}
+
+.wa-cal-wrap .arco-calendar-header {
+  display: none;
+}
+
+body[arco-theme='dark'] .wa-cal-nav,
+body[arco-theme='dark'] .wa-cal-today,
+body[arco-theme='dark'] .wa-cal-today.arco-btn {
+  background: var(--color-fill-1, #2a2a2b) !important;
+  border-color: var(--color-neutral-3, #484849) !important;
+}
+
+body[arco-theme='dark'] .wa-cal-nav__item {
+  border-right-color: var(--color-neutral-3, #484849);
+}

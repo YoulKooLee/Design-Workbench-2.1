@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>纵向时间轴 · timeline-default</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="timeline-default">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">纵向时间轴</span>
+        <span class="wa-comp-meta__slug">timeline-default</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-timeline class="wa-tl-basic">
+          <a-timeline-item>
+            项目立项，完成需求评审与排期
+            <template #label>
+              <span class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2024-01-08
+              </span>
+            </template>
+          </a-timeline-item>
+          <a-timeline-item>
+            完成核心模块开发，进入联调阶段
+            <template #label>
+              <span class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2024-03-15
+              </span>
+            </template>
+          </a-timeline-item>
+          <a-timeline-item>
+            通过内测验收，开放灰度发布
+            <template #label>
+              <span class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2024-05-20
+              </span>
+            </template>
+          </a-timeline-item>
+          <a-timeline-item>
+            正式上线，开放全量用户访问
+            <template #label>
+              <span class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2024-07-01
+              </span>
+            </template>
+          </a-timeline-item>
+          <a-timeline-item>
+            完成首轮迭代，上线数据看板能力
+            <template #label>
+              <span class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2024-09-12
+              </span>
+            </template>
+          </a-timeline-item>
+        </a-timeline>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

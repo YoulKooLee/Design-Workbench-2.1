@@ -1,0 +1,10 @@
+slug: transfer-simple
+label: 简易穿梭
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags: []
+path: components/transfer/simple

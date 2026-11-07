@@ -1,0 +1,26 @@
+/* 左右字段描述：等分列宽 + label 固定约 6 字宽 */
+.wa-typo-fields.arco-descriptions .arco-descriptions-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.wa-typo-fields.arco-descriptions .arco-descriptions-item-label,
+.wa-typo-fields.arco-descriptions .arco-descriptions-item-label-block {
+  width: 6em !important;
+  min-width: 6em;
+  max-width: 6em;
+  padding-right: 12px !important;
+  color: var(--wa-color-muted, var(--color-text-3, #86909c));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: baseline;
+}
+
+.wa-typo-fields.arco-descriptions .arco-descriptions-item-value,
+.wa-typo-fields.arco-descriptions .arco-descriptions-item-value-block {
+  padding-right: 24px;
+  color: var(--wa-color-text, var(--color-text-1, #1d2129));
+  vertical-align: baseline;
+  word-break: break-word;
+}

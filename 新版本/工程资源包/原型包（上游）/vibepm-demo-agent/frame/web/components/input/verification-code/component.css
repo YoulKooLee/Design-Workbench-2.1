@@ -1,0 +1,29 @@
+/* 验证码：按内容收窄；单格宽高跟 WEB Input 密度一致 */
+.wa-input-otp.arco-verification-code,
+.arco-verification-code.wa-input-otp {
+  width: max-content;
+  max-width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.wa-input-otp.arco-verification-code .arco-input-wrapper,
+.arco-verification-code.wa-input-otp .arco-input-wrapper {
+  box-sizing: border-box;
+  width: var(--wa-input-h, 40px);
+  height: var(--wa-input-h, 40px);
+  flex: 0 0 var(--wa-input-h, 40px);
+  padding: 0;
+}
+
+.wa-input-otp.arco-verification-code .arco-input,
+.arco-verification-code.wa-input-otp .arco-input {
+  box-sizing: border-box;
+  width: var(--wa-input-h, 40px);
+  height: var(--wa-input-h, 40px);
+  padding: 0;
+  line-height: var(--wa-input-h, 40px);
+  text-align: center;
+  font-size: var(--wa-input-fs, 14px);
+}

@@ -1,0 +1,22 @@
+/* 时间格式：柔和底 + HH:mm:ss 掩码输入 */
+.wa-input-timestamp.arco-input-wrapper,
+.arco-input-wrapper.wa-input-timestamp {
+  background-color: var(--color-fill-2);
+  border-color: transparent;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.wa-input-timestamp.arco-input-wrapper:hover,
+.arco-input-wrapper.wa-input-timestamp:hover {
+  background-color: var(--color-fill-3);
+  border-color: transparent;
+}
+
+.wa-input-timestamp.arco-input-wrapper.arco-input-focus,
+.wa-input-timestamp.arco-input-wrapper:focus-within,
+.arco-input-wrapper.wa-input-timestamp.arco-input-focus,
+.arco-input-wrapper.wa-input-timestamp:focus-within {
+  background-color: var(--color-fill-2);
+  border-color: rgb(var(--primary-6));
+}

@@ -1,0 +1,55 @@
+/* Grid：单列对照。
+ * Arco Row gutter 写 margin ±gutter/2；全局又给 .arco-row 设了 width:100%，
+ * 会整体左偏、右侧多留白。这里清掉行级左右负边距，列 padding 仍保留列间距，两侧对称。 */
+.wa-fam-grid {
+  grid-template-columns: 1fr;
+}
+
+/* 成员 embed 对齐单列家族卡宽 */
+body.wa-preview-embed .wa-embed {
+  width: min(960px, calc(100% - 32px));
+}
+
+.wa-fam-card__stage {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+}
+
+.wa-layout-demo {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.wa-layout-demo > .arco-row {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  /* 只清左右负边距（对称）；上下留给 gutter 竖向间距 */
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.wa-layout-demo .arco-col {
+  min-width: 0;
+}
+
+.wa-layout-demo .arco-col > .arco-card,
+.wa-layout-demo .arco-col > * {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 家族页未链 card/component.css 时，正文仍对齐默认卡片说明样式 */
+.wa-layout-demo .wa-acard-desc {
+  margin: 0;
+  color: var(--color-text-3);
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+}

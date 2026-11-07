@@ -1,0 +1,6 @@
+/* 悬停下划线链接：Arco hoverable 仅控制底色，下划线由本规则提供 */
+.wa-link-hover.arco-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background-color: transparent;
+}

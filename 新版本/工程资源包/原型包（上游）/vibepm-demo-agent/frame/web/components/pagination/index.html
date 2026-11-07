@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>分页 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./component.css?v=prev-next-label" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="pagination">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">pagination</p>
+          <h1 class="wa-fam-title">分页</h1>
+          <p class="wa-fam-lead">列表翻页控件，支持精简、前后、计数、连体与跳页等形态。</p>
+          <p class="wa-fam-lead">组件类型：default / mini / jumper / full / all / simple / prev-next / counter / text / joined / disabled</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="pagination-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">分页</span><span class="wa-comp-meta__slug">pagination-default</span></div>
+              <a-tooltip :content="famCopyTip('pagination-default')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-default') }]" type="secondary" size="small" @click="copyPrompt('pagination-default')" :aria-label="famCopyTip('pagination-default')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-default')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-pagination v-model:current="current" :total="86" :page-size="10" />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-mini">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">迷你分页</span><span class="wa-comp-meta__slug">pagination-mini</span></div>
+              <a-tooltip :content="famCopyTip('pagination-mini')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-mini') }]" type="secondary" size="small" @click="copyPrompt('pagination-mini')" :aria-label="famCopyTip('pagination-mini')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-mini')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-pagination v-model:current="currentMini" :total="86" :page-size="10" size="mini" />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-jumper">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">跳页分页</span><span class="wa-comp-meta__slug">pagination-jumper</span></div>
+              <a-tooltip :content="famCopyTip('pagination-jumper')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-jumper') }]" type="secondary" size="small" @click="copyPrompt('pagination-jumper')" :aria-label="famCopyTip('pagination-jumper')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-jumper')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-pagination v-model:current="currentJumper" :total="86" :page-size="10" show-jumper />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-full">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">完整分页</span><span class="wa-comp-meta__slug">pagination-full</span></div>
+              <a-tooltip :content="famCopyTip('pagination-full')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-full') }]" type="secondary" size="small" @click="copyPrompt('pagination-full')" :aria-label="famCopyTip('pagination-full')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-full')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-pagination v-model:current="currentFull" :total="86" :page-size="10" show-total show-page-size />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-all">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">全能分页</span><span class="wa-comp-meta__slug">pagination-all</span></div>
+              <a-tooltip :content="famCopyTip('pagination-all')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-all') }]" type="secondary" size="small" @click="copyPrompt('pagination-all')" :aria-label="famCopyTip('pagination-all')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-all')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-pagination v-model:current="currentAll" :total="86" :page-size="10" show-total show-page-size show-jumper />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-simple">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">简洁分页</span><span class="wa-comp-meta__slug">pagination-simple</span></div>
+              <a-tooltip :content="famCopyTip('pagination-simple')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-simple') }]" type="secondary" size="small" @click="copyPrompt('pagination-simple')" :aria-label="famCopyTip('pagination-simple')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-simple')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-pagination v-model:current="currentSimple" :total="86" :page-size="10" simple />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-prev-next">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">前后翻页</span><span class="wa-comp-meta__slug">pagination-prev-next</span></div>
+              <a-tooltip :content="famCopyTip('pagination-prev-next')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-prev-next') }]" type="secondary" size="small" @click="copyPrompt('pagination-prev-next')" :aria-label="famCopyTip('pagination-prev-next')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-prev-next')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <nav class="wa-pg-bar wa-pg-bar--ends" aria-label="分页">
+                <a-button type="secondary" shape="round" :disabled="currentPrevNext <= 1" @click="goPrev('prevNext')">
+                  <template #icon><icon-left :size="12" /></template>
+                  上一页
+                </a-button>
+                <a-button type="secondary" shape="round" :disabled="currentPrevNext >= pageTotal" @click="goNext('prevNext')">
+                  下一页
+                  <icon-right :size="12" />
+                </a-button>
+              </nav>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-counter">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">计数分页</span><span class="wa-comp-meta__slug">pagination-counter</span></div>
+              <a-tooltip :content="famCopyTip('pagination-counter')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-counter') }]" type="secondary" size="small" @click="copyPrompt('pagination-counter')" :aria-label="famCopyTip('pagination-counter')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-counter')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <nav class="wa-pg-bar wa-pg-bar--ends" aria-label="分页">
+                <a-button type="secondary" shape="circle" :disabled="currentCounter <= 1" aria-label="上一页" @click="goPrev('counter')">
+                  <icon-left :size="12" />
+                </a-button>
+                <p class="wa-pg-status" aria-live="polite">第 {{ currentCounter }} 页 / 共 {{ pageTotal }} 页</p>
+                <a-button type="secondary" shape="circle" :disabled="currentCounter >= pageTotal" aria-label="下一页" @click="goNext('counter')">
+                  <icon-right :size="12" />
+                </a-button>
+              </nav>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-text">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">文字分页</span><span class="wa-comp-meta__slug">pagination-text</span></div>
+              <a-tooltip :content="famCopyTip('pagination-text')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-text') }]" type="secondary" size="small" @click="copyPrompt('pagination-text')" :aria-label="famCopyTip('pagination-text')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-text')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <nav class="wa-pg-bar wa-pg-bar--text" aria-label="分页">
+                <a-button type="text" :disabled="currentText <= 1" aria-label="上一页" @click="goPrev('text')">
+                  <icon-left :size="12" />
+                </a-button>
+                <p class="wa-pg-status" aria-live="polite">
+                  第 <strong>{{ currentText }}</strong> 页 / 共 <strong>{{ pageTotal }}</strong> 页
+                </p>
+                <a-button type="text" :disabled="currentText >= pageTotal" aria-label="下一页" @click="goNext('text')">
+                  <icon-right :size="12" />
+                </a-button>
+              </nav>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-joined">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">连体分页</span><span class="wa-comp-meta__slug">pagination-joined</span></div>
+              <a-tooltip :content="famCopyTip('pagination-joined')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-joined') }]" type="secondary" size="small" @click="copyPrompt('pagination-joined')" :aria-label="famCopyTip('pagination-joined')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-joined')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <nav class="wa-pg-joined" aria-label="分页">
+                <a-button type="text" :disabled="currentJoined <= 1" aria-label="上一页" @click="goPrev('joined')">
+                  <icon-left :size="12" />
+                </a-button>
+                <a-button
+                  v-for="n in joinedPages"
+                  :key="n"
+                  type="text"
+                  :class="{ 'wa-pg-joined__active': n === currentJoined }"
+                  :aria-current="n === currentJoined ? 'page' : undefined"
+                  @click="goJoinedPage(n)"
+                >{{ n }}</a-button>
+                <span class="wa-pg-joined__ellipsis" aria-hidden="true">…</span>
+                <a-button type="text" :disabled="currentJoined >= pageTotal" aria-label="下一页" @click="goNext('joined')">
+                  <icon-right :size="12" />
+                </a-button>
+              </nav>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="pagination-disabled">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">禁用分页</span><span class="wa-comp-meta__slug">pagination-disabled</span></div>
+              <a-tooltip :content="famCopyTip('pagination-disabled')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('pagination-disabled') }]" type="secondary" size="small" @click="copyPrompt('pagination-disabled')" :aria-label="famCopyTip('pagination-disabled')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('pagination-disabled')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-pagination v-model:current="currentDisabled" :total="86" :page-size="10" disabled />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'pagination',
+      members: [
+        'pagination-default',
+        'pagination-mini',
+        'pagination-jumper',
+        'pagination-full',
+        'pagination-all',
+        'pagination-simple',
+        'pagination-prev-next',
+        'pagination-counter',
+        'pagination-text',
+        'pagination-joined',
+        'pagination-disabled',
+      ],
+      setup: function (api) {
+        var pageTotal = 10
+        var currentPrevNext = api.ref(2)
+        var currentCounter = api.ref(1)
+        var currentText = api.ref(1)
+        var currentJoined = api.ref(1)
+        var map = {
+          prevNext: currentPrevNext,
+          counter: currentCounter,
+          text: currentText,
+          joined: currentJoined,
+        }
+        return {
+          pageTotal: pageTotal,
+          joinedPages: [1, 2, 3, 4],
+          current: api.ref(1),
+          currentSimple: api.ref(1),
+          currentFull: api.ref(1),
+          currentJumper: api.ref(1),
+          currentMini: api.ref(1),
+          currentDisabled: api.ref(1),
+          currentAll: api.ref(1),
+          currentPrevNext: currentPrevNext,
+          currentCounter: currentCounter,
+          currentText: currentText,
+          currentJoined: currentJoined,
+          goPrev: function (key) {
+            var cur = map[key]
+            if (cur && cur.value > 1) cur.value -= 1
+          },
+          goNext: function (key) {
+            var cur = map[key]
+            if (cur && cur.value < pageTotal) cur.value += 1
+          },
+          goJoinedPage: function (n) {
+            currentJoined.value = n
+          },
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+/* 自定义日期单元格：日程短标（对照 Element date-cell） */
+.wa-cal-cell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 4px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 10px;
+}
+
+.wa-cal-cell__day {
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--color-text-1);
+}
+
+.wa-cal-cell__mark {
+  max-width: 100%;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--color-primary-light-1, rgba(22, 93, 255, 0.08));
+  color: rgb(var(--primary-6, 22, 93, 255));
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arco-calendar-cell-selected .wa-cal-cell__day,
+.arco-calendar-cell-selected .wa-cal-cell__mark {
+  color: inherit;
+}
+
+.arco-calendar-cell-selected .wa-cal-cell__mark {
+  background: rgba(255, 255, 255, 0.22);
+}

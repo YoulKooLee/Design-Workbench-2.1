@@ -1,0 +1,11 @@
+slug: slider-price
+label: 价格区间滑块
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags:
+  - input
+path: components/slider/price

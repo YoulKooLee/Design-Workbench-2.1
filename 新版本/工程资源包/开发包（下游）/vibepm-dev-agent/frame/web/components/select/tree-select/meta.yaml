@@ -1,0 +1,11 @@
+slug: select-tree-select
+label: 树选择
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/select/tree-select

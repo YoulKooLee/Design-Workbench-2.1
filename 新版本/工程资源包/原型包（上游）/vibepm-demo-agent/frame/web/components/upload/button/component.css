@@ -1,0 +1,41 @@
+/* 按钮上传触发器 / 说明（列表灰底整行修法在 components.css，挂 .wa-upload-btn 即生效） */
+
+.wa-upload-btn,
+.arco-upload.wa-upload-btn {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  cursor: default;
+}
+
+.wa-upload-btn-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.wa-upload-tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  color: var(--color-text-3);
+  font-size: 12px;
+  line-height: 18px;
+  cursor: default;
+}
+
+.wa-upload-tip span {
+  min-width: 0;
+  white-space: normal;
+}
+
+.wa-upload-tip .pro-fa-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  color: var(--color-text-3);
+}

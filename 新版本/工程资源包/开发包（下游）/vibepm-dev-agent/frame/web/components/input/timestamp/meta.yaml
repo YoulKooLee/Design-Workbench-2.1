@@ -1,0 +1,11 @@
+slug: input-timestamp
+label: 时间格式
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags:
+  - input
+path: components/input/timestamp

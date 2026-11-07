@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>清单内容对话框 · modal-content-list</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="modal-content-list">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">清单内容对话框</span>
+        <span class="wa-comp-meta__slug">modal-content-list</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-button type="secondary" @click="visible = true">打开示例</a-button>
+        <a-modal
+          v-model:visible="visible"
+          title="内容容器"
+          title-align="start"
+          :width="560"
+          unmount-on-close
+          modal-class="pro-content-modal"
+          ok-text="确定"
+          cancel-text="取消"
+          @ok="visible = false"
+          @cancel="visible = false"
+                  :ok-button-props="{ type: 'primary', shape: 'round' }"
+                  :cancel-button-props="{ type: 'secondary', shape: 'round' }"
+                >
+          <div class="mc-body">
+            <p class="mc-lead">将自定义内容放入此容器。下方为发布清单示例。</p>
+            <div class="mc-panel">
+              <div class="mc-panel__title">发布清单</div>
+              <ul class="mc-list">
+                <li><strong>主题令牌</strong><a-tag color="arcoblue" size="small">已同步</a-tag></li>
+                <li><strong>预览页</strong><span>待确认</span></li>
+                <li><strong>导出包</strong><span>准备中</span></li>
+                <li><strong>样式文档</strong><span>已就绪</span></li>
+                <li><strong>资源清单</strong><span>待核对</span></li>
+              </ul>
+            </div>
+            <a-checkbox v-model="notify">导出后发送通知</a-checkbox>
+          </div>
+        </a-modal>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

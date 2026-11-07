@@ -1,0 +1,27 @@
+/* 标签家族：多色并列演示（母版对照 / embed；落地时并入宿主 CSS）
+   默认灰边无底 / 胶囊体系已写入 assets/common/css/components.css，勿在此重复。 */
+
+.wa-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.wa-tag-option-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug="tag-color"].wa-embed,
+body.wa-preview-embed .wa-preview-stage[data-slug="tag-bordered"].wa-embed,
+body.wa-preview-embed .wa-preview-stage[data-slug="tag-soft"].wa-embed,
+body.wa-preview-embed .wa-preview-stage[data-slug="tag-option"].wa-embed,
+body.wa-preview-embed .wa-preview-stage[data-slug="tag-icon-text"].wa-embed,
+body.wa-preview-embed .wa-preview-stage[data-slug="tag-icon-badge"].wa-embed {
+  width: min(560px, calc(100% - 32px));
+}

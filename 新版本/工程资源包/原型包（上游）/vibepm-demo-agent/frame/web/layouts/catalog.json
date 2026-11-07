@@ -1,0 +1,208 @@
+{
+  "layouts": [
+    {
+      "slug": "app-sidebar",
+      "label": "侧栏通顶框架",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-sidebar",
+      "category": "sidebar",
+      "tags": [],
+      "notes": "交付默认壳（layoutDefault）。新建壳选模板见 layouts/list.md，勿一律复制本目录。对齐 Admin layoutMode=side；wa-layout--side；compact"
+    },
+    {
+      "slug": "app-sidebar-stage",
+      "label": "灰栏工作台",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-sidebar-stage",
+      "category": "sidebar",
+      "tags": [],
+      "notes": "从 app-sidebar 分叉；左侧灰底 + 右侧白台；搜索在 LOGO 右；展开收起在主列顶左"
+    },
+    {
+      "slug": "app-topnav",
+      "label": "通栏顶栏框架",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-topnav",
+      "category": "topnav",
+      "tags": [],
+      "notes": "对齐 Admin layoutMode=top；wa-layout--top；交互与内容槽同源 app-sidebar；preset region / toolbar / tabs；原 icon-nav 已升格为 app-module-nav"
+    },
+    {
+      "slug": "app-module-nav",
+      "label": "顶栏模块导航",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-module-nav",
+      "category": "topnav",
+      "tags": [],
+      "notes": "顶栏一级模块切换；左侧仅当前模块菜单且默认全部展开；由 app-topnav icon-nav 变体升格"
+    },
+    {
+      "slug": "app-top-only",
+      "label": "无侧栏通栏",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-top-only",
+      "category": "topnav",
+      "tags": [],
+      "notes": "从 app-topnav 去侧栏；顶栏水平主导航，主列全宽"
+    },
+    {
+      "slug": "app-top-menu",
+      "label": "顶栏全局菜单",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-top-menu",
+      "category": "topnav",
+      "tags": [],
+      "notes": "LOGO 左侧菜单图标展开产品与服务面板；无固定侧栏；同源 app-top-only"
+    },
+    {
+      "slug": "app-stacked-nav",
+      "label": "双层顶栏框架",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-stacked-nav",
+      "category": "topnav",
+      "tags": [],
+      "notes": "顶栏含品牌+一级+操作；第二层为二级菜单；无侧栏"
+    },
+    {
+      "slug": "app-inset",
+      "label": "侧栏留白框架",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-inset",
+      "category": "sidebar",
+      "tags": [],
+      "notes": "侧栏贴页面底；右侧内容整块表面、周边留白；同源 app-sidebar 导航"
+    },
+    {
+      "slug": "app-inset-stage",
+      "label": "窄轨二级",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-inset-stage",
+      "category": "sidebar",
+      "tags": [],
+      "notes": "从 app-inset 分叉；默认主色底；窄轨一级（图标下两字）+ 顶栏二级；无折叠；底栏仅搜索图标与头像；内容区滚动；主色底内容岛顶部内阴影"
+    },
+    {
+      "slug": "app-dual-rail",
+      "label": "图标双轨框架",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-dual-rail",
+      "category": "sidebar",
+      "tags": [],
+      "notes": "图标轨选分组；第二列面板为该组菜单槽；从 app-sidebar 分叉"
+    },
+    {
+      "slug": "app-icon-rail",
+      "label": "文字双轨",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-icon-rail",
+      "category": "sidebar",
+      "tags": [],
+      "notes": "轨上八个带文字模块入口（看板/日历/项目/笔记/成员/通知/表单/设置）切换第二列；与 app-dual-rail 分组菜单轨分开"
+    },
+    {
+      "slug": "app-icon-island",
+      "label": "图标岛侧栏",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-icon-island",
+      "category": "sidebar",
+      "tags": [],
+      "notes": "悬浮圆形品牌 + 胶囊图标岛；无第二列面板；从 app-icon-rail 分叉"
+    },
+    {
+      "slug": "app-top-island",
+      "label": "图标岛顶栏",
+      "surface": "app",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/app-top-island",
+      "category": "topnav",
+      "tags": [],
+      "notes": "从 app-icon-island 分叉；顶栏左品牌、居中带文字胶囊岛、右操作；无侧栏"
+    },
+    {
+      "slug": "marketing-shell",
+      "label": "营销顶栏页脚",
+      "surface": "marketing",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/marketing-shell",
+      "category": "shell",
+      "tags": [],
+      "notes": "通栏营销顶 + 主列 + 页脚；comfortable；勿从 App 壳复制"
+    },
+    {
+      "slug": "marketing-float",
+      "label": "悬浮导航条",
+      "surface": "marketing",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/marketing-float",
+      "category": "shell",
+      "tags": [],
+      "notes": "从 marketing-shell 分叉；整条悬浮胶囊导航；勿与 app-top-island 混用"
+    },
+    {
+      "slug": "docs-shell",
+      "label": "文档内容壳",
+      "surface": "general",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/docs-shell",
+      "category": "shell",
+      "tags": [],
+      "notes": "限宽三栏 + 悬浮胶囊顶栏（品牌/搜索/站点导航）；surface general"
+    },
+    {
+      "slug": "login-shell",
+      "label": "登录框架",
+      "surface": "general",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/login-shell",
+      "category": "shell",
+      "tags": [],
+      "notes": "无主导航；居中登录表单；分栏登录见 auth-split"
+    },
+    {
+      "slug": "auth-split",
+      "label": "分栏登录",
+      "surface": "general",
+      "status": "上架",
+      "tier": "member",
+      "path": "layouts/auth-split",
+      "category": "shell",
+      "tags": [],
+      "notes": "从 login-shell 分叉；左品牌叙事 + 右登录表单"
+    }
+  ],
+  "layoutCategories": [
+    "shell",
+    "sidebar",
+    "topnav",
+    "stack"
+  ]
+}

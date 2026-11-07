@@ -1,0 +1,109 @@
+/* statistic：单列对照；卡内多组指标横排 */
+
+.wa-fam-grid {
+  grid-template-columns: 1fr;
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug^="statistic-"].wa-embed {
+  width: min(960px, calc(100% - 32px));
+}
+
+/* 舞台默认 flex 居中，行需自拉伸才能三列铺满 */
+.wa-fam-card__stage {
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+.wa-fam-card__stage > .wa-stat-row,
+.wa-embed__stage > .wa-stat-row {
+  align-self: stretch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.wa-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px 32px;
+  width: 100%;
+  min-width: 0;
+}
+
+.wa-stat-row .arco-statistic,
+.wa-stat-row .arco-statistic-countdown {
+  min-width: 0;
+}
+
+.wa-stat-row .arco-statistic-value,
+.arco-statistic-value {
+  font-family: var(--wa-font-serif, var(--wa-font-display));
+  font-variant-numeric: tabular-nums;
+}
+
+.wa-stat-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.wa-stat-trend--up {
+  color: rgb(var(--green-6));
+}
+
+.wa-stat-trend--down {
+  color: rgb(var(--red-6));
+}
+
+.wa-stat-trend .pro-fa-icon {
+  font-size: 12px;
+}
+
+/* extra：标题图标 + 底部说明弱化 */
+.wa-stat-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-2);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.wa-stat-title .pro-fa-icon {
+  color: var(--color-text-3);
+  font-size: 12px;
+}
+
+.wa-stat-extra {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: var(--color-text-3);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.wa-stat-extra .pro-fa-icon {
+  font-size: 11px;
+  color: inherit;
+}
+
+.wa-stat-extra--up {
+  color: rgb(var(--green-6));
+}
+
+.wa-stat-extra--warn {
+  color: rgb(var(--orange-6));
+}
+
+@media (max-width: 720px) {
+  .wa-stat-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

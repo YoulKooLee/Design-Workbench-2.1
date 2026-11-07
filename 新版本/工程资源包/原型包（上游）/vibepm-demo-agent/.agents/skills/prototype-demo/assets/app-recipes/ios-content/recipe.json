@@ -1,0 +1,11 @@
+{
+  "recipe": "ios-content",
+  "shell": "ios_frame.html",
+  "shellFamily": "ios",
+  "source": "frame/app/ios_frame.html",
+  "deliver": [
+    "index.html",
+    "css/ios-frame.css"
+  ],
+  "note": "拷到交付根：index.html + 对应 css；业务只写在 main.screen-content > section.app-shell。勿动画外框。"
+}

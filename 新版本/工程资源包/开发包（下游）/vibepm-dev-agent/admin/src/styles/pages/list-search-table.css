@@ -1,0 +1,35 @@
+/* 数据列表：横向滚动时操作列固定 */
+
+.list-search-table-page {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.list-search-table-page > .arco-card {
+  max-width: 100%;
+}
+
+/*
+ * 列表页卡片 body 内边距已由 global.less 的 .general-card 全局对齐母版（16px）。
+ * 此处仅保留横向滚动与溢出裁剪。
+ */
+.list-search-table-page > .arco-card:not(.pro-page-card) {
+  overflow: hidden;
+}
+
+.list-search-table-page > .arco-card:not(.pro-page-card) > .arco-card-body {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 仅需要横向滚动时，隐藏 Arco 自定义纵向滚动条（scroll.x + fixed 列会触发 both） */
+.list-search-table-page .arco-table-container,
+.list-search-table-page .arco-table-content,
+.list-search-table-page .arco-table-body {
+  overflow-y: hidden !important;
+}
+
+.list-search-table-page .arco-scrollbar-track-direction-vertical {
+  display: none !important;
+}

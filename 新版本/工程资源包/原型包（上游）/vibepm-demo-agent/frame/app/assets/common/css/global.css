@@ -1,0 +1,132 @@
+/**
+ * APP 视觉真源（Style / 品牌）
+ * - 母版出厂默认：**亮色科技蓝**（`frame/.style/亮色科技蓝-style.md` + 预览 :root）
+ * - 壳结构见 chrome.css（换肤勿改）
+ * - 生成项目：scaffold 拷贝本文件后，选定其它 Style 时整文件重写（勿叠两套；勿改 chrome.css）
+ * - 用户回复「默认」→ 保持本文件 / 按亮色科技蓝落实；`styleSource` = `.style/亮色科技蓝-style.md`
+ * - 引入顺序：chrome.css → global.css → css/*-frame*.css
+ */
+@import url("../../fonts/index.css");
+
+:root {
+  color-scheme: light;
+
+  /* —— 亮色科技蓝 tokens（预览真源） —— */
+  --brand-primary: #4c75f2;
+  --brand-primary-rgb: 76, 117, 242;
+  --brand-primary-deep: #3a5ccc;
+  --text-primary: #1a1a1a;
+  --text-secondary: #999999;
+  --text-muted: #a0a4b0;
+  --text-tab-inactive: #a0a4b0;
+  --surface-base: #ffffff;
+  --surface-soft: #f8f9fb;
+  --bg-page: #f4f5f7;
+  --line-soft: #eaecef;
+  --line-card: #f3f4f6;
+  --glow-blue: rgba(76, 117, 242, 0.14);
+  --glow-indigo: rgba(224, 231, 255, 0.45);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.06);
+  --shadow-button: 0 10px 25px rgba(76, 117, 242, 0.3);
+  --shadow-input: 0 4px 14px rgba(0, 0, 0, 0.05);
+  --shadow-dropdown: 0 12px 28px rgba(0, 0, 0, 0.08);
+  --shadow-dock: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-fab: 0 12px 24px rgba(76, 117, 242, 0.35);
+  --semantic-success: #10b981;
+  --semantic-warning: #f5a623;
+  --semantic-danger: #ef4444;
+  --semantic-premium: #8b5cf6;
+  --tint-blue-soft: #eef2ff;
+  --tint-amber-soft: #fff9ee;
+  --tint-violet-soft: #f2eeff;
+  --tint-green-soft: #eefff5;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 18px;
+  --radius-xl: 20px;
+  --radius-card-lg: 24px;
+  --radius-dock: 40px;
+  --radius-pill: 999px;
+  --scrollbar-size: 8px;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.18);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.28);
+  --scrollbar-thumb-active: rgba(0, 0, 0, 0.36);
+
+  /* —— 壳 / Vant 桥接（chrome.css 与组件消费） —— */
+  --frame-bg: #000;
+  --frame-ring: #1f2937;
+  --screen-bg: var(--bg-page);
+  --text-color: var(--text-primary);
+  --brand: var(--brand-primary);
+  --font-family-base: "Inter", system-ui, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --font-size-base: 14px;
+  --control-height-base: 44px;
+  --van-font-family: var(--font-family-base);
+  --van-font-size-md: var(--font-size-base);
+  --van-font-size-lg: 16px;
+  --van-line-height-md: 1.4;
+  --van-primary-color: var(--brand);
+  --van-button-primary-background: var(--brand);
+  --van-button-default-height: var(--control-height-base);
+  --van-button-normal-font-size: var(--font-size-base);
+  --van-field-input-font-size: var(--font-size-base);
+  --van-cell-font-size: var(--font-size-base);
+  --status-bar-image: url("../../icons/status-bar-black.svg");
+}
+
+body {
+  background: var(--bg-page);
+  font-family: var(--font-family-base);
+  color: var(--text-color);
+  font-size: var(--font-size-base);
+}
+
+::selection {
+  background: var(--brand-primary);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: var(--brand-primary);
+  color: #ffffff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+*::-webkit-scrollbar-thumb:active {
+  background-color: var(--scrollbar-thumb-active);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --status-bar-image: url("../../icons/status-bar-white.svg");
+    --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.26);
+    --scrollbar-thumb-active: rgba(255, 255, 255, 0.34);
+  }
+  body {
+    background: #0a0a0a;
+  }
+}

@@ -1,0 +1,11 @@
+slug: btn-primary-round-icon
+label: 带图标胶囊主按钮
+type: component
+surface: marketing
+status: preview
+tier: free
+framework: web
+category: action
+tags:
+  - cta
+path: components/btn-primary/round-icon

@@ -1,0 +1,47 @@
+/* 校验成功：绿描边控件 + 底部图标提示 */
+.wa-input-success {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.wa-input-success__label {
+  color: var(--color-text-1);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.wa-input-success .arco-input-wrapper,
+.arco-input-wrapper.wa-input-success__control {
+  border-color: rgb(var(--success-6)) !important;
+}
+
+.wa-input-success .arco-input-wrapper:hover,
+.arco-input-wrapper.wa-input-success__control:hover {
+  border-color: rgb(var(--success-5)) !important;
+}
+
+.wa-input-success .arco-input-wrapper.arco-input-focus,
+.wa-input-success .arco-input-wrapper:focus-within,
+.arco-input-wrapper.wa-input-success__control.arco-input-focus,
+.arco-input-wrapper.wa-input-success__control:focus-within {
+  border-color: rgb(var(--success-6)) !important;
+  box-shadow: none !important;
+}
+
+.wa-input-success-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: rgb(var(--success-6));
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.wa-input-success-help .pro-fa-icon {
+  font-size: 14px;
+  color: inherit;
+}

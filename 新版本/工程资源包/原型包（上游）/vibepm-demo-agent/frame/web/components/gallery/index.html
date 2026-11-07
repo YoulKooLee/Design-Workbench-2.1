@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>图片画廊 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="gallery">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">gallery</p>
+          <h1 class="wa-fam-title">图片画廊</h1>
+          <p class="wa-fam-lead">图片画廊轮播，用于产品图集、案例相册与缩略图切换。</p>
+          <p class="wa-fam-lead">组件类型：default / dots / thumbnails / counter / thumbnails-side / progress / multiple / arrows / arrows-bottom / arrows-dots</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="gallery-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">图片画廊</span><span class="wa-comp-meta__slug">gallery-default</span></div>
+              <a-tooltip :content="famCopyTip('gallery-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-default')"
+                :aria-label="famCopyTip('gallery-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-carousel class="wa-gallery" show-arrow="always" indicator-type="dot">
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+              </a-carousel>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-dots">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">圆点画廊</span><span class="wa-comp-meta__slug">gallery-dots</span></div>
+              <a-tooltip :content="famCopyTip('gallery-dots')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-dots') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-dots')"
+                :aria-label="famCopyTip('gallery-dots')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-dots')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-carousel class="wa-gallery wa-gallery--dots" show-arrow="never" indicator-type="dot">
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+              </a-carousel>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-thumbnails">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">缩略图画廊</span><span class="wa-comp-meta__slug">gallery-thumbnails</span></div>
+              <a-tooltip :content="famCopyTip('gallery-thumbnails')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-thumbnails') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-thumbnails')"
+                :aria-label="famCopyTip('gallery-thumbnails')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-thumbnails')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-gallery-wrap wa-gallery-wrap--thumbs">
+                <a-carousel class="wa-gallery" v-model:current="thumbCurrent" indicator-type="never" show-arrow="hover">
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+                </a-carousel>
+                <div class="wa-gallery-thumbs" role="tablist" aria-label="缩略图">
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': thumbCurrent === 1 }"
+                  :aria-label="'切换到产品图一'"
+                  @click="thumbCurrent = 1"
+                >
+                  <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                </button>
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': thumbCurrent === 2 }"
+                  :aria-label="'切换到产品图二'"
+                  @click="thumbCurrent = 2"
+                >
+                  <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                </button>
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': thumbCurrent === 3 }"
+                  :aria-label="'切换到产品图三'"
+                  @click="thumbCurrent = 3"
+                >
+                  <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                </button>
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': thumbCurrent === 4 }"
+                  :aria-label="'切换到产品图四'"
+                  @click="thumbCurrent = 4"
+                >
+                  <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                </button>
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': thumbCurrent === 5 }"
+                  :aria-label="'切换到产品图五'"
+                  @click="thumbCurrent = 5"
+                >
+                  <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-counter">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">计数画廊</span><span class="wa-comp-meta__slug">gallery-counter</span></div>
+              <a-tooltip :content="famCopyTip('gallery-counter')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-counter') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-counter')"
+                :aria-label="famCopyTip('gallery-counter')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-counter')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-gallery-wrap wa-gallery-wrap--counter">
+                <a-carousel class="wa-gallery" v-model:current="counterCurrent" show-arrow="hover" indicator-type="never">
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+                </a-carousel>
+                <div class="wa-gallery-counter" aria-live="polite">{{ counterCurrent }} / {{ galleryCount }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-thumbnails-side">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">侧栏缩略图画廊</span><span class="wa-comp-meta__slug">gallery-thumbnails-side</span></div>
+              <a-tooltip :content="famCopyTip('gallery-thumbnails-side')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-thumbnails-side') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-thumbnails-side')"
+                :aria-label="famCopyTip('gallery-thumbnails-side')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-thumbnails-side')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-gallery-wrap wa-gallery-wrap--thumbs-side">
+                <a-carousel class="wa-gallery" v-model:current="sideCurrent" indicator-type="never" show-arrow="hover">
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+                </a-carousel>
+                <div class="wa-gallery-thumbs wa-gallery-thumbs--side" role="tablist" aria-label="缩略图">
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': sideCurrent === 1 }"
+                  :aria-label="'切换到产品图一'"
+                  @click="sideCurrent = 1"
+                >
+                  <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                </button>
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': sideCurrent === 2 }"
+                  :aria-label="'切换到产品图二'"
+                  @click="sideCurrent = 2"
+                >
+                  <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                </button>
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': sideCurrent === 3 }"
+                  :aria-label="'切换到产品图三'"
+                  @click="sideCurrent = 3"
+                >
+                  <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                </button>
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': sideCurrent === 4 }"
+                  :aria-label="'切换到产品图四'"
+                  @click="sideCurrent = 4"
+                >
+                  <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                </button>
+                <button
+                  type="button"
+                  class="wa-gallery-thumb"
+                  :class="{ 'is-active': sideCurrent === 5 }"
+                  :aria-label="'切换到产品图五'"
+                  @click="sideCurrent = 5"
+                >
+                  <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-progress">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">进度条画廊</span><span class="wa-comp-meta__slug">gallery-progress</span></div>
+              <a-tooltip :content="famCopyTip('gallery-progress')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-progress') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-progress')"
+                :aria-label="famCopyTip('gallery-progress')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-progress')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-gallery-wrap wa-gallery-wrap--progress">
+                <a-carousel
+                  class="wa-gallery"
+                  v-model:current="progressCurrent"
+                  :auto-play="{ interval: 4000, hoverToPause: true }"
+                  show-arrow="hover"
+                  indicator-type="dot"
+                  @change="onProgressChange"
+                >
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+                </a-carousel>
+                <div class="wa-gallery-progress" aria-hidden="true">
+                  <div class="wa-gallery-progress__bar" :key="progressTick"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-multiple">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">多列画廊</span><span class="wa-comp-meta__slug">gallery-multiple</span></div>
+              <a-tooltip :content="famCopyTip('gallery-multiple')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-multiple') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-multiple')"
+                :aria-label="famCopyTip('gallery-multiple')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-multiple')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-gallery-wrap wa-gallery-wrap--multiple">
+                <a-button type="secondary" shape="circle" size="small" aria-label="上一组" :disabled="multiIndex <= 0" @click="multiPrev">
+                  <icon-left></icon-left>
+                </a-button>
+                <div class="wa-gallery-viewport">
+                  <div class="wa-gallery-track" :style="multiTrackStyle">
+                  <div class="wa-gallery-cell">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                  <div class="wa-gallery-cell">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                  <div class="wa-gallery-cell">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                  <div class="wa-gallery-cell">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                  <div class="wa-gallery-cell">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                  </div>
+                </div>
+                <a-button type="secondary" shape="circle" size="small" aria-label="下一组" :disabled="multiIndex >= multiMax" @click="multiNext">
+                  <icon-right></icon-right>
+                </a-button>
+              </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-arrows">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">自定义箭头画廊</span><span class="wa-comp-meta__slug">gallery-arrows</span></div>
+              <a-tooltip :content="famCopyTip('gallery-arrows')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-arrows') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-arrows')"
+                :aria-label="famCopyTip('gallery-arrows')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-arrows')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-gallery-wrap wa-gallery-wrap--arrows">
+                <a-button type="secondary" shape="circle" size="small" aria-label="上一张" :disabled="arrowsCurrent <= 1" @click="arrowsPrev">
+                  <icon-left></icon-left>
+                </a-button>
+                <a-carousel class="wa-gallery" v-model:current="arrowsCurrent" show-arrow="never" indicator-type="never">
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+                </a-carousel>
+                <a-button type="secondary" shape="circle" size="small" aria-label="下一张" :disabled="arrowsCurrent >= galleryCount" @click="arrowsNext">
+                  <icon-right></icon-right>
+                </a-button>
+              </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-arrows-bottom">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">底部箭头画廊</span><span class="wa-comp-meta__slug">gallery-arrows-bottom</span></div>
+              <a-tooltip :content="famCopyTip('gallery-arrows-bottom')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-arrows-bottom') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-arrows-bottom')"
+                :aria-label="famCopyTip('gallery-arrows-bottom')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-arrows-bottom')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-gallery-wrap wa-gallery-wrap--arrows-bottom">
+                <a-carousel class="wa-gallery" v-model:current="bottomCurrent" show-arrow="never" indicator-type="never">
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+                </a-carousel>
+                <div class="wa-gallery-arrows-bottom">
+                  <a-button type="secondary" shape="circle" size="small" aria-label="上一张" :disabled="bottomCurrent <= 1" @click="bottomPrev">
+                    <icon-left></icon-left>
+                  </a-button>
+                  <a-button type="secondary" shape="circle" size="small" aria-label="下一张" :disabled="bottomCurrent >= galleryCount" @click="bottomNext">
+                    <icon-right></icon-right>
+                  </a-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="gallery-arrows-dots">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">箭头圆点画廊</span><span class="wa-comp-meta__slug">gallery-arrows-dots</span></div>
+              <a-tooltip :content="famCopyTip('gallery-arrows-dots')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('gallery-arrows-dots') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('gallery-arrows-dots')"
+                :aria-label="famCopyTip('gallery-arrows-dots')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('gallery-arrows-dots')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-gallery-wrap wa-gallery-wrap--arrows-dots">
+                <div class="wa-gallery-arrows-dots__row">
+                  <a-button type="secondary" shape="circle" size="small" aria-label="上一张" :disabled="dotsCurrent <= 1" @click="dotsPrev">
+                    <icon-left></icon-left>
+                  </a-button>
+                  <a-carousel class="wa-gallery" v-model:current="dotsCurrent" show-arrow="never" indicator-type="never">
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_01.jpg" alt="产品图一" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_02.jpg" alt="产品图二" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_03.jpg" alt="产品图三" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_04.jpg" alt="产品图四" />
+                  </div>
+                </a-carousel-item>
+                <a-carousel-item>
+                  <div class="wa-gallery-slide">
+                    <img src="../../assets/images/image_05.jpg" alt="产品图五" />
+                  </div>
+                </a-carousel-item>
+                  </a-carousel>
+                  <a-button type="secondary" shape="circle" size="small" aria-label="下一张" :disabled="dotsCurrent >= galleryCount" @click="dotsNext">
+                    <icon-right></icon-right>
+                  </a-button>
+                </div>
+                <div class="wa-gallery-pills" role="tablist" aria-label="分页">
+                <button
+                  type="button"
+                  class="wa-gallery-pill"
+                  :class="{ 'is-active': dotsCurrent === 1 }"
+                  :aria-label="'第1张'"
+                  @click="dotsCurrent = 1"
+                ></button>
+                <button
+                  type="button"
+                  class="wa-gallery-pill"
+                  :class="{ 'is-active': dotsCurrent === 2 }"
+                  :aria-label="'第2张'"
+                  @click="dotsCurrent = 2"
+                ></button>
+                <button
+                  type="button"
+                  class="wa-gallery-pill"
+                  :class="{ 'is-active': dotsCurrent === 3 }"
+                  :aria-label="'第3张'"
+                  @click="dotsCurrent = 3"
+                ></button>
+                <button
+                  type="button"
+                  class="wa-gallery-pill"
+                  :class="{ 'is-active': dotsCurrent === 4 }"
+                  :aria-label="'第4张'"
+                  @click="dotsCurrent = 4"
+                ></button>
+                <button
+                  type="button"
+                  class="wa-gallery-pill"
+                  :class="{ 'is-active': dotsCurrent === 5 }"
+                  :aria-label="'第5张'"
+                  @click="dotsCurrent = 5"
+                ></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'gallery',
+      members: [
+        'gallery-default',
+        'gallery-dots',
+        'gallery-thumbnails',
+        'gallery-counter',
+        'gallery-thumbnails-side',
+        'gallery-progress',
+        'gallery-multiple',
+        'gallery-arrows',
+        'gallery-arrows-bottom',
+        'gallery-arrows-dots'
+      ],
+      setup: function (api) {
+        var ref = api.ref
+        var computed = api.computed
+        var galleryCount = 5
+        var multiIndex = ref(0)
+        var multiMax = Math.max(0, galleryCount - 3)
+        var multiTrackStyle = computed(function () {
+          return { transform: 'translateX(calc(-' + multiIndex.value + ' * (100cqw + 8px) / 3))' }
+        })
+        var thumbCurrent = ref(1)
+        var sideCurrent = ref(1)
+        var counterCurrent = ref(1)
+        var progressCurrent = ref(1)
+        var progressTick = ref(0)
+        var arrowsCurrent = ref(1)
+        var bottomCurrent = ref(1)
+        var dotsCurrent = ref(1)
+        return {
+          galleryCount: galleryCount,
+          multiIndex: multiIndex,
+          multiMax: multiMax,
+          multiTrackStyle: multiTrackStyle,
+          multiPrev: function () { if (multiIndex.value > 0) multiIndex.value -= 1 },
+          multiNext: function () { if (multiIndex.value < multiMax) multiIndex.value += 1 },
+          thumbCurrent: thumbCurrent,
+          sideCurrent: sideCurrent,
+          counterCurrent: counterCurrent,
+          progressCurrent: progressCurrent,
+          progressTick: progressTick,
+          onProgressChange: function () { progressTick.value += 1 },
+          arrowsCurrent: arrowsCurrent,
+          arrowsPrev: function () { if (arrowsCurrent.value > 1) arrowsCurrent.value -= 1 },
+          arrowsNext: function () { if (arrowsCurrent.value < galleryCount) arrowsCurrent.value += 1 },
+          bottomCurrent: bottomCurrent,
+          bottomPrev: function () { if (bottomCurrent.value > 1) bottomCurrent.value -= 1 },
+          bottomNext: function () { if (bottomCurrent.value < galleryCount) bottomCurrent.value += 1 },
+          dotsCurrent: dotsCurrent,
+          dotsPrev: function () { if (dotsCurrent.value > 1) dotsCurrent.value -= 1 },
+          dotsNext: function () { if (dotsCurrent.value < galleryCount) dotsCurrent.value += 1 },
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

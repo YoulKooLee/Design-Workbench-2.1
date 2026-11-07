@@ -1,0 +1,55 @@
+/* 拖拽放置区外观（列表灰底整行修法在 components.css，挂 .wa-upload-io 即生效） */
+
+.wa-upload-drag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 48px 16px;
+  min-height: 180px;
+  text-align: center;
+  background: var(--color-fill-1);
+  border: 1px dashed var(--color-border-3);
+  border-radius: var(--wa-input-radius, 8px);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+body[arco-theme='dark'] .wa-upload-drag {
+  background: var(--color-fill-2);
+  border-color: var(--color-neutral-4);
+}
+
+.wa-upload-io .arco-upload-drag:hover .wa-upload-drag,
+.wa-upload-drag:hover {
+  border-color: rgb(var(--primary-6));
+  background: rgb(var(--primary-1, 232, 243, 255));
+}
+
+body[arco-theme='dark'] .wa-upload-io .arco-upload-drag:hover .wa-upload-drag,
+body[arco-theme='dark'] .wa-upload-drag:hover {
+  background: rgba(var(--primary-6), 0.12);
+}
+
+.wa-upload-drag-icon {
+  margin-bottom: 10px;
+  color: rgb(var(--primary-6));
+  font-size: 32px;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.wa-upload-drag-text {
+  max-width: 100%;
+  color: var(--color-text-1);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.wa-upload-drag-hint {
+  max-width: 100%;
+  margin-top: 4px;
+  color: var(--color-text-3);
+  font-size: 12px;
+  line-height: 20px;
+}

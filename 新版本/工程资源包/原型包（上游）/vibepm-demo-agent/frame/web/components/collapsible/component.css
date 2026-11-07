@@ -1,0 +1,716 @@
+/* collapsible — single-section disclosure (≠ multi-panel collapse)
+ * Visual patterns aligned to shadcnuikit.com/components/collapsible
+ */
+
+.wa-collapsible.arco-collapse {
+  width: 100%;
+  max-width: 100%;
+  background: transparent;
+}
+
+.wa-collapsible.arco-collapse-borderless .arco-collapse-item-header,
+.wa-collapsible.arco-collapse-borderless .arco-collapse-item-content {
+  background: transparent;
+}
+
+.wa-collapsible .arco-collapse-item-header,
+.wa-collapsible .arco-collapse-item-active > .arco-collapse-item-header {
+  border-bottom-color: transparent;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.wa-collapsible .arco-collapse-item-content-box {
+  padding-top: 0;
+  padding-bottom: 4px;
+  color: var(--color-text-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.wa-collapsible .arco-collapse-item-icon-hover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* Bare panel: hide Arco item header; external ghost trigger owns expand */
+.wa-collapsible--bare > .arco-collapse-item > .arco-collapse-item-header {
+  display: none !important;
+}
+
+.wa-collapsible--bare > .arco-collapse-item > .arco-collapse-item-content {
+  border: none;
+  background: transparent;
+  padding: 0 !important; /* 抵消 Arco 为左侧箭头预留的 padding-left */
+}
+
+.wa-collapsible--bare .arco-collapse-item-content-box {
+  padding: 0;
+}
+
+/* 展开箭头：固定正方形槽位；旋转槽位本身（勿转内部 FA）
+ * 原因：fa-icons.css 对 .arco-btn .pro-fa-icon 写了 transform:none，会盖掉子级旋转 */
+.wa-collapsible-chevron {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  line-height: 0;
+  color: inherit;
+  box-sizing: border-box;
+  transform-origin: center center;
+  transition: transform 0.2s ease;
+}
+
+.wa-collapsible-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.wa-collapsible-chevron > *,
+.wa-collapsible-chevron .pro-fa-icon {
+  grid-area: 1 / 1;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 14px !important;
+  height: 14px !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+.wa-collapsible-chevron--sm {
+  width: 12px;
+  height: 12px;
+  flex-basis: 12px;
+}
+
+.wa-collapsible-chevron--sm > *,
+.wa-collapsible-chevron--sm .pro-fa-icon {
+  width: 10px !important;
+  height: 10px !important;
+  font-size: 10px !important;
+}
+
+/* Ghost icon button (shadcn Button variant="ghost" size icon) */
+.wa-collapsible-ghost.arco-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  margin: 0;
+  line-height: 1;
+  flex: 0 0 32px;
+  box-sizing: border-box;
+  color: var(--color-text-2);
+  border-radius: var(--border-radius-medium);
+}
+
+.wa-collapsible-ghost.arco-btn:hover {
+  color: var(--color-text-1);
+  background: var(--color-fill-2);
+}
+
+.wa-collapsible-ghost.arco-btn .arco-btn-icon,
+.wa-collapsible-ghost.arco-btn > .wa-collapsible-chevron {
+  display: inline-grid;
+  place-items: center;
+  margin: 0;
+  line-height: 0;
+}
+
+/* —— show-more: header + always-visible starred rows + expand —— */
+.wa-collapsible-showmore {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.wa-collapsible-showmore__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  align-items: center;
+  column-gap: 12px;
+  padding: 0 2px;
+}
+
+.wa-collapsible-showmore__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-1);
+  line-height: 1.4;
+}
+
+.wa-collapsible-showmore__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wa-collapsible-showmore__list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-medium);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  color: var(--color-text-1);
+  background: var(--color-bg-2);
+  line-height: 1.4;
+}
+
+.wa-collapsible-showmore__list .pro-fa-icon,
+.wa-collapsible-showmore__list icon-star {
+  color: var(--color-text-3);
+  flex-shrink: 0;
+}
+
+/* —— form: comment + reply composer (shadcn With form) —— */
+.wa-collapsible-form {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-large);
+  background: var(--color-bg-2);
+}
+
+.wa-collapsible-form__main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.wa-collapsible-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.wa-collapsible-form__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wa-collapsible-form__body strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+.wa-collapsible-form__meta > span {
+  font-size: 12px;
+  color: var(--color-text-3);
+}
+
+.wa-collapsible-form__body > p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-1);
+  line-height: 1.5;
+}
+
+.wa-collapsible-form__reply.arco-btn {
+  align-self: flex-start;
+  margin-top: 2px;
+  height: 28px;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-2);
+  background: var(--color-fill-2);
+  border-color: transparent;
+  border-radius: 999px;
+}
+
+.wa-collapsible-form__reply.arco-btn:hover {
+  color: var(--color-text-1);
+  background: var(--color-fill-3);
+}
+
+.wa-collapsible-form__reply.arco-btn > .wa-collapsible-chevron {
+  flex: 0 0 12px;
+  margin: 0;
+}
+
+.wa-collapsible-form__composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 4px 4px 4px 12px;
+  border-radius: 999px;
+  background: var(--color-fill-2);
+  box-sizing: border-box;
+}
+
+/* 覆盖 components.css 全局 hover/focus 铺底，胶囊内输入保持透明 */
+.wa-collapsible-form__composer .arco-input-wrapper,
+.wa-collapsible-form__composer .arco-input-wrapper:hover,
+.wa-collapsible-form__composer .arco-input-wrapper:hover:not(.arco-input-disabled):not(.arco-input-focus):not(:focus-within),
+.wa-collapsible-form__composer .arco-input-wrapper.arco-input-focus,
+.wa-collapsible-form__composer .arco-input-wrapper:focus-within {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.wa-collapsible-form__composer .arco-btn {
+  flex-shrink: 0;
+}
+
+/* —— code: muted bordered shell + View code trigger —— */
+.wa-collapsible-code-shell {
+  width: 100%;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-large);
+  background: var(--color-fill-1);
+  overflow: hidden;
+}
+
+.wa-collapsible-code-shell .arco-collapse-item-header,
+.wa-collapsible-code-shell .arco-collapse-item-active > .arco-collapse-item-header {
+  padding: 14px 16px;
+  align-items: center;
+  line-height: 1;
+}
+
+.wa-collapsible-code-shell .arco-collapse-item-content-box {
+  padding: 0 16px 16px;
+}
+
+.wa-collapsible-code__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-1);
+}
+
+.wa-collapsible-code {
+  margin: 0;
+  padding: 12px 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-text-2);
+  background: var(--color-bg-2);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-medium);
+  overflow-x: auto;
+}
+
+/* —— comments: main thread + N replies ghost toggle —— */
+.wa-collapsible-comments {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-large);
+  background: var(--color-bg-2);
+}
+
+.wa-collapsible-comments__main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.wa-collapsible-comments__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.wa-collapsible-comments__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wa-collapsible-comments__body strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+.wa-collapsible-comments__meta > span {
+  font-size: 12px;
+  color: var(--color-text-3);
+}
+
+.wa-collapsible-comments__body > p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-2);
+  line-height: 1.5;
+}
+
+.wa-collapsible-comments__toggle.arco-btn {
+  display: inline-flex !important;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: 4px;
+  height: 28px;
+  padding: 0 8px;
+  gap: 6px;
+  line-height: 1;
+  font-size: 12px;
+  color: var(--color-text-2);
+  border-radius: var(--border-radius-medium);
+  box-sizing: border-box;
+}
+
+.wa-collapsible-comments__toggle.arco-btn:hover {
+  color: var(--color-text-1);
+  background: var(--color-fill-2);
+}
+
+.wa-collapsible-comments__toggle.arco-btn > .wa-collapsible-chevron {
+  flex: 0 0 12px;
+  margin: 0;
+}
+
+.wa-collapsible-comments__toggle.arco-btn > icon-message {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.wa-collapsible-comments__toggle.arco-btn > span:not(.wa-collapsible-chevron) {
+  line-height: 1.2;
+  flex: 0 0 auto;
+}
+
+.wa-collapsible-comments__replies {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0 0 12px;
+  margin-top: 0;
+}
+
+.wa-collapsible-comments__reply {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.wa-collapsible-comments__reply strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+.wa-collapsible-comments__reply p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--color-text-2);
+  line-height: 1.45;
+}
+
+/* —— card: bordered settings card + form body —— */
+.wa-collapsible-card {
+  width: 100%;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-large);
+  background: var(--color-bg-2);
+  overflow: hidden;
+}
+
+.wa-collapsible-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.wa-collapsible-card__head .wa-collapsible-chevron {
+  color: var(--color-text-3);
+}
+
+.wa-collapsible-card__head:hover {
+  background: var(--color-fill-1);
+}
+
+.wa-collapsible-card__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-1);
+  line-height: 1.4;
+}
+
+.wa-collapsible-card__body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 1px solid var(--color-border-1);
+}
+
+.wa-collapsible-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wa-collapsible-card__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-1);
+  line-height: 1.3;
+}
+
+.wa-collapsible-card__hint {
+  font-size: 12px;
+  color: var(--color-text-3);
+  line-height: 1.35;
+}
+
+.wa-collapsible-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.wa-collapsible-card__row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* —— tree: nested folders (aligned to shadcn tree screenshot) —— */
+.wa-collapsible-tree {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--color-border-2);
+  border-radius: 12px;
+  background: var(--color-bg-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.wa-collapsible-tree .arco-collapse,
+.wa-collapsible-tree .arco-collapse-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+}
+
+/* 整行满宽 + flex：文案左缩进、箭头永远贴右，避免收起时箭头贴文字 */
+.wa-collapsible-tree .arco-collapse-item-header {
+  display: flex !important;
+  align-items: center;
+  width: 100% !important;
+  min-height: 32px;
+  height: 32px;
+  margin: 2px 0;
+  padding: 0 8px !important;
+  border-radius: 8px;
+  background: transparent;
+  transition: background 0.15s ease;
+  box-sizing: border-box;
+  line-height: 1.3;
+}
+
+.wa-collapsible-tree .arco-collapse-item-header-right {
+  padding: 0 8px !important;
+}
+
+.wa-collapsible-tree .arco-collapse-item-header:hover,
+.wa-collapsible-tree .arco-collapse-item-active > .arco-collapse-item-header {
+  background: var(--color-fill-2);
+}
+
+.wa-collapsible-tree .arco-collapse-item-header-title {
+  display: block;
+  flex: 1 1 auto;
+  order: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+.wa-collapsible-tree .arco-collapse-item-icon-hover {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+  order: 2;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin: 0 !important;
+  color: var(--color-text-3);
+}
+
+.wa-collapsible-tree .arco-collapse-item-expand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  transform: none !important;
+}
+
+.wa-collapsible-tree .arco-collapse-item-content,
+.wa-collapsible-tree .arco-collapse-item-content-box {
+  padding: 0 !important;
+  background: transparent;
+  color: inherit;
+}
+
+.wa-collapsible-tree__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--color-text-1);
+  line-height: 1.3;
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+.wa-collapsible-tree__row .pro-fa-icon,
+.wa-collapsible-tree__row > * {
+  flex-shrink: 0;
+}
+
+/* 缩进只加在左侧内容，行宽仍拉满，右侧箭头列对齐 */
+.wa-collapsible-tree__children {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.wa-collapsible-tree__children > .arco-collapse > .arco-collapse-item > .arco-collapse-item-header,
+.wa-collapsible-tree__children > .wa-collapsible-tree__file {
+  padding-left: 28px !important;
+}
+
+.wa-collapsible-tree__children .wa-collapsible-tree__children > .wa-collapsible-tree__file,
+.wa-collapsible-tree__children .wa-collapsible-tree__children > .arco-collapse > .arco-collapse-item > .arco-collapse-item-header {
+  padding-left: 48px !important;
+}
+
+.wa-collapsible-tree__file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 32px;
+  margin: 2px 0;
+  padding: 0 8px;
+  border-radius: 8px;
+  color: var(--color-text-1);
+  line-height: 1.3;
+  box-sizing: border-box;
+}
+
+.wa-collapsible-tree__file:hover {
+  background: var(--color-fill-2);
+}
+
+.wa-collapsible-tree__file .pro-fa-icon {
+  color: var(--color-text-2);
+  flex-shrink: 0;
+}
+
+.wa-fam-section[data-family="collapsible"] .wa-fam-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.wa-fam-section[data-family="collapsible"] .wa-fam-card__stage {
+  width: 100%;
+  justify-content: flex-start;
+  align-items: stretch;
+  scrollbar-gutter: stable;
+}
+
+body:not(.wa-preview-embed) {
+  scrollbar-gutter: stable;
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug^="collapsible-"].wa-embed {
+  width: min(420px, calc(100% - 32px));
+}
+@media (max-width: 720px) {
+  .wa-fam-section[data-family="collapsible"] .wa-fam-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .wa-fam-section[data-family="collapsible"] .wa-fam-card {
+    padding: 16px 14px 14px;
+  }
+
+  .wa-fam-section[data-family="collapsible"] .wa-fam-card__stage {
+    min-width: 0;
+  }
+
+  .wa-collapsible-form,
+  .wa-collapsible-comments,
+  .wa-collapsible-card,
+  .wa-collapsible-code-shell,
+  .wa-collapsible-showmore,
+  .wa-collapsible-tree {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .wa-collapsible-form__composer {
+    flex-wrap: wrap;
+    border-radius: 16px;
+    padding: 8px;
+  }
+
+  .wa-collapsible-form__composer .arco-btn {
+    width: 100%;
+  }
+
+  .wa-collapsible-code {
+    font-size: 11px;
+    overflow-x: auto;
+  }
+}

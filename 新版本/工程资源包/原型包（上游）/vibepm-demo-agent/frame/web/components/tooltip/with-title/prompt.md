@@ -1,0 +1,67 @@
+# 带标题提示
+
+> 状态：preview · slug：`tooltip-with-title` · 类型：component · 母版：web · surface：general · category：`feedback`
+
+## 1. 角色与目标
+
+实现「带标题提示」（`tooltip-with-title`）。悬停展示加粗标题与弱化说明，适合略长的补充解释。
+
+成功标准：业务页出现与 §5 一致的真控件（非说明文案冒充）。
+
+## 2. 实现路径（只走一条）
+
+- **A**（有母版）：**整段粘贴 §5** 到业务页；换文案只改片段内汉字。本条只含一种形态；其它态复制兄弟 slug 提示词。禁止拼装多态橱窗。
+- **B**（无母版 / 其它栈）：按 §5 还原本形态。视觉跟宿主库。禁止未探测到 Arco 时强行 import。
+- **样式落地**：将母版 `components.css` 中 `.wa-tooltip-title*` 规则**并入**宿主页/模块 CSS；**禁止**在交付里保留独立 `component.css` 或写死 `<link …/component.css>`。
+
+## 3. 约束
+
+- **本提示词只含这一种形态**
+- 交互：真 a-tooltip；content 槽内 `.wa-tooltip-title`（标题 + 说明）；触发器用 outline 按钮
+- 若有私有样式：规则真源在同目录 `component.css`；§5 **只贴 HTML**；落地合并进宿主样式，勿在 §5 写独立 link
+
+## 4. 视觉规格
+
+- 布局 / 层级 / 强调：中性触发；气泡内标题加粗、说明 12px 弱化；最大宽约 280px
+- 动效：仅本控件轻交互（hover/focus）；Shine / Glow 等可复用装饰 → `animations/`，不写进本控件
+- 颜色：只用 `--wa-*` / Arco token（若适用）
+
+## 5. 直接粘贴
+
+```html
+<a-tooltip>
+  <template #content>
+    <div class="wa-tooltip-title">
+      <p class="wa-tooltip-title__heading">带标题的文字提示</p>
+      <p class="wa-tooltip-title__desc">文字提示支持自定义布局与富内容，可用于展示简短说明或补充信息。</p>
+    </div>
+  </template>
+  <a-button type="secondary">带标题</a-button>
+</a-tooltip>
+```
+
+> 换文案：只改汉字，勿改 class / type。
+
+## 6. 验收
+
+- [ ] 落地与 §5 同构（允许改文案）
+- [ ] 未混入其它形态或整页橱窗
+
+## 7. 预览
+
+`components/tooltip/with-title/index.html`
+
+## 8. 兄弟形态（同家族）
+
+| slug | 路径 | |
+|------|------|--|
+| tooltip-default | components/tooltip/default/ | 
+| tooltip-bottom | components/tooltip/bottom/ | 
+| tooltip-left | components/tooltip/left/ | 
+| tooltip-right | components/tooltip/right/ | 
+| tooltip-no-icon | components/tooltip/no-icon/ | 
+| tooltip-no-arrow | components/tooltip/no-arrow/ | 
+| tooltip-icon | components/tooltip/icon/ | 
+| tooltip-with-title | components/tooltip/with-title/ | （本条）
+| tooltip-stats | components/tooltip/stats/ | 
+| tooltip-preview | components/tooltip/preview/ | 

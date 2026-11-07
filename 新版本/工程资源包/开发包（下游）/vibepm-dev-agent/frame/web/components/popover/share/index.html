@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>分享气泡 · popover-share</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="popover-share">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">分享气泡</span>
+        <span class="wa-comp-meta__slug">popover-share</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-popover trigger="click" content-class="wa-popover-panel wa-popover-panel--share">
+          <a-button type="secondary" shape="round">分享</a-button>
+          <template #content>
+            <div class="wa-popover-share">
+              <p class="wa-popover-share__title">分享代码</p>
+              <div class="wa-popover-share__channels">
+                <a-button type="secondary" shape="circle" class="wa-popover-share__chan" aria-label="嵌入代码">
+                  <icon-code></icon-code>
+                </a-button>
+                <a-button type="secondary" shape="circle" class="wa-popover-share__chan" aria-label="分享到 X">
+                  <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+                </a-button>
+                <a-button type="secondary" shape="circle" class="wa-popover-share__chan" aria-label="分享到 Facebook">
+                  <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+                </a-button>
+                <a-button type="secondary" shape="circle" class="wa-popover-share__chan" aria-label="发送邮件">
+                  <icon-email></icon-email>
+                </a-button>
+              </div>
+              <div class="wa-popover-share__link">
+                <span class="wa-popover-share__url">{{ shareUrl }}</span>
+                <a-tooltip :content="copied ? '已复制' : '复制链接'">
+                  <button type="button" class="wa-popover-share__copy" aria-label="复制" @click="copyShare">
+                    <icon-check v-if="copied"></icon-check>
+                    <icon-copy v-else></icon-copy>
+                  </button>
+                </a-tooltip>
+              </div>
+            </div>
+          </template>
+        </a-popover>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

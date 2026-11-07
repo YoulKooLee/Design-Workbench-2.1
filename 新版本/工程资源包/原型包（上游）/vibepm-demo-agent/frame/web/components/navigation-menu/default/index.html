@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>产品导航菜单 · navigation-menu-default</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="navigation-menu-default">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">产品导航菜单</span>
+        <span class="wa-comp-meta__slug">navigation-menu-default</span>
+      </div>
+      <div class="wa-embed__stage">
+        <div class="wa-nm">
+          <a-dropdown trigger="hover" position="bl" :popup-max-height="false">
+            <a-button type="text" class="wa-nm-trigger">产品 <icon-down :size="11"></icon-down></a-button>
+            <template #content>
+              <div class="wa-nm-panel wa-nm-panel--product">
+                <a class="wa-nm-featured" href="javascript:void(0)">
+                  <span class="wa-nm-featured__icon"><icon-fire :size="20"></icon-fire></span>
+                  <div class="wa-nm-featured__title">我们的平台</div>
+                  <div class="wa-nm-featured__desc">强大工具助力业务增长，简化日常运营。</div>
+                </a>
+                <div class="wa-nm-product-list">
+                <a class="wa-nm-link wa-nm-link--plain" href="javascript:void(0)"><span class="wa-nm-link__body"><span class="wa-nm-link__title">分析看板</span><span class="wa-nm-link__desc">实时洞察与业务指标可视化。</span></span></a>
+                <a class="wa-nm-link wa-nm-link--plain" href="javascript:void(0)"><span class="wa-nm-link__body"><span class="wa-nm-link__title">团队协作</span><span class="wa-nm-link__desc">与团队实时无缝协同。</span></span></a>
+                <a class="wa-nm-link wa-nm-link--plain" href="javascript:void(0)"><span class="wa-nm-link__body"><span class="wa-nm-link__title">安全与合规</span><span class="wa-nm-link__desc">企业级安全与 GDPR 支持。</span></span></a>
+                <a class="wa-nm-link wa-nm-link--plain" href="javascript:void(0)"><span class="wa-nm-link__body"><span class="wa-nm-link__title">自动化</span><span class="wa-nm-link__desc">用自动化精简工作流。</span></span></a>
+                </div>
+              </div>
+            </template>
+          </a-dropdown>
+          <a-dropdown trigger="hover" position="bl" :popup-max-height="false">
+            <a-button type="text" class="wa-nm-trigger">资源 <icon-down :size="11"></icon-down></a-button>
+            <template #content>
+              <div class="wa-nm-panel wa-nm-panel--resources">
+                <a class="wa-nm-link" href="javascript:void(0)"><span class="wa-nm-link__icon"><icon-book :size="14"></icon-book></span><span class="wa-nm-link__body"><span class="wa-nm-link__title">文档</span><span class="wa-nm-link__desc">指南与 API 参考。</span></span></a>
+                <a class="wa-nm-link" href="javascript:void(0)"><span class="wa-nm-link__icon"><icon-question-circle :size="14"></icon-question-circle></span><span class="wa-nm-link__body"><span class="wa-nm-link__title">帮助中心</span><span class="wa-nm-link__desc">常见问题与排查。</span></span></a>
+                <a class="wa-nm-link" href="javascript:void(0)"><span class="wa-nm-link__icon"><icon-file :size="14"></icon-file></span><span class="wa-nm-link__body"><span class="wa-nm-link__title">博客</span><span class="wa-nm-link__desc">产品动态与行业洞察。</span></span></a>
+                <a class="wa-nm-link" href="javascript:void(0)"><span class="wa-nm-link__icon"><icon-desktop :size="14"></icon-desktop></span><span class="wa-nm-link__body"><span class="wa-nm-link__title">视频教程</span><span class="wa-nm-link__desc">分步上手视频。</span></span></a>
+                <a class="wa-nm-link" href="javascript:void(0)"><span class="wa-nm-link__icon"><icon-message :size="14"></icon-message></span><span class="wa-nm-link__body"><span class="wa-nm-link__title">社区</span><span class="wa-nm-link__desc">与其他用户交流。</span></span></a>
+              </div>
+            </template>
+          </a-dropdown>
+          <a-button type="text" class="wa-nm-trigger">定价</a-button>
+          <a-dropdown trigger="hover" position="bl" :popup-max-height="false">
+            <a-button type="text" class="wa-nm-trigger">公司 <icon-down :size="11"></icon-down></a-button>
+            <template #content>
+              <div class="wa-nm-panel wa-nm-panel--company">
+                <a class="wa-nm-link wa-nm-link--plain" href="javascript:void(0)"><span class="wa-nm-link__body"><span class="wa-nm-link__title">关于我们</span><span class="wa-nm-link__desc">了解使命与价值观。</span></span></a>
+                <a class="wa-nm-link wa-nm-link--plain" href="javascript:void(0)"><span class="wa-nm-link__body"><span class="wa-nm-link__title">加入我们</span><span class="wa-nm-link__desc">加入不断成长的团队。</span></span></a>
+                <a class="wa-nm-link wa-nm-link--plain" href="javascript:void(0)"><span class="wa-nm-link__body"><span class="wa-nm-link__title">联系我们</span><span class="wa-nm-link__desc">与团队取得联系。</span></span></a>
+              </div>
+            </template>
+          </a-dropdown>
+        </div>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+slug: input-password
+label: 密码输入
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/input/password

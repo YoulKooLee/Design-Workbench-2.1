@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>卡片折叠 · collapsible-card</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="collapsible-card">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">卡片折叠</span>
+        <span class="wa-comp-meta__slug">collapsible-card</span>
+      </div>
+      <div class="wa-embed__stage">
+        <div class="wa-collapsible-card">
+          <div class="wa-collapsible-card__head" role="button" tabindex="0" :aria-expanded="isOpen ? 'true' : 'false'" @click="toggle" @keydown.enter.prevent="toggle" @keydown.space.prevent="toggle">
+            <h4 class="wa-collapsible-card__title">设置</h4>
+            <span class="wa-collapsible-chevron" :class="{ 'is-open': isOpen }" style="color: var(--color-text-3)"><icon-down :size="14"></icon-down></span>
+          </div>
+          <a-collapse v-model:active-key="activeKey" :bordered="false" :show-expand-icon="false" class="wa-collapsible wa-collapsible--bare">
+            <a-collapse-item key="1" :show-expand-icon="false">
+              <div class="wa-collapsible-card__body">
+                <div class="wa-collapsible-card__field">
+                  <label class="wa-collapsible-card__label">显示名称</label>
+                  <a-input default-value="陈晓" placeholder="请输入显示名称" allow-clear></a-input>
+                </div>
+                <div class="wa-collapsible-card__field">
+                  <label class="wa-collapsible-card__label">邮箱</label>
+                  <a-input default-value="alex@example.com" placeholder="请输入邮箱" allow-clear></a-input>
+                </div>
+                <div class="wa-collapsible-card__row">
+                  <div class="wa-collapsible-card__row-text">
+                    <span class="wa-collapsible-card__label">通知</span>
+                    <span class="wa-collapsible-card__hint">接收产品更新与提醒</span>
+                  </div>
+                  <a-switch default-checked></a-switch>
+                </div>
+              </div>
+            </a-collapse-item>
+          </a-collapse>
+        </div>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

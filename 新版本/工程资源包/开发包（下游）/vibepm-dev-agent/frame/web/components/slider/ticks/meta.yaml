@@ -1,0 +1,11 @@
+slug: slider-ticks
+label: 刻度点滑块
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags:
+  - input
+path: components/slider/ticks

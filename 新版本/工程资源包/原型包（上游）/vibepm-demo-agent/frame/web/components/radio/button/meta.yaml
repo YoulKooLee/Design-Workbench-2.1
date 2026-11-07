@@ -1,0 +1,11 @@
+slug: radio-button
+label: 按钮单选
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/radio/button

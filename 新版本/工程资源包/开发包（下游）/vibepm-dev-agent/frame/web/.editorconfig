@@ -1,0 +1,10 @@
+# charset=utf-8 for all text under frame/web (prevent agent/editor default-encoding saves)
+root = true
+
+[*.{html,md,css,js,json,yaml,yml,py,txt}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+[*.ps1]
+charset = utf-8

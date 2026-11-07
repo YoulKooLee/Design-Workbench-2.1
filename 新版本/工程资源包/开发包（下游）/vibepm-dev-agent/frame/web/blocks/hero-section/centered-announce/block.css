@@ -1,0 +1,121 @@
+/**
+ * hero-centered-announce — 居中公告条（对照 shadcnuikit hero1 构图）
+ */
+section[data-slug="hero-centered-announce"] {
+  padding: clamp(56px, 8vw, 88px) 24px;
+  background: #ffffff;
+}
+
+html[data-theme='dark'] section[data-slug="hero-centered-announce"] {
+  background: var(--wa-color-bg, #0d0d0d);
+}
+
+section[data-slug="hero-centered-announce"] .wa-section__inner {
+  max-width: var(--wa-container, 1120px);
+  margin: 0 auto;
+}
+
+section[data-slug="hero-centered-announce"].wa-fade-in {
+  animation: hero-ca-fade-up 0.55s ease both;
+}
+
+@keyframes hero-ca-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  section[data-slug="hero-centered-announce"].wa-fade-in {
+    animation: none;
+  }
+}
+
+.hero-centered-announce {
+  max-width: 42rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero-centered-announce__pill {
+  display: none;
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 16px;
+  padding: 6px 14px;
+  border: 1px solid var(--wa-color-border-1);
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--wa-color-text);
+  background: var(--wa-color-surface);
+}
+
+@media (min-width: 640px) {
+  .hero-centered-announce__pill {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35em;
+  }
+}
+
+.hero-centered-announce__pill-link {
+  position: relative;
+  z-index: 1;
+  font-weight: 600;
+  color: var(--wa-color-primary);
+  text-decoration: none;
+}
+
+.hero-centered-announce__pill-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+section[data-slug="hero-centered-announce"] .wa-title {
+  margin: 0;
+  font-size: clamp(28px, 4.5vw, 48px);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  color: var(--wa-color-text);
+}
+
+section[data-slug="hero-centered-announce"] .wa-lead {
+  margin: 16px 0 0;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--wa-color-muted);
+  text-wrap: balance;
+}
+
+.wa-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.hero-centered-announce__actions {
+  margin-top: 40px;
+  justify-content: center;
+  gap: 12px;
+}
+
+.hero-centered-announce__ghost.arco-btn {
+  font-weight: 600;
+  color: var(--wa-color-text);
+}
+
+.hero-centered-announce__ghost .fa-arrow-right {
+  margin-left: 6px;
+  font-size: 12px;
+}

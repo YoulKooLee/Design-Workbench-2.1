@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>子菜单 · dropdown-submenu</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="dropdown-submenu">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">子菜单</span>
+        <span class="wa-comp-meta__slug">dropdown-submenu</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-dropdown>
+          <a-button type="secondary" class="wa-dropdown-icon-btn" aria-label="更多">
+            <template #icon><icon-code /></template>
+          </a-button>
+          <template #content>
+            <a-doption>
+              <template #icon><icon-edit /></template>
+              编辑
+              <template #suffix><span class="wa-dropdown-shortcut">⌘+E</span></template>
+            </a-doption>
+            <a-doption>
+              <template #icon><icon-copy /></template>
+              复制
+              <template #suffix><span class="wa-dropdown-shortcut">⌘+D</span></template>
+            </a-doption>
+            <a-doption>
+              <template #icon><icon-folder /></template>
+              归档
+              <template #suffix><span class="wa-dropdown-shortcut">⌘+⇧+A</span></template>
+            </a-doption>
+            <a-dsubmenu>
+              <template #icon><icon-apps /></template>
+              <template #default>更多</template>
+              <template #content>
+                <a-doption>
+                  <template #icon><icon-folder /></template>
+                  移动到…
+                </a-doption>
+                <a-doption>
+                  <template #icon><icon-link /></template>
+                  复制链接
+                </a-doption>
+              </template>
+            </a-dsubmenu>
+            <div class="wa-dropdown-sep" role="separator"></div>
+            <a-doption class="wa-dropdown-danger">
+              <template #icon><icon-delete /></template>
+              删除
+              <template #suffix>
+                <span class="wa-dropdown-shortcut"><icon-delete-left /></span>
+              </template>
+            </a-doption>
+          </template>
+        </a-dropdown>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

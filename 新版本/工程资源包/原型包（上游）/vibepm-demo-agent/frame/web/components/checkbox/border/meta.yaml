@@ -1,0 +1,11 @@
+slug: checkbox-border
+label: 边框多选
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/checkbox/border

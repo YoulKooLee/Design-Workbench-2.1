@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>日历 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./cell/component.css" />
+  <link rel="stylesheet" href="./header/component.css" />
+  <link rel="stylesheet" href="./select/component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="calendar">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">calendar</p>
+          <h1 class="wa-fam-title">日历</h1>
+          <p class="wa-fam-lead">月视图日期浏览，用于活动排期、日程概览与选日辅助。</p>
+          <p class="wa-fam-lead">组件类型：default / cell / header / select</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="calendar-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">日历</span><span class="wa-comp-meta__slug">calendar-default</span></div>
+              <a-tooltip :content="famCopyTip('calendar-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('calendar-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('calendar-default')"
+                :aria-label="famCopyTip('calendar-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('calendar-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-calendar v-model="valueDefault" />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="calendar-cell">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">自定义单元格</span><span class="wa-comp-meta__slug">calendar-cell</span></div>
+              <a-tooltip :content="famCopyTip('calendar-cell')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('calendar-cell') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('calendar-cell')"
+                :aria-label="famCopyTip('calendar-cell')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('calendar-cell')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-calendar v-model="valueCell" :modes="['month']">
+                <template #default="{ year, month, date }">
+                  <div class="wa-cal-cell">
+                    <div class="wa-cal-cell__day">{{ date }}</div>
+                    <div v-if="cellMark(year, month, date)" class="wa-cal-cell__mark">{{ cellMark(year, month, date) }}</div>
+                  </div>
+                </template>
+              </a-calendar>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="calendar-header">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">自定义头部</span><span class="wa-comp-meta__slug">calendar-header</span></div>
+              <a-tooltip :content="famCopyTip('calendar-header')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('calendar-header') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('calendar-header')"
+                :aria-label="famCopyTip('calendar-header')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('calendar-header')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-cal-wrap">
+                <div class="wa-cal-toolbar">
+                  <span class="wa-cal-toolbar__title">{{ headerLabel }}</span>
+                  <div class="wa-cal-toolbar__actions">
+                    <div class="wa-cal-nav">
+                      <button type="button" class="wa-cal-nav__item" @click="selectDate('prev-year')">上一年</button>
+                      <button type="button" class="wa-cal-nav__item" @click="selectDate('prev-month')">上一月</button>
+                      <button type="button" class="wa-cal-nav__item" @click="selectDate('next-month')">下一月</button>
+                      <button type="button" class="wa-cal-nav__item" @click="selectDate('next-year')">下一年</button>
+                    </div>
+                    <a-button type="secondary" class="wa-cal-today" @click="selectDate('today')">今天</a-button>
+                  </div>
+                </div>
+                <a-calendar :key="panelKey" v-model="valueHeader" :modes="['month']" />
+              </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="calendar-select">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">下拉选择</span><span class="wa-comp-meta__slug">calendar-select</span></div>
+              <a-tooltip :content="famCopyTip('calendar-select')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('calendar-select') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('calendar-select')"
+                :aria-label="famCopyTip('calendar-select')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('calendar-select')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-cal-wrap">
+                <div class="wa-cal-toolbar">
+                  <span class="wa-cal-toolbar__title">{{ selectLabel }}</span>
+                  <div class="wa-cal-toolbar__actions">
+                    <div class="wa-cal-selects">
+                      <a-select
+                        class="wa-cal-selects__year"
+                        v-model="selectYear"
+                        :options="yearOptions"
+                        size="small"
+                        :allow-search="false"
+                        style="width:100px"
+                      ></a-select>
+                      <a-select
+                        class="wa-cal-selects__month"
+                        v-model="selectMonth"
+                        :options="monthOptions"
+                        size="small"
+                        :allow-search="false"
+                        style="width:80px"
+                      ></a-select>
+                    </div>
+                    <a-button type="secondary" class="wa-cal-today" @click="goSelectToday">今天</a-button>
+                  </div>
+                </div>
+                <a-calendar :key="selectPanelKey" v-model="valueSelect" :modes="['month']" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'calendar',
+      members: ['calendar-default', 'calendar-cell', 'calendar-header', 'calendar-select'],
+      setup: function (api) {
+        function markKey(year, month, date) {
+          return year + '-' + month + '-' + date
+        }
+        function buildMarks(base) {
+          var y = base.getFullYear()
+          var m = base.getMonth() + 1
+          var map = {}
+          map[markKey(y, m, 5)] = '例会'
+          map[markKey(y, m, 12)] = '评审'
+          map[markKey(y, m, 20)] = '发版'
+          return map
+        }
+        function shiftMonths(date, delta) {
+          var next = new Date(date.getTime())
+          next.setDate(1)
+          next.setMonth(next.getMonth() + delta)
+          return next
+        }
+        function formatYm(date) {
+          var y = date.getFullYear()
+          var m = String(date.getMonth() + 1).padStart(2, '0')
+          return y + '-' + m
+        }
+        function buildYearOptions(center) {
+          var list = []
+          for (var i = center - 10; i <= center + 10; i += 1) {
+            list.push({ label: String(i), value: i })
+          }
+          return list
+        }
+
+        var valueDefault = api.ref(new Date())
+        var valueCell = api.ref(new Date())
+        var valueHeader = api.ref(new Date())
+        var valueSelect = api.ref(new Date())
+        var marks = buildMarks(valueCell.value)
+        var monthOptions = []
+        for (var m = 1; m <= 12; m += 1) {
+          monthOptions.push({ label: m + '月', value: m })
+        }
+
+        var headerLabel = api.computed(function () {
+          var d = valueHeader.value || new Date()
+          return d.getFullYear() + ' 年 ' + (d.getMonth() + 1) + ' 月'
+        })
+        var panelKey = api.computed(function () {
+          return formatYm(valueHeader.value || new Date())
+        })
+        var selectPanelKey = api.computed(function () {
+          return formatYm(valueSelect.value || new Date())
+        })
+        var selectLabel = api.computed(function () {
+          var d = valueSelect.value || new Date()
+          return d.getFullYear() + ' 年 ' + (d.getMonth() + 1) + ' 月'
+        })
+        var yearOptions = api.computed(function () {
+          return buildYearOptions((valueSelect.value || new Date()).getFullYear())
+        })
+        var selectYear = api.computed({
+          get: function () {
+            return (valueSelect.value || new Date()).getFullYear()
+          },
+          set: function (y) {
+            var cur = valueSelect.value || new Date()
+            var day = Math.min(cur.getDate(), 28)
+            valueSelect.value = new Date(Number(y), cur.getMonth(), day)
+          },
+        })
+        var selectMonth = api.computed({
+          get: function () {
+            return (valueSelect.value || new Date()).getMonth() + 1
+          },
+          set: function (mo) {
+            var cur = valueSelect.value || new Date()
+            var day = Math.min(cur.getDate(), 28)
+            valueSelect.value = new Date(cur.getFullYear(), Number(mo) - 1, day)
+          },
+        })
+
+        function cellMark(year, month, date) {
+          return marks[markKey(year, month, date)] || ''
+        }
+        function selectDate(kind) {
+          var cur = valueHeader.value || new Date()
+          if (kind === 'today') {
+            valueHeader.value = new Date()
+            return
+          }
+          if (kind === 'prev-year') {
+            valueHeader.value = shiftMonths(cur, -12)
+            return
+          }
+          if (kind === 'next-year') {
+            valueHeader.value = shiftMonths(cur, 12)
+            return
+          }
+          if (kind === 'prev-month') {
+            valueHeader.value = shiftMonths(cur, -1)
+            return
+          }
+          if (kind === 'next-month') {
+            valueHeader.value = shiftMonths(cur, 1)
+          }
+        }
+        function goSelectToday() {
+          valueSelect.value = new Date()
+        }
+
+        return {
+          valueDefault: valueDefault,
+          valueCell: valueCell,
+          valueHeader: valueHeader,
+          valueSelect: valueSelect,
+          headerLabel: headerLabel,
+          panelKey: panelKey,
+          selectPanelKey: selectPanelKey,
+          selectLabel: selectLabel,
+          yearOptions: yearOptions,
+          monthOptions: monthOptions,
+          selectYear: selectYear,
+          selectMonth: selectMonth,
+          cellMark: cellMark,
+          selectDate: selectDate,
+          goSelectToday: goSelectToday,
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

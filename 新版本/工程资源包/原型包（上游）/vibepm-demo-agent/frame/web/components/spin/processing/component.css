@@ -1,0 +1,63 @@
+/* 处理请求：居中面板；圆形主题色图标槽 + 取消 */
+.wa-spin-processing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+  margin-inline: auto;
+  padding: 28px 24px 24px;
+  border: 1px solid var(--color-border-2);
+  border-radius: 12px;
+  background: var(--color-bg-2);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.wa-spin-processing__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  background: var(--wa-color-primary-soft);
+  color: rgb(var(--primary-6));
+}
+
+.wa-spin-processing__icon .arco-spin {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.wa-spin-processing__icon .arco-spin-icon {
+  color: rgb(var(--primary-6));
+}
+
+.wa-spin-processing__icon .arco-spin-icon .arco-icon,
+.wa-spin-processing__icon .arco-spin-icon .pro-fa-icon,
+.wa-spin-processing__icon .arco-spin-icon svg {
+  width: 16px;
+  height: 16px;
+  font-size: 16px !important;
+}
+
+.wa-spin-processing__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-1);
+}
+
+.wa-spin-processing__desc {
+  margin: 8px 0 20px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-text-3);
+}
+
+.wa-spin-processing .arco-btn {
+  min-width: 88px;
+}

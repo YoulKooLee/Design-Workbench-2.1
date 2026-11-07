@@ -1,0 +1,211 @@
+/* collapse：双列对照；FAQ 满宽；各形态皮肤 */
+
+.wa-fam-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug^="collapse-"].wa-embed {
+  width: min(720px, calc(100% - 32px));
+}
+
+.wa-fam-card__stage .arco-collapse,
+.wa-embed__stage .arco-collapse {
+  width: 100%;
+  max-width: none;
+}
+
+/* 默认 FAQ：无外边框时透明底；保留组间分隔线；藏标题与内容间的线；内容文字弱化 */
+.arco-collapse-borderless .arco-collapse-item-header,
+.arco-collapse-borderless .arco-collapse-item-content {
+  background: transparent;
+}
+
+.arco-collapse-borderless .arco-collapse-item-active > .arco-collapse-item-header {
+  background: transparent;
+}
+
+/* 标题 ↔ 内容：默认藏线（组间线在 .arco-collapse-item）；边框形态见下 */
+.arco-collapse .arco-collapse-item-header,
+.arco-collapse .arco-collapse-item-active > .arco-collapse-item-header {
+  border-bottom-color: transparent;
+}
+
+/* 边框折叠：展开时标题与内容之间画分隔线，并给内容区顶部留白 */
+.arco-collapse.wa-collapse-bordered .arco-collapse-item-active > .arco-collapse-item-header {
+  border-bottom-color: var(--color-border-2);
+}
+
+.arco-collapse.wa-collapse-bordered .arco-collapse-item-content-box {
+  padding-top: 12px;
+}
+
+.arco-collapse .arco-collapse-item-content,
+.arco-collapse .arco-collapse-item-content-box {
+  color: var(--color-text-3);
+}
+
+/* 行高固定：展开/收起 header padding 不变，避免箭头 top:50% 重算跳动 */
+.arco-collapse .arco-collapse-item-header,
+.arco-collapse .arco-collapse-item-active > .arco-collapse-item-header {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* 标题字重固定，避免展开时 font-weight 变化挤布局 */
+.arco-collapse .arco-collapse-item-header-title,
+.arco-collapse .arco-collapse-item-active > .arco-collapse-item-header .arco-collapse-item-header-title {
+  font-weight: 500;
+}
+
+/* 标题↓内容收窄；内容↓组间分隔线加宽（只动 content，不动 header） */
+.arco-collapse .arco-collapse-item-content-box {
+  padding-top: 0;
+  padding-bottom: 16px;
+}
+
+/* 双列展开时预留滚动条槽，减轻整页左右抖动 */
+body:not(.wa-preview-embed) {
+  scrollbar-gutter: stable;
+}
+
+/* —— chevron / plus：展开图标 10px、略弱于标题；旋转锚点居中防跳 —— */
+.arco-collapse.wa-collapse-chevron .arco-collapse-item-icon-hover,
+.arco-collapse.wa-collapse-plus .arco-collapse-item-icon-hover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.arco-collapse.wa-collapse-chevron .arco-collapse-item .arco-collapse-item-expand-icon,
+.arco-collapse.wa-collapse-plus .arco-collapse-item .arco-collapse-item-expand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  color: var(--color-text-3);
+  font-size: 10px;
+  line-height: 1;
+  /* 上下/加减号靠插槽切换，禁用 Arco 默认旋转，避免“转了但不像切换” */
+  transform: none !important;
+}
+
+.arco-collapse.wa-collapse-chevron .arco-collapse-item .arco-collapse-item-expand-icon .pro-fa-icon,
+.arco-collapse.wa-collapse-plus .arco-collapse-item .arco-collapse-item-expand-icon .pro-fa-icon {
+  font-size: 10px !important;
+  color: var(--color-text-3) !important;
+  line-height: 1;
+}
+
+/* —— icon / subtext：自定义头 —— */
+.wa-collapse-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.wa-collapse-head__icon {
+  box-sizing: border-box;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-text-2);
+  background: transparent;
+  border: 1px solid var(--color-border-3);
+  border-radius: 999px;
+  box-shadow: none;
+  font-size: 14px;
+}
+
+.wa-collapse-head__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.wa-collapse-head__title {
+  color: var(--color-text-1);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.wa-collapse-head__sub {
+  color: var(--color-text-3);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.wa-collapse-icon .arco-collapse-item-header {
+  align-items: center;
+}
+
+/* 内容与标题文字左齐：header 左 13 + 图标 32 + gap 12（展开箭头在右） */
+.arco-collapse.wa-collapse-icon .arco-collapse-item-content {
+  padding-left: 57px;
+}
+
+/* 副文案双行头：顶对齐，图标与首行视觉对齐 */
+.wa-collapse-subtext .arco-collapse-item-header,
+.wa-collapse-subtext .wa-collapse-head {
+  align-items: flex-start;
+}
+
+.wa-collapse-subtext .wa-collapse-head__icon {
+  margin-top: 2px;
+}
+
+.wa-collapse-icon .arco-collapse-item-header-title,
+.wa-collapse-subtext .arco-collapse-item-header-title {
+  display: block;
+  width: 100%;
+}
+
+.wa-collapse-icon .wa-collapse-head__title {
+  line-height: 32px;
+}
+
+/* —— stacked：分卡片 —— */
+.wa-collapse-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: visible;
+  border: none;
+  border-radius: 0;
+}
+
+.wa-collapse-stacked .arco-collapse-item {
+  overflow: hidden;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-medium);
+  background: var(--color-bg-2);
+}
+
+.wa-collapse-stacked .arco-collapse-item:last-of-type {
+  border-bottom: 1px solid var(--color-border-2);
+}
+
+.wa-collapse-stacked .arco-collapse-item-content {
+  background: var(--color-bg-2);
+}
+
+/* —— active：展开项浅底高亮（叠在 stacked 上） —— */
+.wa-collapse-active .arco-collapse-item-active {
+  background: var(--color-fill-2);
+  border-color: var(--color-border-3);
+}
+
+.wa-collapse-active .arco-collapse-item-active > .arco-collapse-item-header,
+.wa-collapse-active .arco-collapse-item-active > .arco-collapse-item-content {
+  background: transparent;
+}

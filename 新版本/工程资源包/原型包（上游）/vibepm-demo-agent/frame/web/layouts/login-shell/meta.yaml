@@ -1,0 +1,9 @@
+slug: login-shell
+label: 登录框架
+type: layout
+surface: general
+status: preview
+tier: free
+framework: web
+category: shell
+notes: 无主导航；居中登录表单（账号/密码/记住/忘记/注册）；分栏登录见 auth-split

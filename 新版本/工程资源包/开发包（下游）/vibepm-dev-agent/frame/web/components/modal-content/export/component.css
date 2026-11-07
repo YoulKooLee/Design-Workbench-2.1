@@ -1,0 +1,12 @@
+/* 导出内容对话框：范围/格式单选 + 条数提示 */
+.pro-content-modal .mc-export-hint {
+  margin: 0 0 4px;
+  color: var(--color-text-3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pro-content-modal .mc-export-form .arco-radio-group-direction-vertical .arco-radio {
+  margin-right: 0;
+  line-height: 32px;
+}

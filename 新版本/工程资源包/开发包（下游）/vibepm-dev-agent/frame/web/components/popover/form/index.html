@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>尺寸表单气泡 · popover-form</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="popover-form">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">尺寸表单气泡</span>
+        <span class="wa-comp-meta__slug">popover-form</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-popover title="尺寸" trigger="click" content-class="wa-popover-panel">
+          <a-button type="secondary">打开气泡</a-button>
+          <template #content>
+            <p class="wa-popover-desc">设置元素的宽高约束。</p>
+            <div class="wa-popover-form">
+              <label class="wa-popover-form__field">
+                <span class="wa-popover-form__label">宽度</span>
+                <a-input default-value="100%" size="small" allow-clear></a-input>
+              </label>
+              <label class="wa-popover-form__field">
+                <span class="wa-popover-form__label">最大宽度</span>
+                <a-input default-value="300px" size="small" allow-clear></a-input>
+              </label>
+              <label class="wa-popover-form__field">
+                <span class="wa-popover-form__label">高度</span>
+                <a-input default-value="25px" size="small" allow-clear></a-input>
+              </label>
+              <label class="wa-popover-form__field">
+                <span class="wa-popover-form__label">最大高度</span>
+                <a-input default-value="none" size="small" allow-clear></a-input>
+              </label>
+            </div>
+          </template>
+        </a-popover>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

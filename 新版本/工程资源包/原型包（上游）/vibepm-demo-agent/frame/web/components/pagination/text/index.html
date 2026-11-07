@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>文字分页 · pagination-text</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="pagination-text">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">文字分页</span>
+        <span class="wa-comp-meta__slug">pagination-text</span>
+      </div>
+      <div class="wa-embed__stage">
+        <nav class="wa-pg-bar wa-pg-bar--text" aria-label="分页">
+          <a-button type="text" :disabled="current <= 1" aria-label="上一页" @click="goPrev">
+            <icon-left :size="12" />
+          </a-button>
+          <p class="wa-pg-status" aria-live="polite">
+            第 <strong>{{ current }}</strong> 页 / 共 <strong>{{ pageTotal }}</strong> 页
+          </p>
+          <a-button type="text" :disabled="current >= pageTotal" aria-label="下一页" @click="goNext">
+            <icon-right :size="12" />
+          </a-button>
+        </nav>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

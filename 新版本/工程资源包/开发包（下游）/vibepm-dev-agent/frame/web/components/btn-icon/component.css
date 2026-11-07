@@ -1,0 +1,42 @@
+/* 连体图标按钮：中缝只留 1px（去掉相邻双边框叠层） */
+.arco-btn-group {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.arco-btn-group .arco-btn.arco-btn-outline,
+.arco-btn-group .arco-btn.arco-btn-dashed,
+.arco-btn-group .arco-btn.arco-btn-secondary {
+  position: relative;
+  margin-left: 0 !important;
+  box-shadow: none !important;
+}
+
+.arco-btn-group .arco-btn.arco-btn-outline:not(:last-child),
+.arco-btn-group .arco-btn.arco-btn-dashed:not(:last-child),
+.arco-btn-group .arco-btn.arco-btn-secondary:not(:last-child) {
+  border-right: none !important;
+}
+
+.arco-btn-group .arco-btn.arco-btn-outline + .arco-btn.arco-btn-outline,
+.arco-btn-group .arco-btn.arco-btn-dashed + .arco-btn.arco-btn-dashed {
+  border-left-width: 1px !important;
+  border-left-style: solid !important;
+  border-left-color: currentColor !important;
+}
+
+.arco-btn-group .arco-btn.arco-btn-secondary + .arco-btn.arco-btn-secondary {
+  border-left-width: 1px !important;
+  border-left-style: solid !important;
+  border-left-color: var(--color-border-2) !important;
+}
+
+.arco-btn-group .arco-btn.arco-btn-primary + .arco-btn.arco-btn-primary {
+  margin-left: 0 !important;
+  border-left: none !important;
+}
+
+.arco-btn-group .arco-btn.arco-btn-primary:not(:last-child) {
+  border-right-width: 1px !important;
+}

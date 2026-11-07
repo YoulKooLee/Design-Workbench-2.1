@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js?v=20261016f"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>文档内容壳 · docs-shell</title>
+  <link rel="icon" href="../../assets/images/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="./layout.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <div class="wa-layout wa-layout--site-docs">
+      <div class="wa-layout__docs-shell">
+        <header class="wa-layout__docs-topbar">
+          <a class="wa-layout__brand" href="./index.html">
+            <span class="wa-layout__brand-mark" aria-hidden="true"><i class="fa-solid fa-book"></i></span>
+            <span class="wa-layout__brand-text">Vibe Docs</span>
+          </a>
+          <button type="button" class="wa-layout__docs-search-trigger" @click="openSearch">
+            <i class="fa-light fa-magnifying-glass" aria-hidden="true"></i>
+            <span>搜索文档</span>
+            <kbd>Ctrl+K</kbd>
+          </button>
+          <nav class="wa-layout__docs-toplinks" aria-label="顶栏导航">
+            <a
+              v-for="link in topLinks"
+              :key="link.key"
+              :href="link.href"
+              class="wa-layout__docs-toplink"
+              :class="{ 'is-active': link.active }"
+              :target="link.external ? '_blank' : null"
+              :rel="link.external ? 'noopener noreferrer' : null"
+            >
+              {{ link.label }}
+              <i v-if="link.external" class="fa-light fa-arrow-up-right-from-square" aria-hidden="true"></i>
+            </a>
+          </nav>
+          <div class="wa-layout__docs-top-actions">
+            <a-tooltip position="bottom" :content="themeDark ? '切换为亮色' : '切换为暗色'">
+              <button type="button" class="wa-layout__icon-btn" :aria-label="themeDark ? '切换为亮色' : '切换为暗色'" data-wa-theme-toggle>
+                <i :class="themeDark ? 'fa-light fa-sun-bright' : 'fa-light fa-moon'" aria-hidden="true"></i>
+              </button>
+            </a-tooltip>
+          </div>
+        </header>
+
+        <div class="wa-layout__docs-stage">
+        <aside class="wa-layout__docs-sider" aria-label="文档目录">
+          <nav class="wa-layout__docs-nav">
+            <template v-for="g in nav" :key="g.key">
+              <button
+                v-if="g.type === 'item'"
+                type="button"
+                class="wa-layout__docs-link wa-layout__docs-link--root"
+                :class="{ 'is-active': activeDoc === g.key }"
+                @click="selectDoc(g.key)"
+              >{{ g.label }}</button>
+              <div v-else class="wa-layout__docs-folder" :class="{ 'is-open': openFolders[g.key] }">
+                <button type="button" class="wa-layout__docs-folder-btn" @click="toggleFolder(g.key)">
+                  <span>{{ g.label }}</span>
+                  <i class="fa-light fa-chevron-down" aria-hidden="true"></i>
+                </button>
+                <div v-show="openFolders[g.key]" class="wa-layout__docs-folder-list">
+                  <button
+                    v-for="item in g.items"
+                    :key="item.key"
+                    type="button"
+                    class="wa-layout__docs-link wa-layout__docs-link--child"
+                    :class="{ 'is-active': activeDoc === item.key }"
+                    @click="selectDoc(item.key)"
+                  >{{ item.label }}</button>
+                </div>
+              </div>
+            </template>
+          </nav>
+        </aside>
+
+        <div class="wa-layout__docs-right">
+          <div class="wa-layout__docs-body">
+            <h1 class="wa-layout__page-title">{{ activeDocLabel }}</h1>
+            <p class="wa-layout__docs-meta">更新于 2026-10-09 · 阅读约 8 分钟 · 适用于帮助中心与设计规范站</p>
+            <main class="wa-layout__docs-main">
+              <article class="wa-layout__docs-article">
+                <p class="wa-layout__page-lead">这篇虚似帮助说明文档壳怎么读、怎么接。顶栏是悬浮胶囊（品牌、搜索、站点导航），其下左侧是站点目录，中间是正文版心，右侧是本页大纲。整页限宽居中，左栏灰底、右栏白底。</p>
+
+                <div class="wa-layout__docs-callout">
+                  <p class="wa-layout__docs-callout-title">
+                    <i class="fa-light fa-circle-info" aria-hidden="true"></i>
+                    <span>说明：</span>
+                  </p>
+                  <ul>
+                    <li>第一次打开？先看「五分钟上手」，再回来对照本页结构。</li>
+                    <li>可直接 <button type="button" class="wa-layout__docs-callout-link" @click="selectDoc('quickstart')">跳转到五分钟上手</button>，再对照左侧目录与本页目录。</li>
+                  </ul>
+                </div>
+
+                <section id="what" class="wa-layout__docs-section">
+                  <h2>这是什么</h2>
+                  <p>文档内容壳（<code>docs-shell</code>）是给帮助中心、产品说明和协议长文用的静态骨架。它不是控制台：没有业务侧栏密度，也没有看板或表格占位。你看到的标题、段落、提示条和本页大纲，落地时都应换成真实文档。</p>
+                  <p>和营销站的差别在于：首页、价格页走 <code>marketing-shell</code> / <code>marketing-float</code>；一旦进入「持续阅读」的说明页，就切到本壳。目录按章节分组，当前页高亮，长文靠右侧大纲跳转，避免读者在通栏里左右游走。</p>
+                </section>
+
+                <section id="audience" class="wa-layout__docs-section">
+                  <h2>适合谁用</h2>
+                  <p>如果你负责把零散的 Markdown、操作手册或设计约定收成一个站，这个壳就是默认起点。它假设读者会停留较久，所以版心有宽度上限，行高偏松，目录可以折叠。</p>
+                  <ul class="wa-layout__docs-list">
+                    <li><strong>设计师</strong>：对照示范页核对字号、间距和灰白分区，再把品牌皮套上。</li>
+                    <li><strong>产品经理</strong>：用左侧目录排需求说明、FAQ 和协议条目，不必另做后台。</li>
+                    <li><strong>研发</strong>：保留三栏骨架，把静态页或 Markdown 渲染结果填进 <code>docs-article</code>。</li>
+                    <li><strong>运营 / 支持</strong>：维护更新日志与常见问题；顶栏搜索示意 Ctrl+K，落地时接真实检索。</li>
+                  </ul>
+                </section>
+
+                <section id="scenarios" class="wa-layout__docs-section">
+                  <h2>使用场景</h2>
+                  <p>下面几类页面都适合挂在这个壳里。它们共同的特点是「一篇说完一件事」，而不是「一张表管一批数据」。</p>
+                  <h3>产品帮助中心</h3>
+                  <p>例如安装、快捷键、导入导出。每篇控制在一个主题，目录用「开始使用 / 功能说明 / 常见问题」分组。需要截图时放在正文中，不要把截图墙做成仪表盘。</p>
+                  <h3>设计规范与组件约定</h3>
+                  <p>说明何时用主按钮、何时用次按钮，令牌叫什么名字。右侧大纲列出本节小标题，方便从「颜色」跳到「圆角」。规范更新后只改正文，壳不用动。</p>
+                  <h3>接口说明与变更记录</h3>
+                  <p>把请求示例、错误码和版本差异写成连续段落或列表。过长的代码块落地时用站点自己的高亮方案；本示范页只用行内 <code>code</code> 示意。</p>
+                  <h3>协议与政策</h3>
+                  <p>服务条款、隐私政策一类长文最需要限宽。默认不要通栏铺满，以免一行横跨整屏。页脚放备案、联系方式和文档仓库入口即可。</p>
+                </section>
+
+                <section id="conventions" class="wa-layout__docs-section">
+                  <h2>阅读约定</h2>
+                  <p>示范内容是虚似文案，用来撑开排版。点击左侧其它条目只会改标题示意路由，不会切换整篇文章——落地时再按真实 slug 换页。</p>
+                  <ul class="wa-layout__docs-list">
+                    <li>顶栏「使用文档」表示当前站点分区，不是某一篇文章。</li>
+                    <li>左侧「开始使用」是平铺分组；「搭建指南」等带箭头的是可折叠分组。</li>
+                    <li>右侧「本页目录」只反映<strong>当前这篇</strong>的小标题，不反映整站目录。</li>
+                    <li>颜色只用主题 token。切暗色后，灰栏与白底会一起反相，不要写死 #fff。</li>
+                  </ul>
+                </section>
+
+                <section id="nav-search" class="wa-layout__docs-section">
+                  <h2>目录与检索</h2>
+                  <p>文档站的第一任务是「找得到」。搜索框在悬浮条右侧，靠近站点链接。点开后可按标题关键词过滤目录项；键盘 <kbd>Ctrl</kbd> + <kbd>K</kbd>（Mac 上为 Command）同样打开。</p>
+                  <p>折叠分组默认收起，避免一屏三十条。若某篇属于折叠组，从搜索结果点进去时，应自动展开该组——本页已按这个规则示意。</p>
+                  <p>当一篇文章短于一屏，右侧大纲仍然保留，这样所有文档页结构一致。落地若某类页面没有小标题，可以隐藏大纲列，但不要改左栏宽度。</p>
+                </section>
+
+                <section id="replace" class="wa-layout__docs-section">
+                  <h2>落地时替换正文</h2>
+                  <p>复制本壳后，删掉这篇虚似文章和引导按钮，只留 <code>docs-article</code> 容器。推荐的最小替换清单：</p>
+                  <ul class="wa-layout__docs-list">
+                    <li>页标题、更新时间、导语。</li>
+                    <li>各 <code>h2</code> 章节；需要时加 <code>h3</code>，并同步右侧大纲 id。</li>
+                    <li>提示条：仅在「必读」或「即将过时」时保留，不要每篇都放。</li>
+                    <li>页脚链接改成你的仓库、状态页和联系邮箱。</li>
+                  </ul>
+                  <p>不要把控制台里的筛选条、批量操作或数据卡片搬进正文。那是另一类壳（<code>app-sidebar</code> 等）的工作。</p>
+                </section>
+
+                <section id="feedback" class="wa-layout__docs-section">
+                  <h2>问题反馈</h2>
+                  <p>顶栏「意见反馈」目前指向示意链接。落地时接到工单系统、邮箱或社区帖。建议在文末再放一次短链，长文读者不一定滚回顶栏。</p>
+                  <p>反馈里请写清：文档路径、你期望看到的步骤、实际结果。配一张当前页截图会更快。内部文档可以注明「仅公司网络可打开」，避免外链失效。</p>
+                </section>
+
+                <section id="enterprise" class="wa-layout__docs-section">
+                  <h2>是否可以在公司内使用</h2>
+                  <p>可以。这是静态原型，适合内网帮助站和设计规范站。若需要登录，请把鉴权页放到 <code>login-shell</code>，通过后再进文档壳，不要在本页叠一层口令门。</p>
+                  <p>部署时注意字体与图标已在母版本地化，不要改回 CDN。品牌色跟站点 <code>data-brand</code> 走，文档站与营销站可以共用同一套皮。</p>
+                </section>
+
+                <section id="next" class="wa-layout__docs-section">
+                  <h2>下一步</h2>
+                  <p>读完本页后，建议按这个顺序继续：环境与安装 → 五分钟上手 → 页面壳选型。若你已经有旧站，先看「从旧站迁移」，再决定目录怎么切。</p>
+                  <p>结构示意到此结束。下面页脚是站点级信息，不属于单篇文章，落地时请改成真实主体名称与链接。</p>
+                </section>
+              </article>
+            </main>
+
+            <aside class="wa-layout__docs-outline" aria-label="本页目录">
+              <div class="wa-layout__docs-outline-inner">
+                <p class="wa-layout__docs-outline-title">本页目录</p>
+                <button
+                  v-for="o in pageOutline"
+                  :key="o.id"
+                  type="button"
+                  class="wa-layout__docs-outline-link"
+                  :class="{ 'is-active': activeOutline === o.id }"
+                  @click="scrollToOutline(o.id)"
+                >{{ o.label }}</button>
+              </div>
+            </aside>
+          </div>
+        </div>
+        </div>
+
+        <footer class="wa-layout__footer wa-layout__docs-footer">
+          <div class="wa-layout__docs-footer-inner">
+            <p class="wa-layout__docs-footer-copy">© 2026 Vibe Design · 文档内容壳示范</p>
+            <nav class="wa-layout__docs-footer-links" aria-label="页脚">
+              <a href="../index.html">全部框架</a>
+              <a href="javascript:;">更新日志</a>
+              <a href="javascript:;">意见反馈</a>
+              <a href="javascript:;">服务条款</a>
+            </nav>
+          </div>
+        </footer>
+      </div>
+
+      <a-modal
+        v-model:visible="searchOpen"
+        title="搜索文档"
+        :footer="false"
+        :width="520"
+        unmount-on-close
+        @cancel="searchOpen = false"
+      >
+        <label class="wa-layout__docs-search-field">
+          <i class="fa-light fa-magnifying-glass" aria-hidden="true"></i>
+          <input
+            v-model="searchQuery"
+            class="wa-layout__docs-search-input"
+            type="search"
+            placeholder="输入标题关键词…"
+            autocomplete="off"
+            @keydown.enter.prevent="searchHits[0] && selectDoc(searchHits[0].key)"
+          />
+        </label>
+        <ul class="wa-layout__docs-search-list">
+          <li v-for="hit in searchHits" :key="hit.key">
+            <button type="button" @click="selectDoc(hit.key)">
+              <span>{{ hit.label }}</span>
+              <em>{{ hit.group }}</em>
+            </button>
+          </li>
+          <li v-if="!searchHits.length" class="is-empty">无匹配结果</li>
+        </ul>
+      </a-modal>
+    </div>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="./layout.js"></script>
+</body>
+</html>

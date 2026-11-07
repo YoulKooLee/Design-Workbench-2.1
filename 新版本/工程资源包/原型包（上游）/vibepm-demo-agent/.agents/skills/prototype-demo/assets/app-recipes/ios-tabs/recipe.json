@@ -1,0 +1,11 @@
+{
+  "recipe": "ios-tabs",
+  "shell": "ios_frame_tabs.html",
+  "shellFamily": "ios",
+  "source": "frame/app/ios_frame_tabs.html",
+  "deliver": [
+    "index.html",
+    "css/ios-frame-tabs.css"
+  ],
+  "note": "拷到交付根：index.html + 对应 css；业务只写在 main.screen-content > section.app-shell。勿动画外框。"
+}

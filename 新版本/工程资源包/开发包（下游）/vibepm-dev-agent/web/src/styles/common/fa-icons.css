@@ -1,0 +1,380 @@
+/**
+ * WEB：Font Awesome 与 Arco 槽位对齐（精简版）
+ * 真源映射见 assets/common/js/fa-icons.js（由 sync-vendor 自 admin 同步）。
+ * WEB 默认态 Classic Pro（theme.js → __VIBE_FA_CLASSIC_PRO__）；默认不用 Sharp。
+ * 不含 Admin 侧栏 / Pro 菜单专用规则。
+ */
+.pro-fa-icon {
+  --fa-width: 1em;
+  --fa-family: 'Font Awesome 7 Pro';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+  color: inherit;
+  width: 1em;
+  height: 1em;
+  font-size: 14px; /* 默认档；后缀等可降到 12px */
+  flex-shrink: 0;
+}
+
+.pro-fa-icon::before {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pro-fa-icon.fa-light {
+  --fa-family: 'Font Awesome 7 Pro';
+  --fa-style: 300;
+}
+
+.pro-fa-icon.fa-regular {
+  --fa-family: 'Font Awesome 7 Pro';
+  --fa-style: 400;
+}
+
+.pro-fa-icon.fa-solid {
+  --fa-family: 'Font Awesome 7 Pro';
+  --fa-style: 900;
+}
+
+/* 误带 fa-sharp 时仍强制 Pro 字族，不走 Sharp */
+.pro-fa-icon.fa-sharp {
+  --fa-family: 'Font Awesome 7 Pro';
+}
+
+/*
+ * 图标 + 文案垂直居中（通用根治）
+ * - 容器用 inline-flex + align-items:center
+ * - 间距用图标 margin-inline-end（比 gap 更稳：slot 多节点/匿名文本也能隔开）
+ * - 标签标题勿设 line-height:1（会压扁高度）
+ * - 业务其它「图标+字」用 .wa-ico-text
+ */
+.wa-ico-text {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.arco-tabs-tab-title {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.wa-ico-text .pro-fa-icon,
+.arco-tabs-tab-title .pro-fa-icon {
+  margin: 0;
+  margin-inline-end: 8px;
+  vertical-align: unset;
+  flex-shrink: 0;
+}
+
+/* 家族复制图标尺寸见 components/index.css .wa-fam-copy */
+
+/*
+ * 面包屑：项内首页图标与文字垂直居中。
+ * Admin fa-icons.css 已有 .arco-breadcrumb-item .pro-fa-icon；WEB 精简版漏同步。
+ * 另用 inline-flex 保证 FA（inline-flex + 1em 盒）与汉字同轴，避免「图标偏下」。
+ */
+.arco-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.arco-breadcrumb-item .pro-fa-icon {
+  vertical-align: unset;
+  margin: 0;
+  margin-inline-end: 4px;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.arco-breadcrumb-item-separator .pro-fa-icon {
+  margin: 0;
+  font-size: 10px;
+  width: 10px;
+  height: 10px;
+  vertical-align: middle;
+}
+
+/* 分页组合态箭头：与 Arco pagination FA 补丁同为 12px */
+.wa-pg-bar .pro-fa-icon,
+.wa-pg-joined .pro-fa-icon {
+  font-size: 12px;
+  width: 12px;
+  height: 12px;
+  line-height: 1;
+}
+
+/* Upload：列表操作 / 图片卡片加号 / 拖拽主图标继承父级字号（对照 Admin fa-icons） */
+.arco-upload-icon .pro-fa-icon,
+.arco-upload-list-item-file-icon .pro-fa-icon,
+.arco-upload-picture-card-text .pro-fa-icon,
+.wa-upload-drag-icon .pro-fa-icon,
+.mc-upload-drag-icon .pro-fa-icon {
+  font-size: inherit;
+}
+
+/* DatePicker / TimePicker / Select 后缀：FA 替换后与 Picker 对齐 12px */
+.arco-picker-suffix-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arco-picker-suffix-icon .pro-fa-icon {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Select / Cascader / TreeSelect 下拉箭头统一 10px */
+.arco-select-view-suffix .pro-fa-icon,
+.arco-select-view-icon .pro-fa-icon {
+  display: inline-block;
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* Select 展开：Arco 原挂在 svg.arco-select-view-arrow-icon 上，FA 须同名类才能旋转 */
+.arco-select-view-opened .arco-select-view-arrow-icon.pro-fa-icon {
+  transform: rotateZ(180deg);
+}
+
+/* Tree / TreeSelect：Arco 只给 svg 旋转，FA 替换后补同一套 */
+.arco-tree-node-switcher-icon .pro-fa-icon {
+  display: inline-block;
+  font-size: 10px;
+  line-height: 1;
+  transform: rotate(-90deg);
+  transition: transform 0.2s cubic-bezier(0.34, 0.69, 0.1, 1);
+}
+
+.arco-tree-node-expanded .arco-tree-node-switcher-icon .pro-fa-icon,
+.arco-tree-node-is-leaf .arco-tree-node-switcher-icon .pro-fa-icon {
+  transform: rotate(0);
+}
+
+/* Cascader 面板：FA 替换后恢复靠右（Arco 原对 .arco-icon-right 绝对定位） */
+.arco-cascader-option .arco-cascader-option-label .pro-fa-icon,
+.arco-cascader-search-option .arco-cascader-search-option-label .pro-fa-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  font-size: 10px;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.arco-picker-clear-icon .pro-fa-icon,
+.arco-select-view-clear-btn .pro-fa-icon,
+.arco-input-clear-btn .pro-fa-icon,
+.arco-input-tag-clear-btn .pro-fa-icon,
+.arco-textarea-clear-btn .pro-fa-icon {
+  font-size: 10px;
+}
+
+.arco-input-suffix .pro-fa-icon {
+  font-size: 12px;
+}
+
+/* 必填 *：隐藏 Arco SVG，用文字星号（与 Admin 对齐） */
+.arco-form-item-label-required-symbol svg {
+  display: none !important;
+}
+
+.arco-form-item-label-required-symbol::before {
+  content: '*';
+  color: rgb(var(--danger-6));
+  font-size: 12px;
+  line-height: 1;
+  margin: 0 2px; /* 与标签文字留缝；兼 start / end 两种星号位置 */
+}
+
+/*
+ * Alert / Progress / Modal / Popconfirm：Arco 语义色只挂在 svg / .arco-icon 上，
+ * FA 替换后类名变为 .pro-fa-icon，须显式补回各状态色。
+ * Message / Notification：色在父容器上，.pro-fa-icon 已 color:inherit。
+ * Result：中性色由 components.css 强制 --color-text-2；Modal 标题图标走下方语义色。
+ */
+.arco-alert-normal .arco-alert-icon .pro-fa-icon {
+  color: var(--color-neutral-4);
+}
+
+.arco-alert-info .arco-alert-icon .pro-fa-icon {
+  color: rgb(var(--primary-6));
+}
+
+.arco-alert-success .arco-alert-icon .pro-fa-icon {
+  color: rgb(var(--success-6));
+}
+
+.arco-alert-warning .arco-alert-icon .pro-fa-icon {
+  color: rgb(var(--warning-6));
+}
+
+.arco-alert-error .arco-alert-icon .pro-fa-icon {
+  color: rgb(var(--danger-6));
+}
+
+/* Modal 标题状态图标（原色挂在 .arco-icon-*-fill 上） */
+.arco-modal-title-icon .pro-fa-icon.fa-circle-info {
+  color: rgb(var(--primary-6));
+}
+
+.arco-modal-title-icon .pro-fa-icon.fa-circle-check {
+  color: rgb(var(--success-6));
+}
+
+.arco-modal-title-icon .pro-fa-icon.fa-circle-exclamation {
+  color: rgb(var(--warning-6));
+}
+
+.arco-modal-title-icon .pro-fa-icon.fa-circle-xmark {
+  color: rgb(var(--danger-6));
+}
+
+/* Popconfirm 正文状态图标 */
+.arco-popconfirm-icon .pro-fa-icon.fa-circle-info {
+  color: rgb(var(--primary-6));
+}
+
+.arco-popconfirm-icon .pro-fa-icon.fa-circle-check {
+  color: rgb(var(--success-6));
+}
+
+.arco-popconfirm-icon .pro-fa-icon.fa-circle-exclamation {
+  color: rgb(var(--warning-6));
+}
+
+.arco-popconfirm-icon .pro-fa-icon.fa-circle-xmark {
+  color: rgb(var(--danger-6));
+}
+
+.arco-progress-status-warning .arco-progress-steps-text .pro-fa-icon,
+.arco-progress-status-warning .arco-progress-line-text .pro-fa-icon,
+.arco-progress-status-warning .arco-progress-circle-text .pro-fa-icon,
+.arco-progress-status-warning .pro-fa-icon {
+  color: rgb(var(--warning-6));
+}
+
+.arco-progress-status-success .arco-progress-steps-text .pro-fa-icon,
+.arco-progress-status-success .arco-progress-line-text .pro-fa-icon,
+.arco-progress-status-success .arco-progress-circle-text .pro-fa-icon,
+.arco-progress-status-success .pro-fa-icon {
+  color: rgb(var(--success-6));
+}
+
+.arco-progress-status-danger .arco-progress-steps-text .pro-fa-icon,
+.arco-progress-status-danger .arco-progress-line-text .pro-fa-icon,
+.arco-progress-status-danger .arco-progress-circle-text .pro-fa-icon,
+.arco-progress-status-danger .pro-fa-icon {
+  color: rgb(var(--danger-6));
+}
+
+/* 密码显隐：固定命中盒，eye / eye-slash 切换不挤布局；隐藏待补丁 SVG 防闪大图标 */
+.arco-input-suffix .arco-icon-hover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.arco-input-suffix .arco-icon-hover > .pro-fa-icon,
+.arco-input-suffix .arco-icon-hover .pro-fa-icon {
+  position: relative;
+  z-index: 1;
+}
+
+.arco-input-suffix .arco-icon-hover::before {
+  z-index: 0;
+}
+
+.arco-input-suffix svg.arco-icon-eye,
+.arco-input-suffix svg.arco-icon-eye-invisible {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+.arco-input-suffix .pro-fa-icon.fa-eye,
+.arco-input-suffix .pro-fa-icon.fa-eye-slash {
+  font-size: 12px;
+  width: 12px;
+  height: 12px;
+  color: var(--color-text-2);
+}
+
+/* 清除热区 18px；悬停灰底由 components.css `.wa-icon-clear` 关掉（与 Input 一致） */
+.arco-input-clear-btn.arco-icon-hover::before,
+.arco-select-view-clear-btn.arco-icon-hover::before,
+.arco-input-tag-clear-btn.arco-icon-hover::before,
+.arco-textarea-clear-btn.arco-icon-hover::before,
+.arco-textarea-clear-btn .arco-icon-hover::before,
+.arco-picker-clear-icon.arco-icon-hover::before {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── 按钮图标槽：与 Admin 同源，补齐垂直居中（Arco 默认 .arco-btn-icon 缺 align-items） ── */
+.arco-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.arco-btn .pro-fa-icon {
+  vertical-align: unset;
+  margin: 0;
+  font-size: 14px;
+}
+
+.arco-btn:not(.arco-btn-only-icon):not(.arco-btn-shape-circle) .pro-fa-icon {
+  transform: none;
+}
+
+.arco-btn-size-mini .pro-fa-icon,
+.arco-btn-size-mini.arco-btn .pro-fa-icon {
+  font-size: 12px;
+}
+
+.arco-btn-size-small .pro-fa-icon,
+.arco-btn-size-small.arco-btn .pro-fa-icon,
+.arco-btn-size-large .pro-fa-icon,
+.arco-btn-size-large.arco-btn .pro-fa-icon {
+  font-size: 14px;
+}
+
+/* Spin：补丁后保留旋转 */
+.pro-fa-icon.arco-icon-spin,
+.arco-spin-icon .pro-fa-icon,
+.arco-btn-loading-icon .pro-fa-icon {
+  animation: arco-loading-circle 1s infinite cubic-bezier(0, 0, 1, 1);
+}
+
+.arco-spin-icon .pro-fa-icon,
+.arco-btn-loading-icon .pro-fa-icon {
+  font-size: 1em;
+}
+
+/* Empty 空态：FA 字形比原 SVG 插画更贴底，加大与描述文案间距（Arco 默认 4px） */
+.arco-empty-image {
+  margin-bottom: 12px;
+}
+
+.arco-empty-image .pro-fa-icon {
+  font-size: 1em;
+  line-height: 1;
+}

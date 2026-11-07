@@ -1,0 +1,37 @@
+/* 头像组：组内 / +N / 气泡溢出字号统一 14px */
+.wa-embed__stage .arco-avatar-group .arco-avatar,
+.wa-fam-card .arco-avatar-group .arco-avatar {
+  flex-shrink: 0;
+  font-size: 14px !important;
+  line-height: 1;
+}
+
+.wa-embed__stage .arco-avatar-group .arco-avatar:not(:first-child),
+.wa-fam-card .arco-avatar-group .arco-avatar:not(:first-child) {
+  margin-left: -8px;
+}
+
+.wa-embed__stage .arco-avatar-group .arco-avatar-group-max-count-avatar.arco-avatar,
+.wa-fam-card .arco-avatar-group .arco-avatar-group-max-count-avatar.arco-avatar {
+  font-size: 14px !important;
+  font-weight: 500;
+}
+
+/* 气泡 teleport 到 body，须用 contentClass / 兜底选择器 */
+.wa-avatar-group-popover,
+.arco-popover-content > div:has(> .arco-avatar) {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.wa-avatar-group-popover .arco-avatar,
+.arco-popover-content > div:has(> .arco-avatar) > .arco-avatar {
+  font-size: 14px !important;
+  line-height: 1;
+}
+
+.wa-avatar-group-popover .arco-avatar:not(:first-child),
+.arco-popover-content > div:has(> .arco-avatar) > .arco-avatar:not(:first-child) {
+  margin-left: -8px !important;
+}

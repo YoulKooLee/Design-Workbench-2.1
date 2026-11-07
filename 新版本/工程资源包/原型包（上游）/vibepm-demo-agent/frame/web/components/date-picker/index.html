@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>日期选择 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <!-- 成员真源：多选壳（橱窗布局见 ../index.css?v=20261014pro .wa-fam-*） -->
+  <link rel="stylesheet" href="./multiple/component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="date-picker">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">date-picker</p>
+          <h1 class="wa-fam-title">日期选择</h1>
+          <p class="wa-fam-lead">表单中选择单日、范围、日期时间、周月年季或多日（预约、档期、排班、休假日等）。</p>
+          <p class="wa-fam-lead">组件类型：default / range / datetime / datetime-range / week / month / year / quarter / multiple / disabled</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="date-picker-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">日期选择</span><span class="wa-comp-meta__slug">date-picker-default</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-default')"
+                :aria-label="famCopyTip('date-picker-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-date-picker
+                  v-model="date"
+                  format="YYYY-MM-DD"
+                  placeholder="请选择日期"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-range">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">日期范围</span><span class="wa-comp-meta__slug">date-picker-range</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-range')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-range') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-range')"
+                :aria-label="famCopyTip('date-picker-range')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-range')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-range-picker
+                  v-model="dateRange"
+                  format="YYYY-MM-DD"
+                  :placeholder="['开始日期', '结束日期']"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-datetime">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">日期时间</span><span class="wa-comp-meta__slug">date-picker-datetime</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-datetime')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-datetime') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-datetime')"
+                :aria-label="famCopyTip('date-picker-datetime')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-datetime')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-date-picker
+                  v-model="dateTime"
+                  show-time
+                  format="YYYY-MM-DD HH:mm"
+                  placeholder="请选择日期时间"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-datetime-range">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">日期时间范围</span><span class="wa-comp-meta__slug">date-picker-datetime-range</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-datetime-range')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-datetime-range') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-datetime-range')"
+                :aria-label="famCopyTip('date-picker-datetime-range')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-datetime-range')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-range-picker
+                  v-model="dateTimeRange"
+                  show-time
+                  format="YYYY-MM-DD HH:mm:ss"
+                  separator="~"
+                  :placeholder="['开始时间', '结束时间']"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-week">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">周选择</span><span class="wa-comp-meta__slug">date-picker-week</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-week')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-week') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-week')"
+                :aria-label="famCopyTip('date-picker-week')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-week')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-week-picker
+                  v-model="dateWeek"
+                  placeholder="请选择周"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-month">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">月选择</span><span class="wa-comp-meta__slug">date-picker-month</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-month')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-month') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-month')"
+                :aria-label="famCopyTip('date-picker-month')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-month')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-month-picker
+                  v-model="dateMonth"
+                  format="YYYY-MM"
+                  placeholder="请选择月份"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-year">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">年选择</span><span class="wa-comp-meta__slug">date-picker-year</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-year')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-year') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-year')"
+                :aria-label="famCopyTip('date-picker-year')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-year')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-year-picker
+                  v-model="dateYear"
+                  format="YYYY"
+                  placeholder="请选择年份"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-quarter">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">季度选择</span><span class="wa-comp-meta__slug">date-picker-quarter</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-quarter')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-quarter') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-quarter')"
+                :aria-label="famCopyTip('date-picker-quarter')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-quarter')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-quarter-picker
+                  v-model="dateQuarter"
+                  placeholder="请选择季度"
+                  allow-clear
+                />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-multiple">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">多选日期</span><span class="wa-comp-meta__slug">date-picker-multiple</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-multiple')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-multiple') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-multiple')"
+                :aria-label="famCopyTip('date-picker-multiple')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-multiple')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="dp-multi" id="dp-multi-family">
+                  <a-date-picker
+                    v-model="dateMultipleDraft"
+                    v-model:popup-visible="dateMultipleOpen"
+                    popup-container="#dp-multi-family"
+                    format="YYYY-MM-DD"
+                    value-format="YYYY-MM-DD"
+                    show-confirm-btn
+                    :show-now-btn="false"
+                    @select-default="onSelectMultipleDate"
+                    @ok="onConfirmMultipleDate"
+                    @popup-visible-change="onMultiplePopupChange"
+                  >
+                    <template #cell="{ date }">
+                      <div class="arco-picker-date">
+                        <div
+                          class="arco-picker-date-value"
+                          :class="{ 'dp-multi-cell--picked': isMultiplePicked(date) }"
+                        >{{ multipleCellDay(date) }}</div>
+                      </div>
+                    </template>
+                    <div
+                      class="dp-multi__field"
+                      :class="{ 'dp-multi__field--open': dateMultipleOpen, 'dp-multi__field--has-value': dateMultiple.length }"
+                      tabindex="0"
+                    >
+                      <div class="dp-multi__tags" v-if="dateMultiple.length">
+                        <a-tag
+                          v-for="d in dateMultiple"
+                          :key="d"
+                          closable
+                          @click.stop
+                          @close.stop="onRemoveMultipleDate(d)"
+                        >
+                          <template #close-icon><icon-close /></template>
+                          {{ d }}
+                        </a-tag>
+                      </div>
+                      <span v-else class="dp-multi__placeholder">请选择多个日期</span>
+                      <span class="dp-multi__suffix">
+                        <span
+                          v-if="dateMultiple.length"
+                          class="arco-icon-hover arco-picker-clear-icon"
+                          role="button"
+                          aria-label="清除"
+                          title="清除"
+                          @click.stop="onClearMultipleDate"
+                        >
+                          <icon-close></icon-close>
+                        </span>
+                        <span class="arco-picker-suffix-icon">
+                          <icon-calendar></icon-calendar>
+                        </span>
+                      </span>
+                    </div>
+                  </a-date-picker>
+                </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="date-picker-disabled">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">禁用日期选择</span><span class="wa-comp-meta__slug">date-picker-disabled</span></div>
+              <a-tooltip :content="famCopyTip('date-picker-disabled')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('date-picker-disabled') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('date-picker-disabled')"
+                :aria-label="famCopyTip('date-picker-disabled')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('date-picker-disabled')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-date-picker
+                  v-model="disabledDate"
+                  format="YYYY-MM-DD"
+                  placeholder="请选择日期"
+                  disabled
+                />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'date-picker',
+      members: [
+        'date-picker-default',
+        'date-picker-range',
+        'date-picker-datetime',
+        'date-picker-datetime-range',
+        'date-picker-week',
+        'date-picker-month',
+        'date-picker-year',
+        'date-picker-quarter',
+        'date-picker-multiple',
+        'date-picker-disabled',
+      ],
+      setup: function (api) {
+        function formatDay(v) {
+          if (v == null || v === '') return ''
+          if (typeof v === 'string') return v.slice(0, 10)
+          if (typeof v.format === 'function') return v.format('YYYY-MM-DD')
+          if (v instanceof Date && !isNaN(v.getTime())) {
+            var y = v.getFullYear()
+            var m = String(v.getMonth() + 1).padStart(2, '0')
+            var d = String(v.getDate()).padStart(2, '0')
+            return y + '-' + m + '-' + d
+          }
+          return String(v)
+        }
+        var dateMultiple = api.ref([])
+        var dateMultipleDraft = api.ref()
+        var dateMultipleOpen = api.ref(false)
+        function clearMultipleDraft() {
+          dateMultipleDraft.value = undefined
+        }
+        return {
+          date: api.ref(),
+          dateRange: api.ref(),
+          dateTime: api.ref(),
+          dateTimeRange: api.ref(),
+          dateWeek: api.ref(),
+          dateMonth: api.ref(),
+          dateYear: api.ref(),
+          dateQuarter: api.ref(),
+          dateMultiple: dateMultiple,
+          dateMultipleDraft: dateMultipleDraft,
+          dateMultipleOpen: dateMultipleOpen,
+          onSelectMultipleDate: function (v) {
+            var s = formatDay(v)
+            if (!s) return
+            dateMultipleDraft.value = s
+            var idx = dateMultiple.value.indexOf(s)
+            if (idx === -1) {
+              dateMultiple.value = dateMultiple.value.concat([s]).sort()
+            } else {
+              dateMultiple.value = dateMultiple.value.filter(function (x) {
+                return x !== s
+              })
+            }
+          },
+          onConfirmMultipleDate: function () {
+            dateMultipleOpen.value = false
+            clearMultipleDraft()
+          },
+          onMultiplePopupChange: function (visible) {
+            dateMultipleOpen.value = visible
+            clearMultipleDraft()
+          },
+          onRemoveMultipleDate: function (d) {
+            dateMultiple.value = dateMultiple.value.filter(function (x) {
+              return x !== d
+            })
+            if (!dateMultiple.value.length) clearMultipleDraft()
+          },
+          onClearMultipleDate: function () {
+            dateMultiple.value = []
+            clearMultipleDraft()
+            dateMultipleOpen.value = false
+          },
+          isMultiplePicked: function (date) {
+            var s = formatDay(date)
+            return !!s && dateMultiple.value.indexOf(s) !== -1
+          },
+          multipleCellDay: function (date) {
+            if (date && typeof date.date === 'function') return date.date()
+            if (date instanceof Date && !isNaN(date.getTime())) return date.getDate()
+            return ''
+          },
+          disabledDate: api.ref('2026-09-16'),
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

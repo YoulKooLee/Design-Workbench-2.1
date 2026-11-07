@@ -1,0 +1,13 @@
+/* avatar-default 成员：与 Admin 基础样板同观感的尺寸与叠放 */
+.wa-embed__stage .arco-avatar,
+.wa-fam-card .arco-avatar {
+  flex-shrink: 0;
+}
+.wa-embed__stage .arco-avatar .pro-fa-icon,
+.wa-fam-card .arco-avatar .pro-fa-icon {
+  font-size: 14px;
+}
+.wa-embed__stage .arco-avatar-group .arco-avatar:not(:first-child),
+.wa-fam-card .arco-avatar-group .arco-avatar:not(:first-child) {
+  margin-left: -8px;
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>带内容页头 · page-header-content</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="page-header-content">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">带内容页头</span>
+        <span class="wa-comp-meta__slug">page-header-content</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-page-header
+          class="wa-page-header-demo"
+          title="帮助中心"
+          subtitle="使用指南"
+          :show-back="true"
+          @back="onBack"
+        >
+          <template #extra>
+            <a-button type="primary" size="small">反馈</a-button>
+          </template>
+          <div class="wa-page-header-demo__body">
+            本页汇总常见问题与操作步骤，点击返回可回到上一级列表。
+          </div>
+        </a-page-header>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

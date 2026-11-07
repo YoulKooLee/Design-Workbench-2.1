@@ -1,0 +1,21 @@
+/* 固定时间点范围：双 Select + 分隔，后缀时钟仅右侧（对齐 TimeRange） */
+.tp-select-range {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  gap: 0;
+}
+
+.tp-select-range .arco-select {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.tp-select-range__sep {
+  flex: 0 0 auto;
+  padding: 0 6px;
+  color: var(--color-text-3, #86909c);
+  line-height: 1;
+  user-select: none;
+}

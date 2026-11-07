@@ -1,0 +1,119 @@
+/**
+ * 品牌皮：亮色科技蓝（可选）
+ * 激活：html[data-brand="liangse-keji-lan"]（见 assets/common/js/brand.js · ?brand=）
+ * 由原 global.css 默认蓝皮抽出；无 data-brand 时吃紫雾（global.css）。
+ * link/arcoblue 阶：只改 --primary-*，global body 已桥 link/arcoblue → primary。
+ */
+
+html[data-brand='liangse-keji-lan'] {
+  --wa-font-sans: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --wa-font-display: var(--wa-font-sans);
+  --wa-font-serif: var(--wa-font-sans);
+  --wa-color-text-1: #1d2129;
+  --wa-color-text-2: rgba(0, 0, 0, 0.65);
+  --wa-color-text-3: #86909c;
+  --wa-color-text: var(--wa-color-text-1);
+  --wa-color-text-secondary: var(--wa-color-text-2);
+  --wa-color-muted: var(--wa-color-text-3);
+  /* 产品画布中性灰（与紫雾/白场对齐）；冷蓝氛围见 --wa-gradient-page */
+  --wa-color-bg: #f5f5f5;
+  --wa-color-surface: #ffffff;
+  --wa-color-primary: #165dff;
+  --wa-color-accent: #0ea5e9;
+  --wa-color-primary-soft: color-mix(in srgb, var(--wa-color-primary) 14%, transparent);
+  --wa-color-on-primary: #ffffff;
+  --wa-color-border-1: #f2f3f5;
+  --wa-color-border-2: #e5e6eb;
+  --wa-color-border-3: #c9cdd4;
+  --wa-color-border: var(--wa-color-border-2);
+  --wa-color-fill-1: #f7f8fa;
+  --wa-color-fill-2: #f2f3f5;
+  --wa-color-fill-3: #e5e6eb;
+  --wa-border-w: 1px;
+  --wa-border-card: var(--wa-border-w) solid var(--wa-color-border-2);
+  --wa-border-section: none;
+  --wa-shadow-soft: 0 0 8px rgba(15, 23, 42, 0.06), 0 0 16px rgba(15, 23, 42, 0.04);
+  --wa-shadow-soft-hover: 0 0 12px rgba(15, 23, 42, 0.08), 0 0 24px rgba(15, 23, 42, 0.05);
+  --wa-shadow-section: 0 8px 32px rgba(15, 23, 42, 0.06);
+  --wa-shadow-lift: 0 8px 20px rgba(15, 23, 42, 0.12);
+  --wa-shadow-lift-hover: 0 10px 24px rgba(15, 23, 42, 0.16);
+  --wa-shadow-button: 0 6px 16px color-mix(in srgb, var(--wa-color-primary) 18%, transparent);
+  --wa-shadow-button-hover: 0 8px 18px color-mix(in srgb, var(--wa-color-primary) 24%, transparent);
+  /* 冷灰蓝画布 + 蓝/青角晕，与紫雾暖纸、白场纯白拉开 */
+  --wa-gradient-page:
+    radial-gradient(120% 80% at 100% -10%, color-mix(in srgb, var(--wa-color-primary) 12%, transparent), transparent 55%),
+    radial-gradient(90% 60% at -10% 40%, color-mix(in srgb, var(--wa-color-accent) 8%, transparent), transparent 50%),
+    linear-gradient(180deg, #f3f7fd 0%, #e8eef8 100%);
+  --wa-radius: 12px;
+  --wa-radius-lg: 20px;
+  --wa-input-radius: 8px;
+  --wa-btn-radius-lg: 10px;
+  --wa-btn-radius-cta: var(--wa-btn-radius-lg);
+  --wa-cta-h: 48px;
+  --wa-cta-fs: 16px;
+  --wa-ctrl-ring: 3px;
+  --wa-mask-bg: rgba(0, 0, 0, 0.32);
+  --wa-mask-blur: 4px;
+  --color-mask-bg: var(--wa-mask-bg);
+  --wa-container: 1200px;
+}
+
+html[data-brand='liangse-keji-lan'] body {
+  --primary-1: 232, 243, 255;
+  --primary-2: 190, 218, 255;
+  --primary-3: 148, 191, 255;
+  --primary-4: 106, 161, 255;
+  --primary-5: 64, 128, 255;
+  --primary-6: 22, 93, 255;
+  --primary-7: 14, 66, 210;
+  --primary-8: 7, 44, 166;
+  --primary-9: 3, 26, 121;
+  --primary-10: 0, 13, 77;
+}
+
+html[data-brand='liangse-keji-lan'][data-theme='dark'] {
+  color-scheme: dark;
+  --wa-color-text-1: #f2f3f5;
+  --wa-color-text-3: #86909c;
+  --wa-color-text: var(--wa-color-text-1);
+  --wa-color-muted: var(--wa-color-text-3);
+  /* 产品画布中性深灰；冷蓝氛围见 --wa-gradient-page（border/mask 配方继承亮色） */
+  --wa-color-bg: #0d0d0d;
+  --wa-color-surface: #232324;
+  --wa-color-border-1: rgba(255, 255, 255, 0.06);
+  --wa-color-border-2: rgba(255, 255, 255, 0.12);
+  --wa-color-border-3: rgba(255, 255, 255, 0.2);
+  --wa-color-border: var(--wa-color-border-2);
+  --wa-color-primary: #165dff;
+  --wa-color-accent: #0ea5e9;
+  --wa-color-primary-soft: color-mix(in srgb, var(--wa-color-primary) 22%, transparent);
+  --wa-shadow-soft: 0 0 8px rgba(0, 0, 0, 0.22), 0 0 16px rgba(0, 0, 0, 0.16);
+  --wa-shadow-soft-hover: 0 0 12px rgba(0, 0, 0, 0.3), 0 0 24px rgba(0, 0, 0, 0.22);
+  --wa-shadow-section: 0 8px 32px rgba(0, 0, 0, 0.28);
+  --wa-shadow-lift: 0 8px 20px rgba(0, 0, 0, 0.32);
+  --wa-shadow-lift-hover: 0 10px 24px rgba(0, 0, 0, 0.4);
+  --wa-shadow-button: 0 6px 16px color-mix(in srgb, var(--wa-color-primary) 28%, transparent);
+  --wa-shadow-button-hover: 0 8px 18px color-mix(in srgb, var(--wa-color-primary) 34%, transparent);
+  --wa-mask-bg: rgba(0, 0, 0, 0.42);
+  --color-mask-bg: var(--wa-mask-bg);
+  --wa-gradient-page:
+    radial-gradient(120% 80% at 100% -10%, color-mix(in srgb, var(--wa-color-primary) 10%, transparent), transparent 55%),
+    radial-gradient(90% 60% at -10% 40%, color-mix(in srgb, var(--wa-color-accent) 5%, transparent), transparent 50%),
+    linear-gradient(180deg, #101012 0%, #141416 100%);
+}
+
+html[data-brand='liangse-keji-lan'][data-theme='dark'] body,
+html[data-brand='liangse-keji-lan'] body[arco-theme='dark'] {
+  --color-mask-bg: var(--wa-mask-bg);
+  /* 暗色阶：1–3 须深面（Alert info 描边吃 primary-2） */
+  --primary-1: 16, 28, 52;
+  --primary-2: 20, 40, 80;
+  --primary-3: 24, 52, 120;
+  --primary-4: 28, 70, 180;
+  --primary-5: 26, 82, 220;
+  --primary-6: 22, 93, 255;
+  --primary-7: 64, 128, 255;
+  --primary-8: 106, 161, 255;
+  --primary-9: 148, 191, 255;
+  --primary-10: 190, 218, 255;
+}

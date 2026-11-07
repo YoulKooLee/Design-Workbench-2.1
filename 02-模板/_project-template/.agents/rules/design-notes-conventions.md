@@ -1,73 +1,21 @@
-# 原型设计说明编写规范（Design Notes）
+# 原型设计说明 · 接入规范（指针文件）
 
-## 总则
+> 真源：`src/common/design-notes/规范.md`（v3.0，三份合一：Part A 模块接入 / Part B 打标 / Part C 卡片编写）。
+> 本文件只保留红线速查与验收门槛，不重复正文；两处口径如有冲突，以规范.md 为准。
+> 历史口径（2026-11-07 修正）：旧版本文件曾规定"必须 PrototypeLayout + description 整段 Markdown"，该写法已被 v3.0 取代，仅作旧原型兼容。
 
-所有原型页面的「设计说明」**必须**通过 `src/common/PrototypeLayout.tsx` 组件渲染，**禁止**在原型页面里手写内联 `<aside>` / `<div className="...-panel">` 之类的自绘说明区。
+## 硬性要求
 
-设计说明统一走 Xbox 风格（方方正正、扁平、白底绿边框、编号卡片、SVG 连线 + hover 高亮），由组件自动渲染；作者只需提供**结构化的 Markdown 内容**。
-
-## 组件接入方式
-
-在原型 `index.tsx` 中把页面内容包进 `PrototypeLayout`，并传入 `description`（推荐）或 `modules`：
-
-```tsx
-import { PrototypeLayout } from '../../common/PrototypeLayout';
-
-export default function Page() {
-  return (
-    <PrototypeLayout
-      title="页面标题"
-      breadcrumb="路径 / 页面"
-      description={DESIGN_NOTES}   // 结构化 Markdown，见下方规范
-    >
-      {/* 页面设计稿 */}
-    </PrototypeLayout>
-  );
-}
-```
-
-> 若用 `modules`（精准连线），左侧模块需显式 `data-proto-id`，且 `modules` 的 `id` 与之对应。默认情况下 `description` 会自动拆卡并给左侧子元素自动编号，无需额外标记。
-
-## description 结构化规范
-
-`description` 是一段 Markdown 字符串，解析规则如下：
-
-| 语法 | 作用 | 渲染 |
-| --- | --- | --- |
-| `# 标题` | 页面一句话说明（brief） | 说明面板顶部简介 |
-| `## 模块标题` | 分割一个模块卡片 | 一张编号卡片 |
-| `- 要点` | 模块下的列表项 | 卡片内绿色方块列表 |
-| `### 子标题` | 模块内分组标题 | 卡片内 `【子标题】` 前缀段落 |
-| 普通文本 | 模块的描述段落 | 卡片正文 |
-
-### 编写模板
-
-```markdown
-# 一句话说明页面用途
-
-## 模块标题
-一段描述该模块职责的文字。
-- 功能点 1
-- 字段说明
-- 交互要点
-
-## 下一模块标题
-...
-```
-
-### 编写要点
-
-- **每模块只做一件事**：标题即模块职责，正文描述边界。
-- **引用真实字段/接口**：涉及数据时写真实字段名、字典取值、错误码（如 `INDICATOR_CODE_DUPLICATE(3001)`），方便开发对照。
-- **写交互与状态**：hover、点击、Tab 切换、空态、边界条件都要写进列表。
-- **模块数量 3~6 个为宜**，过多说明页面拆得不合理，过少说明说明不充分。
-- **markdown 中转义符**：含 `\`` 等特殊字符时注意转义，避免破坏解析。
+1. 所有原型页面的「设计说明」**必须**通过 `src/common/DesignNotesPanel`（或经 `PrototypeLayout` 内嵌）渲染，**禁止**在原型页面里手写内联 `<aside>` / `<div className="...-panel">` 之类的自绘说明区。
+2. 新原型接入按规范.md Part B 三步执行：打标（左侧区域 `data-proto-id`，可选 `data-proto-label`）→ 卡片（传 `modules`，单卡双页签：页面说明 + 可选接口说明）→ 落盘（注入 `onSave` 适配器；不传则降级 localStorage 草稿）。
+3. 旧格式兼容：`PrototypeLayout` 仍可传 `description`（纯 Markdown 按 `## ` 自动拆卡），只用于维护旧页面，新页面禁止。
+4. 卡片内容守 Part C §8.1 内容来源红线：每条出自该页 PRD / SRS 或其蒸馏产物，逐项讲开发内容、边界与要求、交互细节、注意事项；**禁写会话过程与经验教训/踩坑叙事**。
+5. 成稿后用 `humanizer-zh` 技能去 AI 味，只调措辞、不增删事实。
 
 ## 验收（自检）
 
-写完设计说明后对照检查：
-- [ ] 用的是 `PrototypeLayout`，没有内联自绘说明区
-- [ ] `description` 用 `## ` 正确拆成了 2 张以上卡片（非整段糊一起）
-- [ ] 每张卡片有标题、有正文或列表、无空卡
-- [ ] 左侧设计稿的关键模块能通过连线/编号对应到右侧卡片
+- [ ] 用的是 DesignNotesPanel / PrototypeLayout，没有内联自绘说明区
+- [ ] 每卡对应左侧一个真实区块，打标元素与卡片连线一一对应、悬停联动正常
+- [ ] 卡片状态标记（设计中 / 已评审 / 待开发 / 开发中 / 已完成）与真实进度一致
+- [ ] 通过 `onSave` 落盘（或明确接受草稿降级），刷新后数据不丢
 - [ ] `npm run typecheck` 通过

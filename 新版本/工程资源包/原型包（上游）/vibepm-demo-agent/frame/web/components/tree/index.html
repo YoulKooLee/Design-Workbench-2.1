@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>树形控件 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="tree">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">tree</p>
+          <h1 class="wa-fam-title">树形控件</h1>
+          <p class="wa-fam-lead">层级数据选择与浏览，用于组织架构、目录与权限节点。</p>
+          <p class="wa-fam-lead">组件类型：default / checkable</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="tree-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">树形控件</span><span class="wa-comp-meta__slug">tree-default</span></div>
+              <a-tooltip :content="famCopyTip('tree-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tree-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tree-default')"
+                :aria-label="famCopyTip('tree-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tree-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-tree-panel">
+                <div class="wa-tree-panel__head">
+                  <span class="wa-tree-panel__title">组织架构</span>
+                  <span class="wa-tree-panel__count">{{ selectedKeys.length }} / {{ treeNodeCount }}</span>
+                </div>
+                <div class="wa-tree-panel__body">
+                  <a-tree
+                    class="wa-tree"
+                    block-node
+                    :data="treeData"
+                    v-model:selected-keys="selectedKeys"
+                    v-model:expanded-keys="expandedKeys"
+                  ></a-tree>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tree-checkable">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">复选树形控件</span><span class="wa-comp-meta__slug">tree-checkable</span></div>
+              <a-tooltip :content="famCopyTip('tree-checkable')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tree-checkable') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tree-checkable')"
+                :aria-label="famCopyTip('tree-checkable')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tree-checkable')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-tree-panel">
+                <div class="wa-tree-panel__head">
+                  <span class="wa-tree-panel__title">选择部门</span>
+                  <span class="wa-tree-panel__count">{{ checkedKeys.length }} / {{ treeNodeCount }}</span>
+                </div>
+                <div class="wa-tree-panel__body">
+                  <a-tree
+                    class="wa-tree"
+                    block-node
+                    checkable
+                    :data="treeData"
+                    v-model:checked-keys="checkedKeys"
+                    v-model:expanded-keys="checkExpandedKeys"
+                  ></a-tree>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'tree',
+      members: ['tree-default', 'tree-checkable'],
+      setup: function (api) {
+        var treeData = [
+          {
+            title: '总公司',
+            key: '0',
+            children: [
+              {
+                title: '华东大区',
+                key: '0-0',
+                children: [
+                  { title: '上海分部', key: '0-0-0' },
+                  { title: '杭州分部', key: '0-0-1' },
+                  { title: '南京分部', key: '0-0-2' },
+                ],
+              },
+              {
+                title: '华南大区',
+                key: '0-1',
+                children: [
+                  { title: '深圳分部', key: '0-1-0' },
+                  { title: '广州分部', key: '0-1-1' },
+                  { title: '厦门分部', key: '0-1-2', disabled: true },
+                ],
+              },
+              {
+                title: '华北大区',
+                key: '0-2',
+                children: [
+                  { title: '北京分部', key: '0-2-0' },
+                  { title: '天津分部', key: '0-2-1' },
+                ],
+              },
+            ],
+          },
+          {
+            title: '支撑中心',
+            key: '1',
+            children: [
+              { title: '人力资源', key: '1-0' },
+              { title: '财务中心', key: '1-1' },
+              { title: '信息技术', key: '1-2' },
+            ],
+          },
+        ]
+        function walk(nodes) {
+          return (nodes || []).reduce(function (sum, node) {
+            return sum + 1 + walk(node.children)
+          }, 0)
+        }
+        return {
+          treeData: treeData,
+          treeNodeCount: walk(treeData),
+          selectedKeys: api.ref(['0-0-0']),
+          expandedKeys: api.ref(['0', '0-0', '0-1', '0-2', '1']),
+          checkedKeys: api.ref(['0-0-0', '0-0-1', '1-0']),
+          checkExpandedKeys: api.ref(['0', '0-0', '0-1', '0-2', '1']),
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

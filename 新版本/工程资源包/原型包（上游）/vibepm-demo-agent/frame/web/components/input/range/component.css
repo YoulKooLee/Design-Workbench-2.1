@@ -1,0 +1,35 @@
+/* 数值范围：对照 Admin component-form-range + a-input-group */
+.wa-input-range.arco-input-group,
+.arco-input-group.wa-input-range {
+  display: flex !important;
+  align-items: center;
+  width: 100%;
+}
+
+.wa-input-range.arco-input-group > .arco-input-wrapper,
+.arco-input-group.wa-input-range > .arco-input-wrapper {
+  flex: 1;
+  min-width: 0;
+  margin-right: 0 !important;
+  border-radius: var(--wa-input-radius, 8px) !important;
+  border-right: 1px solid var(--color-border-2) !important;
+}
+
+.wa-input-range.arco-input-group > .arco-input-wrapper:hover,
+.arco-input-group.wa-input-range > .arco-input-wrapper:hover {
+  border-right-color: var(--color-border-3) !important;
+}
+
+.wa-input-range.arco-input-group > .arco-input-wrapper:focus-within,
+.arco-input-group.wa-input-range > .arco-input-wrapper:focus-within,
+.wa-input-range.arco-input-group > .arco-input-wrapper.arco-input-focus,
+.arco-input-group.wa-input-range > .arco-input-wrapper.arco-input-focus {
+  border-right-color: rgb(var(--primary-6)) !important;
+}
+
+.wa-input-range__sep {
+  flex-shrink: 0;
+  padding: 0 8px;
+  color: var(--color-text-3, #86909c);
+  line-height: var(--wa-input-h, 40px);
+}
