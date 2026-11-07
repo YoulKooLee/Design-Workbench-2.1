@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>未转译模板 · 原版预览索引（2026-10-23）</title>
+<style>
+  :root { --line:#e2e8f0; --muted:#64748b; --ink:#1e293b; --accent:#2563eb; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#f6f8fb; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px; }
+  h1 { font-size: 20px; margin: 0 0 6px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  h2 { font-size: 15px; margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; background:#fff; border:1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 13px; }
+  th { background: #f1f5f9; font-weight: 600; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  td.name { font-weight: 600; white-space: nowrap; }
+  td.reason { color: var(--muted); }
+  a.btn { display: inline-block; padding: 3px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--accent); text-decoration: none; font-size: 12.5px; background: #fff; }
+  a.btn:hover { border-color: var(--accent); }
+  .none { color: #b91c1c; font-size: 12.5px; }
+  .tag { display:inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+  .tag.cut { background:#fef2f2; color:#b91c1c; }
+  .tag.p4 { background:#fffbeb; color:#92400e; }
+  .note { background:#eff6ff; border:1px solid #bfdbfe; border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-bottom: 8px; }
+  .foot { color: var(--muted); font-size: 12px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>未转译模板 · 原版预览索引</h1>
+  <div class="sub">对应《qwen-页面模板批量转译任务书-2026-10-23》范围分档中「剔除 8 项」与「P4 存疑 4 项」。原版为英文蓝本，仅供决策预览。</div>
+
+  <div class="note">本页可直接双击打开（file 协议），各「原版预览」链接指向素材源内的静态 HTML。无链接项表示素材包内没有可直接打开的静态页（纯脚本 / 仅说明文档）。</div>
+
+  <h2>建议剔除 · 8 项</h2>
+  <table>
+    <tr><th>模板</th><th>不做理由（任务书）</th><th>原版预览</th></tr>
+    <tr><td class="name">open-design-landing <span class="tag cut">剔除</span></td><td class="reason">23.1 MB / 37 文件，绝大部分是 PNG 拼贴素材与 compose 脚本，无转译价值</td><td><a class="btn" href="页面模板/open-design-landing/example.html">原版预览</a></td></tr>
+    <tr><td class="name">last30days <span class="tag cut">剔除</span></td><td class="reason">889 KB / 75 个 py，社交舆情抓取脚本，非设计资产</td><td><span class="none">无静态页（纯 Python 脚本）</span></td></tr>
+    <tr><td class="name">live-artifact <span class="tag cut">剔除</span></td><td class="reason">583 KB，crypto/stock 仪表盘样例，偏离产品设计主线</td><td><a class="btn" href="页面模板/live-artifact/examples/baby-health-live.html">示例1</a> <a class="btn" href="页面模板/live-artifact/examples/competitor-radar-live.html">示例2</a> <a class="btn" href="页面模板/live-artifact/examples/crm-table-live.html">示例3</a></td></tr>
+    <tr><td class="name">aster-atelier <span class="tag cut">剔除</span></td><td class="reason">584 KB，含外部素材依赖</td><td><a class="btn" href="页面模板/aster-atelier/example.html">原版预览</a></td></tr>
+    <tr><td class="name">github-dashboard <span class="tag cut">剔除</span></td><td class="reason">GitHub 数据看板，依赖真实 API 形态，转成静态原型失真</td><td><a class="btn" href="页面模板/github-dashboard/example.html">原版预览</a></td></tr>
+    <tr><td class="name">dating-web <span class="tag cut">剔除</span></td><td class="reason">场景与工作台用户群体不符</td><td><a class="btn" href="页面模板/dating-web/example.html">原版预览</a></td></tr>
+    <tr><td class="name">webgl-experience <span class="tag cut">剔除</span></td><td class="reason">WebGL 沉浸体验，零依赖原则下无法转译</td><td><a class="btn" href="页面模板/webgl-experience/example.html">原版预览</a></td></tr>
+    <tr><td class="name">worker-visualizer <span class="tag cut">剔除</span></td><td class="reason">同上，动效演示向，非页面模板</td><td><a class="btn" href="页面模板/worker-visualizer/example.html">原版预览</a></td></tr>
+  </table>
+
+  <h2>P4 垂直专业 / 存疑 · 4 项（待拍板）</h2>
+  <table>
+    <tr><th>模板</th><th>存疑点</th><th>原版预览</th></tr>
+    <tr><td class="name">clinical-case-report <span class="tag p4">P4</span></td><td class="reason">医疗病例报告 —— 垂直专业领域，是否纳入工作台组件库取决于是否接医疗类项目</td><td><a class="btn" href="文档报告/clinical-case-report/example.html">原版预览</a> <a class="btn" href="文档报告/clinical-case-report/examples/example-stemi.html">示例2</a></td></tr>
+    <tr><td class="name">dcf-valuation <span class="tag p4">P4</span></td><td class="reason">金融 DCF 估值模型 —— 同上，且涉及财务专业口径</td><td><span class="none">无静态页（仅说明文档）</span></td></tr>
+    <tr><td class="name">x-research <span class="tag p4">P4</span></td><td class="reason">社媒 X 研究模板 —— 场景较窄</td><td><span class="none">无静态页（仅说明文档）</span></td></tr>
+    <tr><td class="name">tweaks <span class="tag p4">P4</span></td><td class="reason">参数调优面板 —— 偏工具/调试场景</td><td><a class="btn" href="页面模板/tweaks/example.html">原版预览</a></td></tr>
+  </table>
+
+  <div class="foot">生成：WorkBuddy · 2026-10-23 · 素材源：08-文档/更新材料2026.10.22/design-templates/。已入库可预览的 12 项见工作台「组件库 → 页面模板」。</div>
+</div>
+</body>
+</html>

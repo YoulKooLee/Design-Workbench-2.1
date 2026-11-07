@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>通信看板 · 房间任务助理原型（静态演示）</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563eb'/%3E%3Cpath d='M9 12h14M9 17h14M9 22h9' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#f0f4f8; --panel:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --line:#e2e8f0; --line-subtle:rgba(15,23,42,0.04);
+    --accent:#2563eb; --accent-hover:#1d4ed8; --accent-soft:#eff6ff; --accent-border:#bfdbfe;
+    --green:#16a34a; --green-soft:#f0fdf4; --green-border:#bbf7d0;
+    --amber:#d97706; --amber-soft:#fffbeb; --amber-border:#fde68a;
+    --red:#dc2626; --red-soft:#fef2f2; --red-border:#fecaca;
+    --slate:#64748b; --slate-soft:#f1f5f9;
+    --radius:16px; --radius-sm:10px; --radius-pill:9999px;
+    --shadow:0 1px 3px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.05);
+    --shadow-hover:0 4px 8px rgba(15,23,42,.08),0 12px 28px rgba(37,99,235,.10);
+    --focus:0 0 0 3px rgba(37,99,235,.12);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+  /* ===== 顶栏（对齐现有工作台） ===== */
+  header.topbar{display:flex;align-items:center;gap:14px;padding:14px 28px;background:rgba(255,255,255,0.86);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#18181b,#3f3f46);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
+  .title h1{font-size:16px;margin:0;font-weight:650}
+  .title p{margin:0;color:var(--muted);font-size:12px}
+  .topbar .spacer{flex:1}
+  .proto-tag{font-size:12px;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-border);border-radius:var(--radius-pill);padding:4px 12px;font-weight:600}
+  /* ===== 原型提示条 ===== */
+  .proto-banner{margin:14px 28px 0;padding:11px 16px;background:#eff6ff;border:1px solid var(--accent-border);border-radius:var(--radius-sm);font-size:12.5px;color:#1e40af;display:flex;gap:10px;align-items:center}
+  .proto-banner svg{flex:0 0 16px;width:16px;height:16px}
+  /* ===== 页签 ===== */
+  nav.tabs{display:flex;gap:4px;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap;margin-top:12px}
+  nav.tabs .tab{padding:11px 16px;cursor:pointer;color:var(--muted);font-weight:550;border-bottom:2px solid transparent;font-size:14px;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+  nav.tabs .tab:hover{color:var(--ink)}
+  nav.tabs .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  main{padding:20px 28px 48px;max-width:1280px;margin:0 auto}
+  /* ===== 按钮 ===== */
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 16px;border-radius:var(--radius-pill);cursor:pointer;font-size:13px;transition:.15s;white-space:nowrap;font-weight:500;font-family:inherit}
+  .btn:hover{border-color:#d4d4d8;background:var(--accent-soft)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.primary:hover{background:var(--accent-hover)}
+  .btn.sm{padding:5px 12px;font-size:12px}
+  .btn:disabled{opacity:.55;cursor:not-allowed;background:#f4f4f5;border-color:var(--line);color:var(--muted)}
+  .btn:focus-visible{outline:none;box-shadow:var(--focus)}
+  /* ===== KPI ===== */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:18px 0}
+  @media(max-width:1040px){ .kpi-row{grid-template-columns:repeat(2,1fr)} }
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .kpi-head{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:8px}
+  .kpi-head .ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify:center}
+  .ico-blue{background:var(--accent-soft);color:var(--accent)}
+  .ico-green{background:var(--green-soft);color:var(--green)}
+  .ico-amber{background:var(--amber-soft);color:var(--amber)}
+  .kpi-value{font-size:22px;font-weight:700;min-height:32px;display:flex;align-items:baseline;gap:6px}
+  .kpi-value small{font-size:13px;font-weight:500;color:var(--muted)}
+  .kpi-sub{font-size:12px;color:var(--muted);margin-top:3px}
+  /* ===== 智能体 chip 带 ===== */
+  .agent-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .agent-chip{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:12px;box-shadow:var(--shadow)}
+  .agent-chip .av{width:26px;height:26px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+  .agent-chip .io{color:var(--muted)} .agent-chip .io b{color:var(--ink)}
+  .agent-chip.off{opacity:.55}
+  .on-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:4px}
+  .off-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#cbd5e1;margin-right:4px}
+  /* ===== 卡片 / 表格 ===== */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+  .table-scroll{overflow-x:auto}
+  .table-scroll table{min-width:640px}
+  .design-note .table-scroll table{min-width:520px;table-layout:fixed}
+  .modal-x{display:flex;align-items:center;justify-content:center}
+  .card-head{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);font-size:14px;font-weight:650}
+  .card-head .muted{font-weight:400;font-size:12px}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}
+  th{font-size:12px;color:var(--muted);font-weight:600;background:#fafbfd;white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#fbfcfe}
+  .muted{color:var(--muted)}
+  .desc{color:var(--ink);font-size:12.5px;line-height:1.5}
+  /* 状态徽标（一期新增演示） */
+  .st-badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:9999px;white-space:nowrap}
+  .st-badge .dot{width:6px;height:6px;border-radius:50%}
+  .st-not_started{background:var(--slate-soft);color:var(--slate)} .st-not_started .dot{background:#94a3b8}
+  .st-in_progress{background:var(--accent-soft);color:var(--accent)} .st-in_progress .dot{background:var(--accent)}
+  .st-blocked{background:var(--amber-soft);color:var(--amber)} .st-blocked .dot{background:var(--amber)}
+  .st-waiting_user{background:var(--red-soft);color:var(--red)} .st-waiting_user .dot{background:var(--red)}
+  .st-done{background:var(--green-soft);color:var(--green)} .st-done .dot{background:var(--green)}
+  .st-archived{background:#eef1f5;color:var(--slate)} .st-archived .dot{background:#cbd5e1}
+  .note-time{font-size:11.5px;color:var(--muted)}
+  .note-none{font-size:11.5px;color:#94a3b8}
+  .todo-tag{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:9999px;white-space:nowrap}
+  .todo-tag.ask{background:var(--red-soft);color:var(--red)}
+  .todo-tag.stale{background:var(--amber-soft);color:var(--amber)}
+  /* ===== 弹窗 ===== */
+  .modal-mask{position:fixed;inset:0;background:rgba(24,24,27,.45);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(2px);padding:18px}
+  .modal-mask.show{display:flex}
+  .modal{background:#fff;border-radius:18px;width:820px;max-width:98vw;max-height:92vh;box-shadow:0 24px 70px rgba(0,0,0,.28);display:flex;flex-direction:column;overflow:hidden}
+  .modal-head{display:flex;align-items:center;gap:12px;padding:18px 24px 12px;flex-shrink:0;flex-wrap:wrap}
+  .modal-head h3{font-size:16px;font-weight:700;margin:0;max-width:520px;word-break:break-all}
+  .modal-x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:none;background:#f1f5f9;color:var(--muted);cursor:pointer;font-size:14px;flex-shrink:0}
+  .modal-x:hover{background:var(--red-soft);color:var(--red)}
+  .modal-body{flex:1;min-height:0;overflow-y:auto;padding:4px 24px 16px}
+  .modal-ops{flex-shrink:0;padding:12px 24px 18px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--line)}
+  /* ===== 助理小结卡片（一期主新增物） ===== */
+  .asst-card{background:#f8fbff;border:1px solid var(--accent-border);border-radius:14px;padding:16px 18px;margin-bottom:18px}
+  .asst-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+  .asst-head .ttl{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .asst-head .ttl svg{width:17px;height:17px;color:var(--accent)}
+  .asst-head .spacer{flex:1}
+  .asst-src{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:9999px;background:#fff;border:1px solid var(--line);color:var(--muted)}
+  .asst-src.ai{color:var(--accent);border-color:var(--accent-border);background:var(--accent-soft)}
+  .asst-src.local{color:var(--amber);border-color:var(--amber-border);background:var(--amber-soft)}
+  .asst-meta{font-size:11.5px;color:var(--muted);margin:4px 0 12px;display:flex;gap:14px;flex-wrap:wrap}
+  .asst-meta .who{display:inline-flex;align-items:center;gap:5px}
+  .asst-people{display:flex;gap:6px;flex-wrap:wrap}
+  .asst-people .mini-av{width:20px;height:20px;border-radius:6px;color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+  .asst-sec{margin-bottom:12px}
+  .asst-sec:last-child{margin-bottom:2px}
+  .asst-sec h4{font-size:13px;font-weight:650;margin:0 0 6px;color:var(--ink)}
+  .asst-sec ul{margin:0;padding-left:18px}
+  .asst-sec li{font-size:13px;line-height:1.6;margin-bottom:3px}
+  .asst-sec .empty-line{font-size:12.5px;color:var(--muted)}
+  .next-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+  .next-item .txt{flex:1;min-width:0;font-size:13px;line-height:1.55}
+  .next-item .pickers{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;justify-content:flex-end}
+  .pick-chip{font-size:11.5px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:9999px;padding:3px 10px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .pick-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .pick-chip:disabled{opacity:.45;cursor:default}
+  .pick-chip.off{opacity:.55}
+  .delegate-bar{display:none;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px dashed var(--accent-border);border-radius:10px;padding:9px 12px;margin-top:4px}
+  .delegate-bar.show{display:flex}
+  .delegate-bar .d-text{font-size:12.5px;color:var(--ink);flex:1;min-width:160px}
+  .draft-note{display:none;font-size:12px;color:#92400e;background:var(--amber-soft);border:1px solid var(--amber-border);border-radius:10px;padding:9px 12px;margin-top:10px;line-height:1.55}
+  .draft-note.show{display:block}
+  /* 空态 */
+  .asst-empty{border:1.5px dashed var(--accent-border);border-radius:12px;background:#fff;padding:22px 18px;text-align:center}
+  .asst-empty .e-t{font-size:13.5px;font-weight:600;margin-bottom:6px}
+  .asst-empty .e-d{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  /* 时间线 */
+  .timeline-hint{font-size:12px;color:var(--muted);margin:4px 0 10px}
+  .room-msg{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f4f4f5}
+  .room-msg:last-child{border-bottom:none}
+  .room-msg .rm-avatar{flex:0 0 32px;height:32px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--accent)}
+  .room-msg .rm-body{flex:1;min-width:0}
+  .room-msg .rm-head{display:flex;gap:8px;align-items:baseline;margin-bottom:4px;flex-wrap:wrap}
+  .room-msg .rm-from{font-size:13px;font-weight:600}
+  .room-msg .rm-intent{font-size:11px;color:#a1a1aa;border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+  .room-msg .rm-ts{font-size:11px;color:#a1a1aa}
+  .room-msg .rm-content{font-size:13px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+  .rm-private{background:#fffbeb;border-radius:6px;padding:8px 10px}
+  /* 回复框（保留现有仲裁回复位） */
+  .room-reply{border-top:1px solid var(--line);padding:12px 0 4px;display:flex;flex-direction:column;gap:8px}
+  .room-reply textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;resize:vertical;min-height:52px}
+  .room-reply textarea:focus{outline:none;border-color:var(--accent);box-shadow:var(--focus)}
+  .room-reply-ops{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .select-sm{padding:5px 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;outline:none;background:#fff;font-family:inherit;cursor:pointer}
+  .select-sm:focus{border-color:var(--accent);box-shadow:var(--focus)}
+  /* ===== 设计说明折叠面板（技术细节收这里，不进主界面） ===== */
+  .design-note details{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .design-note summary{cursor:pointer;padding:14px 18px;font-size:14px;font-weight:650;list-style:none;display:flex;align-items:center;gap:10px}
+  .design-note summary::-webkit-details-marker{display:none}
+  .design-note summary .arrow{transition:transform .15s;color:var(--muted);font-size:12px}
+  .design-note details[open] summary .arrow{transform:rotate(90deg)}
+  .design-note .dn-body{padding:4px 18px 18px;border-top:1px solid var(--line);font-size:12.5px;color:#334155}
+  .design-note h5{font-size:13px;margin:14px 0 8px;color:var(--ink)}
+  .design-note table{margin:8px 0}
+  .design-note th,.design-note td{font-size:12px;padding:8px 12px}
+  .design-note ul{margin:6px 0;padding-left:20px}
+  .design-note li{margin-bottom:4px}
+  .design-note .q-list li{margin-bottom:8px}
+  .design-note .q-list input:disabled{cursor:default;accent-color:var(--green)}
+  .design-note code{background:#f1f5f9;border-radius:5px;padding:1px 5px;font-size:11.5px;font-family:ui-monospace,Menlo,monospace;word-break:break-all}
+  /* toast */
+  .toast-wrap{position:fixed;top:18px;right:18px;z-index:100;display:flex;flex-direction:column;gap:8px}
+  .toast{background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;box-shadow:var(--shadow);animation:slidein .2s ease;max-width:380px}
+  .toast.ok{background:#18181b}.toast.info{background:#27272a}
+  @keyframes slidein{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  @media(max-width:768px){
+    main{padding:16px 14px 40px}
+    th,td{padding:9px 10px}
+    .modal{width:100%}
+    .modal-head,.modal-body,.modal-ops{padding-left:14px;padding-right:14px}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">豆</div>
+  <div class="title">
+    <h1>产品设计工作台</h1>
+    <p>通信看板 · 房间任务助理（一期方案静态原型）</p>
+  </div>
+  <div class="spacer"></div>
+  <span class="proto-tag">静态演示 · 示例数据 · 不读写真实文件</span>
+</header>
+
+<div class="proto-banner">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+  <span>本页用于先看视觉与交互：按钮均已接演示反馈（提示「静态演示」），不连接后端、不发送消息、不写本地文件。看完请直接指出哪里与预期不符，再据此调整方案与正式开发。</span>
+</div>
+
+<nav class="tabs">
+  <button class="tab" data-demo="项目管理">项目管理</button>
+  <button class="tab" data-demo="工作日报">工作日报</button>
+  <button class="tab" data-demo="技能库">技能库</button>
+  <button class="tab active">通信看板</button>
+  <button class="tab" data-demo="待办事项">待办事项</button>
+</nav>
+
+<main>
+  <!-- KPI 四卡（沿用现有看板统计位，数值为示例） -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>协作房间</div>
+      <div class="kpi-value">6 <small>个示例</small></div>
+      <div class="kpi-sub">其中 4 个房间有产物文件</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-green"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span>智能体</div>
+      <div class="kpi-value">4 <small>个在线</small></div>
+      <div class="kpi-sub">豆包 / CodeBuddy / WorkBuddy / 千问 · DeepSeek 离线</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>收件消息</div>
+      <div class="kpi-value">18 <small>条示例</small></div>
+      <div class="kpi-sub">其中 3 条未读</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-head"><span class="ico ico-amber"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></span>待你确认</div>
+      <div class="kpi-value">1 <small>件</small></div>
+      <div class="kpi-sub">另有 1 个房间较早提出、近期无进展</div>
+    </div>
+  </div>
+
+  <div class="agent-strip" id="agentStrip"></div>
+
+  <!-- 待你仲裁（沿用现有区块） -->
+  <div class="card">
+    <div class="card-head">待你确认 <span class="muted">1 件 · 智能体之间僵持或点名请你拍板时出现在这里</span></div>
+    <div class="table-scroll">
+    <table>
+      <colgroup><col style="width:13%"><col style="width:23%"><col style="width:30%"><col style="width:14%"><col style="width:10%"><col style="width:10%"/></colgroup>
+      <thead><tr><th>类型</th><th>房间</th><th>需要你决定什么</th><th>参与</th><th>最近活动</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr style="cursor:pointer" data-open-room="DeepSeek_收件箱自动处理接入">
+          <td><span class="todo-tag ask">点名要你确认</span></td>
+          <td><b>DeepSeek_收件箱自动处理接入</b></td>
+          <td class="desc">收件箱消息是「自动落本地待办」还是「先出建议由你勾选」，两种口径请你定一个。</td>
+          <td class="muted">DeepSeek / WorkBuddy</td>
+          <td class="muted">10-29 09:40</td>
+          <td><button class="btn sm" data-open-room="DeepSeek_收件箱自动处理接入">查看并确认</button></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- 房间列表：新增状态徽标 + 最近小结时间两列演示 -->
+  <div class="card">
+    <div class="card-head">协作房间 <span class="muted">状态徽标与「最近小结」列为一期新增演示；其余列沿用现有房间表</span></div>
+    <div class="table-scroll">
+    <table>
+      <colgroup><col style="width:26%"><col style="width:8%"><col style="width:30%"><col style="width:14%"><col style="width:8%"><col style="width:14%"/></colgroup>
+      <thead><tr><th>房间（状态）</th><th>消息数</th><th>任务说明</th><th>最近小结</th><th>产物</th><th>操作</th></tr></thead>
+      <tbody id="roomTbody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- 设计说明（技术细节折叠区，不进日常界面） -->
+  <div class="design-note">
+    <details>
+      <summary><span class="arrow">▶</span>设计说明与技术备注（开发时参考，正式界面不显示这部分文字）</summary>
+      <div class="dn-body" id="designNoteBody"></div>
+    </details>
+  </div>
+</main>
+
+<!-- 房间弹窗 -->
+<div class="modal-mask" id="modalMask">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="roomTitle">房间对话</h3>
+      <span id="roomStateWrap" style="display:flex;align-items:center;gap:8px"></span>
+      <button class="modal-x" id="modalClose" title="关闭"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-ops">
+      <button class="btn" id="modalCloseBtn">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ===== MOCK-DATA（全部为示例数据，正式版由后端按真实房间生成） ===== */
+const AGENTS = [
+  {id:'doubao', label:'豆包', grad:'linear-gradient(135deg,#2563eb,#60a5fa)', online:true,  inbox:6, outbox:4, unread:1},
+  {id:'codebuddy', label:'CodeBuddy', grad:'linear-gradient(135deg,#0d9488,#2dd4bf)', online:true,  inbox:5, outbox:7, unread:1},
+  {id:'workbuddy', label:'WorkBuddy', grad:'linear-gradient(135deg,#d97706,#fbbf24)', online:true,  inbox:4, outbox:3, unread:1},
+  {id:'deepseek', label:'DeepSeek', grad:'linear-gradient(135deg,#0284c7,#38bdf8)', online:false, inbox:3, outbox:2, unread:0},
+  {id:'qwen', label:'千问', grad:'linear-gradient(135deg,#7c3aed,#a78bfa)', online:true,  inbox:0, outbox:1, unread:0}
+];
+const AGENT_MAP = Object.fromEntries(AGENTS.map(a=>[a.id,a]));
+
+const STATUS = {
+  not_started:  {text:'待开始',   cls:'st-not_started'},
+  in_progress:   {text:'进行中',   cls:'st-in_progress'},
+  blocked:       {text:'卡住了',   cls:'st-blocked'},
+  waiting_user: {text:'待你确认', cls:'st-waiting_user'},
+  done:          {text:'已完成',   cls:'st-done'},
+  archived:      {text:'已归档',   cls:'st-archived'}
+};
+
+// timeline 便捷构造：[from, intent, ts, content, private?]
+function tl(rows){ return rows.map(r=>({from:r[0], intent:r[1], ts:r[2], content:r[3], priv:!!r[4]})); }
+
+const ROOMS = [
+  {
+    key:'doubao_v32', name:'豆包_工作台v3.2日报工时改造', status:'in_progress', msgs:46,
+    task:'日报每条目增加工时字段（小时、保留1位小数）；月报按上月16日至本月15日账期统计各项目总工时与占比；右侧加班日仍按自然月统计。',
+    artifact:true, hasNote:true, noteTime:'10-30 10:24', src:'ai', participants:['doubao','codebuddy'],
+    summary:{
+      mode:'ai', time:'10-30 10:24', cover:46,
+      progress:[
+        '日报编辑器双端已加工时输入框，后端按 0.1 小时取整保存，非数字与负数按 0 处理。',
+        '月报条形图已改为「工时（小时）+ 占比」双标注，账期为上月16日至本月15日。',
+        '右侧加班日统计维持自然月口径，未受账期调整影响；0 工时旧项目不再出现在占比行。'
+      ],
+      blocks:[
+        '历史日报条目没有工时值，月报中按 0 处理，是否补录尚未定。',
+        '周报、季报、年报目前仍按条目文字汇总，暂未加工时口径。'
+      ],
+      next:[
+        {text:'确认旧日报条目是否补录工时；若不补录，月报只统计新口径之后的数据。', by:null},
+        {text:'周报是否也要按工时汇总，建议放到下一期再评估，本期先不动。', by:'qwen'}
+      ],
+      decide:['月报图表标题旁是否直接显示账期文字「上月16日~本月15日」，请确认展示方式。']
+    },
+    timeline: tl([
+      ['doubao','info','10-30 10:24','月报占比口径已切到 16~15 账期，加班日区块保持自然月，双端都已同步。'],
+      ['codebuddy','review','10-30 09:58','复核了后端工时规范化：非有限值归 0、四舍五入保留 1 位，逻辑无误。'],
+      ['doubao','handoff','10-29 17:40','周报/季报是否加工时先挂起，等本期验收后再排期。'],
+      ['workbuddy','ask','10-29 15:12','旧条目没工时的行直接隐藏可以吗？还是保留 0% 行供追溯？'],
+      ['codebuddy','info','10-29 11:06','日报编辑器桌面端与网页端的工时输入框样式已对齐。']
+    ])
+  },
+  {
+    key:'codebuddy_launch', name:'CodeBuddy_启动链路产品化', status:'blocked', msgs:12,
+    task:'把 codebuddy CLI 的启动、心跳、失败重试整理成可一键拉起的稳定链路，供其他智能体复用。',
+    artifact:false, hasNote:true, noteTime:'10-28 17:02', src:'local', participants:['codebuddy','doubao'],
+    summary:{
+      mode:'local', time:'10-28 17:02', cover:12,
+      progress:[
+        '已梳理启动命令、心跳文件位置与 5 分钟在线判定规则。',
+        '失败重试的触发条件列了初稿，但还没写成可执行脚本。'
+      ],
+      blocks:[
+        'CLI 在打包后的运行目录与开发目录不一致，路径解析还没跑通。',
+        '当前无可用模型时的降级策略未验证（这份小结是按本地规则整理的草稿）。'
+      ],
+      next:[
+        {text:'先在打包目录下复现一次启动失败，确认路径问题再写重试脚本。', by:'codebuddy'}
+      ],
+      decide:[]
+    },
+    timeline: tl([
+      ['codebuddy','info','10-28 17:02','启动链路现状已整理成清单，卡点在打包路径。'],
+      ['doubao','review','10-28 16:30','心跳 5 分钟过期规则与现有看板一致，可沿用。'],
+      ['codebuddy','ask','10-28 15:10','打包后 CLI 相对路径找不到，需要确认运行时基准目录。']
+    ])
+  },
+  {
+    key:'deepseek_inbox', name:'DeepSeek_收件箱自动处理接入', status:'waiting_user', msgs:23,
+    task:'智能体每次会话开始先读收件箱，按任务类型分派处理；待确认是自动落待办还是先出建议。',
+    artifact:true, hasNote:true, noteTime:'10-29 09:40', src:'ai', participants:['deepseek','workbuddy','doubao'],
+    summary:{
+      mode:'ai', time:'10-29 09:40', cover:23,
+      progress:[
+        '收件箱按智能体分目录读取的通路已跑通，私信信封字段能正常解析。',
+        '已演示两种处理方式：自动落本地待办、先出建议由人工勾选。'
+      ],
+      blocks:[
+        '两种口径尚未拍板，接入代码停在方案对比阶段。'
+      ],
+      next:[
+        {text:'先按「先出建议、人工勾选」落地，风险更低；确认后再补自动落待办。', by:'workbuddy'}
+      ],
+      decide:['收件箱消息默认采用哪种处理口径：自动落待办，还是先出建议由你勾选？']
+    },
+    timeline: tl([
+      ['deepseek','ask','10-29 09:40','两种口径对比已列完，等你确认默认方式。'],
+      ['workbuddy','review','10-29 09:12','建议先出建议再勾选，避免误把咨询类消息建成待办。'],
+      ['deepseek','info','10-28 18:20','收件箱解析通路验证通过，信封 schema 兼容新旧版本。'],
+      ['doubao','handoff','10-28 16:05','接入前先等口径结论，不要先写自动落库逻辑。']
+    ])
+  },
+  {
+    key:'qwen_review', name:'千问_原型设计上下文治理方案评审', status:'done', msgs:38,
+    task:'评审原型页面说明卡片与术语规范：用户可见文案用大白话，技术细节收进说明卡片。',
+    artifact:true, hasNote:true, noteTime:'10-27 16:10', src:'ai', participants:['qwen','doubao'],
+    summary:{
+      mode:'ai', time:'10-27 16:10', cover:38,
+      progress:[
+        '评审结论已归档：界面文案禁用技术术语，技术备注统一放折叠说明区。',
+        '评审中提出的 6 条修改建议已逐条标注采纳/暂缓。'
+      ],
+      blocks:[],
+      next:[
+        {text:'按评审结论回头检查通信看板现有文案，清理术语外露。', by:'qwen'}
+      ],
+      decide:[]
+    },
+    timeline: tl([
+      ['qwen','review','10-27 16:10','评审结论已归档，6 条建议处置完毕。'],
+      ['doubao','confirm','10-27 15:40','同意技术细节收进折叠说明区的做法。'],
+      ['qwen','info','10-27 14:22','逐条对照原型稿完成术语排查。']
+    ])
+  },
+  {
+    key:'workbuddy_walk', name:'WorkBuddy_通信面板交互细节走查', status:'not_started', msgs:2,
+    task:'逐页走查通信看板的按钮、弹窗与空态提示，记录体验问题清单。',
+    artifact:false, hasNote:false, noteTime:null, src:null, participants:['workbuddy','doubao'],
+    summary:null,
+    timeline: tl([
+      ['workbuddy','info','10-26 10:02','走查任务已建，尚未开始逐条记录。'],
+      ['doubao','info','10-26 10:00','房间已创建，等待走查结论。']
+    ])
+  },
+  {
+    key:'archived_todo', name:'历史议题_待办同步口径对齐', status:'archived', msgs:57,
+    task:'钉钉待办状态回写与本地隐藏名单口径确认（已结案归档）。',
+    artifact:true, hasNote:true, noteTime:'09-18 11:32', src:'ai', participants:['doubao','codebuddy','workbuddy'],
+    summary:{
+      mode:'ai', time:'09-18 11:32', cover:57,
+      progress:['已确认：完成/重新打开回写钉钉，进行中仅本地，删除为本地隐藏可逆。'],
+      blocks:[],
+      next:[],
+      decide:[]
+    },
+    timeline: tl([
+      ['doubao','confirm','09-18 11:32','口径确认完毕，房间归档。'],
+      ['workbuddy','review','09-18 10:15','本地隐藏方案不影响钉钉原始数据，可接受。']
+    ])
+  }
+];
+/* ===== JS-BLOCK（演示逻辑：全部本地状态，不发请求） ===== */
+const $ = s => document.querySelector(s);
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg, kind){
+  const wrap = $('#toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (kind||'info');
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .25s'; setTimeout(()=>el.remove(),260); },2400);
+}
+
+/* ---------- 智能体 chip 带 ---------- */
+function renderAgents(){
+  $('#agentStrip').innerHTML = AGENTS.map(a=>`
+    <div class="agent-chip ${a.online?'':'off'}" title="${esc(a.label)} · ${a.online?'在线':'离线'}">
+      <span class="av" style="background:${a.grad}">${esc(a.label.charAt(0))}</span>
+      <b>${esc(a.label)}</b>
+      <span class="io">${a.online?'<span class="on-dot"></span>':'<span class="off-dot"></span>'}收 <b>${a.inbox}</b>${a.unread?`（<b style="color:#dc2626">${a.unread} 未读</b>）`:''} · 发 <b>${a.outbox}</b></span>
+    </div>`).join('');
+}
+
+/* ---------- 房间表 ---------- */
+function statusBadge(status){
+  const s = STATUS[status];
+  return `<span class="st-badge ${s.cls}"><span class="dot"></span>${s.text}</span>`;
+}
+function renderTable(){
+  $('#roomTbody').innerHTML = ROOMS.map(r=>`
+    <tr>
+      <td><b>${esc(r.name)}</b><div style="margin-top:5px">${statusBadge(r.status)}</div></td>
+      <td>${r.msgs}</td>
+      <td class="desc">${esc(r.task.slice(0,96))}</td>
+      <td>${r.hasNote ? `<span class="note-time">${esc(r.noteTime)}</span>` : '<span class="note-none">尚未生成</span>'}</td>
+      <td>${r.artifact
+        ? '<span style="font-size:11px;font-weight:600;color:var(--green);background:var(--green-soft);padding:2px 9px;border-radius:9999px;white-space:nowrap">有产物</span>'
+        : '<span class="muted">—</span>'}</td>
+      <td><button class="btn sm" data-open="${r.key}">查看对话</button></td>
+    </tr>`).join('');
+  document.querySelectorAll('[data-open]').forEach(b=>{
+    b.onclick = ()=> openRoom(b.dataset.open);
+  });
+}
+
+/* ---------- 弹窗：助理卡片 ---------- */
+const FALLBACK_DRAFT = {
+  mode:'local', time:'刚刚', cover:2,
+  progress:['房间消息较少，先按本地规则整理出一版初稿，便于先看到结构。'],
+  blocks:['对话记录不足，个别要点可能需要补充沟通后再确认。'],
+  next:[{text:'继续补充讨论记录后，可随时重新整理小结。', by:'workbuddy'}],
+  decide:[]
+};
+// 可指派对象为全部在册执行智能体（主持人豆包不在候选内）；离线者弱化标注，仍可提交、上线后处理
+function delegateChips(selBy){
+  return AGENTS.filter(a=>a.id!=='doubao').map(a=>{
+    const off = a.online ? '' : ' off';
+    const tag = a.online ? '' : '（离线，上线后处理）';
+    return `<button class="pick-chip ${off} ${selBy===a.id?'on':''}" data-to="${a.id}" title="${a.online?'在线':'当前离线，提交后等其上线处理'}">交给 ${esc(a.label)}${tag}</button>`;
+  }).join('') + `<button class="pick-chip ${!selBy?'on':''}" data-to="none">暂不安排</button>`;
+}
+function renderAssistant(room){
+  if(!room.summary){
+    return `<div class="asst-card">
+      <div class="asst-empty">
+        <div class="e-t">还没有房间进展小结</div>
+        <div class="e-d">整理最近的讨论记录，输出：当前进展、卡点、下一步建议、需要你拍板的事。先点一次看看效果。</div>
+        <button class="btn primary" id="genBtn">生成进展小结</button>
+      </div>
+    </div>`;
+  }
+  const s = room.summary;
+  const srcCls = s.mode==='ai' ? 'asst-src ai' : 'asst-src local';
+  const srcText = s.mode==='ai' ? 'AI 整理成稿' : '本地规则草稿';
+  const people = room.participants.map(p=>{
+    const a = AGENT_MAP[p];
+    return `<span class="mini-av" style="background:${a.grad}" title="${esc(a.label)}">${esc(a.label.charAt(0))}</span>`;
+  }).join('');
+  const progress = s.progress.length ? `<ul>${s.progress.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '<div class="empty-line">暂无进展项。</div>';
+  const blocks  = s.blocks.length ? `<ul>${s.blocks.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '<div class="empty-line">没有阻塞或待确认的事项。</div>';
+  const nextItems = s.next.length ? s.next.map((n,i)=>`
+    <div class="next-item">
+      <div class="txt">${esc(n.text)}</div>
+      <div class="pickers" data-ni="${i}">${delegateChips(n.by)}</div>
+    </div>`).join('') : '<div class="empty-line">暂无明确的下一步安排。</div>';
+  const decide = s.decide.length ? `<ul>${s.decide.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '<div class="empty-line">暂无需要你拍板的事项。</div>';
+  return `<div class="asst-card">
+    <div class="asst-head">
+      <span class="ttl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>房间进展小结</span>
+      <span class="${srcCls}" id="srcBadge">${srcText}</span>
+      <span class="spacer"></span>
+      <span style="display:flex;gap:6px;align-items:center">
+        <button class="pick-chip" data-modeswitch="ai">AI 成稿样式</button>
+        <button class="pick-chip" data-modeswitch="local">本地草稿样式</button>
+      </span>
+      <button class="btn sm primary" id="regenBtn">重新整理</button>
+    </div>
+    <div class="asst-meta">
+      <span>整理时间：${esc(s.time)}</span>
+      <span>覆盖对话：${s.cover} 条（示例）</span>
+      <span>参与方：<span class="asst-people" style="vertical-align:middle">${people}</span></span>
+    </div>
+    <div class="asst-sec"><h4>一、当前进展</h4>${progress}</div>
+    <div class="asst-sec"><h4>二、卡点与待确认</h4>${blocks}</div>
+    <div class="asst-sec"><h4>三、下一步建议（可选指派）</h4>${nextItems}
+      <div class="delegate-bar" id="delegateBar">
+        <span class="d-text" id="delegateText"></span>
+        <button class="btn sm primary" id="delegateOk">确认指派（演示）</button>
+        <button class="btn sm" id="delegateCancel">取消选择</button>
+      </div>
+    </div>
+    <div class="asst-sec"><h4>四、需要你拍板</h4>${decide}</div>
+    <div class="draft-note" id="draftNote">当前为本地规则草稿：未调用模型，仅按最近对话要点归纳；模型不可用时自动使用此形态，并在界面上明确标注来源。</div>
+  </div>`;
+}
+function renderTimeline(room){
+  const rows = room.timeline.map(m=>{
+    const a = AGENT_MAP[m.from];
+    const avGrad = a ? a.grad : 'linear-gradient(135deg,#94a3b8,#cbd5e1)';
+    const label = a ? a.label : m.from;
+    return `<div class="room-msg">
+      <div class="rm-avatar" style="background:${avGrad};color:#fff">${esc(label.charAt(0))}</div>
+      <div class="rm-body">
+        <div class="rm-head"><span class="rm-from">${esc(label)}</span><span class="rm-intent">${esc(m.intent)}</span>${m.priv?'<span class="rm-intent" style="background:#fef3c7;border-color:#fde68a;color:#92400e">私信</span>':''}<span class="rm-ts">${esc(m.ts)}</span></div>
+        <div class="rm-content ${m.priv?'rm-private':''}">${esc(m.content)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="timeline-hint">对话记录 · 共 ${room.timeline.length} 条（示例）</div>${rows}`;
+}
+function renderReply(){
+  return `<div class="room-reply">
+    <textarea id="replyText" rows="2" placeholder="补充说明或确认给参与智能体（演示用，不会真实发送）…"></textarea>
+    <div class="room-reply-ops">
+      <span class="muted" style="font-size:11px">正式版发送后会追加到房间记录，并通知参与智能体。</span>
+      <button class="btn primary sm" id="replySend">发送确认</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- 弹窗事件 ---------- */
+let currentRoom = null;
+function openRoom(key){
+  const room = ROOMS.find(r=>r.key===key);
+  currentRoom = room;
+  $('#roomTitle').textContent = room.name;
+  $('#roomStateWrap').innerHTML = `状态：<select class="select-sm" id="stateSel">` +
+    Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${k===room.status?'selected':''}>${v.text}</option>`).join('') + `</select>`;
+  $('#stateSel').onchange = e=>{
+    room.status = e.target.value;
+    renderTable();
+    toast('状态已更新为「' + STATUS[room.status].text + '」（演示联动表格徽标）','ok');
+  };
+  $('#modalBody').innerHTML = renderAssistant(room) + renderTimeline(room) + renderReply();
+  bindAssistantEvents(room);
+  $('#replySend').onclick = ()=>{
+    if(!$('#replyText').value.trim()){ toast('请先填写回复内容','err'); return; }
+    toast('静态演示：正式版才会把确认消息写入房间并通知参与智能体。','info');
+    $('#replyText').value='';
+  };
+  $('#modalMask').classList.add('show');
+}
+function bindAssistantEvents(room){
+  const genBtn = $('#genBtn');
+  if(genBtn){
+    genBtn.onclick = ()=>{
+      genBtn.disabled = true; genBtn.textContent='整理中…';
+      setTimeout(()=>{
+        room.summary = JSON.parse(JSON.stringify(FALLBACK_DRAFT));
+        room.hasNote = true; room.noteTime = '刚刚'; room.src='local';
+        $('#modalBody').innerHTML = renderAssistant(room) + renderTimeline(room) + renderReply();
+        bindAssistantEvents(room);
+        renderTable();
+        toast('已生成第一版进展小结（本地草稿示例）','ok');
+      },1100);
+    };
+    return;
+  }
+  const regen = $('#regenBtn');
+  regen.onclick = ()=>{
+    regen.disabled = true; regen.textContent='整理中…';
+    setTimeout(()=>{
+      regen.disabled=false; regen.textContent='重新整理';
+      if(room.summary) room.summary.time='刚刚';
+      renderTable();
+      toast('已按当前对话重新整理（演示数据）','ok');
+      /* 刷新 meta 时间显示 */
+      const meta = document.querySelector('.asst-meta span');
+      if(meta) meta.textContent='整理时间：刚刚';
+    },1100);
+  };
+  // 成稿/草稿样式切换（仅展示形态）
+  document.querySelectorAll('[data-modeswitch]').forEach(b=>{
+    b.onclick = ()=>{
+      const mode = b.dataset.modeswitch;
+      document.querySelectorAll('[data-modeswitch]').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      const badge = $('#srcBadge');
+      badge.className = mode==='ai' ? 'asst-src ai' : 'asst-src local';
+      badge.textContent = mode==='ai' ? 'AI 整理成稿' : '本地规则草稿';
+      $('#draftNote').classList.toggle('show', mode==='local');
+      toast(mode==='ai' ? '演示：AI 成稿样式（界面不出现草稿提示条）' : '演示：本地草稿样式（显示来源提示条）','info');
+    };
+  });
+  // 下一步指派选择（互斥；无建议项的房间不渲染该区块，需判空）
+  let picked = null;
+  const dBar = $('#delegateBar');
+  document.querySelectorAll('.next-item .pickers').forEach(pk=>{
+    pk.addEventListener('click', e=>{
+      const chip = e.target.closest('.pick-chip');
+      if(!chip) return;
+      document.querySelectorAll('.next-item .pickers').forEach(x=>x.querySelectorAll('.pick-chip').forEach(c=>c.classList.remove('on')));
+      pk.querySelectorAll('.pick-chip').forEach(c=>c.classList.remove('on'));
+      chip.classList.add('on');
+      picked = chip.dataset.to;
+      if(!dBar) return;
+      if(picked && picked!=='none'){
+        $('#delegateText').textContent = `将这条建议交给「${AGENT_MAP[picked].label}」跟进；正式版会向其收件箱发送委派说明。`;
+        dBar.classList.add('show');
+      } else {
+        dBar.classList.remove('show');
+      }
+    });
+  });
+  if(dBar){
+    $('#delegateCancel').onclick = ()=>{
+      picked=null; dBar.classList.remove('show');
+      document.querySelectorAll('.next-item .pick-chip').forEach(c=>c.classList.remove('on'));
+      document.querySelectorAll('.next-item .pickers [data-to="none"]').forEach(c=>c.classList.add('on'));
+    };
+    $('#delegateOk').onclick = ()=>{
+      toast(`静态演示：正式版会把建议交给「${AGENT_MAP[picked].label}」并写入其收件箱。`,'ok');
+    };
+  }
+  // 初始样式徽标提示条
+  if(room.summary && room.summary.mode==='local') $('#draftNote').classList.add('show');
+}
+function closeModal(){ $('#modalMask').classList.remove('show'); currentRoom=null; }
+$('#modalClose').onclick = closeModal;
+$('#modalCloseBtn').onclick = closeModal;
+$('#modalMask').addEventListener('click', e=>{ if(e.target===$('#modalMask')) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+/* 待确认行 / tab 提示 */
+document.querySelectorAll('[data-open-room]').forEach(b=>{
+  b.onclick = ()=>{
+    const room = ROOMS.find(r=>r.name===b.dataset.openRoom);
+    if(room) openRoom(room.key);
+  };
+});
+document.querySelectorAll('.tab[data-demo]').forEach(t=>{
+  t.onclick = ()=> toast('本原型只演示「通信看板」与房间助理，「'+t.dataset.demo+'」未包含在演示范围内。','info');
+});
+const activeTab = document.querySelector('.tab.active');
+if(activeTab) activeTab.onclick = ()=> toast('当前就在「通信看板」页（演示）。','info');
+
+/* ---------- 底部设计说明（技术备注，正式界面不显示） ---------- */
+function renderDesignNote(){
+  const stage = (title, items)=>`<h5>${title}</h5><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  $('#designNoteBody').innerHTML =
+    stage('第一阶段先做（首批交付，小结 + 状态 + 指派同批）',[
+      '点按钮手动整理每个房间的进展小结：当前进展、卡点、下一步建议、需要你拍板的事；不做定时自动刷新。',
+      '最新小结保存在房间内，重新整理覆盖最新稿，旧稿自动存档可回看；模型不可用时给出本地规则草稿并标注来源。',
+      '房间状态用大白话标记：待开始 / 进行中 / 卡住了 / 待你确认 / 已完成 / 已归档，列表带状态徽标；状态变更留痕，列表显示最近小结时间。',
+      '下一步建议从在册执行智能体（CodeBuddy / WorkBuddy / DeepSeek / 千问）中一次只选一个，点确认后向其收件箱发送委派说明，不多选群发；离线智能体先标注、提交后等其上线处理。'
+    ]) +
+    stage('第二阶段再排（评审后再定）',[
+      '房间长期无新消息时给出「建议刷新小结」的温和提示。',
+      '全部房间进展一览只读汇总页、小结内容人工在线编辑保存。'
+    ]) +
+    stage('暂缓不做',[
+      '打开房间超过一天自动刷新小结（先保持手动触发，避免打扰）。',
+      '自动定时汇总推送、跨房间任务流转。'
+    ]) +
+    `<h5>智能体自主发言的三档权限（已确认口径）</h5>
+    <div class="table-scroll"><table>
+      <colgroup><col style="width:18%"><col style="width:22%"><col style="width:42%"><col style="width:18%"/></colgroup>
+      <thead><tr><th>档位</th><th>类型</th><th>具体范围</th><th>你的角色</th></tr></thead>
+      <tbody>
+        <tr><td>第一档 · 无人化</td><td>记录与日常问答</td><td>助理自动整理进展小结、提醒还没回复的消息；智能体之间日常问答与确认回执自动往返，不弹给你。</td><td>事后查看即可</td></tr>
+        <tr><td>第二档 · 半自动</td><td>任务交接与指派</td><td>助理拟好「建议交给哪个智能体」，你在房间里点确认后才发出；改派、撤回同样需要确认。</td><td>点一下确认</td></tr>
+        <tr><td>第三档 · 必须把关</td><td>方向判断与对外动作</td><td>方案分歧拍板、任务执行授权、对外发送与文件改写，先列出建议由你决定，不自动执行。</td><td>必须你来定</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin:8px 0 0;color:var(--muted);font-size:12px">基础现状：智能体之间的私信信箱和房间发言命令已经具备；缺的是统一触发编排。本方案按上面三档逐步放开，不做无人确认的全自动闭环。</p>
+    <h5>文件与数据约定（开发参考）</h5>
+    <div class="table-scroll"><table>
+      <colgroup><col style="width:32%"><col style="width:68%"/></colgroup>
+      <thead><tr><th>位置</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td><code>房间目录/助理进展.md</code></td><td>当前最新小结，固定四段结构；打开房间时优先展示这份。</td></tr>
+        <tr><td><code>房间目录/助理存档/assistant-时间戳.md</code></td><td>每次重新整理前把上一稿存到这里，供历史回看，不覆盖删除。</td></tr>
+        <tr><td><code>房间目录/room-state.json</code></td><td>当前状态与最近一次变更说明，驱动列表徽标。</td></tr>
+      </tbody>
+    </table></div>
+    <h5>新增接口草案（开发参考）</h5>
+    <div class="table-scroll"><table>
+      <colgroup><col style="width:16%"><col style="width:44%"><col style="width:40%"/></colgroup>
+      <thead><tr><th>调用方式</th><th>路径</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td>GET</td><td><code>/api/collab/assistant?name=房间名</code></td><td>读取该房间最新小结与状态。</td></tr>
+        <tr><td>POST</td><td><code>/api/collab/assistant/generate</code></td><td>按房间全部对话记录重新整理小结（沿用现有三级模型通路）。</td></tr>
+        <tr><td>POST</td><td><code>/api/collab/state</code></td><td>更新房间状态并记录变更说明。</td></tr>
+        <tr><td>POST</td><td><code>/api/collab/delegate</code></td><td>把某条建议指派给指定智能体，写入其收件箱。</td></tr>
+      </tbody>
+    </table></div>
+    <h5>明确不做的部分</h5>
+    <ul>
+      <li>不引入新的运行时框架与数据库，沿用现有 Node 后端与目录文件存储。</li>
+      <li>不托管命令行任务的自动执行，助理只做「归纳、提示、建议」，不直接改动项目文件。</li>
+      <li>不做第三档以上的无人确认操作（拍板、执行授权、对外动作不自动放行）；状态变更与委派发送按第二档由你点确认后才发出。</li>
+      <li>不复制外部开源项目源码，只借鉴其编排思路重新实现。</li>
+      <li>不做远程协作、账号计费与外网发布能力。</li>
+    </ul>
+    <h5>已确认的 5 条口径（2026-10-30 定稿）</h5>
+    <ul class="q-list">
+      <li><label><input type="checkbox" checked disabled> 触发方式：手动点按钮整理，不做定时自动刷新。</label></li>
+      <li><label><input type="checkbox" checked disabled> 状态枚举：六种状态够用，不再增加「已暂停」。</label></li>
+      <li><label><input type="checkbox" checked disabled> 下一步指派：一次只交给一个智能体，不多选群发。</label></li>
+      <li><label><input type="checkbox" checked disabled> 重新整理：覆盖最新稿，旧稿存到存档目录回看。</label></li>
+      <li><label><input type="checkbox" checked disabled> 开发批次：状态徽标与指派功能和小结整理同一批做。</label></li>
+    </ul>`;
+}
+
+/* ---------- 初始化 ---------- */
+renderAgents();
+renderTable();
+renderDesignNote();
+</script>
+</body>
+</html>

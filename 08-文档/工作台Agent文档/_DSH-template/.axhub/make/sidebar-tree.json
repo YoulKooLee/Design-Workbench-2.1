@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-17T03:54:15.108Z",
+  "prototypes": [],
+  "docs": [],
+  "themesTree": [],
+  "themes": [],
+  "data": [],
+  "templates": [],
+  "components": [
+    {
+      "id": "item-components-axhub-components",
+      "kind": "item",
+      "title": "axhub-components",
+      "itemKey": "components/axhub-components",
+      "clientUrl": "http://localhost:5173/component-templates/axhub-components/",
+      "previewUrl": "http://localhost:5173/component-templates/axhub-components/"
+    },
+    {
+      "id": "item-components-Design-components",
+      "kind": "item",
+      "title": "Design components",
+      "itemKey": "components/Design-components"
+    },
+    {
+      "id": "folder-components-basic",
+      "kind": "folder",
+      "title": "基础组件",
+      "children": [
+        {
+          "id": "item-components-basic",
+          "kind": "item",
+          "title": "按钮/标签/卡片",
+          "itemKey": "components/basic",
+          "clientUrl": "http://localhost:5173/component-templates/basic/",
+          "previewUrl": "http://localhost:5173/component-templates/basic/"
+        }
+      ]
+    },
+    {
+      "id": "folder-components-form",
+      "kind": "folder",
+      "title": "表单组件",
+      "children": [
+        {
+          "id": "item-components-form",
+          "kind": "item",
+          "title": "表单 FormField",
+          "itemKey": "components/form",
+          "clientUrl": "http://localhost:5173/component-templates/form/",
+          "previewUrl": "http://localhost:5173/component-templates/form/"
+        }
+      ]
+    },
+    {
+      "id": "folder-components-data",
+      "kind": "folder",
+      "title": "数据展示",
+      "children": [
+        {
+          "id": "item-components-data",
+          "kind": "item",
+          "title": "指标卡/表格",
+          "itemKey": "components/data",
+          "clientUrl": "http://localhost:5173/component-templates/data/",
+          "previewUrl": "http://localhost:5173/component-templates/data/"
+        }
+      ]
+    },
+    {
+      "id": "folder-components-feedback",
+      "kind": "folder",
+      "title": "反馈组件",
+      "children": [
+        {
+          "id": "item-components-feedback",
+          "kind": "item",
+          "title": "弹窗/结果页",
+          "itemKey": "components/feedback",
+          "clientUrl": "http://localhost:5173/component-templates/feedback/",
+          "previewUrl": "http://localhost:5173/component-templates/feedback/"
+        }
+      ]
+    },
+    {
+      "id": "item-components-component-library",
+      "kind": "item",
+      "title": "组件库总览",
+      "itemKey": "components/component-library",
+      "clientUrl": "http://localhost:5173/component-templates/component-library/",
+      "previewUrl": "http://localhost:5173/component-templates/component-library/"
+    }
+  ],
+  "canvas": []
+}

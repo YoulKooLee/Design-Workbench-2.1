@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UI 设计稿 v1.0 · 日报页 + 需求池页</title>
+<style>
+  :root{
+    /* 沿用工作台 v4 token（主蓝 #2563eb + 浅灰底 #f0f4f8 + 白卡） */
+    --bg:#f0f4f8; --panel:#ffffff; --ink:#1e293b; --muted:#64748b; --text-2:#475569;
+    --line:#e2e8f0; --line-subtle:rgba(15,23,42,0.05);
+    --accent:#2563eb; --accent-hover:#1d4ed8; --accent-soft:#eff6ff; --accent-border:#bfdbfe;
+    --green:#16a34a; --green-soft:#f0fdf4; --green-border:#bbf7d0;
+    --amber:#d97706; --amber-soft:#fffbeb; --amber-border:#fde68a;
+    --red:#dc2626; --red-soft:#fef2f2; --red-border:#fecaca;
+    --radius:16px; --radius-sm:10px; --radius-xs:8px; --radius-pill:9999px;
+    --shadow:0 1px 3px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.05);
+    --shadow-hover:0 4px 8px rgba(15,23,42,.08),0 12px 28px rgba(37,99,235,.10);
+    --focus:0 0 0 3px rgba(37,99,235,.12);
+    /* 本稿新增（建议写入 :root） */
+    --gap:16px;            /* 卡片间距 */
+    --card-pad:20px;       /* 卡片内边距 */
+    --card-pad-sm:14px;    /* 列表类卡片内边距 */
+    --num:20px;            /* 统计数字字号 */
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+  .doc{max-width:1180px;margin:0 auto;padding:28px 28px 80px}
+  .doc-head{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;box-shadow:var(--shadow);margin-bottom:20px}
+  .doc-head h1{margin:0 0 6px;font-size:22px;font-weight:700;letter-spacing:.2px}
+  .doc-head .sub{color:var(--muted);font-size:13px}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .meta span{font-size:11.5px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border);border-radius:var(--radius-pill);padding:3px 12px;font-weight:600}
+  h2.sec{font-size:17px;margin:34px 0 14px;padding-left:12px;border-left:4px solid var(--accent);line-height:1.2}
+  h3.sec{font-size:14.5px;margin:22px 0 10px;color:var(--ink)}
+  p.note{color:var(--text-2);font-size:13px;margin:8px 0 12px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+  table.spec{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0 6px}
+  table.spec th,table.spec td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  table.spec th{background:#fafbfd;color:var(--muted);font-weight:600;white-space:nowrap;font-size:12px}
+  table.spec td code{background:#f6f8fb;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:11.5px;color:var(--accent)}
+  .swatch{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px;border:1px solid rgba(15,23,42,.12)}
+  /* ===== 示意区（按本稿规范渲染，可直接对照实现） ===== */
+  .stage{background:var(--bg);border:1px dashed #cbd5e1;border-radius:var(--radius);padding:18px;margin:12px 0 14px}
+  .stage-cap{font-size:11.5px;color:var(--muted);margin:0 0 10px;font-weight:600;letter-spacing:.3px}
+  .daily-wrap{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);align-items:stretch}
+  .daily-card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:var(--card-pad);box-shadow:var(--shadow);transition:box-shadow .18s}
+  .daily-card:hover{box-shadow:var(--shadow-hover)}
+  .daily-card h3{margin:0 0 14px;font-size:15px;font-weight:650;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .daily-card h3::before{content:'';width:3px;height:16px;border-radius:2px;background:linear-gradient(180deg,var(--accent),#7dd3fc);flex:none}
+  .daily-card h3 .sub{font-weight:400;font-size:12px;color:var(--muted)}
+  .daily-card h3 .ops{margin-left:auto;display:flex;gap:6px}
+  .card-fill{flex:1;min-height:0;display:flex;flex-direction:column}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:6px 14px;border-radius:var(--radius-pill);font-size:12px;cursor:pointer;font-weight:500;transition:.15s}
+  .btn:hover{border-color:#cbd5e1;background:var(--accent-soft)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+  .btn.danger{color:var(--red);border-color:var(--red-border)}
+  .btn.danger:hover{background:var(--red-soft)}
+  .hint{font-size:11.5px;color:var(--muted)}
+  /* 日历 */
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:6px;flex:1}
+  .cal-head{font-size:11px;color:var(--muted);text-align:center;padding:2px 0;font-weight:600}
+  .cal-cell{min-height:64px;border:1px solid var(--line-subtle);border-radius:var(--radius-xs);padding:6px 7px;background:#fff;position:relative;font-size:11px;transition:.15s}
+  .cal-cell:hover{border-color:var(--accent-border);box-shadow:var(--focus)}
+  .cal-cell.today{outline:2px solid var(--accent);outline-offset:-1px;background:#f8fbff}
+  .cal-cell.selected{background:var(--accent-soft);border-color:var(--accent-border);outline:2px solid var(--accent);outline-offset:-1px}
+  .cal-cell.dim{opacity:.4}
+  .cal-cell .d{font-weight:700;color:var(--ink);font-size:12px}
+  .cal-cell .tag{display:block;margin-top:4px;padding:0 5px;border-radius:5px;font-size:10px;line-height:1.7;background:var(--green-soft);color:var(--green);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cal-cell .ot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px #fff}
+  /* 编辑器 */
+  .proj-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+  .proj-row select,.proj-row input[type=text]{border:1px solid var(--line);border-radius:var(--radius-sm);padding:7px 10px;font:inherit;font-size:13px;transition:border-color .15s,box-shadow .15s;background:#fff}
+  .proj-row select:focus,.proj-row input[type=text]:focus{border-color:var(--accent);outline:none;box-shadow:var(--focus)}
+  .proj-row select{max-width:190px}
+  .proj-row input[type=text]{flex:1;min-width:0}
+  .ed-foot{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  .ed-foot .spacer{flex:1}
+  textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font:inherit;font-size:13px;line-height:1.65;resize:vertical;transition:border-color .15s,box-shadow .15s}
+  textarea:focus{border-color:var(--accent);outline:none;box-shadow:var(--focus)}
+  textarea[readonly]{background:#f6f8fb;color:var(--text-2);resize:none}
+  /* 统计条 */
+  .stat-bar{display:flex;align-items:center;gap:10px;margin:9px 0}
+  .stat-bar .nm{width:130px;font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stat-bar .bar{flex:1;height:10px;background:var(--line-subtle);border-radius:5px;overflow:hidden}
+  .stat-bar .bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),#38bdf8)}
+  .stat-bar .pct{width:52px;text-align:right;font-size:12px;font-weight:700;color:var(--accent)}
+  .month-side{flex:1;min-width:230px;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px 16px 10px;display:flex;flex-direction:column}
+  .month-side-h{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px}
+  .kpi{display:flex;align-items:stretch}
+  .kpi .k{flex:1;padding:0 16px}
+  .kpi .k:first-child{padding-left:0}
+  .kpi .k + .k{border-left:1px solid var(--line)}
+  .kpi .n{font-size:var(--num);font-weight:700;color:var(--ink);line-height:1.2}
+  .kpi .l{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .ot-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+  .ot-label{font-size:11.5px;color:var(--muted)}
+  .ot-chip{display:inline-block;padding:2px 10px;border-radius:var(--radius-pill);background:var(--red-soft);color:var(--red);font-size:11px;border:1px solid var(--red-border)}
+  /* 需求池 */
+  .req-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .seg{display:inline-flex;background:#f6f8fb;border:1px solid var(--line);border-radius:var(--radius-pill);padding:3px;gap:2px}
+  .seg button{border:0;background:transparent;font:inherit;font-size:12.5px;color:var(--muted);padding:5px 14px;border-radius:var(--radius-pill);cursor:pointer;font-weight:550;transition:.15s}
+  .seg button b{font-weight:700;margin-left:5px}
+  .seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 3px rgba(15,23,42,.10)}
+  .req-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+  .req-card{position:relative;border:1px solid var(--line);border-radius:12px;padding:var(--card-pad-sm) 16px 12px 18px;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.05);transition:box-shadow .16s,transform .16s;overflow:hidden}
+  .req-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)}
+  .req-card.p-high::before{background:linear-gradient(180deg,var(--red),#f87171)}
+  .req-card.p-low::before{background:linear-gradient(180deg,var(--green),#4ade80)}
+  .req-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
+  .req-card .req-title{font-size:13.5px;font-weight:650;color:var(--ink);word-break:break-all}
+  .req-card .req-desc{font-size:12px;color:var(--text-2);margin-top:5px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .req-card .req-meta{font-size:11px;color:var(--muted);margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .req-card .req-ops{margin-left:auto;display:flex;gap:6px;opacity:.55;transition:opacity .15s}
+  .req-card:hover .req-ops{opacity:1}
+  .pill{font-size:11px;padding:2px 9px;border-radius:var(--radius-pill);white-space:nowrap;font-weight:600;border:1px solid transparent}
+  .pill.high{background:var(--red-soft);color:var(--red);border-color:var(--red-border)}
+  .pill.mid{background:var(--amber-soft);color:var(--amber);border-color:var(--amber-border)}
+  .pill.low{background:var(--green-soft);color:var(--green);border-color:var(--green-border)}
+  .pill.st-todo{background:#eef1f5;color:var(--muted);border-color:var(--line)}
+  .pill.st-doing{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-border)}
+  .pill.st-done{background:var(--green-soft);color:var(--green);border-color:var(--green-border)}
+  .empty{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+  .alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:12.5px;margin-bottom:var(--gap)}
+  .alert-warn{background:var(--amber-soft);color:#92400e;border:1px solid var(--amber-border)}
+  /* 弹窗示意 */
+  .modal-dim{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow-hover);max-width:760px}
+  .modal-head{display:flex;align-items:center;margin-bottom:14px}
+  .modal-head h3{margin:0;font-size:15px;font-weight:650}
+  .field-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px}
+  .field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:5px;font-weight:600}
+  .field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 11px;font:inherit;font-size:13px;background:#fff}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);outline:none;box-shadow:var(--focus)}
+  .modal-ops{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+  pre.code{background:#0f172a;color:#e2e8f0;border-radius:var(--radius-sm);padding:14px 16px;overflow:auto;font-size:12px;line-height:1.65;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre.code .c{color:#94a3b8}
+  ul.chk{font-size:12.5px;color:var(--text-2);padding-left:20px;margin:6px 0}
+  ul.chk li{margin:4px 0}
+  .tag-new{font-size:10px;background:var(--green-soft);color:var(--green);border:1px solid var(--green-border);border-radius:5px;padding:0 6px;margin-left:6px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-head">
+    <h1>UI 设计稿 v1.0 · 日报页 + 需求池页</h1>
+    <div class="sub">产品设计工作台面板（localhost:7788）· 办公浅色系 · 沿用 v4 设计 token</div>
+    <div class="meta">
+      <span>版本 v1.0</span><span>2026-10-10</span><span>作者 WorkBuddy</span><span>实施方 豆包</span><span>状态 待评审</span>
+    </div>
+  </div>
+
+  <h2 class="sec">一、设计原则</h2>
+  <div class="panel">
+    <table class="spec">
+      <tr><th style="width:120px">原则</th><th>说明</th></tr>
+      <tr><td>沿用 token</td><td>不新增主色，底色 <code>#f0f4f8</code>、白卡、主蓝 <code>#2563eb</code> 全部复用项目管理页现有变量，保证跨页一致。</td></tr>
+      <tr><td>卡片语言统一</td><td>日报页当前用 12px 圆角，与工作台主卡片 16px 不一致；本稿统一为 <code>--radius:16px</code> + <code>--shadow</code> + hover <code>--shadow-hover</code>。</td></tr>
+      <tr><td>同排等高</td><td>日历看板与日报编辑器必须同高同宽（1:1 栅格 + 内容区 <code>flex:1</code> 撑满，非固定高度）。</td></tr>
+      <tr><td>三级信息层级</td><td>标题 15px/650 → 正文 13px → 辅助 11~12px muted；数字类信息用 20px/700 强调。</td></tr>
+      <tr><td>克制用色</td><td>颜色只承载语义：蓝=选中/进行中，绿=已完成/正常，橙=提醒/中优先级，红=加班/高优先级。装饰性渐变仅限进度条与标题竖条。</td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec">二、设计 Token（现有复用 + 建议新增）</h2>
+  <div class="panel">
+    <table class="spec">
+      <tr><th>变量</th><th>值</th><th>用途</th></tr>
+      <tr><td><code>--bg</code></td><td><span class="swatch" style="background:#f0f4f8"></span>#f0f4f8</td><td>页面底色（沿用）</td></tr>
+      <tr><td><code>--panel</code></td><td><span class="swatch" style="background:#ffffff"></span>#ffffff</td><td>卡片底（沿用）</td></tr>
+      <tr><td><code>--ink</code> / <code>--muted</code></td><td><span class="swatch" style="background:#1e293b"></span>#1e293b / <span class="swatch" style="background:#64748b"></span>#64748b</td><td>主文字 / 辅助文字（沿用）</td></tr>
+      <tr><td><code>--accent</code></td><td><span class="swatch" style="background:#2563eb"></span>#2563eb</td><td>主色：选中、进行中、进度条</td></tr>
+      <tr><td><code>--green</code> / <code>--amber</code> / <code>--red</code></td><td><span class="swatch" style="background:#16a34a"></span>#16a34a / <span class="swatch" style="background:#d97706"></span>#d97706 / <span class="swatch" style="background:#dc2626"></span>#dc2626</td><td>完成 / 提醒·中优先级 / 加班·高优先级</td></tr>
+      <tr><td><code>--gap</code><span class="tag-new">新增</span></td><td>16px</td><td>卡片之间间距</td></tr>
+      <tr><td><code>--card-pad</code><span class="tag-new">新增</span></td><td>20px</td><td>大卡片内边距（日报各卡）</td></tr>
+      <tr><td><code>--card-pad-sm</code><span class="tag-new">新增</span></td><td>14px</td><td>列表卡片内边距（需求卡）</td></tr>
+      <tr><td><code>--text-2</code><span class="tag-new">新增</span></td><td>#475569</td><td>正文次级（需求摘要、只读文本）</td></tr>
+      <tr><td><code>--num</code><span class="tag-new">新增</span></td><td>20px</td><td>统计数字字号</td></tr>
+    </table>
+    <p class="note">建议把上表 5 个新增变量补进 <code>:root</code>，其余全部引用现有变量，实现时不必新增色号。</p>
+  </div>
+
+  <h2 class="sec">三、日报页</h2>
+
+  <h3 class="sec">3.1 分区布局（栅格与尺寸）</h3>
+  <div class="panel">
+    <table class="spec">
+      <tr><th>行</th><th>分区</th><th>栅格</th><th>说明</th></tr>
+      <tr><td>0</td><td>未写日报提醒条</td><td>全宽，置顶</td><td>橙底提示，高 40px，圆角 10px，mb 16px</td></tr>
+      <tr><td>1</td><td>日历看板 ｜ 日报编辑器</td><td><code>1fr : 1fr</code> <b>等宽等高</b></td><td>两卡 stretch 等高；日历内部 <code>grid-auto-rows:1fr</code> 撑满</td></tr>
+      <tr><td>2</td><td>本周周报 ｜ 口头汇报版</td><td><code>3fr : 2fr</code></td><td>周报可编辑文本更长，占 60%；口头版只读占 40%</td></tr>
+      <tr><td>3</td><td>月报</td><td><code>grid-column:1/-1</code></td><td>内部左右两栏：项目占比（min 280px）｜ 加班统计（min 220px）</td></tr>
+      <tr><td>4</td><td>季报</td><td>全宽</td><td>可编辑文本域 min-height 160px</td></tr>
+      <tr><td>5</td><td>年报</td><td>全宽</td><td>可编辑文本域 min-height 180px</td></tr>
+    </table>
+    <p class="note">容器：<code>.daily-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}</code>；两行均 <b>1:1 同宽</b>（周报与口头版等宽）。实现上建议用两个独立的 <code>.daily-wrap</code> 行容器（<code>.daily-row.two</code> / <code>.daily-row.wide</code>）比单行 grid 更好控。</p>
+  </div>
+
+  <h3 class="sec">3.2 视觉示意（按本稿规范渲染）</h3>
+  <div class="stage">
+    <p class="stage-cap">示意 A｜日报页 行1-行2（真实类名与 token 渲染，非截图）</p>
+    <div class="daily-wrap" style="margin-bottom:16px">
+      <div class="daily-card">
+        <h3>2026年10月 <span class="sub">点击日期写日报 · 红点=加班</span><span class="ops"><button class="btn">‹</button><button class="btn">今天</button><button class="btn">›</button></span></h3>
+        <div class="cal-grid card-fill">
+          <div class="cal-head">一</div><div class="cal-head">二</div><div class="cal-head">三</div><div class="cal-head">四</div><div class="cal-head">五</div><div class="cal-head">六</div><div class="cal-head">日</div>
+          <div class="cal-cell dim"></div><div class="cal-cell dim"></div><div class="cal-cell dim"></div>
+          <div class="cal-cell"><div class="d">1</div><span class="tag">深圳医疗</span></div>
+          <div class="cal-cell"><div class="d">2</div><span class="tag">深圳医疗</span></div>
+          <div class="cal-cell dim"><div class="d">3</div></div>
+          <div class="cal-cell dim"><div class="d">4</div></div>
+          <div class="cal-cell"><div class="d">5</div><span class="tag">崂山园区</span><i class="ot"></i></div>
+          <div class="cal-cell"><div class="d">6</div><span class="tag">崂山园区</span></div>
+          <div class="cal-cell selected"><div class="d">7</div><span class="tag">组件库</span></div>
+          <div class="cal-cell today"><div class="d">8</div></div>
+          <div class="cal-cell dim"><div class="d">9</div></div>
+          <div class="cal-cell dim"><div class="d">10</div></div>
+          <div class="cal-cell dim"><div class="d">11</div></div>
+        </div>
+      </div>
+      <div class="daily-card">
+        <h3>日报 · 2026年10月7日</h3>
+        <div class="card-fill">
+          <div class="proj-row"><select><option>崂山园区大屏</option><option>深圳南山医疗</option></select><input type="text" value="园区总览专题走查与配色复核"/></div>
+          <div class="proj-row"><select><option>组件库</option></select><input type="text" value="物联网分类组件登记"/></div>
+          <div class="proj-row"><select><option>深圳南山医疗</option></select><input type="text" placeholder="工作内容"/></div>
+          <div class="ed-foot">
+            <label style="font-size:12.5px;display:flex;align-items:center;gap:5px"><input type="checkbox" checked/> 今天加班</label>
+            <button class="btn">+ 添加条目</button>
+            <span class="spacer"></span>
+            <button class="btn danger">删除当天</button>
+            <button class="btn primary">保存日报</button>
+          </div>
+          <div class="hint" style="margin-top:10px">工作台项目自动带入（崂山园区大屏、深圳南山医疗 等），也可选「＋ 其他项目」手动填写。</div>
+        </div>
+      </div>
+    </div>
+    <div class="daily-wrap" style="grid-template-columns:1fr 1fr">
+      <div class="daily-card">
+        <h3>本周周报 <span class="sub">2026-10-05 ~ 2026-10-11 · 自动生成 · 可直接编辑</span><span class="ops"><button class="btn">‹ 上一周</button><button class="btn">本周</button><button class="btn">下一周 ›</button></span></h3>
+        <textarea>【周报】2026-10-05 ~ 2026-10-11
+一、本周工作（按项目）
+· 崂山园区大屏：
+  - 园区总览专题走查与配色复核
+  - 安全态势模块指标口径确认
+· 组件库：
+  - 物联网分类组件登记与预览补齐
+
+二、数据统计
+· 日报 5 条，加班 2 天（10月05日、10月07日）
+
+三、下周计划
+· （待补充）</textarea>
+        <div class="ed-foot"><button class="btn">复制</button><span class="spacer"></span><span class="hint">自动暂存本周编辑</span></div>
+      </div>
+      <div class="daily-card">
+        <h3>口头汇报版 <span class="sub">只读 · 自动生成</span><span class="ops"><button class="btn">重新生成</button><button class="btn">复制</button></span></h3>
+        <textarea readonly>本周（2026-10-05 ~ 2026-10-11）我主要完成了 崂山园区大屏 2 项工作，组件库 1 项工作。重点包括：园区总览专题走查与配色复核；安全态势模块指标口径确认；物联网分类组件登记与预览补齐。本周加班 2 天。下周计划：待补充。</textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <p class="stage-cap">示意 B｜日报页 行3 月报（全宽 · 内部两栏）</p>
+    <div class="daily-card">
+      <h3>月报 · 2026年10月 <span class="ops"><button class="btn">‹</button><button class="btn">本月</button><button class="btn">›</button></span></h3>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div style="flex:1;min-width:280px">
+          <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px">各项目时长占比</div>
+          <div class="stat-bar"><span class="nm">崂山园区大屏</span><span class="bar"><i style="width:42%"></i></span><span class="pct">42%</span></div>
+          <div class="stat-bar"><span class="nm">组件库</span><span class="bar"><i style="width:28%"></i></span><span class="pct">28%</span></div>
+          <div class="stat-bar"><span class="nm">深圳南山医疗</span><span class="bar"><i style="width:20%"></i></span><span class="pct">20%</span></div>
+          <div class="stat-bar"><span class="nm">常州项目</span><span class="bar"><i style="width:10%"></i></span><span class="pct">10%</span></div>
+        </div>
+        <div class="month-side">
+          <div class="month-side-h">本月统计</div>
+          <div class="kpi"><div class="k"><div class="n">2</div><div class="l">加班天数</div></div><div class="k"><div class="n">12</div><div class="l">日报条数</div></div><div class="k"><div class="n">4</div><div class="l">覆盖项目</div></div></div>
+          <div class="ot-row"><span class="ot-label">加班日</span><span class="ot-chip">10月05日</span><span class="ot-chip">10月07日</span><span class="hint" style="margin-left:auto">占比按工作条目数近似统计</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sec">3.3 卡片与组件规范（具体值）</h3>
+  <div class="panel">
+    <table class="spec">
+      <tr><th style="width:150px">元素</th><th>规范值</th></tr>
+      <tr><td>卡片</td><td>圆角 <code>16px</code>；内边距 <code>20px</code>；边框 <code>1px #e2e8f0</code>；阴影 <code>--shadow</code>；hover 阴影 <code>--shadow-hover</code>（0.18s）</td></tr>
+      <tr><td>卡片标题</td><td>字号 <code>15px</code>/字重 <code>650</code>；左侧 3px×16px 蓝青渐变竖条；下方间距 <code>14px</code>；副说明 <code>12px/400 muted</code>；操作按钮组 <code>margin-left:auto</code> 右对齐</td></tr>
+      <tr><td>日历格</td><td><code>min-height:64px</code>；圆角 <code>8px</code>；间距 <code>6px</code>；边框 <code>--line-subtle</code>；日期数字 <code>12px/700</code>；项目标签 <code>10px</code> 绿底单行省略；加班红点 7px 右上角带 2px 白描边</td></tr>
+      <tr><td>日历状态</td><td>今天：<code>outline 2px accent</code> + 底 <code>#f8fbff</code>；选中：底 <code>--accent-soft</code> + 同色 outline；无日报：整体 <code>opacity .4</code>；hover：<code>--focus</code> 光圈</td></tr>
+      <tr><td>输入控件</td><td>圆角 <code>10px</code>；内边距 <code>7px 10px</code>；字号 <code>13px</code>；focus 边框 <code>--accent</code> + <code>--focus</code> 光圈；下拉 <code>max-width:190px</code>，内容输入 <code>flex:1</code></td></tr>
+      <tr><td>文本域</td><td>圆角 <code>10px</code>；内边距 <code>10px 12px</code>；字号 <code>13px</code>/行高 <code>1.65</code>；周报/口头版 <code>min-height:150px</code>，季报 160px，年报 180px；只读态底 <code>#f6f8fb</code>、字色 <code>--text-2</code></td></tr>
+      <tr><td>进度条</td><td>轨道高 <code>10px</code>/圆角 5px/底 <code>--line-subtle</code>；填充渐变 <code>90deg accent→#38bdf8</code>；项目名 <code>130px</code> 省略；百分比 <code>52px</code> 右对齐、<code>12px/700 accent</code></td></tr>
+      <tr><td>统计侧栏</td><td>右栏整体装进 <code>.month-side</code> 面板<span class="tag-new">改</span>：底 <code>#f8fafc</code>、边框 <code>1px #e2e8f0</code>、圆角 <code>12px</code>、内边距 <code>12px 16px 10px</code>；面板头「本月统计」<code>12px/600 muted</code></td></tr>
+      <tr><td>统计数字</td><td>字号 <code>20px</code>/字重 <code>700</code>/行高 1.2；标签 <code>11.5px muted</code>；三组 <b>flex 均分 + 组间 1px 竖分隔线</b><span class="tag-new">改</span>（替代散排 gap 18）</td></tr>
+      <tr><td>加班 chip</td><td>收进面板底行 <code>.ot-row</code><span class="tag-new">改</span>：虚线分隔（<code>1px dashed #e2e8f0</code>）、<code>margin-top:auto</code> 锚底；行 = 「加班日」label + 药丸 chip + 右对齐备注（<code>11px muted</code>）；chip <code>11px</code> 红底 <code>--red-soft</code> + 红字 + <code>#fecaca</code> 边框</td></tr>
+      <tr><td>按钮</td><td>统一 <code>.btn</code> 药丸形：<code>sm</code> = <code>6px 14px / 12px</code>；主操作 primary 实心蓝；删除 danger 红字红边 + hover 红底</td></tr>
+      <tr><td>提醒条</td><td>橙底 <code>--amber-soft</code>、字 <code>#92400e</code>、边框 <code>--amber-border</code>、圆角 10px、下间距 16px</td></tr>
+      <tr><td>空态</td><td>内边距 <code>40px</code>、居中、<code>13px muted</code></td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec">四、需求池页</h2>
+
+  <h3 class="sec">4.1 视觉示意</h3>
+  <div class="stage">
+    <p class="stage-cap">示意 C｜需求池页（筛选统计条 + 双列需求卡）</p>
+    <div class="daily-card">
+      <div class="req-toolbar">
+        <h3 style="margin:0;font-size:15px">需求池</h3>
+        <div class="seg">
+          <button class="on">全部 <b>24</b></button>
+          <button>待处理 <b>9</b></button>
+          <button>进行中 <b>7</b></button>
+          <button>已完成 <b>8</b></button>
+        </div>
+        <span style="flex:1"></span>
+        <button class="btn primary">+ 新增需求</button>
+      </div>
+      <div class="req-grid">
+        <div class="req-card p-high">
+          <div class="req-title">大屏安全态势专题指标口径确认</div>
+          <div class="req-desc">需与甲方确认告警分级口径（红/橙/黄）与统计周期，作为安全态势模块的取数依据，含越限判定阈值。</div>
+          <div class="req-meta"><span class="pill high">高</span><span class="pill st-doing">进行中</span><span>崂山园区大屏 · 创建 2026/10/6</span><span class="req-ops"><button class="btn">编辑</button><button class="btn danger">删除</button></span></div>
+        </div>
+        <div class="req-card">
+          <div class="req-title">组件库预览缩略图放大</div>
+          <div class="req-desc">组件卡片预览太小看不清，卡片栅格最小宽度调整为 340px，缩略图比例改 3:2。</div>
+          <div class="req-meta"><span class="pill mid">中</span><span class="pill st-done">已完成</span><span>产品设计工作台 · 创建 2026/10/5</span><span class="req-ops"><button class="btn">编辑</button><button class="btn danger">删除</button></span></div>
+        </div>
+        <div class="req-card p-low">
+          <div class="req-title">出差报销归档脚本支持多城市拆分</div>
+          <div class="req-desc">一趟出差涉及多城市时，按城市自动拆分存档目录与明细表行。</div>
+          <div class="req-meta"><span class="pill low">低</span><span class="pill st-todo">待处理</span><span>其他 · 创建 2026/10/8</span><span class="req-ops"><button class="btn">编辑</button><button class="btn danger">删除</button></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <p class="stage-cap">示意 D｜新增/编辑需求弹窗（760px 宽）</p>
+    <div class="modal-dim">
+      <div class="modal-head"><h3>新增需求</h3></div>
+      <div class="field"><label>需求标题</label><input type="text" value="大屏消防运行专题数据要素梳理" /></div>
+      <div class="field" style="margin-top:10px"><label>需求正文</label><textarea rows="2">补充需求细节、验收标准等</textarea></div>
+      <div class="field-row">
+        <div class="field"><label>关联项目</label><select><option>崂山园区大屏</option></select></div>
+        <div class="field"><label>优先级</label><select><option>高</option><option selected>中</option><option>低</option></select></div>
+        <div class="field"><label>状态</label><select><option>待处理</option><option>进行中</option><option>已完成</option></select></div>
+      </div>
+      <div class="modal-ops"><button class="btn">取消</button><button class="btn primary">保存</button></div>
+    </div>
+  </div>
+
+  <h3 class="sec">4.2 组件规范（具体值）</h3>
+  <div class="panel">
+    <table class="spec">
+      <tr><th style="width:150px">元素</th><th>规范值</th></tr>
+      <tr><td>页面容器</td><td>单张白卡（圆角 16px、内边距 20px、<code>--shadow</code>）承载全部内容，与日报页卡片语言一致</td></tr>
+      <tr><td>标题行</td><td>「需求池」<code>15px/650</code>；与筛选控件同排，右侧「+ 新增需求」primary 按钮，<code>margin-bottom:16px</code></td></tr>
+      <tr><td>筛选统计条</td><td><b>改为分段控件</b>：容器底 <code>#f6f8fb</code>、药丸形、内边距 3px、间距 2px；项 <code>12.5px/550</code>、内边距 <code>5px 14px</code>；选中项白底 + <code>0 1px 3px rgba(15,23,42,.10)</code> + 蓝字；计数 <code>b</code> 加粗、左间距 5px</td></tr>
+      <tr><td>需求列表</td><td>双列自适应栅格 <code>repeat(auto-fill,minmax(340px,1fr))</code>，间距 <code>12px</code></td></tr>
+      <tr><td>需求卡</td><td>圆角 <code>12px</code>；内边距 <code>14px 16px 12px 18px</code>（左侧留出 3px 色条）；边框 <code>--line</code>；浅阴影 <code>0 1px 2px rgba(15,23,42,.05)</code>；hover <code>--shadow-hover</code> + <code>translateY(-1px)</code>，0.16s</td></tr>
+      <tr><td>优先级色条</td><td>卡片左侧 <code>::before</code> 3px 通高：高=红渐变、中=橙 <code>--amber</code>、低=绿渐变</td></tr>
+      <tr><td>标题 / 摘要</td><td>标题 <code>13.5px/650</code>；摘要 <code>12px</code>/色 <code>--text-2</code>/行高 1.6/<b>两行截断</b>（-webkit-line-clamp:2）</td></tr>
+      <tr><td>元信息行</td><td><code>11px muted</code>，上间距 <code>8px</code>；顺序：优先级 pill → 状态 pill（可点击切换）→ 项目 · 创建时间 → 操作组右对齐</td></tr>
+      <tr><td>操作按钮</td><td>默认 <code>opacity:.55</code>，卡片 hover 时 <code>opacity:1</code>（降低噪声、避免误删）；编辑用默认 .btn，删除用 .btn.danger</td></tr>
+      <tr><td>状态 pill</td><td>待处理 <code>#eef1f5/muted</code>；进行中 <code>--accent-soft/accent</code>；已完成 <code>--green-soft/green</code>；统一 <code>11px/600</code> + 药丸 + 1px 同色系边框</td></tr>
+      <tr><td>优先级 pill</td><td>高 <code>--red-soft/#dc2626</code>；中 <code>--amber-soft/#d97706</code>；低 <code>--green-soft/#16a34a</code></td></tr>
+      <tr><td>弹窗</td><td>沿用 <code>.modal.wide</code> 760px；标题 <code>15px/650</code>；label <code>11.5px/600 muted</code> 上间距 5px；控件圆角 10px、内边距 <code>8px 11px</code>；三列 <code>.field-row</code> 等宽 gap 12px；底部操作右对齐、上间距 18px</td></tr>
+      <tr><td>空态</td><td>同日报页：内边距 40px、居中、<code>13px muted</code>；建议文案「暂无需求 · 点击右上角新增」</td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec">五、间距 / 圆角 / 字号 速查</h2>
+  <div class="panel">
+    <table class="spec">
+      <tr><th>层级</th><th>间距</th><th>圆角</th><th>字号</th></tr>
+      <tr><td>页面外框</td><td><code>24px 28px</code>（沿用 main）</td><td>—</td><td>正文 14px</td></tr>
+      <tr><td>卡片之间</td><td><code>16px</code></td><td><code>16px</code></td><td>卡片标题 15px/650</td></tr>
+      <tr><td>卡片内部</td><td><code>20px</code>（列表卡 14px）</td><td>—</td><td>正文 13px</td></tr>
+      <tr><td>标题→内容</td><td><code>14px</code></td><td>—</td><td>辅助 11.5~12px</td></tr>
+      <tr><td>控件之间</td><td><code>8~10px</code></td><td><code>10px</code></td><td>按钮 12px</td></tr>
+      <tr><td>标签 / 栅格单元</td><td><code>2~6px</code></td><td><code>8px</code></td><td>pill 11px / 日历标签 10px</td></tr>
+      <tr><td>统计强调</td><td>组间距 <code>18px</code></td><td>—</td><td>数字 20px/700</td></tr>
+    </table>
+  </div>
+
+  <h2 class="sec">六、落地 CSS 片段（可直接合入 <code>&lt;style&gt;</code>）</h2>
+  <div class="panel">
+<pre class="code"><span class="c">/* ===== 日报 / 需求池 v1.1（按设计稿 v1.0）===== */</span>
+<span class="c">/* 行容器：两行独立控制，行1=1:1 等高，行2=1:1 同宽 */</span>
+.daily-row{display:grid;gap:var(--gap);align-items:stretch;margin-bottom:var(--gap)}
+.daily-row.two{grid-template-columns:1fr 1fr}
+.daily-row.wide{grid-template-columns:1fr 1fr}
+.daily-card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:var(--card-pad);box-shadow:var(--shadow);transition:box-shadow .18s}
+.daily-card:hover{box-shadow:var(--shadow-hover)}
+.daily-card h3{margin:0 0 14px;font-size:15px;font-weight:650;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.daily-card h3::before{content:'';width:3px;height:16px;border-radius:2px;
+  background:linear-gradient(180deg,var(--accent),#7dd3fc);flex:none}
+.daily-card .fill{flex:1;min-height:0;display:flex;flex-direction:column}
+<span class="c">/* 日历：自动行高撑满，与编辑器等高 */</span>
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:6px;flex:1}
+.cal-cell{min-height:64px;border:1px solid var(--line-subtle);border-radius:8px;padding:6px 7px;
+  background:#fff;position:relative;font-size:11px;transition:.15s}
+.cal-cell:hover{border-color:var(--accent-border);box-shadow:var(--focus)}
+.cal-cell.today{outline:2px solid var(--accent);outline-offset:-1px;background:#f8fbff}
+.cal-cell.selected{background:var(--accent-soft);border-color:var(--accent-border);
+  outline:2px solid var(--accent);outline-offset:-1px}
+.cal-cell.dim{opacity:.4}
+<span class="c">/* 需求池：分段筛选 + 双列卡片 */</span>
+.seg{display:inline-flex;background:#f6f8fb;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;font:inherit;font-size:12.5px;color:var(--muted);
+  padding:5px 14px;border-radius:999px;cursor:pointer;font-weight:550;transition:.15s}
+.seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 3px rgba(15,23,42,.10)}
+.req-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.req-card{position:relative;border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px 12px 18px;background:#fff;overflow:hidden;
+  box-shadow:0 1px 2px rgba(15,23,42,.05);transition:box-shadow .16s,transform .16s}
+.req-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)}
+.req-card.p-high::before{background:linear-gradient(180deg,var(--red),#f87171)}
+.req-card.p-low::before{background:linear-gradient(180deg,var(--green),#4ade80)}
+.req-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
+.req-desc{font-size:12px;color:#475569;margin-top:5px;line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.req-ops{margin-left:auto;display:flex;gap:6px;opacity:.55;transition:opacity .15s}
+.req-card:hover .req-ops{opacity:1}
+<span class="c">/* 月报统计侧栏：装进面板，替代散排 KPI */</span>
+.month-side{flex:1;min-width:230px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;
+  padding:12px 16px 10px;display:flex;flex-direction:column}
+.month-side-h{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px}
+.kpi{display:flex;align-items:stretch}
+.kpi .k{flex:1;padding:0 16px}.kpi .k:first-child{padding-left:0}
+.kpi .k+.k{border-left:1px solid #e2e8f0}
+.kpi .n{font-size:20px;font-weight:700;line-height:1.2}
+.kpi .l{font-size:11.5px;color:var(--muted);margin-top:2px}
+.ot-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px dashed #e2e8f0}
+.ot-label{font-size:11.5px;color:var(--muted)}</pre>
+    <p class="note">说明：若要最小改动，可保留现有 <code>.daily-wrap</code> 单容器方案，仅把圆角 12→16、内边距 16→20、第 2 行保持 <code>grid-template-columns:1fr 1fr</code> 同宽（需给月/季/年报卡 <code>grid-column:1/-1</code>）。</p>
+  </div>
+
+  <h2 class="sec">七、验收清单</h2>
+  <div class="panel">
+    <ul class="chk">
+      <li>日历看板与日报编辑器<b>同高同宽</b>（缩放窗口、切换月份不改变等高）</li>
+      <li>所有卡片圆角 16px、内边距 20px，hover 阴影与项目管理页一致</li>
+      <li>今天/选中/无日报/加班四种日历状态可区分，红点不被裁切</li>
+      <li>周报与口头版<b>同宽 1:1</b>；只读区底色 #f6f8fb 且不可编辑</li>
+      <li>月报右栏为 <b>.month-side 浅底面板</b>：KPI 三组带竖分隔线、加班日行虚线锚底，与左栏占比条等高对齐</li>
+      <li>需求池筛选为分段控件，选中态白底蓝字，计数随筛选实时更新</li>
+      <li>需求卡优先级色条三色正确；摘要两行截断；操作按钮 hover 才全亮</li>
+      <li>弹窗三列等宽，label 与控件间距 5px，保存/取消右对齐</li>
+      <li>窄屏（&lt;900px）双列自动降为单列，无横向滚动</li>
+      <li>未改动项目管理 / Skill 库 / 知识库 / 工作规则等其他页面样式</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

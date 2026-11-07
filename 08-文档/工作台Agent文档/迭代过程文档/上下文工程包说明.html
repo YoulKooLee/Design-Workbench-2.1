@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>上下文工程包说明</title>
+<style>
+/* ===========================================================================
+   _core.css —— 领域组件的共享结构样式（被 build.py 在每套主题之前加载）
+   ---------------------------------------------------------------------------
+   契约：本文件是「新增领域块」的唯一结构样式来源。所有规则只用 CSS 变量表达，
+   因此换主题时只需在主题文件的 :root 里改变量、或补领域组件选择器覆盖，无需重写
+   整块。经典排版（正文/标题/表格/图/公式/callout/定理族）仍由各主题自带；本文件
+   只补 multi-style 时代没有的调研组件：图表、KPI 卡、风险条款卡、内容盒、方案对比
+   卡、技术流程节点。
+
+   变量分层：
+   - 主题应定义的基础变量（--color-text / --color-muted / --color-accent /
+     --color-rule / --color-bg 等）本文件只「使用」，不定义。
+   - 领域组件专属变量（--chart-1..8 图表色板、--sem-pos/warn/neg 语义色、
+     --chart-height 画布高度）在此给出无障碍默认值；主题可在自己的 :root 覆盖。
+     因为主题在 core 之后加载，同为 :root 的覆盖会生效。
+   =========================================================================== */
+
+:root {
+  /* 分类图表色板：默认 Okabe-Ito 无障碍 8 色（色盲友好、灰度可分辨）。 */
+  --chart-1: #0072B2;
+  --chart-2: #E69F00;
+  --chart-3: #009E73;
+  --chart-4: #CC79A7;
+  --chart-5: #56B4E9;
+  --chart-6: #D55E00;
+  --chart-7: #F0E442;
+  --chart-8: #999999;
+  /* 语义色：正面/中性提示/负面（风险分级、KPI 涨跌都复用，去 emoji 靠颜色）。 */
+  --sem-pos:  #1f8a5b;
+  --sem-warn: #c98a1a;
+  --sem-neg:  #c0392b;
+  /* 图表画布默认高度（可被 --extra-css 或主题覆盖）。 */
+  --chart-height: 400px;
+  /* 外链色：[ID](url) 渲染为 <a class="ref">[ID]</a> 的统一配色，
+     主题可在自己的 :root 覆盖以贴合主题色。 */
+  --ref-color: #1a73e8;
+}
+
+/* 页眉日期是页眉署名行的子元素；多数主题只样式化 .doc-byline，这里给 .doc-date
+   一个跨主题的默认颜色（主题若自定义会覆盖它），使 class 契约完整。 */
+.doc-byline .doc-date { color: var(--color-muted); }
+
+/* --- 外链：[ID](url) → <a class="ref" href="url" rel="noopener" target="_blank">[ID]</a) -
+   build.py 给所有外链 markdown 链接打 .ref 并把显示文本包成 [ID]；这里只给结构样式：
+   用 --ref-color 上色、缩小字号、去下划线/底边（与各主题 a { border-bottom } 区分开）。
+   类选择器优先级高于元素选择器 a，故主题里的 a 规则不会盖掉它；主题可在 :root 覆盖
+   --ref-color 以贴合自身配色。 */
+.ref {
+  color: var(--ref-color);
+  text-decoration: none;
+  border-bottom: none;
+  font-size: .85em;
+  white-space: nowrap;
+}
+
+/* --- 表格自适应：宽表横向滚动，不撑破正文宽度（PC 与移动端一致） ---------- */
+/* build.py 把每张 <table> 包进 <div class="table-scroll">。窄表正常铺满 100%；
+   列多 / 长 token 使表格 min-content 超过正文宽度时，在此处横向滚动，正文整体
+   宽度与边距不被撑破。不强制 white-space:nowrap，让单元格文字优先换行自适应，
+   只在确有不可断内容时才滚动。 */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+.table-scroll > table { margin-top: 0; }
+.table-scroll > table > caption { caption-side: top; }
+
+/* --- 图表（ECharts 画布 + 标题；配色由 build.py 的 init 脚本注入） --------- */
+.chart-figure { margin: 1.8em 0; }
+.chart-title {
+  font-weight: 700; color: var(--color-text); font-size: .96rem;
+  margin: 0 0 .5em; text-align: center;
+}
+.chart-title .fignum { color: var(--color-accent); }
+.chart {
+  width: 100%; height: var(--chart-height); min-height: 240px;
+}
+
+/* --- KPI 卡片 / 网格 ------------------------------------------------------ */
+.kpi-grid {
+  display: grid; gap: .9rem; margin: 1.4em 0;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.kpi-card {
+  padding: 1rem 1.1rem; border-radius: 10px;
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg));
+  border: 1px solid var(--color-rule);
+  border-top: 3px solid var(--color-accent);
+}
+.kpi-trend-up   { border-top-color: var(--sem-pos); }
+.kpi-trend-down { border-top-color: var(--sem-neg); }
+.kpi-value {
+  font-size: 1.7rem; font-weight: 700; line-height: 1.15;
+  color: var(--color-text); letter-spacing: -.01em;
+}
+.kpi-label { font-size: .82rem; color: var(--color-muted); margin-top: .25rem; }
+.kpi-delta {
+  display: inline-block; margin-top: .5rem; font-size: .8rem; font-weight: 600;
+  padding: .08em .5em; border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.kpi-delta.kpi-up   { color: var(--sem-pos); }
+.kpi-delta.kpi-down { color: var(--sem-neg); }
+.kpi-delta.kpi-flat { color: var(--color-muted); }
+.kpi-note { font-size: .85rem; color: var(--color-muted); margin-top: .5rem; }
+.kpi-note p { margin: .2em 0; }
+
+/* --- 风险条款卡（彩色左边框替代 emoji；等级 risk-high/medium/low） -------------------------------------- */
+.clause-card {
+  margin: 1.2em 0; padding: .9em 1.1em; border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--color-rule) 22%, var(--color-bg));
+  border-left: 4px solid var(--color-muted);
+}
+.clause-card.risk-high   { border-left-color: var(--sem-neg); }
+.clause-card.risk-medium { border-left-color: var(--sem-warn); }
+.clause-card.risk-low    { border-left-color: var(--sem-pos); }
+.clause-head { margin: 0 0 .4em; font-weight: 700; }
+
+/* --- 内容盒：核心发现 / 研究方法 / 行动建议 / 局限 ------------------------ */
+.content-box {
+  margin: 1.4em 0; padding: 1em 1.2em; border-radius: 8px;
+  background: color-mix(in srgb, var(--color-accent) 4%, var(--color-bg));
+  border: 1px solid var(--color-rule); border-left: 4px solid var(--color-accent);
+}
+.content-box .box-title {
+  margin: 0 0 .5em; font-weight: 700; color: var(--color-accent);
+  font-size: .95rem; letter-spacing: .01em;
+}
+.content-box p:last-child, .content-box ul:last-child, .content-box ol:last-child { margin-bottom: 0; }
+.box-keyfindings { border-left-color: var(--color-accent); }
+.box-keyfindings .box-title { color: var(--color-accent); }
+.box-methodology { border-left-color: var(--color-muted); }
+.box-methodology .box-title { color: var(--color-muted); }
+.box-recommendations { border-left-color: var(--sem-pos); }
+.box-recommendations .box-title { color: var(--sem-pos); }
+.box-limitations { border-left-color: var(--sem-warn); }
+.box-limitations .box-title { color: var(--sem-warn); }
+
+/* --- 方案对比卡 ---------------------------------------------------------- */
+.method-grid {
+  display: grid; gap: 1rem; margin: 1.4em 0;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.method-card {
+  padding: 1rem 1.1rem; border: 1px solid var(--color-rule); border-radius: 10px;
+  background: var(--color-bg);
+}
+.method-title {
+  margin: 0 0 .6em; font-weight: 700; color: var(--color-accent);
+  padding-bottom: .35em; border-bottom: 1px solid var(--color-rule);
+}
+.method-pros, .method-cons { margin: .6em 0; }
+.proscons-title { margin: 0 0 .2em; font-weight: 700; font-size: .85rem; }
+.method-pros .proscons-title { color: var(--sem-pos); }
+.method-cons .proscons-title { color: var(--sem-neg); }
+.method-pros ul, .method-cons ul { margin: .2em 0 .2em 1.2em; }
+
+/* --- 技术流程（横向节点 + CSS 箭头，去 emoji） --------------------------- */
+.tech-flow {
+  display: flex; flex-wrap: wrap; align-items: stretch; gap: .4rem;
+  margin: 1.4em 0;
+}
+.tech-node {
+  flex: 1 1 150px; min-width: 130px; padding: .8em 1em;
+  border: 1px solid var(--color-rule); border-radius: 8px;
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg));
+}
+.tech-node-title { margin: 0 0 .3em; font-weight: 700; color: var(--color-accent); }
+.tech-node p { margin: .2em 0; font-size: .9rem; }
+.tech-arrow {
+  align-self: center; flex: 0 0 auto; width: 0; height: 0;
+  border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+  border-left: 11px solid var(--color-muted);
+}
+
+@media (max-width: 640px) {
+  .tech-flow { flex-direction: column; }
+  .tech-arrow {
+    align-self: center; border-left: 7px solid transparent;
+    border-right: 7px solid transparent; border-top: 11px solid var(--color-muted);
+    border-bottom: 0;
+  }
+}
+
+@media print {
+  .chart { break-inside: avoid; }
+  .kpi-card, .clause-card, .method-card, .content-box, .tech-node { break-inside: avoid; }
+  .table-scroll { overflow: visible; }   /* PDF 不滚动：表格原样排出，由分页处理 */
+}
+
+
+/* ===========================================================================
+   enhanced-science.css —— 技术研究 / 科技趋势增强主题
+   深海蓝 + 钢蓝，克制高级感；技术流程与方案对比为核心视觉焦点。
+   与 build.py 的 class 契约完全兼容；在 _core.css 结构之上做视觉增强。
+   =========================================================================== */
+
+:root {
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Noto Sans CJK SC", sans-serif;
+  --font-head: var(--font-body);
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Noto Sans Mono CJK SC", monospace;
+
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-accent: #1e3a5f;
+  --color-accent-soft: #f1f5f9;
+  --color-rule: #e2e8f0;
+  --color-bg: #ffffff;
+  --color-highlight: #4a6fa5;
+
+  --measure: 56rem;
+  --base-size: 16px;
+  --leading: 1.65;
+
+  --chart-1: #1e3a5f;
+  --chart-2: #4a6fa5;
+  --chart-3: #7c8aa0;
+  --chart-4: #0f766e;
+  --chart-5: #6b5b95;
+  --chart-6: #8a6d4b;
+  --chart-7: #475569;
+  --chart-8: #94a3b8;
+
+  --sem-pos: #0f766e;
+  --sem-warn: #b45309;
+  --sem-neg: #be123c;
+  --ref-color: #1e3a5f;
+}
+
+html { background: #f8fafc; }
+body {
+  margin: 0;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font: var(--base-size)/var(--leading) var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.report {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 4rem 2.2rem 6rem;
+  background: var(--color-bg);
+}
+
+/* --- 标题区：科技白皮书封面 --- */
+.doc-header {
+  margin-bottom: 2.6rem;
+  padding: 1.8rem 2rem;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+  border-radius: 14px;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+.doc-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.55rem;
+  color: #ffffff;
+  position: relative;
+}
+.doc-subtitle {
+  font-size: 1.15rem;
+  color: #cbd5e1;
+  font-weight: 400;
+  margin: 0 0 0.8rem;
+  position: relative;
+}
+.doc-byline {
+  font-size: 0.86rem;
+  color: #94a3b8;
+  margin: 0.8rem 0 0;
+  position: relative;
+}
+.doc-author { font-weight: 700; color: #ffffff; }
+.doc-byline .doc-date { color: #94a3b8; }
+
+/* --- 摘要 --- */
+.abstract {
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-rule);
+  border-radius: 12px;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 2.6rem;
+}
+.abstract-title {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--color-accent);
+  margin: 0 0 0.65rem;
+}
+.abstract p { margin: 0 0 0.65rem; }
+.abstract p:last-child { margin-bottom: 0; }
+
+/* --- 标题 --- */
+.doc-body h1, .doc-body h2, .doc-body h3, .doc-body h4 {
+  font-weight: 700;
+  line-height: 1.22;
+  margin: 2em 0 0.65em;
+  color: var(--color-text);
+}
+.doc-body h1 {
+  font-size: 1.55rem;
+  color: var(--color-accent);
+  padding-bottom: 0.35em;
+  border-bottom: 2px solid var(--color-rule);
+}
+.doc-body h2 { font-size: 1.28rem; }
+.doc-body h3 { font-size: 1.1rem; }
+.doc-body h4 { font-size: 1rem; color: var(--color-muted); }
+.secnum {
+  color: var(--color-highlight);
+  font-weight: 800;
+  margin-right: 0.5em;
+}
+
+/* --- 正文 --- */
+.doc-body p { margin: 0 0 1.05rem; }
+ul, ol { margin: 0.7em 0 1.15em 1.4em; padding: 0; }
+li { margin: 0.35em 0; }
+li::marker { color: var(--color-highlight); }
+
+a { color: var(--ref-color); text-decoration: none; border-bottom: 1px solid var(--color-rule); }
+a:hover { border-bottom-color: var(--ref-color); }
+a.xref { font-weight: 700; border: none; color: var(--color-accent); }
+.xref-broken { color: var(--sem-neg); font-weight: 700; }
+
+/* --- callout --- */
+.callout {
+  margin: 1.5em 0;
+  padding: 1.1em 1.3em;
+  background: #f8fafc;
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0 10px 10px 0;
+}
+.callout-title { font-weight: 800; margin: 0 0 0.45em; color: var(--color-accent); }
+.note { border-left-color: var(--color-accent); background: #f1f5f9; }
+.tip, .takeaway { border-left-color: var(--sem-pos); background: #ecfdf5; }
+.tip .callout-title, .takeaway .callout-title { color: var(--sem-pos); }
+.warning { border-left-color: var(--sem-neg); background: #fef2f2; }
+.warning .callout-title { color: var(--sem-neg); }
+.info { border-left-color: var(--color-highlight); background: #f1f5f9; }
+
+/* --- 定理族 --- */
+.theorem-block {
+  margin: 1.5em 0;
+  padding: 1.1em 1.3em;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border: 1px solid var(--color-rule);
+  border-radius: 10px;
+}
+.thm-title { margin: 0 0 0.4em; }
+.thm-head { font-weight: 800; color: var(--color-accent); }
+.proof { margin: 1.2em 0; color: var(--color-muted); }
+.proof-title { font-style: italic; font-weight: 700; margin: 0 0.4em 0 0; display: inline; }
+.proof-title + * { display: inline; }
+.qed { float: right; color: var(--color-muted); }
+
+/* --- 图 --- */
+.figure { margin: 2em 0; text-align: center; }
+.figure img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 20px rgba(30, 58, 95, 0.1); }
+figcaption { font-size: 0.88rem; color: var(--color-muted); margin-top: 0.7em; }
+.fignum { font-weight: 800; color: var(--color-highlight); }
+
+/* --- 表格 --- */
+table { border-collapse: collapse; width: 100%; margin: 1.8em 0; font-size: 0.92rem; }
+caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 0.87rem;
+  color: var(--color-muted);
+  margin-bottom: 0.6em;
+}
+.tabnum { font-weight: 800; color: var(--color-highlight); }
+th, td { padding: 0.65em 0.9em; text-align: left; border-bottom: 1px solid var(--color-rule); }
+thead th {
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.8rem;
+}
+tbody tr:nth-child(even) { background: #f8fafc; }
+tbody tr:hover { background: #f1f5f9; }
+
+/* --- 公式 --- */
+.math-block { margin: 1.3em 0; text-align: center; position: relative; overflow-x: auto; }
+.eqnum { position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--color-muted); }
+
+/* --- 代码与引用 --- */
+pre.code {
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1.1em 1.3em;
+  border-radius: 10px;
+  overflow-x: auto;
+  line-height: 1.55;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+code { font-family: var(--font-mono); font-size: 0.88em; background: #e0e7ff; padding: 0.12em 0.38em; border-radius: 4px; }
+pre.code code { background: none; padding: 0; }
+blockquote {
+  margin: 1.5em 0;
+  padding: 0.6em 0 0.6em 1.3em;
+  border-left: 3px solid var(--color-highlight);
+  color: var(--color-muted);
+  background: #f8fafc;
+  border-radius: 0 8px 8px 0;
+}
+hr { border: none; border-top: 1px solid var(--color-rule); margin: 2.4em 0; }
+
+/* --- 领域组件增强 --- */
+
+/* KPI 卡片 */
+.kpi-grid {
+  display: grid;
+  gap: 1rem;
+  margin: 1.6em 0;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+.kpi-card {
+  padding: 1.2rem 1.3rem;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--color-rule);
+  border-top: 4px solid var(--color-accent);
+  box-shadow: 0 2px 10px rgba(30, 58, 95, 0.06);
+}
+.kpi-trend-up { border-top-color: var(--sem-pos); }
+.kpi-trend-down { border-top-color: var(--sem-neg); }
+.kpi-trend-flat { border-top-color: var(--color-muted); }
+.kpi-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+.kpi-label { font-size: 0.8rem; color: var(--color-muted); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.kpi-delta {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.12em 0.65em;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+.kpi-delta.kpi-up { color: var(--sem-pos); }
+.kpi-delta.kpi-down { color: var(--sem-neg); }
+.kpi-delta.kpi-flat { color: var(--color-muted); }
+.kpi-note { font-size: 0.84rem; color: var(--color-muted); margin-top: 0.55rem; }
+
+/* 风险条款卡 */
+.clause-card {
+  margin: 1.3em 0;
+  padding: 1.05em 1.25em;
+  border-radius: 0 10px 10px 0;
+  background: #ffffff;
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--color-muted);
+  box-shadow: 0 2px 6px rgba(30, 58, 95, 0.04);
+}
+.clause-card.risk-high { border-left-color: var(--sem-neg); background: #fef2f2; }
+.clause-card.risk-medium { border-left-color: var(--sem-warn); background: #fffbeb; }
+.clause-card.risk-low { border-left-color: var(--sem-pos); background: #f0fdf4; }
+.clause-head { margin: 0 0 0.45em; font-weight: 800; }
+
+/* 内容盒 */
+.content-box {
+  margin: 1.5em 0;
+  padding: 1.15rem 1.35rem;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--color-accent);
+  box-shadow: 0 2px 6px rgba(30, 58, 95, 0.04);
+}
+.content-box .box-title {
+  margin: 0 0 0.55em;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.box-keyfindings { border-left-color: var(--color-highlight); background: #f1f5f9; }
+.box-keyfindings .box-title { color: var(--color-highlight); }
+.box-methodology { border-left-color: var(--color-muted); }
+.box-methodology .box-title { color: var(--color-muted); }
+.box-recommendations { border-left-color: var(--sem-pos); background: #f0fdf4; }
+.box-recommendations .box-title { color: var(--sem-pos); }
+.box-limitations { border-left-color: var(--sem-warn); background: #fffbeb; }
+.box-limitations .box-title { color: var(--sem-warn); }
+
+/* 方案对比卡 */
+.method-grid {
+  display: grid;
+  gap: 1.1rem;
+  margin: 1.6em 0;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+.method-card {
+  padding: 1.15rem 1.3rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.04);
+}
+.method-title {
+  margin: 0 0 0.7em;
+  font-weight: 800;
+  color: var(--color-accent);
+  padding-bottom: 0.4em;
+  border-bottom: 2px solid var(--color-rule);
+}
+.method-pros, .method-cons { margin: 0.7em 0; }
+.proscons-title { margin: 0 0 0.25em; font-weight: 800; font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.method-pros .proscons-title { color: var(--sem-pos); }
+.method-cons .proscons-title { color: var(--sem-neg); }
+
+/* 技术流程 */
+.tech-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  margin: 1.6em 0;
+}
+.tech-node {
+  flex: 1 1 150px;
+  min-width: 130px;
+  padding: 0.95em 1.1em;
+  border: 1px solid var(--color-rule);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--color-accent-soft) 100%);
+  box-shadow: 0 2px 6px rgba(30, 58, 95, 0.05);
+}
+.tech-node-title { margin: 0 0 0.35em; font-weight: 800; color: var(--color-accent); }
+.tech-node p { margin: 0.25em 0; font-size: 0.9rem; }
+.tech-arrow {
+  align-self: center;
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 13px solid var(--color-highlight);
+}
+
+/* 图表 */
+.chart-figure { margin: 2em 0; }
+.chart-title { font-weight: 800; color: var(--color-text); font-size: 0.96rem; margin: 0 0 0.6em; text-align: center; }
+.chart-title .fignum { color: var(--color-highlight); }
+.chart { width: 100%; height: var(--chart-height, 400px); min-height: 240px; }
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .report { padding: 2.2rem 1.2rem 3.5rem; }
+  .doc-header { padding: 1.4rem 1.5rem; }
+  .doc-title { font-size: 1.75rem; }
+  .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .method-grid { grid-template-columns: 1fr; }
+  .tech-flow { flex-direction: column; }
+  .tech-arrow {
+    align-self: center;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 12px solid var(--color-highlight);
+    border-bottom: 0;
+  }
+}
+
+/* 打印 */
+@media print {
+  html, body { background: #fff; }
+  .report { padding: 0; max-width: none; }
+  .doc-header { background: none; color: var(--color-text); border-bottom: 3px solid var(--color-accent); border-radius: 0; }
+  .doc-title { color: var(--color-accent); }
+  .doc-subtitle, .doc-byline, .doc-author, .doc-byline .doc-date { color: var(--color-muted); }
+  .kpi-card, .clause-card, .method-card, .content-box, .tech-node, .figure img { break-inside: avoid; }
+  .chart { break-inside: avoid; }
+  pre.code { background: #f4f4f4; color: #222; box-shadow: none; }
+  a { color: var(--color-text); border-bottom-color: var(--color-rule); }
+}
+
+
+/* ===========================================================================
+   _polish.css —— 通用打磨层（非主题；下划线开头，不进入 --list-styles）
+   ---------------------------------------------------------------------------
+   由 build.py 在每次渲染时自动加载，级联固定为：
+       _core.css → 主题 → 本文件 → 可选 --extra-css
+   职责：跨主题一致的细节修正，不改变任何主题的气质。只做五类事：
+   数字排版（等宽对齐）、外链观感、嵌套列表间距、宽表滚动与图片兜底、
+   打印分页与可达性。全部规则变量驱动 / 低特异性，任何主题都可安全叠加；
+   主题如需不同行为，用更高特异性选择器或 --extra-css 覆盖即可。
+   =========================================================================== */
+
+/* --- 1. 数字排版：表格与 KPI 的数字一律等宽对齐 --------------------------- */
+td, th { font-variant-numeric: tabular-nums lining-nums; }
+.kpi-value, .kpi-delta, .eqnum, .secnum { font-variant-numeric: tabular-nums lining-nums; }
+
+/* --- 2. 外链：上标化处理，弱化对行文的打断 ----------------------------- */
+.ref {
+  /* font-size: 0.78em;
+  vertical-align: 0.28em;
+  line-height: 0; */
+  padding: 0 0.08em;
+}
+
+/* --- 3. 嵌套列表：子列表收紧上下间距（引擎支持嵌套后各主题的统一默认） ------ */
+li > ul, li > ol { margin: 0.25em 0 0.35em 1.25em; }
+
+/* --- 4. 图片与画布的兜底约束、宽表滚动条观感 -------------------------------- */
+img { max-width: 100%; height: auto; }
+.chart > canvas, .chart > div { max-width: 100%; }
+.table-scroll { scrollbar-width: thin; }
+.table-scroll::-webkit-scrollbar { height: 8px; }
+.table-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-rule, #ccc);
+  border-radius: 4px;
+}
+
+/* --- 5. 可达性：键盘焦点可见 -------------------------------------------------- */
+a:focus-visible {
+  outline: 2px solid var(--color-accent, #06c);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* --- 6. 打印与 PDF：孤行/寡行、标题吸附、页边距、跨页表头 ---------------------- */
+@media print {
+  @page { margin: 18mm 16mm; }
+  p, li { orphans: 3; widows: 3; }
+  .doc-body h1, .doc-body h2, .doc-body h3, .doc-body h4 { break-after: avoid; }
+  .chart-figure, .figure, .math-block, .theorem-block,
+  .kpi-grid, .method-grid, .tech-flow { break-inside: avoid; }
+  .doc-header { break-after: avoid; }
+  thead { display: table-header-group; }   /* 跨页表格重复表头 */
+  .ref { color: inherit; }                 /* 打印时外链不抢焦点 */
+}
+
+</style>
+</head>
+<body>
+<article class="report">
+<header class="doc-header">
+<h1 class="doc-title">上下文工程包说明</h1>
+<p class="doc-subtitle">产品设计工作台 · _project-template 现行版（2026-09-25 更新后）</p>
+<p class="doc-byline"><span class="doc-author">qwen</span> &middot; <span class="doc-date">2026-09-25</span></p>
+</header>
+<div class="abstract"><p class="abstract-title">摘要</p><p>本文说明「上下文工程包」的设计原理、分层架构、执行流程与本次更新内容。</p><p>工程包要解决三个真实痛点：过程性讨论污染需求文档、跨端开发失忆、上下文溢出。核心思路是一条装配公式——整个工程不必全部塞进上下文，执行时只聚焦「当前模块设计 + 总体/业务架构 + 模块间数据流」，模块完成即压缩，再进下一个。</p><p>围绕这条公式，工程包用四层机制落地：常驻入口（AGENTS.md 6.5 KB）、三层装配（常驻基线 / 模块滑窗 / 按需检索）、技术强制（8 个 hook 注册点 + 7 条拦截名单）、写入侧纪律（三态门禁 + 基线三件套 + 模块快照）。本文所有体量数字均为 2026-09-25 实测值。</p></div>
+<div class="doc-body">
+<h1 id="sec-1">一、这套工程包解决什么问题</h1>
+<h2 id="sec-2">1.1 三个真实痛点</h2>
+<div class="table-scroll"><table><thead><tr><th>痛点</th><th>现象</th><th>工程包的对策</th></tr></thead><tbody><tr><td>过程讨论污染规格</td><td>智能体把方案对比、试错、自己的推断一并写进 PRD，导致需求文档抓不住重点</td><td>写入侧三态门禁：<code>[事实]</code> 才可进基线，<code>[讨论]</code> / <code>[否决]</code> 只进过程层</td></tr><tr><td>跨端开发失忆</td><td>同一业务分 Web 与移动端，Web 做完换到移动端，前序决策全丢，只能重来</td><td>模块完成快照（≤300 字，含接口契约与跨端差异）入常驻基线，换端只读快照不读实现</td></tr><tr><td>上下文溢出</td><td>智能体遍历读技能库、组件库等大目录，单次调用即吞掉数十万 token</td><td>路径级技术拦截（context-budget hook）+ 体量瘦身 + 按需检索分层</td></tr></tbody></table></div>
+<h2 id="sec-3">1.2 一条装配公式</h2>
+<p>整套机制的源头是一句话：</p>
+<blockquote><p>整个工程没必要全部塞进上下文，执行过程只需要聚焦当前模块设计方案 + 总体架构、业务架构 + 模块之间数据流，这个模块完成就压缩上下文做下个模块。</p></blockquote>
+<p>这句话被拆成三层可执行规则：<strong>常驻基线</strong>对应"总体架构 + 业务架构 + 模块间数据流"，<strong>模块滑窗</strong>对应"当前模块设计方案"，<strong>按需检索</strong>对应"整个工程没必要全部塞进"。</p>
+<div class="callout callout" id="callout-1"><p class="callout-title">设计取向</p><p>工程包不追求"让智能体记住一切"，而追求"让该忘的能被安全忘掉、该记的永远在文件里"。因此有一条贯穿全文的原则：<strong>别指望压缩时被保住，让基线永远是文件，丢了按路径重读。</strong></p></div>
+<h1 id="sec-4">二、整体架构</h1>
+<h2 id="sec-5">2.1 四层结构</h2>
+<div class="tech-flow" id="tech-flow-1"><div class="tech-node" id="tech-node-1"><p class="tech-node-title">常驻入口层</p><p>AGENTS.md 6.5 KB 每次会话必读，只写本工程独有的事实与约定</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-2"><p class="tech-node-title">装配层</p><p>常驻基线 / 模块滑窗 / 按需检索 决定"这次装什么、装多少"</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-3"><p class="tech-node-title">强制层</p><p>8 个 hook 注册点 把约定变成拦得住的技术门禁</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-4"><p class="tech-node-title">记忆层</p><p>三态门禁 + 基线三件套 + 模块快照 决定"什么能留下、留在哪"</p></div></div>
+<h2 id="sec-6">2.2 目录职责与体量</h2>
+<div class="table-scroll"><table id="tab-1"><caption><span class="tabnum">表 1.</span> 工程包目录职责与实测体量（2026-09-25）</caption><thead><tr><th>层</th><th>路径</th><th>职责</th><th style="text-align:right">文件数</th><th style="text-align:right">体量</th><th>常驻性</th></tr></thead><tbody><tr><td>入口</td><td><code>AGENTS.md</code></td><td>本工程独有事实、分流规则、基线约定、读取地图</td><td style="text-align:right">1</td><td style="text-align:right">6.5 KB</td><td>常驻</td></tr><tr><td>入口</td><td><code>CLAUDE.md</code></td><td>指针文件，指向 AGENTS.md 唯一真源</td><td style="text-align:right">1</td><td style="text-align:right">0.3 KB</td><td>常驻</td></tr><tr><td>记忆</td><td><code>project-memory.md</code></td><td>过程层：决策记录、变更流水、任务进度（只放摘要+路径）</td><td style="text-align:right">1</td><td style="text-align:right">2.2 KB</td><td>常驻</td></tr><tr><td>技能</td><td><code>.agents/skills/</code></td><td>51 个技能，每个含 SKILL.md</td><td style="text-align:right">272</td><td style="text-align:right">2.40 MB</td><td>仅 INDEX 常驻</td></tr><tr><td>技能索引</td><td><code>.agents/skills/INDEX.md</code></td><td>技能名 + 触发词，会话启动注入</td><td style="text-align:right">1</td><td style="text-align:right">5.8 KB</td><td>常驻（注入）</td></tr><tr><td>知识</td><td><code>.agents/knowledge/</code></td><td>分阶段规范（需求/设计/开发/测试/约定/图表/UI库）</td><td style="text-align:right">47</td><td style="text-align:right">205 KB</td><td>按需</td></tr><tr><td>规则</td><td><code>.agents/rules/</code></td><td>Agent 协作与工程规则（12 文件）</td><td style="text-align:right">12</td><td style="text-align:right">51 KB</td><td>按需</td></tr><tr><td>子 Agent</td><td><code>.agents/agents/</code></td><td>18 个子 Agent 定义（审查、规划、需求撰写等）</td><td style="text-align:right">18</td><td style="text-align:right">113 KB</td><td>按需</td></tr><tr><td>门禁</td><td><code>.agents/hooks/</code></td><td>9 个 hook 脚本 + lib + 分发器</td><td style="text-align:right">13</td><td style="text-align:right">13 KB</td><td>运行时</td></tr><tr><td>配置</td><td><code>.agents/settings.json</code></td><td>hook 注册<strong>唯一真源</strong></td><td style="text-align:right">1</td><td style="text-align:right">2.9 KB</td><td>启动读取</td></tr><tr><td>组件</td><td><code>src/component-templates/</code></td><td>组件真源，每个含 index.html + index.tsx</td><td style="text-align:right">393</td><td style="text-align:right">1.46 MB</td><td>禁止整目录读</td></tr><tr><td>业务规范</td><td><code>rules/</code>（根级）</td><td>产品/原型业务规范（需求对齐、原型开发、评审、主题）</td><td style="text-align:right">47</td><td style="text-align:right">436 KB</td><td>按需</td></tr><tr><td>交付</td><td><code>templates/</code></td><td>PACKAGING / 项目初始化 / PRD / 评审模板</td><td style="text-align:right">9</td><td style="text-align:right">—</td><td>按需</td></tr></tbody></table></div>
+<figure class="chart-figure" id="fig-1"><p class="chart-title"><span class="fignum">图 1.</span> 各层体量分布（KB，对数感知）</p><div class="chart" id="chart-canvas-1"></div><script type="application/json" data-chart="chart-canvas-1">{"tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}}, "grid": {"left": "3%", "right": "10%", "bottom": "3%", "top": "6%", "containLabel": true}, "xAxis": {"type": "value", "name": "KB"}, "yAxis": {"type": "category", "data": ["AGENTS.md", "hooks", "rules(.agents)", "knowledge", "agents", "rules(根级)", "component-templates", "skills"]}, "series": [{"type": "bar", "data": [6.5, 13, 51, 205, 113, 436, 1495, 2460], "label": {"show": true, "position": "right", "formatter": "{c} KB"}, "barWidth": "58%"}]}</script></figure>
+<div class="callout callout" id="callout-2"><p class="callout-title">体量与常驻的关系</p><p>图中体量最大的三层（skills 2.40 MB、component-templates 1.46 MB、根级 rules 436 KB）<strong>全部禁止整目录读取</strong>，只允许精确单文件访问；真正常驻的只有 AGENTS.md（6.5 KB）+ INDEX.md（5.8 KB）+ project-memory.md（2.2 KB），合计约 14.5 KB。这是"大库存在但不进上下文"的关键设计。</p></div>
+<h2 id="sec-7">2.3 会话启动时的装配链路</h2>
+<div class="tech-flow" id="tech-flow-2"><div class="tech-node" id="tech-node-5"><p class="tech-node-title">宿主启动会话</p><p>读取 <code>.agents/settings.json</code></p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-6"><p class="tech-node-title">SessionStart hook</p><p>清理上轮状态文件（edited / read / review-called）</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-7"><p class="tech-node-title">注入常驻内容</p><p>强制执行清单 + 技能索引 INDEX.md（5.8 KB）</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-8"><p class="tech-node-title">注入项目上下文</p><p>AGENTS.md 全文（6.5 KB）</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-9"><p class="tech-node-title">就绪</p><p>智能体凭索引匹配触发词，按需读单个技能</p></div></div>
+<div class="warning callout" id="warning-1"><p class="callout-title">生效前提</p><p>上述链路依赖宿主支持并加载 <code>.agents/</code> 钩子约定。当前 Claude Code / CodeBuddy 系宿主支持；WorkBuddy 宿主实测不加载（其配置文件无 hooks 段），此时全部 hook 不生效，AGENTS.md 的约束退化为纯文字。跨宿主使用前应先确认接线状态。</p></div>
+<h1 id="sec-8">三、装配原理：三层上下文模型</h1>
+<h2 id="sec-9">3.1 三层划分</h2>
+<div class="table-scroll"><table><thead><tr><th>层</th><th>装什么</th><th>何时装</th><th>体量取向</th></tr></thead><tbody><tr><td>常驻基线</td><td>总体架构、业务模型、数据模型、模块间数据流、已完成模块快照</td><td>每次会话都在</td><td>只存<strong>条目级摘要</strong>，禁止全文灌入</td></tr><tr><td>模块滑窗</td><td>当前模块的 HLD / LLD、manifest 反查到的组件、上下游契约切片</td><td>进入模块时装、离开时卸</td><td>单模块级，用完即走</td></tr><tr><td>按需检索</td><td>技能正文、知识库规范、组件源码、业务规范</td><td>命中需求时精确读单文件</td><td><strong>永不常驻</strong></td></tr></tbody></table></div>
+<h2 id="sec-10">3.2 跨端不失忆的机制</h2>
+<div class="tech-flow" id="tech-flow-3"><div class="tech-node" id="tech-node-10"><p class="tech-node-title">Web 端开发</p><p>完成模块 A 的实现</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-11"><p class="tech-node-title">闭环验收</p><p>数据流闭环判据通过（无孤儿数据、无凭空数据）</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-12"><p class="tech-node-title">写快照</p><p>≤300 字：接口契约 + 跨端差异 + 关键决策</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-13"><p class="tech-node-title">入常驻基线</p><p>快照成为基线的一部分</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-14"><p class="tech-node-title">移动端启动</p><p>装配 = 基线（含 Web 端快照）+ 移动端滑窗</p></div></div>
+<p>关键在最后一跳：移动端读到的是<strong>接口契约与跨端差异</strong>，不是 Web 端的实现代码。因此既不失忆，也不需要重读一遍 Web 端源码。</p>
+<h2 id="sec-11">3.3 模块快照的固定字段</h2>
+<div class="table-scroll"><table id="tab-2"><caption><span class="tabnum">表 2.</span> 模块完成快照字段（总长 ≤300 字）</caption><thead><tr><th>字段</th><th>内容要求</th></tr></thead><tbody><tr><td>模块名 + 端</td><td>web / mobile / both</td></tr><tr><td>状态</td><td>已完成 / 进行中（完成度百分比）</td></tr><tr><td>职责</td><td>一句话</td></tr><tr><td>对外接口</td><td>契约形式：输入实体 → 处理 → 输出实体，<strong>不写实现</strong></td></tr><tr><td>依赖模块</td><td>上游取什么数据、下游给什么数据</td></tr><tr><td>数据实体</td><td>本模块读写的实体名，与数据模型对齐</td></tr><tr><td>关键决策</td><td>≤3 条，只写结论 + 一句理由</td></tr><tr><td>跨端差异</td><td>Web 已实现部分，移动端需注意什么</td></tr><tr><td>未完成 TODO</td><td>≤3 条</td></tr></tbody></table></div>
+<h2 id="sec-12">3.4 压缩闸门：给"模块完成"一个客观定义</h2>
+<p>"这个模块完成就压缩上下文"这句话，如果"完成"由智能体自报，等于没有门禁。工程包把闭环验收升级为闸门：</p>
+<div class="tech-flow" id="tech-flow-4"><div class="tech-node" id="tech-node-15"><p class="tech-node-title">数据流闭环验收</p><p>A 模块的输出都能被某模块接住 无孤儿数据、无凭空数据</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-16"><p class="tech-node-title">才写模块快照</p><p>快照 ≤300 字，含接口契约与跨端差异</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-17"><p class="tech-node-title">才允许压缩上下文</p><p>PreCompact 保存状态，记忆门禁三问完成</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-18"><p class="tech-node-title">才进下个模块</p><p>装配下一模块滑窗，卸掉前序模块实现</p></div></div>
+<p>闭环判据落在设计阶段的质量清单中，不由智能体自报完成。</p>
+<h1 id="sec-13">四、技术强制层：hook 门禁体系</h1>
+<h2 id="sec-14">4.1 唯一真源与注册表</h2>
+<p><code>.agents/settings.json</code> 是 hook 注册的<strong>唯一真源</strong>（本次更新已删除并存的 <code>hooks.json</code>，消除双配置分裂）。事件名统一 PascalCase，共 8 个注册点：</p>
+<div class="table-scroll"><table id="tab-3"><caption><span class="tabnum">表 3.</span> hook 注册表（<code>.agents/settings.json</code>）</caption><thead><tr><th>事件</th><th>matcher</th><th>hook</th><th>作用</th></tr></thead><tbody><tr><td>SessionStart</td><td><code>*</code></td><td>session-start</td><td>清理上轮状态 + 注入强制清单与技能索引</td></tr><tr><td>PreToolUse</td><td>`Edit\</td><td>Write\</td><td>MultiEdit`</td><td>config-protection</td><td>阻止改 eslint / tsconfig 等配置来消除报错</td></tr><tr><td>PreToolUse</td><td>`Edit\</td><td>Write\</td><td>MultiEdit`</td><td>gateguard</td><td>首次编辑前检查是否已 Read 过，防盲改</td></tr><tr><td>PreToolUse</td><td>`Read\</td><td>Glob\</td><td>Grep`</td><td>context-budget</td><td>拦截高危目录的通配 / 递归 / 目录级读取</td></tr><tr><td>PostToolUse</td><td>`Edit\</td><td>Write\</td><td>MultiEdit`</td><td>review-reminder</td><td>代码改动后提醒调用 code-reviewer</td></tr><tr><td>PostToolUse</td><td><code>Read</code></td><td>gateguard</td><td>记录已读文件，供后续编辑校验</td></tr><tr><td>PostToolUse</td><td><code>Agent</code></td><td>review-tracker</td><td>追踪本会话是否已执行审查</td></tr><tr><td>PreCompact</td><td><code>*</code></td><td>pre-compact</td><td>压缩前保存工作状态快照</td></tr><tr><td>Stop</td><td><code>*</code></td><td>stop-quality-gate</td><td>回复结束前检查 console.log 残留与审查合规</td></tr></tbody></table></div>
+<p>所有 hook 经统一分发器 <code>run.cjs</code> 调用：<code>node .agents/hooks/run.cjs &lt;hookName&gt;</code>，按参数动态加载同名 <code>.cjs</code> 并执行其 <code>run(input)</code>，有返回则输出 JSON 给宿主。</p>
+<h2 id="sec-15">4.2 context-budget 的拦截判定</h2>
+<p>这是唯一管"读了什么、读多少目录"的护栏，7 条高危名单：</p>
+<div class="table-scroll"><table id="tab-4"><caption><span class="tabnum">表 4.</span> context-budget 高危名单（7 条）</caption><thead><tr><th>#</th><th>拦截目标</th><th>说明</th></tr></thead><tbody><tr><td>1</td><td><code>.agents/skills/</code></td><td>技能库 2.40 MB，只许读 INDEX.md 与命中的单个 SKILL.md</td></tr><tr><td>2</td><td><code>.agents/knowledge/</code></td><td>分阶段规范 205 KB，按阶段精确读</td></tr><tr><td>3</td><td><code>.agents/rules/</code></td><td>工程规则 51 KB，按需精确读</td></tr><tr><td>4</td><td>根级 <code>rules/</code></td><td>业务规范 436 KB，入口是 <code>rules/README.md</code></td></tr><tr><td>5</td><td><code>src/themes/</code></td><td>只需主题名时读 <code>theme.json</code> 的 name 字段</td></tr><tr><td>6</td><td><code>src/component-templates/</code></td><td>组件真源 1.46 MB，用 manifest 反查单组件</td></tr><tr><td>7</td><td><code>03-组件库/</code></td><td>工程外共享母版层，整目录禁止</td></tr></tbody></table></div>
+<p>判定流程：</p>
+<div class="tech-flow" id="tech-flow-5"><div class="tech-node" id="tech-node-19"><p class="tech-node-title">收到 Read / Glob / Grep</p><p>提取目标路径，反斜杠归一化</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-20"><p class="tech-node-title">命中名单？</p><p>7 条正则逐一匹配 未命中 → 直接放行</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-21"><p class="tech-node-title">是批量操作？</p><p>含通配符 <code>*?[]{}</code> 或 Glob/Grep 检索 或 Read 目标是目录</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-22"><p class="tech-node-title">阻断并给指引</p><p>返回拦截原因 + 安全替代路径</p></div></div>
+<div class="tip callout" id="tip-1"><p class="callout-title">防误伤设计</p><p>三个条件全不满足（即<strong>精确单文件 Read</strong>）时直接放行。所以"读某一个组件的 index.tsx"永远合法，被拦的只有"整目录扫一遍"。这条设计让护栏可用而不至于阻碍正常工作。</p></div>
+<h2 id="sec-16">4.3 安全替代路径</h2>
+<div class="table-scroll"><table><thead><tr><th>想做的事</th><th>被拦的写法</th><th>正确写法</th></tr></thead><tbody><tr><td>找合适组件</td><td>整目录 Read <code>src/component-templates/</code></td><td>查 <code>.agents/component-manifest.json</code> 反查单组件</td></tr><tr><td>找主题</td><td>递归读 <code>src/themes/</code></td><td>只读目标主题的 <code>theme.json</code> 取 name 字段</td></tr><tr><td>匹配技能</td><td>遍历 <code>.agents/skills/**/SKILL.md</code></td><td>读 session-start 注入的 <code>INDEX.md</code>，命中后只读那一个</td></tr><tr><td>查业务规范</td><td>整目录 Read 根级 <code>rules/</code></td><td>从 <code>rules/README.md</code> 入口按表精确读单个 guide</td></tr><tr><td>查阶段规范</td><td>递归读 <code>.agents/knowledge/</code></td><td>按当前阶段读对应子目录下 1-2 个文件</td></tr></tbody></table></div>
+<h1 id="sec-17">五、知识路由：技能索引机制</h1>
+<h2 id="sec-18">5.1 为什么不遍历</h2>
+<p><code>.agents/skills/</code> 实测 272 文件 / 2.40 MB，SKILL.md 正文合计约 44 万字符。历史上曾出现"技能正文全量约 400 KB"的错误自述，实测低估 8.3 倍——单个 <code>diagram-generator</code> 目录就接近百万字符。因此技能匹配必须有轻量入口。</p>
+<h2 id="sec-19">5.2 索引链路</h2>
+<div class="tech-flow" id="tech-flow-6"><div class="tech-node" id="tech-node-23"><p class="tech-node-title">生成</p><p><code>build-skills-index.mjs</code> 解析各技能 frontmatter，生成 INDEX.md</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-24"><p class="tech-node-title">注入</p><p>session-start hook 把 INDEX.md（5.8 KB）全文注入会话</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-25"><p class="tech-node-title">匹配</p><p>智能体用索引里的触发词比对当前意图</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-26"><p class="tech-node-title">加载</p><p>命中后<strong>只读那一个</strong> SKILL.md</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-27"><p class="tech-node-title">兜底</p><p>没命中就用通用能力，并说明"本次未匹配到技能"</p></div></div>
+<p>INDEX.md 已从 21.7 KB 瘦身至 5.8 KB（只保留技能名与触发词），使"注入即常驻"与"永不常驻"的表述不再冲突。</p>
+<h2 id="sec-20">5.3 需求文档类的特殊路由</h2>
+<p>需求文档（PRD / SRS / 说明书）不走通用匹配，有专门的两步前置：</p>
+<div class="tech-flow" id="tech-flow-7"><div class="tech-node" id="tech-node-28"><p class="tech-node-title">识别需求文档任务</p><p>撰写或转写 PRD / SRS / 说明书</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-29"><p class="tech-node-title">读 req-doc-workflow.md</p><p>按路由表选技能</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-30"><p class="tech-node-title">读 prd-to-srs-gate.md</p><p>确认 PRD→SRS 转写门禁</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-31"><p class="tech-node-title">再读命中的 SKILL.md</p><p>只加载那一个技能正文</p></div></div>
+<p>规则明确：<strong>禁止跳过路由直接写文档</strong>。若只有 PRD 而产出要交给别人接手，必须先走转写门禁，不得静默用 PRD 当规格真源。</p>
+<h2 id="sec-21">5.4 子 Agent 的使用边界</h2>
+<div class="table-scroll"><table><thead><tr><th>适合</th><th>不适合</th></tr></thead><tbody><tr><td>盘点取结论：把几十 KB 文件换成几 KB 结论清单，省一个数量级</td><td>审查：必须自己读改动点，实测派子 Agent 审查会返回截断、白花时间</td></tr></tbody></table></div>
+<p>子 Agent 不可用时（部分宿主只认自己的子 Agent 路径、读不到 <code>.agents/agents/</code>），按 <code>.agents/rules/agent-orchestration.md</code> 的「子 Agent 不可用时的自审兜底」章节自行审查。</p>
+<h1 id="sec-22">六、记忆与写入侧纪律</h1>
+<h2 id="sec-23">6.1 三态门禁</h2>
+<p>病根在写入侧而非读取侧——读取分层再细，也拦不住过程讨论被写进 PRD。所以进基线前必须先归类：</p>
+<div class="table-scroll"><table id="tab-5"><caption><span class="tabnum">表 5.</span> 写入侧三态门禁</caption><thead><tr><th>标记</th><th>内容</th><th>去向</th></tr></thead><tbody><tr><td><code>[事实]</code></td><td>客户原话 / 已签字需求 / 实测数据</td><td><strong>可进基线</strong>（PRD / SRS），并带来源标注</td></tr><tr><td><code>[讨论]</code></td><td>方案对比、试错过程、智能体推断</td><td><strong>只能进过程层</strong> <code>project-memory.md</code>「决策记录」小节</td></tr><tr><td><code>[否决]</code></td><td>被否方案 + <strong>否决理由（必填）</strong></td><td><strong>只能进过程层</strong>，压缩时理由必须保留一行</td></tr></tbody></table></div>
+<p><code>[否决]</code> 必留理由的原因很直接：否则失忆后智能体会重提已被否决的方案、重走一遍弯路。</p>
+<p>另有一条硬规则：<code>[智能体补全待确认]</code> 不得作为规格真源。未经用户确认的补全内容若成为真源，会把智能体的推断固化成需求，后续所有开发都建立在未确认的假设上。</p>
+<div class="warning callout" id="warning-2"><p class="callout-title">当前性质</p><p>三态门禁目前是<strong>纪律约定，写入侧无技术兜底</strong>。现有 hook 中，context-budget 只管读取、gateguard 只检查"写前是否读过"、stop-quality-gate 只检查 console.log 残留——没有任何一个环节校验写入内容的分类。实测中出现过否决理由被写进功能清单的真实泄漏，靠执行者自查纠正。使用时需知悉这一边界。</p></div>
+<h2 id="sec-24">6.2 基线三件套与基线链</h2>
+<div class="table-scroll"><table id="tab-6"><caption><span class="tabnum">表 6.</span> 基线三件套落盘路径</caption><thead><tr><th>件</th><th>落盘路径（按需创建，不预置空文件）</th></tr></thead><tbody><tr><td>SRS（需求规格，研发唯一真源）</td><td><code>docs/01-需求与规划/*SRS*.md</code> 或 <code>docs/**/*需求*说明书*.md</code></td></tr><tr><td>HLD（系统架构 + 数据模型）</td><td><code>docs/02-架构与设计/*概要设计*.md</code></td></tr><tr><td>LLD（逐模块实现）</td><td><code>docs/02-架构与设计/*详细设计*.md</code></td></tr><tr><td>过程与索引</td><td><code>project-memory.md</code>（只放摘要 + 路径，不放正文）</td></tr></tbody></table></div>
+<p>基线链的术语已锁定（SRS = 需求规格说明书，不翻转）：</p>
+<div class="tech-flow" id="tech-flow-8"><div class="tech-node" id="tech-node-32"><p class="tech-node-title">客户需求</p><p>客户原话与背景输入</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-33"><p class="tech-node-title">PRD</p><p>产品探索真源</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-34"><p class="tech-node-title">SRS</p><p>需求规格真源</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-35"><p class="tech-node-title">HLD</p><p>系统架构 + 数据模型</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-36"><p class="tech-node-title">LLD</p><p>逐模块实现</p></div></div>
+<p>其中"系统架构 + 数据模型"是 HLD 的两个章节，引用既有规范文件，<strong>不新建文档</strong>（避免双份真源）。</p>
+<p>每份基线头部登记版本号 + 变更时间 + 一句话摘要；<strong>实现改变了基线事实必须回写，否则视为未完成</strong>。</p>
+<h2 id="sec-25">6.3 记忆去向判定</h2>
+<div class="tech-flow" id="tech-flow-9"><div class="tech-node" id="tech-node-37"><p class="tech-node-title">产出信息</p><p>对话与任务产物，先归类再落盘</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-38"><p class="tech-node-title">影响基线？</p><p>是 → 写入基线文档并更新索引</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-39"><p class="tech-node-title">项目级可复用？</p><p>是 → <code>项目答疑手册.md</code></p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-40"><p class="tech-node-title">工作台级可复用？</p><p>是 → <code>../../08-文档/工作台答疑手册.md</code></p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-41"><p class="tech-node-title">全否</p><p>一次性操作 / 可从代码还原 → 不保存</p></div></div>
+<p>无法判断去向时<strong>主动询问人类，禁止自作主张</strong>。</p>
+<p>工程包刻意不新建 <code>DECISIONS.md</code> / <code>CHANGELOG.md</code> / <code>TASKS.md</code>：它们与压缩恢复检查表、答疑手册、基线版本登记高度重叠，两套进度记录并存会导致压缩恢复时不知以哪个为准。</p>
+<h1 id="sec-26">七、压缩与恢复</h1>
+<h2 id="sec-27">7.1 压缩前：先归档再压缩</h2>
+<div class="tech-flow" id="tech-flow-10"><div class="tech-node" id="tech-node-42"><p class="tech-node-title">压缩触发</p><p>PreCompact hook 或长会话自动摘要</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-43"><p class="tech-node-title">记忆门禁三问</p><p>影响基线 / 项目可复用 / 工作台可复用</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-44"><p class="tech-node-title">值得保留 → 落盘</p><p>写入对应记忆层并更新索引</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-45"><p class="tech-node-title">无法判断 → 先问人</p><p>归档完成后才执行压缩</p></div></div>
+<p>保留原则：<strong>过程层可丢，基线层不可丢</strong>；<code>[否决]</code> 压缩时必须保留理由一行。</p>
+<h2 id="sec-28">7.2 压缩后：四项恢复检查</h2>
+<div class="table-scroll"><table id="tab-7"><caption><span class="tabnum">表 7.</span> 压缩后恢复检查表</caption><thead><tr><th>#</th><th>检查项</th><th>判定标准</th><th>异常处置</th></tr></thead><tbody><tr><td>1</td><td>任务进度</td><td>有且仅有一个 in_progress 任务</td><td>无 → 回到上一条用户消息重新确认目标；多个 → 合并到当前主线</td></tr><tr><td>2</td><td>未完成改动</td><td>最近一次编辑的目标文件存在且内容与最后动作一致</td><td>丢失 → 用 git status 找回或告知用户；不符 → 重新读取</td></tr><tr><td>3</td><td>下一步计划</td><td>有明确文件路径 + 动作 + 验收方式</td><td>不明确 → 一句话复述计划并请用户确认</td></tr><tr><td>4</td><td>依赖上下文</td><td>相关规范已预加载或可按需重读</td><td>需要 → <strong>只重读当前依赖的 1 个文件，禁止整库重读</strong></td></tr></tbody></table></div>
+<p>恢复顺序固定为：先恢复"任务状态"（我在做什么）→ 再恢复"文件状态"（改到哪了）→ 最后确认"下一步"（做什么、怎么做、怎么验收）。</p>
+<p>三条禁区：不重复已完成的工作、不擅自扩大范围、状态不确定时先问不猜。</p>
+<h1 id="sec-29">八、执行流程：从需求到验收</h1>
+<h2 id="sec-30">8.1 原型探索主路径</h2>
+<div class="tech-flow" id="tech-flow-11"><div class="tech-node" id="tech-node-46"><p class="tech-node-title">读上下文</p><p>AGENTS.md 与注入的技能索引</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-47"><p class="tech-node-title">需求对齐</p><p>问清一次</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-48"><p class="tech-node-title">设计方向对齐</p><p>信息架构、交互路径、视觉方向</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-49"><p class="tech-node-title">主规格草案</p><p>基于需求与设计对齐，不从空白起步</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-50"><p class="tech-node-title">评审确认</p><p>方向与验收口径对齐后再动手</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-51"><p class="tech-node-title">实现</p><p>按规格开发原型并注册路由</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-52"><p class="tech-node-title">同步主规格</p><p>原型事实有变即回写规格</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-53"><p class="tech-node-title">预览链接</p><p>验收前先给可打开的链接</p></div>
+<div class="tech-arrow" aria-hidden="true"></div>
+<div class="tech-node" id="tech-node-54"><p class="tech-node-title">验收</p><p>代理负责验收，必要时独立子代理审查</p></div></div>
+<p>主规格不是空白起点：需求与设计完成第一轮对齐后再建草案。局部文案 / 样式 / 素材替换 / 明确 bug 修复可跳过正式对齐，但若改动改变了原型事实，仍需同步主规格。</p>
+<h2 id="sec-31">8.2 先分流，再决定要不要停下来问人</h2>
+<div class="table-scroll"><table><thead><tr><th>情况</th><th>做法</th></tr></thead><tbody><tr><td>方向已定，要尽快看到东西</td><td>先做出来再收敛；开工前把目标 / 范围 / 验收问清一次，之后不反复请示</td></tr><tr><td>方向会变：目标、范围、验收重点、信息架构、交互路径、视觉方向出现多种选择</td><td><strong>停下来问人</strong></td></tr><tr><td>范围会变：要加模块、要改数据模型</td><td><strong>停下来问人</strong></td></tr><tr><td>产出要交给别人接手</td><td>规格先行：SRS 是唯一真源；只有 PRD 时先走转写门禁</td></tr></tbody></table></div>
+<p>其余自己判断，<strong>不要为了请示而请示</strong>。</p>
+<h2 id="sec-32">8.3 编码底线（读不到规范时的自判约定）</h2>
+<ul><li>禁止改 <code>.eslintrc</code> / <code>tsconfig.json</code> 等配置来消除报错</li><li><strong>新增原型页面必须同步注册路由</strong></li><li>避免 <code>console.log</code> 残留与裸写 <code>fetch</code></li><li>其余风格按现有代码对齐</li><li>单文件建议 ≤600 行，超了按页面 / 职责拆——理由不是"人看着累"，而是<strong>改动后要重读一次，太贵</strong></li></ul>
+<h1 id="sec-33">九、本次更新（2026-09-25）</h1>
+<h2 id="sec-34">9.1 瘦身成效</h2>
+<figure class="chart-figure" id="fig-2"><p class="chart-title"><span class="fignum">图 2.</span> 常驻内容瘦身前后对比（KB）</p><div class="chart" id="chart-canvas-2"></div><script type="application/json" data-chart="chart-canvas-2">{"tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}}, "legend": {"data": ["更新前", "更新后"]}, "grid": {"left": "3%", "right": "8%", "bottom": "3%", "top": "18%", "containLabel": true}, "xAxis": {"type": "category", "data": ["AGENTS.md", "skills/INDEX.md"]}, "yAxis": {"type": "value", "name": "KB"}, "series": [{"name": "更新前", "type": "bar", "data": [35.0, 21.7], "label": {"show": true, "position": "top", "formatter": "{c}"}}, {"name": "更新后", "type": "bar", "data": [6.5, 5.8], "label": {"show": true, "position": "top", "formatter": "{c}"}}]}</script></figure>
+<p>AGENTS.md 从 35.0 KB 降至 6.5 KB（-81%），INDEX.md 从 21.7 KB 降至 5.8 KB（-73%）。瘦身方式不是删规则，而是<strong>分层</strong>：机制的"为什么"与预算推导移入 <code>.agents/rules/AGENTS-rationale.md</code>（18.1 KB，按需读取），AGENTS.md 只留执行所需的结论。</p>
+<div class="note callout" id="note-1"><p class="callout-title">正本与派生关系</p><p><code>AGENTS.md</code> 是<strong>唯一正本</strong>，新建项目时由面板从模板整体拷贝，项目初始即带该文件，不存在"由 template 再生成一次"的步骤。<code>AGENTS.template.md</code> 由 <code>build-agents-template.mjs</code> 从正本<strong>单向派生</strong>，只插入维护提醒与占位符，定位接近备份参考。因此改 AGENTS.md 即刻对新项目生效；跑生成器同步 template 是可选收尾动作，不是生效前提。当前两文件剥离插入块后正文逐字符相等，零漂移。</p></div>
+<h2 id="sec-35">9.2 修复清单</h2>
+<div class="table-scroll"><table id="tab-8"><caption><span class="tabnum">表 8.</span> 2026-09-25 更新修复清单（X 系列来自模板审查，Y 系列来自更新后复验）</caption><thead><tr><th>#</th><th>问题</th><th>修复动作</th><th>状态</th></tr></thead><tbody><tr><td>X1</td><td>双配置分裂：<code>hooks.json</code>（小写事件名，含 context-budget）与 <code>settings.json</code>（PascalCase，不含）互相矛盾</td><td>删除 hooks.json，settings.json 成唯一真源；5 个事件名全 PascalCase，context-budget 正确注册到 `Read\</td><td>Glob\</td><td>Grep`</td><td>已闭环</td></tr><tr><td>X2</td><td>拦截名单窄于文档禁区声明（3 处缺口）</td><td>名单 6 → 7 条：新增 <code>src/component-templates/</code>；<code>03-组件库</code> 从"仅 vendor 层"改为父目录整拦；根级 <code>rules/</code> 从"仅 impeccable 子路径"改为主目录整拦</td><td>已闭环</td></tr><tr><td>X3</td><td>INDEX.md 21.7 KB 全量注入，与"永不常驻"表述冲突且有截断风险</td><td>瘦身至 5.8 KB，只留技能名 + 触发词</td><td>已闭环</td></tr><tr><td>X4</td><td><code>build-all.js</code> 在 Windows 下 <code>spawnSync(&#x27;npx&#x27;, …)</code> 无 shell 无法启动，退出码 null</td><td>加 <code>shell: process.platform === &#x27;win32&#x27;</code></td><td>已闭环</td></tr><tr><td>X5</td><td>AGENTS.md L93 引用工作台层记忆缺相对前缀，从工程根解析断链</td><td>改为 <code>../../10-智能体记忆/BOOTSTRAP.md</code>，与同文件其他工程外引用风格统一</td><td>已闭环</td></tr><tr><td>X6</td><td><code>session-context.md</code> 死文件：全工程 0 引用，内容仍是 Vue 3 + Element Plus 环境（与本工程 React 不符），且带 BOM</td><td>删除该文件</td><td>已闭环</td></tr><tr><td>X7</td><td>"子 Agent 不可用时按 agent-orchestration.md 自行审查"引用落空，该文件无兜底内容</td><td>新增「子 Agent 不可用时的自审兜底」章节</td><td>已闭环</td></tr><tr><td>X8</td><td>根级空壳 <code>skills-lock.json</code>（35 B）与 <code>.agents/skills-lock.json</code>（2.4 KB 真源）同名并存</td><td>删除根级空壳</td><td>已闭环</td></tr><tr><td>Y1</td><td>写入侧门禁的工作台级去向 <code>../../08-文档/工作台答疑手册.md</code> 文件不存在</td><td>文件已放回 08-文档 根下，引用实测可达</td><td>已闭环</td></tr><tr><td>Y2</td><td><code>compaction-recovery.md</code> 引用 AGENTS.md「上下文装配协议」章节与"常驻基线第 6 项"，瘦身后两者已删，模块快照落盘锚点丢失</td><td>改为指向现存锚点，该文件对 AGENTS.md 的章节引用清零</td><td>已闭环</td></tr><tr><td>Y3</td><td>预算红线（40 / 120 / 113 KB）在 AGENTS.md 与 rationale 间归属不清</td><td>从 AGENTS.md 删除，rationale 保留为历史依据并加瘦身说明</td><td>已闭环</td></tr><tr><td>Y4</td><td>模板携带 <code>settings.local.json</code>，含 31 条免确认权限（<code>curl:*</code> / <code>kill:*</code> / <code>chmod:*</code> / <code>bash:*</code>）+ <code>enableAllProjectMcpServers: true</code> + macOS 路径残留，每个新项目自动继承</td><td>精简至 22 条无副作用权限，删除高危通配与 MCP 自动信任开关，清除 macOS 残留</td><td>已闭环</td></tr><tr><td>Y5</td><td>3 个规则文件带 BOM（<code>io.cjs</code> 不处理 BOM，未来任何 hook 读取即静默失效）</td><td>清理 33 个文本文件 BOM，<code>.agents</code> 全量扫描 0 个 BOM</td><td>已闭环</td></tr><tr><td>Y6</td><td>双配置合一采用改名备份，<code>hooks.json.bak</code> 残留在 <code>.agents/</code> 根下</td><td>删除备份文件</td><td>已闭环</td></tr></tbody></table></div>
+<h2 id="sec-36">9.3 AGENTS.md 现行结构</h2>
+<p>瘦身后只剩六章，全部是"本工程独有"的内容：</p>
+<div class="table-scroll"><table id="tab-9"><caption><span class="tabnum">表 9.</span> AGENTS.md 六章结构</caption><thead><tr><th>章</th><th>内容</th></tr></thead><tbody><tr><td>一</td><td>本工程独有的事实（组件真源、反查方式、母版层、主题、预览入口、工程根构成）</td></tr><tr><td>二</td><td>先分流，再决定要不要停下来问人</td></tr><tr><td>三</td><td>基线与实现：不规定先后，但收口时两者都要有且必须一致</td></tr><tr><td>四</td><td>技能与子 Agent</td></tr><tr><td>五</td><td>原型探索路径</td></tr><tr><td>六</td><td>按需读取地图（永不常驻）</td></tr></tbody></table></div>
+<p>设计原则写在文件开头：<strong>只写三类内容</strong>——本工程独有的事实、本工程独有的约定、上下文被压缩时该保住什么。通用工程能力（设计、编码、审查、写文档、调技能）交给智能体自己的判断和宿主自带能力，不必等这份文件的许可。</p>
+<h1 id="sec-37">十、已知边界与遗留</h1>
+<div class="clause-card risk-high" id="clause-card-1"><p class="clause-head">宿主接线决定护栏是否生效</p><p>全部 hook 依赖宿主加载 <code>.agents/</code> 钩子约定。实测 WorkBuddy 宿主的配置文件无 hooks 段，此时 context-budget、session-start 等 9 个脚本<strong>一个都不运行</strong>，技能索引不注入、预算不拦截，AGENTS.md 的约束退化为纯文字。跨宿主使用前必须确认接线状态，不能假设护栏在场。</p></div>
+<div class="clause-card risk-medium" id="clause-card-2"><p class="clause-head">预算红线无字节级技术强制</p><p>context-budget 是<strong>路径拦截器</strong>（判断"读了哪个目录"），不含任何字节阈值。因此"常驻基线 ≤40 KB""单次装配 ≤120 KB"这类体量约束目前只是文档约定，没有技术手段阻断。一次实测中单个阶段装配达 172 KB，主因是规格产物全量回读——属必要质量动作，但现行机制既不拦也不记账。</p></div>
+<div class="clause-card risk-medium" id="clause-card-3"><p class="clause-head">写入侧三态门禁纯靠纪律</p><p>如 §6.1 所述，没有任何 hook 校验写入内容的分类。已有真实泄漏案例（否决理由被写进基线文档），靠执行者自查发现。这是设计与实现之间的洞：文档认定"病根在写入侧"，但写入侧没有对应技术件。</p></div>
+<div class="clause-card risk-low" id="clause-card-4"><p class="clause-head">其他遗留项</p><ul><li>Vibe vendor 双副本 8.40 MB（30 文件与 <code>02-模板/vendor</code> MD5 完全相同）：删除不可逆，待用户拍板。</li><li>3 个在役项目的 AGENTS.md 仍是旧版（无装配协议、无三态门禁）：按既有裁定"要用的时候再同步"。</li><li><code>settings.local.json</code> 仍随模板分发，<code>.gitignore</code> 未排除该项：剩余 22 条均为无副作用权限，风险已降至低。</li><li><code>_DSH-template</code> 已归档至 <code>08-文档/2.1更新文档/</code>，其改进已吸收进本模板；归档副本仍是修复前状态（<code>hooks.json</code> 尚存），复活前需重新核对。</li></ul></div>
+<h1 id="sec-38">十一、使用指引</h1>
+<h2 id="sec-39">11.1 新建项目</h2>
+<p>面板从 <code>02-模板/_project-template</code> 整体拷贝（排除 <code>node_modules</code> 与 <code>.git</code>），项目初始即带 AGENTS.md 与完整 <code>.agents/</code>。新建原型页面后需运行 <code>node scripts/scan-entries.js</code> 重扫入口清单，否则面板中不出现该条目、预览路由 404。</p>
+<h2 id="sec-40">11.2 修改规则时的动作</h2>
+<div class="table-scroll"><table><thead><tr><th>改了什么</th><th>必须跟着做</th></tr></thead><tbody><tr><td><code>AGENTS.md</code></td><td>运行 <code>node .agents/scripts/build-agents-template.mjs</code> 同步派生模板（可选但推荐，避免副本过期误导）</td></tr><tr><td>增删技能</td><td>运行 <code>node .agents/scripts/build-skills-index.mjs</code> 重生成 INDEX.md</td></tr><tr><td>增删 <code>.agents/knowledge/</code> 下 .md</td><td>同步 <code>catalog.json</code></td></tr><tr><td>新增禁区目录</td><td>同步更新 <code>context-budget.cjs</code> 的名单——<strong>文档声明与技术名单必须一致</strong>，两者错位就是溢出事故</td></tr><tr><td>新增规则文件</td><td>在对应 README / 索引表补一行</td></tr></tbody></table></div>
+<div class="tip callout" id="tip-2"><p class="callout-title">一条反复验证过的教训</p><p>预算声明必须与实测一致，且禁令覆盖范围必须与工作流实际引导的目录一致。历史上两次溢出事故的根因都是这两者错位：一次是自述体量低估 8.3 倍，一次是禁令未覆盖工作流命令智能体去读的目录。改动后请重新实测，不要沿用旧数字。</p></div>
+<h2 id="sec-41">11.3 排查智能体行为异常时</h2>
+<p>先读 <code>.agents/rules/AGENTS-rationale.md</code>（讲"为什么这么设计"，日常执行不需要读）。三种情况该读它：要修改 AGENTS.md 的规则时、规则之间看似冲突需判断优先级时、排查智能体行为异常需理解设计意图时。</p>
+<p>若怀疑护栏未生效，按此顺序确认：宿主是否加载 <code>.agents/settings.json</code> → SessionStart 是否注入技能索引 → context-budget 是否对目标路径产过拦截输出。文件存在不等于宿主已接线。</p>
+</div>
+</article>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script>(function(){
+  function cssvar(s,n,d){var v=s.getPropertyValue(n).trim();return v||d;}
+  function palette(s){var out=[];for(var i=1;i<=8;i++){var v=s.getPropertyValue("--chart-"+i).trim();if(v)out.push(v);}return out;}
+  function themeColor(opt,s){
+    var text=cssvar(s,"--color-text","#222"),muted=cssvar(s,"--color-muted","#666"),rule=cssvar(s,"--color-rule","#ccc");
+    var pal=palette(s);
+    if(pal.length&&!opt.color)opt.color=pal;
+    opt.textStyle=opt.textStyle||{};if(!opt.textStyle.color)opt.textStyle.color=text;
+    opt.backgroundColor=opt.backgroundColor||"transparent";
+    function axis(a){if(!a)return;var arr=Array.isArray(a)?a:[a];arr.forEach(function(x){
+      x.axisLine=x.axisLine||{};x.axisLine.lineStyle=x.axisLine.lineStyle||{};if(!x.axisLine.lineStyle.color)x.axisLine.lineStyle.color=rule;
+      x.axisLabel=x.axisLabel||{};if(!x.axisLabel.color)x.axisLabel.color=muted;
+      x.splitLine=x.splitLine||{};x.splitLine.lineStyle=x.splitLine.lineStyle||{};if(!x.splitLine.lineStyle.color)x.splitLine.lineStyle.color=rule;});}
+    axis(opt.xAxis);axis(opt.yAxis);
+    if(opt.legend){var lg=Array.isArray(opt.legend)?opt.legend:[opt.legend];lg.forEach(function(l){l.textStyle=l.textStyle||{};if(!l.textStyle.color)l.textStyle.color=muted;});}
+    return opt;
+  }
+  function render(){
+    if(!window.echarts)return;
+    var s=getComputedStyle(document.documentElement);
+    var charts=[];
+    document.querySelectorAll("script[data-chart]").forEach(function(sc){
+      var el=document.getElementById(sc.getAttribute("data-chart"));if(!el)return;
+      var opt;try{opt=JSON.parse(sc.textContent);}catch(e){return;}
+      var ch=echarts.init(el);ch.setOption(themeColor(opt,s));charts.push(ch);
+    });
+    window.addEventListener("resize",function(){charts.forEach(function(c){c.resize();});});
+  }
+  if(document.readyState!=="loading")render();else document.addEventListener("DOMContentLoaded",render);
+})();</script>
+</body>
+</html>
