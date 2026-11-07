@@ -18,7 +18,7 @@
 
 ### AGENTS.md 与 AGENTS.template.md 的关系（2026-10-19 更新）
 
-- **`AGENTS.md` 是唯一正本**。由产品设计工作台面板新建项目时，`工作台面板/server.mjs` 用 `fs.cpSync` 从 `02-模板/_project-template` **整体拷贝**（仅排除 `node_modules` 与 `.git`），项目初始即带 `AGENTS.md`。
+- **`AGENTS.md` 是唯一正本**。由产品设计工作台桌面应用新建项目时，`工作台桌面应用/service/server.mjs` 用 `fs.cpSync` 从 `02-模板/_project-template` **整体拷贝**（仅排除 `node_modules` 与 `.git`），项目初始即带 `AGENTS.md`。
 - **`AGENTS.template.md` 已删除**（连同生成器 `.agents/scripts/build-agents-template.mjs`）：它是 AGENTS.md 的单向派生副本，不参与项目生成，实际已过期；那句「改 AGENTS.md 必须重跑生成器」的维护提醒也随之移除。存档见 `99-回收站/2026-10-19-AGENTS模板清理/`。
 - **历史版本**改存 `08-文档/2.1更新文档/AGENTS历史版本/`（命名 `YYYY-MM-DD_HHmm_<工程名>_AGENTS.md`）。
 
