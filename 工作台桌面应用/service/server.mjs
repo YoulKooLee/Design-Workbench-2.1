@@ -153,7 +153,7 @@ process.on('unhandledRejection', (reason) => {
 const PUBLIC = path.join(__dirname, 'public');
 
 // ===== 路径配置 =====
-// 由 server.mjs 自身位置自动推导（Axhub 根目录 = 工作台面板 的上一级），
+// 由 server.mjs 自身位置自动推导（工作台根 = 本目录上两级：工作台桌面应用/service → 工作台桌面应用 → 工作台根），
 // 便于整个文件夹复制到任意机器/路径后直接运行，无需改硬编码。
 const TEMPLATE_DIR = path.join(AXHUB_ROOT, '02-模板', '_project-template');
 const LIBRARY_DIR = path.join(TEMPLATE_DIR, '.agents');
@@ -318,6 +318,27 @@ function migrateIntent(intent) {
   if (intent === 'opening') return 'active'; // 启动中视为已启动（隐含）
   if (intent === 'stopped') return 'stopped';
   return 'active'; // created/copied/focus 等旧值，默认视为已启动待处理
+}
+
+// 装配清单（2026-11-07，方案1.3）：建项即写 .axhub/assembly.json，模板版本戳可审计、跟版有基线
+function writeAssemblyStamp(projDir, info) {
+  try {
+    let hash = 'unknown';
+    try {
+      const r = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: AXHUB_ROOT, encoding: 'utf8', windowsHide: true, timeout: 5000 });
+      if (r.status === 0) hash = r.stdout.trim();
+    } catch (e) { /* 无 git 环境容忍 */ }
+    const ax = path.join(projDir, '.axhub');
+    fs.mkdirSync(ax, { recursive: true });
+    fs.writeFileSync(path.join(ax, 'assembly.json'), JSON.stringify({
+      template: info.template || '_project-template',
+      templateHash: hash,
+      framework: info.framework || 'make',
+      upstream: info.upstream || null,
+      createdAt: new Date().toISOString().slice(0, 19),
+      note: '装配真源＝建项时模板快照；跟版由 90-运行脚本/sync-template-to-projects.mjs 维护',
+    }, null, 2), 'utf8');
+  } catch (e) { console.error('[assembly-stamp]', e.message); }
 }
 
 // 活体检测：判断一个项目是否"真的在运行"。
@@ -1761,7 +1782,8 @@ const server = http.createServer(async (req, res) => {
         const missNote = inherited && inherited.missing && inherited.missing.length > 0
           ? `，缺失已标记：${inherited.missing.join('、')}`
           : '';
-        return send(res, 200, { ok: true, msg: `项目已创建：${projName}（Vue编码工程 · Vue3 + Element Plus，已装载 AGENTS.md/.agents/templates，继承上游 ${upstreamRel}${missNote}，启动开发栈时自动安装依赖）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin', inherited });
+        writeAssemblyStamp(dst, { template: '_project-development', framework: 'admin', upstream: upstreamRel });
+      return send(res, 200, { ok: true, msg: `项目已创建：${projName}（Vue编码工程 · Vue3 + Element Plus，已装载 AGENTS.md/.agents/templates，继承上游 ${upstreamRel}${missNote}，启动开发栈时自动安装依赖）`, relative: `01-项目/${projName}`, path: dst, framework: 'admin', inherited });
       }
       // make 原型工程：整体拷贝 _project-template 骨架
       const copyRoot = TEMPLATE_DIR;
@@ -1910,6 +1932,7 @@ const server = http.createServer(async (req, res) => {
           inst.unref();
         } catch(e) { console.error('[auto-install]', e.message); }
       })();
+      writeAssemblyStamp(dst, { template: isMakeTpl ? makeTplId : '_project-template', framework: 'make' });
       return send(res, 200, { ok: true, msg: `项目已创建：${projName}${tplMsg}`, relative: `01-项目/${projName}`, path: dst, template: isMakeTpl ? makeTplId : '_project-template' });
     } catch (e) {
       return sendError(res, '创建失败：' + e.message, 500);

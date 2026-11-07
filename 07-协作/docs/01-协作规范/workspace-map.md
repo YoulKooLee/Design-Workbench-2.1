@@ -51,18 +51,17 @@ D:\产品设计工作台\
 │   └── 漫剧工作台\
 ├── 02-模板\                ← _project-template（React 原型骨架）/ _project-development（研发工程模板）
 ├── 03-组件库\              ← 组件模板 / 页面模板 / ui-libs
-├── 91-运行状态\
-├── 91-运行状态/办公数据\                ← 办公文件
-├── 08-文档\                ← 迭代过程文档 / 打包输出
-├── 07-协作\                ← 多智能体协作根（messages / rooms / agents / docs / 用户操作）
+├── 04-知识库\              ← 业务知识库
+├── 05-技能库\
 ├── 06-智能体记忆\          ← 工作台层记忆（000~004 + rules/ + skills/ + router.md + agents/）
-├── 工作台桌面应用/service\             ← 工作台管理端代码（server.mjs，旧名 axhub-manager）
+├── 07-协作\                ← 多智能体协作根（messages / rooms / agents / docs / 用户操作）
+├── 08-文档\                ← 迭代过程文档 / 打包输出
+├── 90-运行脚本\            ← launch-project.ps1 / bootstrap.ps1 / env-doctor.ps1 / smoke-test.mjs / sync-projects-index.mjs
+├── 91-运行状态\
+├── 92-维护台账\            ← patches / archive / tools
+├── 99-回收站\              ← 删除件暂存
 ├── 工作台桌面应用\         ← Electron 桌面壳
-├── 新版本\
-├── TMPHS\
-├── TMPWH\
-├── TMPYX\
-└── TMPZSK\
+└── 新版本\
 ```
 <!-- AUTO-SYNC:tree END -->
 

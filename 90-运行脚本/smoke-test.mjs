@@ -57,12 +57,16 @@ console.log('\n[3/5] 项目');
 const projRoot = path.join(ROOT, CFG.projects.rootDir);
 const projects = fs.readdirSync(projRoot, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
 check(`项目根可读`, fs.existsSync(projRoot));
-check(`试点项目 指标管理平台 在位`, projects.includes('指标管理平台'));
+// 可移植（2026-11-07）：不硬编码旧机试点项目名——自适应校验
+check(`至少一个项目且首个项目 AGENTS.md 可读`, projects.length >= 1 && fs.existsSync(path.join(projRoot, projects[0], 'AGENTS.md')), projects.join(' / '));
 check(`项目列表不含模板`, !projects.includes('_project-template'));
 check(`项目数 = ${projects.length}`, projects.length >= 1, projects.join(' / '));
-const pm = path.join(projRoot, '指标管理平台', 'project-memory.md');
-check(`project-memory.md 含协作字段`, fs.existsSync(pm) && fs.readFileSync(pm, 'utf8').includes('owner_agent'));
-check(`handoff.md 在位`, fs.existsSync(path.join(projRoot, '指标管理平台', 'handoff.md')));
+// 协作字段 owner_agent：至少一个项目的 project-memory 含之（handoff.md 双真源已于 2026-11 裁决退役，owner 单一落 project-memory）
+const anyOwner = projects.some((n) => {
+  const pmp = path.join(projRoot, n, 'project-memory.md');
+  return fs.existsSync(pmp) && fs.readFileSync(pmp, 'utf8').includes('owner_agent');
+});
+check(`owner_agent 协作字段在至少一个项目 project-memory 中`, anyOwner);
 
 // 3.5 模板组件库（React 真组件库，src/component-templates/axhub 中文分类真源）
 console.log('\n[3.5] 模板组件库');
