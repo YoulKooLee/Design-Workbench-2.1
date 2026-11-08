@@ -110,6 +110,6 @@
 | 压缩恢复 / 模块快照模板 | `.agents/rules/compaction-recovery.md` |
 | 交付模式三档 | `.agents/rules/delivery-modes.md` |
 | 十条原则与交付铁律 | `.agents/rules/work-principles.md` |
-| 技能索引与子 Agent 编排 | `.agents/rules/subagent-orchestration.md` |
+| 技能索引与子 Agent 编排 | `.agents/rules/subagent-orchestration.md`（**严禁遍历技能目录**，体量真源见 `context-budget.md`） |
 | 编码 / 前端 / 安全规范 | `.agents/rules/coding-conventions.md`、`write-safety.md` |
 | 完整规范索引 | `.agents/rules/INDEX.md` |

@@ -77,4 +77,4 @@ description: 原型标注替代 PRD 时使用：把页面目录、组件说明�
 - 不要把组件状态只写进页面本地 state；需要出现在标注面板里的状态要写进节点 `controls`。
 - 不要依赖不稳定 CSS 选择器作为唯一定位方式；能补稳定属性时优先补。
 - `showBrandLink`、`defaultMarkerIndexVisible`、`renderToolbarActions` 这类展示增强选项只有在用户明确要求品牌入口、默认显示序号或工具栏自定义动作时才设置；常规标注接入保持默认配置。
-- Markdown 图片必须随原型发布：放到当前原型 `assets/` 并用最终可访问 URL；不要用本地路径、`/api/markdown-file` 或 `../assets/...`。
+- Markdown 图片必须随原型发布：放到当前原型 `assets/` 并用最终可访问 URL；不要用本地路径、`/api/markdown-file` 或 `{project}/src/prototypes/{slug}/assets/`（占位符，按项目实际路径展开）。

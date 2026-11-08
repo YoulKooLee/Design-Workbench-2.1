@@ -170,7 +170,7 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 【输出】四状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
 ```
 
-> 角色定义在 `.agents/agents/page-spec-loader.md`，
+> 角色定义在 (page-spec-loader 已删除，规范加载由 page-generator 步骤 2 内联执行)，
 > 它会自动检测 UI 库、按需加载对应规范、规划组件，返回结构化摘要。
 
 **输出格式**：

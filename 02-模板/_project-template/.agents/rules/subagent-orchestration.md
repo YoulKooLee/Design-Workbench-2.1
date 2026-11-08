@@ -11,7 +11,7 @@
 | Agent | 文件 | 职责 | 调用时机 |
 |---|---|---|---|
 | `design-reviewer` | `.agents/agents/design-reviewer.md` | HLD/LLD 设计文档审查：结构完整性、分层边界、技术规范、可追溯性、设计质量五维度 | `hld-lld-writing` skill 写完每章后 |
-| `design-note-reviewer` | `.agents/agents/design-note-reviewer.md` | 页面设计说明卡片审查：功能点完整性、文案规范（禁技术黑话）、与代码一致性三维度 | 原型工作流在每张页面设计说明写完后 |
+| `design-note-reviewer` | `.agents/agents/design-note-reviewer.md`（3+3 精简保留，审查设计说明卡片） | 页面设计说明卡片审查：功能点完整性、文案规范（禁技术黑话）、与代码一致性三维度 | 原型工作流在每张页面设计说明写完后 |
 | `page-reviewer` | `.agents/agents/page-reviewer.md` | 生成页面代码审查：需求完整性、规范符合、代码质量 | `page-generator` skill 步骤 6 |
 
 ## 已转 Skill 的能力（3 个，主 Agent 自己执行）

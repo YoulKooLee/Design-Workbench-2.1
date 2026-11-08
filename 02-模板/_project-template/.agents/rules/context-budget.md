@@ -5,7 +5,7 @@
 
 **被禁目录的实测体量**（改动后须重测）：`.agents/skills/` **2.4 MB / 273 文件**（其中 `SKILL.md` 合计 446 KB）；`.agents/knowledge/` 200 KB / 48 文件；根级 `rules/` 0.43 MB / 47 文件。推导与事故见 rationale §一。
 
-> 注：本文件是上述体量的**唯一实测真源**。`AGENTS.md` §4.7 只写「严禁遍历技能目录」不带数字，避免两处数字打架；要引用体量一律引本行。
+> 注：本文件是上述体量的**唯一实测真源**。`AGENTS.md` §四 已写「严禁遍历技能目录」不带数字，避免两处数字打架；要引用体量一律引本行。
 
 **禁止**：遍历 / 批量 Read（含通配符、递归）：`.agents/skills/`、`.agents/knowledge/`、`.agents/rules/`、根级 `rules/`、`src/themes/`、`03-组件库/**/vendor/`。
 

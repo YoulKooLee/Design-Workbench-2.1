@@ -16,7 +16,7 @@ description: >
 
 > **重要**：本 skill 是通用工作流框架，不绑定任何特定项目或框架。
 > 项目特有约定（目录结构、命名规范、路由方式、导航方式、全局样式、Mock 等）
-> 由步骤 2 的 `page-spec-loading` skill 从 `{PROJECT_PATH}/README-DEV.md` 加载（优先），
+> 由步骤 2 的 `page-spec-loading(已并入本skill)` skill 从 `{PROJECT_PATH}/README-DEV.md` 加载（优先），
 > 并辅以 `{WORKSPACE_PATH}/.agents/knowledge/` 中的通用规范。
 > 若 README-DEV.md 不存在，则通过读取项目文件自行推断。
 
@@ -144,10 +144,10 @@ Read `.agents/rules/prd-to-srs-gate.md`，执行检测：
 
 ## 步骤 2：规范加载与组件规划
 
-**目标**：按 `page-spec-loading` skill 规范按需加载规范并规划组件，只读取当前功能实际需要的内容。
+**目标**：按 `page-spec-loading(已并入本skill)` skill 规范按需加载规范并规划组件，只读取当前功能实际需要的内容。
 
 执行动作：
-主 Agent 自己执行（按 `page-spec-loading` skill 流程），不派子 Agent。传入以下参数（将占位符替换为实际值）：
+主 Agent 自己执行（按 `page-spec-loading(已并入本skill)` skill 流程），不派子 Agent。传入以下参数（将占位符替换为实际值）：
 
 ```
 PROJECT_PATH：{子项目根目录绝对路径}
@@ -157,14 +157,14 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 {步骤 1 输出的完整需求理解内容}
 ```
 
-> `page-spec-loading` skill 定义在 `.agents/skills/page-spec-loading/SKILL.md`，
+> `page-spec-loading(已并入本skill)` skill 定义在 `(已并入本skill)`，
 > 它会自动检测 UI 库、按需加载对应规范、规划组件，返回结构化摘要。
 
 **输出格式**：
 ```
 规范加载与组件规划
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[page-spec-loading skill 返回的规范摘要，原样展示]
+[page-spec-loading 流程输出的规范摘要，原样展示]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -303,7 +303,7 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 {步骤 1 输出的完整需求理解内容}
 
 规范摘要：
-{步骤 2 page-spec-loading skill 返回的规范摘要}
+{步骤 2 page-spec-loading 流程输出的规范摘要}
 
 生成的文件列表：
 {步骤 4 任务清单中所有已完成的文件路径}
@@ -415,7 +415,7 @@ Phase 1 进度：{已完成}/{总数}
 
 > **规范库位置**：`{WORKSPACE_PATH}/.agents/knowledge/`（多子项目时 WORKSPACE 为仓库根，非 admin/ 内）
 > **项目规范（优先）**：`{PROJECT_PATH}/README-DEV.md`
-> **加载方式**：Step 2 通过 `page-spec-loading` skill 按需加载，不会一次性读取所有文件。
+> **加载方式**：Step 2 通过 `page-spec-loading(已并入本skill)` skill 按需加载，不会一次性读取所有文件。
 > **查看目录**：调用 Read("{WORKSPACE_PATH}/.agents/knowledge/catalog.json") 获取所有可用 category。
 
 | category | 用途 | 加载时机 |
@@ -434,4 +434,4 @@ Phase 1 进度：{已完成}/{总数}
 | `ui-libs/vant/pages` | Vant 页面布局规范 | 仅 vant 项目 |
 | `phase3-development/delivery-plan` | 交付计划规范（Step 7 更新计划时使用） | 有 delivery-plan.md 时 |
 
-> 新增 UI 库只需在 `{WORKSPACE_PATH}/.agents/knowledge/ui-libs/` 下添加对应目录，`page-spec-loading` 会自动发现。
+> 新增 UI 库只需在 `{WORKSPACE_PATH}/.agents/knowledge/ui-libs/` 下添加对应目录，`page-spec-loading(已并入本skill)` 会自动发现。

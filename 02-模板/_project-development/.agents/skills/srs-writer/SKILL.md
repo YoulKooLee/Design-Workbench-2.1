@@ -844,4 +844,4 @@ bash .agents/skills/common/export-word.sh <markdown文件路径> srs-writer
 | PRD→SRS 转写对照 | `references/prd-to-srs-handoff.md` | Step F 章节映射与展开规则 |
 | PRD→SRS 门禁 | Read(".agents/rules/prd-to-srs-gate.md") | 下游阻断与 SPEC_SOURCE |
 | 图表生成 | 调用 `diagram-generator` 技能 | 流程图、时序图 |
-| 模板提炼 Agent | `.agents/agents/template-analyzer.md` | 从Word文档提炼新模板 |
+| 模板提炼 Agent | (template-analyzer 已删除，模板提炼由主 Agent 直接执行) | 从Word文档提炼新模板 |
