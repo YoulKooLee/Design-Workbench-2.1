@@ -14,25 +14,16 @@ description: >
 
 # 概要设计说明书（HLD）生成器
 
-## 软门禁（无 Hook 时仍须执行）
-条文真源：`.agents/rules/soft-gates.md`（先读后改 / 完成前验证 / 审查勾选）。
-本技能适用：文档类；宣称完成可省略 build；`design-reviewer` 按本技能已有调度。
-禁止因无 Hook 把快速模式升为全量审查。
-
-## 角色调度架构
+## 工作流架构（3+3 精简版）
 
 ```
-hld-design skill（主流程：调度 + 文件写入）
-  ├── design-analyzer 角色（分析师，DOC_TYPE=hld）
-  │     职责：读 SRS/代码/已有HLD，输出架构级摘要（模块/实体/接口分组/技术栈/部署/非功能映射）
-  │
-  ├── design-writer 角色（撰写者，DOC_TYPE=hld）
-  │     职责：摘要 + 模板 → 架构级设计章节（允许技术词汇，禁止下沉到字段/单接口）
-  │
-  └── design-reviewer 角色（审查者，DOC_TYPE=hld）
+hld-design skill（主流程：调度 + 文件写入 + 分析 + 撰写）
+  └── design-reviewer agent（审查者，DOC_TYPE=hld）
         职责：五维度审查（结构完整性/分层边界/技术规范/可追溯性/设计质量）
         时机：内容写入文件后统一运行 → 汇总 → 询问用户是否修复
 ```
+
+**精简说明：** design-analyzer 和 design-writer 已合并为 hld-lld-writing skill（2026-11-08 按沈剑理论精简）。主 Agent 自己完成分析和撰写，不派子 Agent。
 
 **先写后审原则：** 生成内容写入文件 → 对变更章节运行 design-reviewer → 汇总报告 → 询问"是否修复？" → 用户确认后修复。
 
@@ -63,34 +54,20 @@ hld-design skill（主流程：调度 + 文件写入）
 | 中 | 已有概要设计 | `Glob("**/*概要设计*.md")` |
 | 低 | 路由/代码 | `src/router/`, `src/views/`, `src/api/`, `package.json` |
 
-- 未找到 SRS 但存在 `docs/**/*-PRD.md` → Read `.agents/rules/prd-to-srs-gate.md`，**中止**，路由 **`srs-writer` Step F**
-- 未找到 SRS 且无 PRD → 提示用户先用 `/srs-writer` 生成需求说明书（HLD 以 SRS 为依据）
+- 未找到 SRS 但存在 `docs/**/*-PRD.md` → Read `.agents/rules/prd-to-srs-gate.md`，**中止**，路由 **`req-doc` Step F**
+- 未找到 SRS 且无 PRD → 提示用户先用 `/req-doc` 生成需求说明书（HLD 以 SRS 为依据）
 - 找到已有 HLD → 转 Step B / C
 
 ### A2: 读取模板
 
 读取 `references/templates/hld-template.md`，严格按模板章节结构生成。
 
-### A3: 调度 design-analyzer（系统级分析）
+### A3: 系统级分析（主 Agent 执行）
 
-按 `.agents/rules/role-dispatch.md` 调度：
-
-```
-【角色】design-analyzer
-【定义】.agents/agents/design-analyzer.md
-【交付模式】{DELIVERY_MODE}
-【执行】能独立派发则派发；否则主会话扮演。
-【输入 / Prompt】
-交付模式：{DELIVERY_MODE}
-  PROJECT_PATH: {项目根目录}
-  DOC_TYPE: hld
-  FEATURE_NAME: {系统名称}
-  MODE: from_srs（有SRS）或 from_code（仅有代码）
-  SOURCE_PATH: {SRS路径 或 src/ 目录}
-【输出】四状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
-```
-
-收到架构级摘要后，对照"开放项"清单补充询问用户（如技术选型偏好、部署形态）。
+主 Agent 按 hld-lld-writing skill 阶段 1 执行：
+1. Read SRS / 代码 / 已有 HLD
+2. 输出架构级摘要：模块/实体/接口分组/技术栈/部署/非功能映射
+3. 对照"开放项"清单补充询问用户（如技术选型偏好、部署形态）
 
 ### A4: 生成任务清单
 
@@ -101,16 +78,16 @@ hld-design skill（主流程：调度 + 文件写入）
 |------|---------|------|------|
 | 1 | 创建文件 - 封面 + 文档信息 + 引言 | [文档] | [ ] 等待中 |
 | 2 | 生成系统总体架构图 | [图表] | [ ] 等待中 |
-| 3 | 三、系统总体设计 | [角色] | [ ] 等待中 |
+| 3 | 三、系统总体设计 | [Agent] | [ ] 等待中 |
 | 4 | 生成模块关系图 | [图表] | [ ] 等待中 |
-| 5 | 四、应用架构 | [角色] | [ ] 等待中 |
+| 5 | 四、应用架构 | [Agent] | [ ] 等待中 |
 | 6 | 生成概念ER图 | [图表] | [ ] 等待中 |
-| 7 | 五、数据架构 | [角色] | [ ] 等待中 |
-| 8 | 六、接口架构 | [角色] | [ ] 等待中 |
-| 9 | 七、技术架构 | [角色] | [ ] 等待中 |
+| 7 | 五、数据架构 | [Agent] | [ ] 等待中 |
+| 8 | 六、接口架构 | [Agent] | [ ] 等待中 |
+| 9 | 七、技术架构 | [Agent] | [ ] 等待中 |
 | 10 | 生成部署架构图 | [图表] | [ ] 等待中 |
-| 11 | 八、部署架构 | [角色] | [ ] 等待中 |
-| 12 | 九、非功能性设计 | [角色] | [ ] 等待中 |
+| 11 | 八、部署架构 | [Agent] | [ ] 等待中 |
+| 12 | 九、非功能性设计 | [Agent] | [ ] 等待中 |
 ```
 
 状态标识：[ ] 等待中 → [进行中] → [完成]
@@ -118,50 +95,23 @@ hld-design skill（主流程：调度 + 文件写入）
 **类型说明：**
 - [文档]：主流程直接写（封面、文档信息、引言）
 - [图表]：调用 `diagram-generator` 技能生成，图片路径记入备注列
-- [角色]：调度 analyzer（A3已完成系统级分析，此处直接复用摘要）→ writer → 写入
+- [Agent]：调用 analyzer（A3已完成系统级分析，此处直接复用摘要）→ writer → 写入
 
 ### A5: 执行任务
 
-1. [文档] / [图表]：每次执行一个，前置图表先于对应 [角色] 完成，路径记备注
-2. [角色]：调度 design-writer（传入 A3 摘要中对应章节部分 + DIAGRAM_PATHS）→ Edit 追加
+1. [文档] / [图表]：每次执行一个，前置图表先于对应 [Agent] 完成，路径记备注
+2. [Agent]：主 Agent 按 hld-lld-writing skill 阶段 2 撰写（传入 A3 摘要中对应章节部分 + DIAGRAM_PATHS）→ Edit 追加
 3. 第一个任务用 Write 创建文件，后续 Edit 追加，每次写入 ≤150 行
 
-```
-【角色】design-writer
-【定义】.agents/agents/design-writer.md
-【交付模式】{DELIVERY_MODE}
-【执行】能独立派发则派发；否则主会话扮演。
-【输入 / Prompt】
-交付模式：{DELIVERY_MODE}
-    PROJECT_PATH: {项目根目录}
-    DOC_TYPE: hld
-    CHAPTER: {章节名}
-    SECTION_NUMBER: {编号}
-    设计摘要: {A3 摘要中对应部分}
-    DIAGRAM_PATHS: {对应图表路径}
-【输出】四状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
-```
 
-**注意：** diagram-generator 是技能不是角色，图表必须作为独立 [图表] 任务在 [角色] 任务前完成。
+
+**注意：** diagram-generator 是技能不是 agent，图表必须作为独立 [图表] 任务在 [Agent] 任务前完成。
 
 ### A6: 全文审查与修复
 
 所有章节写入完成后：
 
-1. **并行审查**：对各 [角色] 章节按 `role-dispatch.md` 调度 design-reviewer（无独立派发则串行扮演）：
-
-```
-【角色】design-reviewer
-【定义】.agents/agents/design-reviewer.md
-【交付模式】{DELIVERY_MODE}
-【执行】能独立派发则派发；否则主会话扮演。不得因环境能力不足缩小审查范围。
-【输入 / Prompt】
-交付模式：{DELIVERY_MODE}
-DOC_TYPE: hld
-章节内容: {对应章节}
-设计摘要: {A3 摘要}
-【输出】四状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
-```
+1. **并行审查**：对各 [Agent] 章节调用 design-reviewer（DOC_TYPE=hld，传入章节内容 + A3摘要）
 2. **汇总报告**：
 ```
 ## 审查报告
@@ -181,8 +131,8 @@ DOC_TYPE: hld
 ## Step B: 局部完善模式
 
 1. 读取现有 HLD 对应章节
-2. design-analyzer（MODE: from_existing，DOC_TYPE=hld）分析现有内容，识别缺失
-3. design-writer 补充/改写
+2. 主 Agent 分析现有内容，识别缺失（MODE: from_existing，DOC_TYPE=hld）
+3. 主 Agent 补充/改写
 4. Edit 写入
 5. design-reviewer 审查变更章节 → 汇总 → 询问修复 → 用户确认后修复
 6. 更新版本号
@@ -203,10 +153,10 @@ DOC_TYPE: hld
 
 **触发场景：** 代码已演进，需将 HLD 与代码现状对齐（架构级：模块增减、技术栈变更、模块依赖变化）。
 
-1. **分析代码现状**：以路由注册表为唯一真相源——只有在 `src/router/modules/index.ts`（或等效入口）中实际注册的路由才算"功能存在"，残留的 view/api/mock 文件不算（判定细则见 `.agents/skills/srs-writer/SKILL.md` 的 Step B）。提取实际模块清单、技术栈（package.json）、模块依赖
+1. **分析代码现状**：以路由注册表为唯一真相源——只有在 `src/router/modules/index.ts`（或等效入口）中实际注册的路由才算"功能存在"，残留的 view/api/mock 文件不算（判定细则见 `.agents/skills/req-doc/SKILL.md` 的 Step B）。提取实际模块清单、技术栈（package.json）、模块依赖
 2. **分析现有 HLD**：提取文档声称的模块、架构、技术栈
 3. **生成差异清单**：模块增减、技术栈变更、依赖变化 → 展示给用户确认
-4. **执行更新**：design-analyzer（from_code）→ design-writer 更新对应章节 → 重新生成受影响图表
+4. **执行更新**：主 Agent 分析代码（from_code）→ 更新对应章节 → 重新生成受影响图表
 5. **审查**：design-reviewer → 汇总 → 询问修复
 6. 更新版本号
 
@@ -220,13 +170,13 @@ DOC_TYPE: hld
 bash .agents/skills/common/export-word.sh <markdown文件路径> formal
 ```
 
-找到文件：`Glob("docs/**/*概要设计*.md")`，多个让用户选。导出失败检查 `.agents/skills/common/config.json` 的 `apiBaseUrl`。
+找到文件：`Glob("docs/**/*概要设计*.md")`，多个让用户选。导出失败检查 `.agents/skills/config.json` 的 `apiBaseUrl`。
 
 ## 文档命名规范
 
 `docs/02-架构与设计/{日期}-{客户名称}{项目名称}-概要设计说明书-V{版本号}.md`
 
-示例：`docs/02-架构与设计/20260818-示例科技客户关系管理模块-概要设计说明书-V1.0.md`
+示例：`docs/02-架构与设计/20260530-PM能源科技智慧厂区巡检平台-概要设计说明书-V1.0.md`
 
 ## 参考资源
 
@@ -235,4 +185,4 @@ bash .agents/skills/common/export-word.sh <markdown文件路径> formal
 | HLD 模板 | `references/templates/hld-template.md` | 文档结构与章节规范 |
 | HLD 内容规范 | `.agents/knowledge/phase2-design/hld-spec.md` | 分层边界、质量清单 |
 | 图表生成 | 调用 `diagram-generator` 技能 | 架构图、概念ER图、部署图 |
-| 分析/撰写/审查 | `design-analyzer` / `design-writer` / `design-reviewer` | 三代理（DOC_TYPE=hld） |
+| 审查 | `design-reviewer` | 五维度审查（DOC_TYPE=hld） |

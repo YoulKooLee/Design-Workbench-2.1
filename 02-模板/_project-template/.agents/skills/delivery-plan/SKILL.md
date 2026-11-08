@@ -40,19 +40,17 @@ ls docs/delivery-plan.md 2>/dev/null
 - **仅有 PRD、无合格 SRS** → 输出门禁 §3 话术，**中止**，路由 **`req-doc` Step F**
 - 若无 SRS 也无 PRD → 提示用户先用 `/req-doc` 或 `/prd-writer` + Step F
 
-### A2: 调用 delivery-analyzer
+### A2: 分析需求并生成交付计划
 
-```
-subagent_type: "delivery-analyzer"
-传入：
-  PROJECT_PATH: {项目根目录绝对路径}
-  SRS_PATH: {需求说明书文件路径}
-  PROJECT_NAME: {从需求说明书封面提取的项目名称}
-```
-
-### A3: 写入计划文件
-
-将 delivery-analyzer 的输出写入 `docs/delivery-plan.md`。
+主 Agent 直接执行：
+1. Read SRS 需求说明书，提取所有功能模块
+2. 分析每个功能的依赖关系（按 SRS 3.4 依赖矩阵或功能描述推断）
+3. 按依赖关系分 4 层：
+   - 第1层：无依赖的基础功能
+   - 第2层：依赖第1层的核心业务
+   - 第3层：依赖第2层的衍生功能
+   - 第4层：移动端（依赖PC端）
+4. 生成任务清单，写入 `docs/delivery-plan.md`。
 
 写入后输出：
 

@@ -1,8 +1,9 @@
 ---
 name: diagram-generator
 description: >
-用户要求在文档中生成、创建、绘制或插入任何类型图表时必须使用本技能。
-重要：通过 srs-writer 技能生成需求说明书时，必须使用本技能生成所有图表，禁止手动绘制图表。
+文档插图生成器（SVG/PNG 直出）：用户要求在文档中生成、插入图表、且不需要交付可编辑源文件时用本技能。
+边界：要 .drawio 可编辑源文件 → drawio-generator；独立交付、以后要重画的架构/时序图 → d2-diagram；本技能只管「嵌进文档的一张图」。
+重要：通过 req-doc 技能生成需求说明书时，必须使用本技能生成所有图表，禁止手动绘制图表。
 触发场景：
 (1) 流程图/活动图: "生成流程图" "画流程图" "重新生成流程图" "插入流程图" "生成活动图" "用户操作流程图",
 (2) 架构图: "生成架构图" "画架构图" "插入架构图" "系统架构图",
@@ -18,16 +19,11 @@ description: >
 
 # 图表生成器（draw.io）
 
-## 软门禁（无 Hook 时仍须执行）
-条文真源：`.agents/rules/soft-gates.md`（先读后改 / 完成前验证 / 审查勾选）。
-本技能适用：文档类；宣称完成可省略 build，以已有 `validate-diagram` / 渲染成功为证据；不新增 code-reviewer。
-禁止因无 Hook 把快速模式升为全量审查。
-
 ## 核心原则
 
 **所有图表统一使用 draw.io XML 格式，通过后端 API 渲染为 PNG/SVG。**
 
-- 不使用 Mermaid、PlantUML 等其他图表语言；**D2 仅在「独立出图」场景使用**（见 d2-diagram 技能），文档内插图一律用 draw.io XML
+- 不使用 Mermaid、PlantUML 等其他图表语言；**D2 仅在「独立出图」场景使用**（见 `d2-diagram` 技能），文档内插图一律用 draw.io XML
 - 源文件为 `.xml`（draw.io 格式），输出为 `.png`（默认）或 `.svg`
 - 渲染通过 `draw.axuremart.com/api/export` API 完成
 
@@ -44,10 +40,8 @@ description: >
 
 ```
 1. 确定图表类型 → 查阅类型对照表
-2. 调度角色 diagram-drawer 生成 XML
-   - 传入：PROJECT_PATH, SKILL_PATH, DIAGRAM_TYPE, DESCRIPTION
-   - 该角色自动读取绘图规范 + 模板 → 生成 → 自检
-3. 接收角色输出的 XML
+2. Read `.agents/knowledge/diagram/${DIAGRAM_TYPE}-rules.md` 和 `examples/${DIAGRAM_TYPE}.xml`
+3. 按规则生成 XML（节点文字 ≤12 汉字，颜色 ≤3 种）
 4. 保存 XML 源文件 → docs/images/src/<名称>.xml
 5. 调用本地校验脚本 `validate-diagram` 确认 XML 结构合法（见「本地校验脚本」）
 6. 调用渲染脚本 → 按平台选择 `render-diagram.ps1`（Windows）或 `render-diagram.sh`（Git Bash / Linux / macOS）生成 PNG
@@ -55,39 +49,22 @@ description: >
 8. 在文档中插入图片引用
 ```
 
-### 角色调度方式
+### 主 Agent 执行方式
 
-按 `.agents/rules/role-dispatch.md` 调度角色 `diagram-drawer` 生成 XML。本角色只输出 XML，不改业务源码。若环境仅提供无名通用子任务，仍须先 Read 角色定义再执行。
+主 Agent 直接生成 XML，不派子 Agent。
 
 ```
-【角色】diagram-drawer
-【定义】.agents/agents/diagram-drawer.md
-【交付模式】{DELIVERY_MODE}
-【执行】
-  - 若当前环境支持独立子 Agent（独立上下文派发）：派发后只回收 XML；
-  - 否则：主会话按该定义 Step 1–5 逐步执行（运行时降级）。
-【输入 / Prompt】
-交付模式：{DELIVERY_MODE}
-  独立派发时：你是 diagram-drawer 子 Agent。开始前必须先 Read `.agents/agents/diagram-drawer.md` 并严格按其 Step 1-5 执行。
-  主会话扮演时：你正在扮演 diagram-drawer。开始前必须先 Read `.agents/agents/diagram-drawer.md` 并严格按其 Step 1-5 执行。
-  你只输出 XML，不触发其他技能，不调度其他角色。
-
-  PROJECT_PATH: {项目根目录}
-  SKILL_PATH: {PROJECT_PATH}/.agents/skills/diagram-generator
-  DIAGRAM_TYPE: bpmn | flowchart | sequence | architecture | system-arch | swimlane | cross-functional | matrix-swimlane | er | class | usecase | state | orgchart | mindmap | mindmap-vertical | mindmap-radial | mindmap-minimal
-  DESCRIPTION: {图表内容描述，包含节点名称、流程步骤、角色等}
-  CONTAINER_SIZE: {可选，如 "1050x1000"}
-  STYLE_OVERRIDE: {可选，如 "swimlane border: #b0b8c0"}
-【输出】四状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
+DIAGRAM_TYPE: bpmn | flowchart | sequence | architecture | system-arch | swimlane | cross-functional | matrix-swimlane | er | class | usecase | state | orgchart | mindmap | mindmap-vertical | mindmap-radial | mindmap-minimal
+DESCRIPTION: {图表内容描述，包含节点名称、流程步骤、角色等}
+CONTAINER_SIZE: {可选，如 "1050x1000"}
+STYLE_OVERRIDE: {可选，如 "swimlane border: #b0b8c0"}
 ```
-
-> 角色定义在 `.agents/agents/diagram-drawer.md`。
 
 ### 批量生成（需求文档场景）
 
 ```
 1. 分析文档中所有需要图表的位置
-2. 逐张调度角色 diagram-drawer 生成 XML
+2. 逐张生成 XML（主 Agent 按单张流程执行）
 3. 保存所有 XML 源文件
 4. 批量调用 `validate-diagram` 校验每个源文件
 5. 批量调用渲染脚本
@@ -350,9 +327,9 @@ docs/images/<模块>-<描述>.png
 
 ## 禁止行为
 
-1. **禁止 Mermaid / PlantUML**；D2 只在「独立出图」场景用（d2-diagram 技能），文档内插图必须是 draw.io XML
+1. **禁止 Mermaid / PlantUML**；D2 只在「独立出图」场景用（`d2-diagram` 技能），文档内插图必须是 draw.io XML
 2. **禁止跳过本地校验与渲染验证** — 须先 `validate-diagram` 通过，再 `render-diagram` 确认输出
-3. **禁止绕过 config.json** — 渲染时优先从 `.agents/skills/common/config.json` 读取 API 地址，仅在 config.json 不存在时使用默认值
+3. **禁止绕过 config.json** — 渲染时优先从 `.agents/skills/config.json` 读取 API 地址，仅在 config.json 不存在时使用默认值
 4. **禁止省略 id="0" 和 id="1"** — 这两个根节点是 draw.io 必需的
 5. **禁止使用中文文件名** — 文件名用英文，节点内容可以用中文
 6. **禁止不验证就声称完成** — 渲染成功才算完成

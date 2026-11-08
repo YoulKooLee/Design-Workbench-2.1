@@ -10,11 +10,6 @@ description: >
 
 # 交付链路规划器
 
-## 软门禁（无 Hook 时仍须执行）
-条文真源：`.agents/rules/soft-gates.md`（先读后改 / 完成前验证 / 审查勾选）。
-本技能适用：计划文档可省略 build；Step D 转入 `feature-dev` 后走代码验证与步骤 6。
-禁止因无 Hook 把快速模式升为全量审查。
-
 ## 工作模式
 
 | 模式 | 触发场景 | 入口 |
@@ -42,29 +37,20 @@ ls docs/delivery-plan.md 2>/dev/null
 ```
 
 - 若已有 `docs/delivery-plan.md`，询问用户是否覆盖重新生成
-- **仅有 PRD、无合格 SRS** → 输出门禁 §3 话术，**中止**，路由 **`srs-writer` Step F**
-- 若无 SRS 也无 PRD → 提示用户先用 `/srs-writer` 或 `/prd-writer` + Step F
+- **仅有 PRD、无合格 SRS** → 输出门禁 §3 话术，**中止**，路由 **`req-doc` Step F**
+- 若无 SRS 也无 PRD → 提示用户先用 `/req-doc` 或 `/prd-writer` + Step F
 
-### A2: 调度 delivery-analyzer
+### A2: 分析需求并生成交付计划
 
-按 `.agents/rules/role-dispatch.md` 调度：
-
-```
-【角色】delivery-analyzer
-【定义】.agents/agents/delivery-analyzer.md
-【交付模式】{DELIVERY_MODE}
-【执行】能独立派发则派发；否则主会话扮演。
-【输入 / Prompt】
-交付模式：{DELIVERY_MODE}
-  PROJECT_PATH: {项目根目录绝对路径}
-  SRS_PATH: {需求说明书文件路径}
-  PROJECT_NAME: {从需求说明书封面提取的项目名称}
-【输出】四状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
-```
-
-### A3: 写入计划文件
-
-将 delivery-analyzer 的输出写入 `docs/delivery-plan.md`。
+主 Agent 直接执行：
+1. Read SRS 需求说明书，提取所有功能模块
+2. 分析每个功能的依赖关系（按 SRS 3.4 依赖矩阵或功能描述推断）
+3. 按依赖关系分 4 层：
+   - 第1层：无依赖的基础功能
+   - 第2层：依赖第1层的核心业务
+   - 第3层：依赖第2层的衍生功能
+   - 第4层：移动端（依赖PC端）
+4. 生成任务清单，写入 `docs/delivery-plan.md`。
 
 写入后输出：
 
@@ -81,7 +67,7 @@ Phase 1 共 N 个功能模块，分 4 层实现
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 推荐第一步：{第1层第一个功能}
-执行：/feature-dev 实现{功能名}
+执行：/page-generator 实现{功能名}
 ```
 
 ---
@@ -104,17 +90,17 @@ Phase 2-4：待 Phase 1 完成后展开
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 推荐下一步：{当前推荐功能}
 依赖状态：{依赖项} 均已完成
-执行：/feature-dev 实现{功能名}
+执行：/page-generator 实现{功能名}
 ```
 
 ---
 
 ## Step C: 更新模式
 
-**触发时机**：feature-dev 完成验收后自动调用，或用户手动触发。
+**触发时机**：page-generator 完成验收后自动调用，或用户手动触发。
 
 **触发方式**：
-- feature-dev Step 7 自动调用（传入已完成的功能名）
+- page-generator Step 7 自动调用（传入已完成的功能名）
 - 用户输入"标记{功能名}完成"
 
 **执行步骤**：
@@ -136,7 +122,7 @@ Phase 1 进度：{已完成}/{总数}
 
 推荐下一步：{下一个功能}
 依赖状态：{依赖项} 均已完成
-执行：/feature-dev 实现{功能名}
+执行：/page-generator 实现{功能名}
 ```
 
 ---
@@ -147,7 +133,7 @@ Phase 1 进度：{已完成}/{总数}
 
 **核心原则（来自 ECC-main Infinite Agentic Loop）**：
 - delivery-plan.md 是 spec 文件，自动执行模式是 Orchestrator
-- 读取计划 → 找下一个可实现功能 → 调用 feature-dev 完整实现 → 更新计划 → 继续下一个
+- 读取计划 → 找下一个可实现功能 → 调用 page-generator 完整实现 → 更新计划 → 继续下一个
 - **不停止、不询问、不偷懒**，直到所有依赖满足的功能全部完成
 - 遇到依赖未满足的功能才暂停，并说明原因
 
@@ -168,7 +154,7 @@ Phase 1 进度：{已完成}/{总数}
 自动执行队列（共 N 个功能）：
   1. F02 移动端-登录/登出（第1层）
   2. F03 移动端-我的（第1层，依赖 F02）
-  3. F08 客户档案（第2层）
+  3. F08 炼厂管理（第2层）
   ...
 
 开始执行，不会中途停止询问。
@@ -176,19 +162,19 @@ Phase 1 进度：{已完成}/{总数}
 
 ### D2: 循环执行
 
-对队列中每个功能，执行完整的 feature-dev 流程（步骤1-7）：
+对队列中每个功能，执行完整的 page-generator 流程（步骤1-7）：
 
 ```
 当前执行：[ID] [功能名]（第N层，共M个待实现）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[执行 feature-dev 完整流程：需求理解→规范加载→执行计划→代码生成→路由导航→验收检查→更新计划]
+[执行 page-generator 完整流程：需求理解→规范加载→执行计划→代码生成→路由导航→验收检查→更新计划]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [完成] [功能名] ✅  进度：已完成/总数
 继续下一个：[下一个功能名]
 ```
 
 **执行规则**：
-- 每个功能必须完整执行 feature-dev 的全部7个步骤，不能跳步骤
+- 每个功能必须完整执行 page-generator 的全部7个步骤，不能跳步骤
 - 验收检查（Step 6）发现问题必须修复后才能继续，不能跳过
 - 每个功能完成后立即更新 delivery-plan.md（Step 7）
 - 上一个功能的完成状态会解锁下一个功能的依赖，自动纳入队列
@@ -208,7 +194,7 @@ Phase 1 进度：{已完成}/{总数}
 Phase 1 进度：{已完成}/{总数}
 剩余功能等待依赖：
   - F03 移动端-我的（等待 F02 完成）
-  - F08 客户档案（等待第1层全部完成）
+  - F08 炼厂管理（等待第1层全部完成）
 
 继续执行：/delivery-plan 实现全部功能
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -248,24 +234,17 @@ ls docs/delivery-plan.md 2>/dev/null
 ```
 
 - 若已有 `docs/delivery-plan.md`，询问用户是否覆盖重新生成
-- **仅有 PRD、无合格 SRS** → 输出门禁 §3 话术，**中止**，路由 **`srs-writer` Step F**
-- 若无 SRS 也无 PRD → 提示用户先用 `/srs-writer` 或 `/prd-writer` + Step F
+- **仅有 PRD、无合格 SRS** → 输出门禁 §3 话术，**中止**，路由 **`req-doc` Step F**
+- 若无 SRS 也无 PRD → 提示用户先用 `/req-doc` 或 `/prd-writer` + Step F
 
-### A2: 调度 delivery-analyzer
-
-按 `.agents/rules/role-dispatch.md` 调度：
+### A2: 调用 delivery-analyzer
 
 ```
-【角色】delivery-analyzer
-【定义】.agents/agents/delivery-analyzer.md
-【交付模式】{DELIVERY_MODE}
-【执行】能独立派发则派发；否则主会话扮演。
-【输入 / Prompt】
-交付模式：{DELIVERY_MODE}
+subagent_type: "delivery-analyzer"
+传入：
   PROJECT_PATH: {项目根目录绝对路径}
   SRS_PATH: {需求说明书文件路径}
   PROJECT_NAME: {从需求说明书封面提取的项目名称}
-【输出】四状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
 ```
 
 ### A3: 写入计划文件
@@ -287,7 +266,7 @@ Phase 1 共 N 个功能模块，分 4 层实现
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 推荐第一步：{第1层第一个功能}
-执行：/feature-dev 实现{功能名}
+执行：/page-generator 实现{功能名}
 ```
 
 ---
@@ -310,17 +289,17 @@ Phase 2-4：待 Phase 1 完成后展开
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 推荐下一步：{当前推荐功能}
 依赖状态：{依赖项} 均已完成
-执行：/feature-dev 实现{功能名}
+执行：/page-generator 实现{功能名}
 ```
 
 ---
 
 ## Step C: 更新模式
 
-**触发时机**：feature-dev 完成验收后自动调用，或用户手动触发。
+**触发时机**：page-generator 完成验收后自动调用，或用户手动触发。
 
 **触发方式**：
-- feature-dev Step 7 自动调用（传入已完成的功能名）
+- page-generator Step 7 自动调用（传入已完成的功能名）
 - 用户输入"标记{功能名}完成"
 
 **执行步骤**：
@@ -342,7 +321,7 @@ Phase 1 进度：{已完成}/{总数}
 
 推荐下一步：{下一个功能}
 依赖状态：{依赖项} 均已完成
-执行：/feature-dev 实现{功能名}
+执行：/page-generator 实现{功能名}
 ```
 
 ---

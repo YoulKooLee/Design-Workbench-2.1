@@ -40,10 +40,8 @@ description: >
 
 ```
 1. 确定图表类型 → 查阅类型对照表
-2. 调用 diagram-drawer agent 生成 XML
-   - 传入：PROJECT_PATH, SKILL_PATH, DIAGRAM_TYPE, DESCRIPTION
-   - agent 自动读取绘图规范 + 模板 → 生成 → 自检
-3. 接收 agent 输出的 XML
+2. Read `.agents/knowledge/diagram/${DIAGRAM_TYPE}-rules.md` 和 `examples/${DIAGRAM_TYPE}.xml`
+3. 按规则生成 XML（节点文字 ≤12 汉字，颜色 ≤3 种）
 4. 保存 XML 源文件 → docs/images/src/<名称>.xml
 5. 调用本地校验脚本 `validate-diagram` 确认 XML 结构合法（见「本地校验脚本」）
 6. 调用渲染脚本 → 按平台选择 `render-diagram.ps1`（Windows）或 `render-diagram.sh`（Git Bash / Linux / macOS）生成 PNG
@@ -51,32 +49,22 @@ description: >
 8. 在文档中插入图片引用
 ```
 
-### Agent 调用方式
+### 主 Agent 执行方式
 
-使用 Task 工具调用子 Agent 生成 XML。Cursor 环境无内置 `diagram-drawer` 类型时，使用 `generalPurpose` + 读取 agent 定义：
+主 Agent 直接生成 XML，不派子 Agent。
 
 ```
-subagent_type: "generalPurpose"
-readonly: true
-prompt:
-  你是 diagram-drawer 子 Agent。开始前必须先 Read `.agents/agents/diagram-drawer.md` 并严格按其 Step 1-5 执行。
-  你只输出 XML，不触发其他技能，不派发子 Agent。
-
-  PROJECT_PATH: {项目根目录}
-  SKILL_PATH: {PROJECT_PATH}/.agents/skills/diagram-generator
-  DIAGRAM_TYPE: bpmn | flowchart | sequence | architecture | system-arch | swimlane | cross-functional | matrix-swimlane | er | class | usecase | state | orgchart | mindmap | mindmap-vertical | mindmap-radial | mindmap-minimal
-  DESCRIPTION: {图表内容描述，包含节点名称、流程步骤、角色等}
-  CONTAINER_SIZE: {可选，如 "1050x1000"}
-  STYLE_OVERRIDE: {可选，如 "swimlane border: #b0b8c0"}
+DIAGRAM_TYPE: bpmn | flowchart | sequence | architecture | system-arch | swimlane | cross-functional | matrix-swimlane | er | class | usecase | state | orgchart | mindmap | mindmap-vertical | mindmap-radial | mindmap-minimal
+DESCRIPTION: {图表内容描述，包含节点名称、流程步骤、角色等}
+CONTAINER_SIZE: {可选，如 "1050x1000"}
+STYLE_OVERRIDE: {可选，如 "swimlane border: #b0b8c0"}
 ```
-
-> `diagram-drawer` agent 定义在 `.agents/agents/diagram-drawer.md`。
 
 ### 批量生成（需求文档场景）
 
 ```
 1. 分析文档中所有需要图表的位置
-2. 逐张调用 diagram-drawer agent 生成 XML
+2. 逐张生成 XML（主 Agent 按单张流程执行）
 3. 保存所有 XML 源文件
 4. 批量调用 `validate-diagram` 校验每个源文件
 5. 批量调用渲染脚本

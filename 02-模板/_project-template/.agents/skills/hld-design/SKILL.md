@@ -14,20 +14,16 @@ description: >
 
 # 概要设计说明书（HLD）生成器
 
-## Agent 协作架构
+## 工作流架构（3+3 精简版）
 
 ```
-hld-design skill（主流程：调度 + 文件写入）
-  ├── design-analyzer agent（分析师，DOC_TYPE=hld）
-  │     职责：读 SRS/代码/已有HLD，输出架构级摘要（模块/实体/接口分组/技术栈/部署/非功能映射）
-  │
-  ├── design-writer agent（撰写者，DOC_TYPE=hld）
-  │     职责：摘要 + 模板 → 架构级设计章节（允许技术词汇，禁止下沉到字段/单接口）
-  │
+hld-design skill（主流程：调度 + 文件写入 + 分析 + 撰写）
   └── design-reviewer agent（审查者，DOC_TYPE=hld）
         职责：五维度审查（结构完整性/分层边界/技术规范/可追溯性/设计质量）
         时机：内容写入文件后统一运行 → 汇总 → 询问用户是否修复
 ```
+
+**精简说明：** design-analyzer 和 design-writer 已合并为 hld-lld-writing skill（2026-11-08 按沈剑理论精简）。主 Agent 自己完成分析和撰写，不派子 Agent。
 
 **先写后审原则：** 生成内容写入文件 → 对变更章节运行 design-reviewer → 汇总报告 → 询问"是否修复？" → 用户确认后修复。
 
@@ -66,19 +62,12 @@ hld-design skill（主流程：调度 + 文件写入）
 
 读取 `references/templates/hld-template.md`，严格按模板章节结构生成。
 
-### A3: 调用 design-analyzer（系统级分析）
+### A3: 系统级分析（主 Agent 执行）
 
-```
-subagent_type: "design-analyzer"
-传入：
-  PROJECT_PATH: {项目根目录}
-  DOC_TYPE: hld
-  FEATURE_NAME: {系统名称}
-  MODE: from_srs（有SRS）或 from_code（仅有代码）
-  SOURCE_PATH: {SRS路径 或 src/ 目录}
-```
-
-收到架构级摘要后，对照"开放项"清单补充询问用户（如技术选型偏好、部署形态）。
+主 Agent 按 hld-lld-writing skill 阶段 1 执行：
+1. Read SRS / 代码 / 已有 HLD
+2. 输出架构级摘要：模块/实体/接口分组/技术栈/部署/非功能映射
+3. 对照"开放项"清单补充询问用户（如技术选型偏好、部署形态）
 
 ### A4: 生成任务清单
 
@@ -111,20 +100,10 @@ subagent_type: "design-analyzer"
 ### A5: 执行任务
 
 1. [文档] / [图表]：每次执行一个，前置图表先于对应 [Agent] 完成，路径记备注
-2. [Agent]：调用 design-writer（传入 A3 摘要中对应章节部分 + DIAGRAM_PATHS）→ Edit 追加
+2. [Agent]：主 Agent 按 hld-lld-writing skill 阶段 2 撰写（传入 A3 摘要中对应章节部分 + DIAGRAM_PATHS）→ Edit 追加
 3. 第一个任务用 Write 创建文件，后续 Edit 追加，每次写入 ≤150 行
 
-```
-design-writer 调用：
-  subagent_type: "design-writer"
-  传入：
-    PROJECT_PATH: {项目根目录}
-    DOC_TYPE: hld
-    CHAPTER: {章节名}
-    SECTION_NUMBER: {编号}
-    设计摘要: {A3 摘要中对应部分}
-    DIAGRAM_PATHS: {对应图表路径}
-```
+
 
 **注意：** diagram-generator 是技能不是 agent，图表必须作为独立 [图表] 任务在 [Agent] 任务前完成。
 
@@ -152,8 +131,8 @@ design-writer 调用：
 ## Step B: 局部完善模式
 
 1. 读取现有 HLD 对应章节
-2. design-analyzer（MODE: from_existing，DOC_TYPE=hld）分析现有内容，识别缺失
-3. design-writer 补充/改写
+2. 主 Agent 分析现有内容，识别缺失（MODE: from_existing，DOC_TYPE=hld）
+3. 主 Agent 补充/改写
 4. Edit 写入
 5. design-reviewer 审查变更章节 → 汇总 → 询问修复 → 用户确认后修复
 6. 更新版本号
@@ -177,7 +156,7 @@ design-writer 调用：
 1. **分析代码现状**：以路由注册表为唯一真相源——只有在 `src/router/modules/index.ts`（或等效入口）中实际注册的路由才算"功能存在"，残留的 view/api/mock 文件不算（判定细则见 `.agents/skills/req-doc/SKILL.md` 的 Step B）。提取实际模块清单、技术栈（package.json）、模块依赖
 2. **分析现有 HLD**：提取文档声称的模块、架构、技术栈
 3. **生成差异清单**：模块增减、技术栈变更、依赖变化 → 展示给用户确认
-4. **执行更新**：design-analyzer（from_code）→ design-writer 更新对应章节 → 重新生成受影响图表
+4. **执行更新**：主 Agent 分析代码（from_code）→ 更新对应章节 → 重新生成受影响图表
 5. **审查**：design-reviewer → 汇总 → 询问修复
 6. 更新版本号
 
@@ -206,4 +185,4 @@ bash .agents/skills/common/export-word.sh <markdown文件路径> formal
 | HLD 模板 | `references/templates/hld-template.md` | 文档结构与章节规范 |
 | HLD 内容规范 | `.agents/knowledge/phase2-design/hld-spec.md` | 分层边界、质量清单 |
 | 图表生成 | 调用 `diagram-generator` 技能 | 架构图、概念ER图、部署图 |
-| 分析/撰写/审查 | `design-analyzer` / `design-writer` / `design-reviewer` | 三代理（DOC_TYPE=hld） |
+| 审查 | `design-reviewer` | 五维度审查（DOC_TYPE=hld） |

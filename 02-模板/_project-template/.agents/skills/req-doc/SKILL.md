@@ -17,29 +17,17 @@ description: >
 
 # SRS需求规格说明书生成器
 
-## Agent 协作架构
+## 工作流架构（3+3 精简版）
 
 ```
-req-doc skill（主流程：调度 + 文件写入）
-  ├── req-analyzer agent（分析师）
-  │     职责：读取设计文档/代码/已有需求，输出结构化功能摘要
-  │     输出：字段表、业务规则、枚举值、依赖关系
-  │
-  ├── req-writer agent（撰写者）
-  │     职责：摘要 + 规范 → 符合 PRD 语言的 Markdown 章节
-  │     约束：只写"做什么"，不写技术实现，不写 UI 布局
-  │
-  ├── req-reviewer agent（审查者）
-  │     职责：四维度独立审查（语言规范/章节结构/三要素/提示文案）
-  │     时机：**按 AGENTS.md「交付模式」** — 标准模式下 A6 **抽检**（非全量）；严格模式全量审查
-  │     → 汇总审查结果 → **P0 自动修复**；P1/P2 按模式决定是否询问用户
-  │
-  └── template-analyzer agent（模板提炼器）
-        职责：分析已有需求说明书，提炼可复用模板
-        输入：docling 转换后的 Markdown 全文
-        输出：分析摘要 + 完整模板文件内容
-        仅由 Step E（模板生成模式）调用
+req-doc skill（主流程：调度 + 分析 + 撰写 + 文件写入）
+  └── design-note-reviewer agent（审查者）
+        职责：四维度独立审查（语言规范/章节结构/三要素/提示文案）
+        时机：**按 AGENTS.md「交付模式」** — 标准模式下 A6 **抽检**（非全量）；严格模式全量审查
+        → 汇总审查结果 → **P0 自动修复**；P1/P2 按模式决定是否询问用户
 ```
+
+**精简说明：** req-analyzer + req-writer 已合并为 req-doc-writing skill（2026-11-08 按沈剑理论精简）。主 Agent 自己完成分析和撰写，不派子 Agent。template-analyzer 已去掉（模板提炼是低频一次性工作）。
 
 **审查策略（见 `AGENTS.md`「交付模式」；**本技能未声明时默认「标准」**）：
 
@@ -51,16 +39,12 @@ req-doc skill（主流程：调度 + 文件写入）
 
 **生成模式写入阶段（A5）仍不穿插 reviewer**；审查集中在 A6 一次完成。
 
-**分组并行策略**：若需要生成多个功能模块，按以下规则分组执行：
-
-1. **analyzer 阶段**：将所有功能模块按 2-3 个一组，同组内并行调用 `req-analyzer`，组间串行
-2. **writer 阶段**：每组 analyzer 完成后，同组内并行调用 `req-writer`（**writer 后不跑 reviewer**）
-3. **文件写入阶段**：同组写入完成后，按章节编号顺序串行追加到文档
+**分组策略**：若需要生成多个功能模块，按 2-3 个一组分组。每组内主 Agent 依次完成分析和撰写，按章节编号顺序串行追加到文档。
 
 **分组示例（6个模块）：**
-- 第1组：模块A、模块B、模块C → 并行 analyzer → 并行 writer → 各自串行 reviewer → 串行写入
+- 第1组：模块A、模块B、模块C → 逐个分析+撰写 → 串行写入
 - 第2组：模块D、模块E、模块F → 同上
-- 两组之间串行，不跨组并行
+- 两组之间串行
 
 ---
 
@@ -103,9 +87,9 @@ req-doc skill（主流程：调度 + 文件写入）
 
 **术语表冷启动检查：**
 
-检查 `.agents/agent-memory/req-writer/` 目录是否存在项目术语表文件：
-- 若存在 → 读取并在 A4 任务清单中注明"已有术语表，analyzer 将复用"
-- 若不存在 → 在任务清单第一个 [Agent] 任务备注"首次运行，analyzer 将初始化术语表"，并在第一组 analyzer 全部完成后，主流程汇总各 analyzer 输出的术语，写入 `.agents/agent-memory/req-writer/project-{项目名}-terminology.md`，后续各组 analyzer 直接读取复用
+检查 `.agents/agent-memory/req-doc/` 目录是否存在项目术语表文件：
+- 若存在 → 读取并在 A4 任务清单中注明"已有术语表，将复用"
+- 若不存在 → 在任务清单第一个功能模块任务备注"首次运行，将初始化术语表"，并在第一组功能模块全部完成后，主流程汇总各模块输出的术语，写入 `.agents/agent-memory/req-doc/project-{项目名}-terminology.md`，后续各组直接读取复用
 
 ### A4: 生成任务清单
 
@@ -113,7 +97,7 @@ req-doc skill（主流程：调度 + 文件写入）
 
 任务拆分原则：**每个功能模块（3.5.x）是一个独立任务，非详细设计章节（文档信息、项目概述、功能清单等）也各自独立。**
 
-**[Agent] 任务分组规则：每 2-3 个功能模块为一组，同组并行 analyzer → 同组并行 writer → 串行写入。**
+**[Agent] 任务分组规则：每 2-3 个功能模块为一组，同组主 Agent 依次分析+撰写 → 串行写入。**
 
 任务清单示例：
 ```
@@ -139,7 +123,7 @@ req-doc skill（主流程：调度 + 文件写入）
 
 **关键规则：**
 - 每个 [Agent] 任务之前必须有对应的 [图表] 任务，同组的图表任务合并为一个批次
-- [图表] 任务完成后将图片路径记录在备注列，[Agent] 任务执行时从备注列读取路径传给 req-writer
+- [图表] 任务完成后将图片路径记录在备注列，[Agent] 任务执行时从备注列读取路径用于撰写
 - 同组 [Agent] 任务的 analyzer 阶段并行，writer 阶段并行，文件写入按编号顺序串行
 
 状态标识：[ ] 等待中 → [进行中] → [完成]
@@ -165,40 +149,31 @@ req-doc skill（主流程：调度 + 文件写入）
 
 同组的图表任务合并为一个批次调用 `diagram-generator` 技能，获取所有图片路径后记录在任务清单备注中，供后续 [Agent] 任务使用。
 
-**[Agent] 类任务执行方式（分组并行）：**
+**[Agent] 类任务执行方式（分组执行）：**
 
 每组功能模块按以下流程执行：
 
 ```
-Phase 1 — 并行 analyzer（同组所有模块同时启动）
-  对组内每个模块，并行调用 req-analyzer：
-    subagent_type: "req-analyzer"
-    传入：
-      PROJECT_PATH: {项目根目录}
-      FEATURE_NAME: {功能名称}
-      MODE: from_design 或 from_code
-      SOURCE_PATH: {设计文档路径 或 src/ 目录}
-  等待组内所有 analyzer 完成后进入 Phase 2
+Phase 1 — 分析（主 Agent 按 req-doc-writing skill 阶段 1 执行）
+  对组内每个模块，依次：
+    Read 设计文档/代码/已有需求
+    输出结构化功能摘要：字段表、业务规则、枚举值、依赖关系
+  完成后进入 Phase 2
 
-Phase 2 — 并行 writer（同组所有模块同时启动）
-  对组内每个模块，并行调用 req-writer：
-    subagent_type: "req-writer"
-    传入：
-      PROJECT_PATH: {项目根目录}
-      FEATURE_NAME: {功能名称}
-      SECTION_NUMBER: {章节编号}
-      功能摘要: {对应模块的 req-analyzer 输出}
-      DIAGRAM_PATHS: {对应 [图表] 任务已生成的图片路径}
-  等待组内所有 writer 完成后进入 Phase 3
+Phase 2 — 撰写（主 Agent 按 req-doc-writing skill 阶段 2 执行）
+  对组内每个模块，依次：
+    功能摘要 + 规范 → 符合 PRD 语言的 Markdown 章节
+    约束：只写"做什么"，不写技术实现，不写 UI 布局
+  完成后进入 Phase 3
 
 Phase 3 — 串行写入（按章节编号顺序）
   对组内每个模块，按编号顺序用 Edit 工具追加到文档
   每次写入后验证：grep 章节标题确认写入正确
 ```
 
-**注意：** writer 阶段不运行 reviewer。同组全部写入完成后，在 **A6** 统一审查（按交付模式）。
+**注意：** 撰写阶段不运行 reviewer。全部写入完成后，在 **A6** 统一审查（按交付模式）。
 
-**注意：** diagram-generator 是技能（Skill），不是 agent，无法在 agent 协作流程中间调用。流程图必须作为独立的 [图表] 类任务，在对应 [Agent] 任务之前完成，再将图片路径传给 req-writer。
+**注意：** diagram-generator 是技能（Skill），不是 agent。流程图必须作为独立的 [图表] 类任务，在对应 [Agent] 任务之前完成，再将图片路径用于撰写。
 
 ### A6: 审查与修复（精简）
 
@@ -216,12 +191,12 @@ Phase 3 — 串行写入（按章节编号顺序）
 
 | 模式 | 动作 |
 | --- | --- |
-| **快速** | 跳过 req-reviewer；对本次新增/变更段落做 **禁用词 grep**（见 `req-doc-workflow.md`） |
-| **标准** | 对 3.5.x **抽检**：`max(2, ceil(模块数 × 20%))` 个模块并行 req-reviewer；优先抽 **首个、中间、末尾** 模块 |
-| **严格** | **全部** 3.5.x 按 2–3 个一组并行 req-reviewer |
+| **快速** | 跳过 design-note-reviewer；对本次新增/变更段落做 **禁用词 grep**（见 `req-doc-workflow.md`） |
+| **标准** | 对 3.5.x **抽检**：`max(2, ceil(模块数 × 20%))` 个模块并行 design-note-reviewer；优先抽 **首个、中间、末尾** 模块 |
+| **严格** | **全部** 3.5.x 按 2–3 个一组并行 design-note-reviewer |
 
 ```
-subagent_type: "req-reviewer"
+subagent_type: "design-note-reviewer"
 传入：
   PROJECT_PATH: {项目根目录}
   FEATURE_NAME: {功能名称}
@@ -261,7 +236,7 @@ subagent_type: "req-reviewer"
 
 修复方式（同原规则）：
 
-- [Agent 重写]：问题数 ≥ 2，或涉及结构/三要素 → analyzer(from_existing) → req-writer → **最多 1 次** req-reviewer 复审
+- [Agent 重写]：问题数 ≥ 2，或涉及结构/三要素 → 主 Agent 重新分析(from_existing) → 重新撰写 → **最多 1 次** design-note-reviewer 复审
 - [主流程修正]：单点文案/格式 → 直接 Edit
 
 全部 P0（及用户确认的 P1）修完后，更新版本号（+0.1）、重命名文件（日期+版本），输出修复汇总。
@@ -373,24 +348,16 @@ subagent_type: "req-reviewer"
 
 ### B3: 功能模块深度分析
 
-对 B2 中标记为"需要更新"或"需要新增"的 3.5.x 功能模块，按 2-3 个一组并行调用 `req-analyzer`：
+对 B2 中标记为"需要更新"或"需要新增"的 3.5.x 功能模块，按 2-3 个一组分析：
 
-```
-subagent_type: "req-analyzer"
-传入：
-  PROJECT_PATH: {项目根目录}
-  FEATURE_NAME: {功能名称}
-  MODE: from_code
-  SOURCE_PATH: {对应子项目的 src/ 目录，如 admin/src/ 或 mobile/src/}
-```
-
-**关键：analyzer 会自动从路由文件出发，逐层定位并完整读取所有相关文件（view → components → api → mock），不需要主流程预先列出文件清单。但主流程必须确保 SOURCE_PATH 指向正确的子项目目录。**
-
-**主流程在调用前的准备工作：**
+**主 Agent 分析步骤：**
 1. 确认该功能模块对应的路由文件路径（从 B1 的路由扫描结果中获取）
-2. 在 prompt 中补充提示：`该功能对应路由文件为 {路由文件路径}，请从此文件开始逐层分析`
+2. 从路由文件出发，逐层定位并完整读取所有相关文件（view → components → api → mock）
+3. 输出结构化功能摘要：字段表、业务规则、枚举值、依赖关系
 
-**代码质量评估：** analyzer 完成后，检查摘要中的自检结果。若某模块摘要中：
+**关键：主 Agent 必须确保从路由注册表出发分析，而非残留文件。SOURCE_PATH 指向正确的子项目目录。**
+
+**代码质量评估：** 分析完成后，检查摘要中的自检结果。若某模块摘要中：
 - 筛选字段数 + 列表列数 + 表单字段数 合计 < 5 → 标记为"代码信息不足"
 - 自检结果中有"✗"标记 → 要求 analyzer 重新读取对应文件补充
 
@@ -422,8 +389,8 @@ Phase 2 — 更新/新增结构性章节（主流程直接 Edit）
   3. 3.4 补充新增权限行
   4. 3.1 更新架构描述
 
-Phase 3 — 更新/新增 3.5.x 功能详细设计（调用 req-writer）
-  对每个需要更新或新增的模块，调用 req-writer 生成内容并写入
+Phase 3 — 更新/新增 3.5.x 功能详细设计
+  主 Agent 按 req-doc-writing skill 阶段 2 撰写，逐个模块生成内容并写入
 
 Phase 4 — 重新生成图表（调用 diagram-generator）
   对标记需要重新生成的流程图/架构图，调用 diagram-generator
@@ -438,8 +405,8 @@ Phase 4 — 重新生成图表（调用 diagram-generator）
 ## Step C: 局部完善模式
 
 1. 读取现有SRS需求规格说明书对应章节
-2. 调用 `req-analyzer`（MODE: from_existing）分析现有内容，识别缺失和问题
-3. 调用 `req-writer` 补充/改写，生成新章节内容
+2. 主 Agent 分析现有内容，识别缺失和问题（MODE: from_existing）
+3. 主 Agent 补充/改写，生成新章节内容
 4. 用 Edit 工具将新内容写入文件
 5. **按 A6 策略**审查变更范围（标准模式：变更章节 + 关联结构性交叉检查；快速模式：grep 即可）
 6. P0 自动修复；P1 **问一次**是否一并修复
@@ -473,7 +440,7 @@ Phase 4 — 重新生成图表（调用 diagram-generator）
 ### D3: 逐章审查
 
 - **结构性章节**：主流程对照模板检查
-- **3.5.x**：按交付模式 — **严格** 全量 req-reviewer；**标准** 仅审查 D2 清单中标记 `[Agent]` 的章节（用户点名审查时可全量）；**快速** 跳过 reviewer，grep 禁用词
+- **3.5.x**：按交付模式 — **严格** 全量 design-note-reviewer；**标准** 仅审查 D2 清单中标记 `[Agent]` 的章节（用户点名审查时可全量）；**快速** 跳过 reviewer，grep 禁用词
 
 ### D4: 汇总报告与修复
 
@@ -483,7 +450,7 @@ Phase 4 — 重新生成图表（调用 diagram-generator）
 - **严格**：P0 修完后，P1/P2 展示报告并等用户确认再修
 - **快速**：只输出列表
 
-修复流程同 A6 第四步。D3 的问题清单保留至 D6，修复时传给 req-writer，**每章最多 1 次** reviewer 复审。
+修复流程同 A6 第四步。D3 的问题清单保留至 D6，修复时传给主 Agent 撰写阶段，**每章最多 1 次** reviewer 复审。
 
 ### D5: 生成修复任务清单并执行
 
@@ -498,45 +465,35 @@ Phase 4 — 重新生成图表（调用 diagram-generator）
 ```
 
 **修复方式判断：**
-- [Agent 重写]：问题数 >= 2，或涉及语言规范/章节结构/三要素缺失 → 整章重写
+- [主 Agent 重写]：问题数 >= 2，或涉及语言规范/章节结构/三要素缺失 → 整章重写
 - [主流程修正]：问题数 = 1，且是局部文案/格式问题 → 直接 Edit 修改
 
-**关键：D3 审查时每章的问题清单必须保留在上下文中，D6 修复时直接传给 req-writer 和 req-reviewer，不需要重新审查。**
+**关键：D3 审查时每章的问题清单必须保留在上下文中，D6 修复时直接传给主 Agent 撰写阶段和 design-note-reviewer，不需要重新审查。**
 
 ### D6: 逐项执行修复
 
 每次只修复一个任务，执行前更新为 [进行中]，完成后更新为 [完成]，立即开始下一个。
 
-**[Agent 重写] 流程（整章重写）：**
+**[主 Agent 重写] 流程（整章重写）：**
 
 ```
-Step 1: 调用 req-analyzer（MODE: from_existing）
-  传入：
-    PROJECT_PATH: {项目根目录}
-    FEATURE_NAME: {功能名称}
-    MODE: from_existing
-    SOURCE_PATH: {SRS需求规格说明书路径}
-  作用：提取现有章节中可复用的内容，同时标注哪些需要改写
+Step 1: 分析现有章节（主 Agent，MODE: from_existing）
+  Read SRS 对应章节
+  提取可复用内容，标注哪些需要改写
 
-Step 2: 调用 req-writer
-  传入：
-    PROJECT_PATH: {项目根目录}
-    FEATURE_NAME: {功能名称}
-    SECTION_NUMBER: {章节编号}
-    功能摘要: {req-analyzer 的输出}
-    审查报告: {D3 中该章节的问题清单，原文传入，不要省略}
-    DIAGRAM_PATHS: {已有流程图路径，无需重新生成}
+Step 2: 重新撰写（主 Agent）
+  按 req-doc-writing skill 阶段 2 执行
+  传入 D3 的问题清单，逐一修正
+  保留已有流程图路径，不重新生成
 
-Step 3: 调用 req-reviewer 复审
+Step 3: design-note-reviewer 复审
   传入：
-    PROJECT_PATH: {项目根目录}
-    FEATURE_NAME: {功能名称}
-    章节内容: {req-writer 的输出}
-    原始问题清单: {D3 中该章节的 ❌ 问题列表，原文传入}
+    章节内容: {Step 2 的输出}
+    原始问题清单: {D3 中该章节的 ❌ 问题列表}
 
 Step 4: 处理复审结果
   - 全部通过 → 进入 Step 5
-  - 仍有 ❌ → 再次调用 req-writer 修正（最多重试1次）
+  - 仍有 ❌ → 主 Agent 再次修正（最多重试1次）
     仍未通过 → 写入文件并在文档末尾附注"待人工复查：[问题描述]"
 
 Step 5: 替换文档中的对应章节
@@ -618,19 +575,16 @@ unzip -p {docx路径} word/document.xml > /tmp/req-doc-raw.xml
 
 转换完成后，读取 `/tmp/req-template-source.md` 的内容。
 
-### E3: 调用 template-analyzer
+### E3: 分析 Word 文档并提炼模板
 
-```
-subagent_type: "template-analyzer"
-传入：
-  CONVERTED_CONTENT: {E2 转换后的完整 Markdown 内容}
-  TEMPLATE_NAME: {用户提供的模板名称}
-  PROJECT_PATH: {项目根目录}
-```
+主 Agent 直接执行：
+1. Read E2 转换后的 Markdown 全文
+2. 识别文档结构：章节层级、表格格式、字段规范、内容模式
+3. 提炼为可复用的模板结构
 
 ### E4: 写入模板文件
 
-将 template-analyzer 的输出直接写入：
+将分析结果写入：
 
 ```
 {PROJECT_PATH}/.agents/skills/req-doc/references/templates/{模板文件名}.md
@@ -663,7 +617,7 @@ ls {PROJECT_PATH}/.agents/skills/req-doc/references/templates/*.md
 请选择本次使用的模板（默认：1）：
 ```
 
-用户选择后，A2 读取对应模板文件，后续 req-writer 按所选模板的规范生成内容。
+用户选择后，A2 读取对应模板文件，后续按所选模板的规范生成内容。
 
 ### E6: 完成提示
 
@@ -723,7 +677,7 @@ PRD → SRS 转写计划
 | A2 模板 | 同 Step A |
 | A3 信息 | 从 PRD §1–§2 提取，缺的再问 |
 | A4 任务清单 | 每个 🔴 模块一个 3.5.x [Agent] 任务 |
-| A5 执行 | analyzer 传 `MODE: from_prd`、`SOURCE_PATH: {PRD}` |
+| A5 执行 | 主 Agent 分析传 `MODE: from_prd`、`SOURCE_PATH: {PRD}` |
 | 文首 | 按 `prd-to-srs-handoff.md` 写来源 PRD 元数据 |
 
 **3.1 / 3.2 / 3.3 / 6.1**：主流程按对照表从 PRD §4 / §5 展开，不得留空。
@@ -785,4 +739,4 @@ bash .agents/skills/common/export-word.sh <markdown文件路径> req-doc
 | PRD→SRS 转写对照 | `references/prd-to-srs-handoff.md` | Step F 章节映射与展开规则 |
 | PRD→SRS 门禁 | Read(".agents/rules/prd-to-srs-gate.md") | 下游阻断与 SPEC_SOURCE |
 | 图表生成 | 调用 `diagram-generator` 技能 | 流程图、时序图 |
-| 模板提炼 Agent | `.agents/agents/template-analyzer.md` | 从Word文档提炼新模板 |
+| 模板提炼 | 主 Agent 直接分析（Step E3） | 从Word文档提炼新模板 |

@@ -15,21 +15,16 @@ description: >
 
 # 详细设计说明书（LLD）生成器
 
-## Agent 协作架构
+## 工作流架构（3+3 精简版）
 
 ```
-lld-design skill（主流程：调度 + 文件写入）
-  ├── design-analyzer agent（分析师，DOC_TYPE=lld）
-  │     职责：读 SRS/HLD/代码，输出实现级摘要（类/表结构/字段/索引/接口签名/错误码）
-  │     按 database.md 补全必备字段，按 backend.md 规整接口
-  │
-  ├── design-writer agent（撰写者，DOC_TYPE=lld）
-  │     职责：摘要 + 模板 + 技术规范 → 模块详设/数据库物理设计/API详细设计章节
-  │
+lld-design skill（主流程：调度 + 文件写入 + 分析 + 撰写）
   └── design-reviewer agent（审查者，DOC_TYPE=lld）
         职责：五维度审查（结构完整性/分层边界/技术规范符合/可追溯性/设计质量）
         重点：表必备字段、命名规范、索引、统一响应格式、可追溯性
 ```
+
+**精简说明：** design-analyzer 和 design-writer 已合并为 hld-lld-writing skill（2026-11-08 按沈剑理论精简）。主 Agent 自己完成分析和撰写，不派子 Agent。
 
 **先写后审原则：** 生成 → 写入 → design-reviewer 审查 → 汇总 → 询问修复 → 用户确认后修复。
 
@@ -65,7 +60,7 @@ lld-design skill（主流程：调度 + 文件写入）
 
 ### A2: 读取模板与规范
 
-读取 `references/templates/lld-template.md`。design-analyzer / writer / reviewer 会自行读取 database.md / backend.md / security.md，主流程无需预读。
+读取 `references/templates/lld-template.md`。主 Agent 执行分析/撰写时会自行读取 database.md / backend.md / security.md，无需预读。
 
 ### A3: 确定模块范围
 
@@ -99,31 +94,29 @@ lld-design skill（主流程：调度 + 文件写入）
 **[Agent] 类任务分组执行：**
 
 ```
-Phase 1 — 并行 analyzer（组内模块同时启动）
-  subagent_type: "design-analyzer"
-  传入：
+Phase 1 — 分析（组内模块同时处理）
+  主 Agent 按 hld-lld-writing skill 阶段 1 执行：
     PROJECT_PATH: {项目根目录}
     DOC_TYPE: lld
     FEATURE_NAME: {模块名}
     MODE: from_hld（有HLD）/ from_code（代码为主）/ from_srs
     SOURCE_PATH: 按 MODE 取值——from_hld 传 HLD 文件路径，from_code 传 src/ 目录，from_srs 传 SRS 路径
-  （analyzer 会从路由逐层定位代码，提取表结构/接口/类，补全必备字段）
-  **主流程必须按模块名索引保存每个 analyzer 的输出摘要，供 A6 审查时取用。**
+  （主 Agent 从路由逐层定位代码，提取表结构/接口/类，补全必备字段）
+  **必须按模块名索引保存每个模块的分析摘要，供 A6 审查时取用。**
 
-Phase 2 — 并行 writer（组内模块同时启动）
-  subagent_type: "design-writer"
-  传入：
+Phase 2 — 撰写（组内模块同时处理）
+  主 Agent 按 hld-lld-writing skill 阶段 2 执行：
     PROJECT_PATH: {项目根目录}
     DOC_TYPE: lld
     FEATURE_NAME: {模块名}（模块详设章节用 FEATURE_NAME；数据库/API 汇总章节用 CHAPTER 传章节名）
     SECTION_NUMBER: {编号}
-    设计摘要: {对应模块的 analyzer 输出}
+    设计摘要: {对应模块的分析输出}
     DIAGRAM_PATHS: {对应类图/时序图/ER图路径}
 
 Phase 3 — 串行写入（按编号顺序 Edit 追加，每次 ≤150 行）
 ```
 
-**四、数据库 / 五、API 集中编排时：** 主流程汇总各模块 analyzer 输出中的表与接口，去重后传给 design-writer 统一生成（避免同一张表在多模块重复定义）。
+**四、数据库 / 五、API 集中编排时：** 主 Agent 汇总各模块分析输出中的表与接口，去重后统一生成（避免同一张表在多模块重复定义）。
 
 **图表：** 每组图表合并为一个批次调用 diagram-generator（类图 class、时序图 sequence、物理ER图 er），路径记入备注。
 
@@ -144,8 +137,8 @@ Phase 3 — 串行写入（按编号顺序 Edit 追加，每次 ≤150 行）
 适用：补某个模块、加一张表、补一个接口。
 
 1. 读取现有 LLD 对应章节
-2. design-analyzer（MODE: from_existing 或 from_code，DOC_TYPE=lld）
-3. design-writer 补充/改写（如需新表，补全必备字段）
+2. 主 Agent 分析（MODE: from_existing 或 from_code，DOC_TYPE=lld）
+3. 主 Agent 补充/改写（如需新表，补全必备字段）
 4. Edit 写入对应位置
 5. design-reviewer 审查 → 汇总 → 询问修复 → 用户确认后修复
 6. 更新版本号
@@ -167,7 +160,7 @@ Phase 3 — 串行写入（按编号顺序 Edit 追加，每次 ≤150 行）
 
 **触发场景：** 代码已实现/演进，需将 LLD 与代码现状对齐。**代码是真相源。**
 
-1. **分析代码现状**：以路由注册表为唯一真相源——只有实际注册的路由才算"功能存在"，残留文件不算（判定细则见 `.agents/skills/req-doc/SKILL.md` 的 Step B）。对每个活跃模块，design-analyzer（from_code）提取：实际表字段（mock/entity）、实际接口（api/*.ts）、实际类结构
+1. **分析代码现状**：以路由注册表为唯一真相源——只有实际注册的路由才算"功能存在"，残留文件不算（判定细则见 `.agents/skills/req-doc/SKILL.md` 的 Step B）。主 Agent 对每个活跃模块提取（from_code）：实际表字段（mock/entity）、实际接口（api/*.ts）、实际类结构
 2. **分析现有 LLD**：提取文档中的表、接口、模块
 3. **生成差异清单**：
    - 表级：字段增减、类型变更、新表、废弃表
@@ -175,7 +168,7 @@ Phase 3 — 串行写入（按编号顺序 Edit 追加，每次 ≤150 行）
    - 模块级：类增减、流程变更
    展示给用户确认
 4. **代码质量评估**：若某模块代码信息不足（字段+接口合计过少或 analyzer 自检有✗），标注 ⚠️ 提示人工补充，不自动写入
-5. **执行更新**：design-writer 更新对应章节 → 重新生成受影响图表（类图/时序图/ER图）
+5. **执行更新**：主 Agent 更新对应章节 → 重新生成受影响图表（类图/时序图/ER图）
 6. **审查**：design-reviewer → 汇总 → 询问修复
 7. 更新版本号
 
@@ -207,4 +200,4 @@ bash .agents/skills/common/export-word.sh <markdown文件路径> formal
 | 后端规范 | `.agents/knowledge/phase3-development/backend.md` | RESTful、统一响应格式 |
 | 安全规范 | `.agents/knowledge/conventions/security.md` | 鉴权、数据安全、注入防护 |
 | 图表生成 | 调用 `diagram-generator` 技能 | 类图、时序图、物理ER图 |
-| 分析/撰写/审查 | `design-analyzer` / `design-writer` / `design-reviewer` | 三代理（DOC_TYPE=lld） |
+| 审查 | `design-reviewer` | 五维度审查（DOC_TYPE=lld） |
