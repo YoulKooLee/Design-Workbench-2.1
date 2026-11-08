@@ -11,6 +11,7 @@ const samples = [
   '中文内容测试二维码编码是否正确',
   'x'.repeat(100),
   'http://192.168.1.158:53817/?projectId=' + encodeURIComponent('崂山国家实验室园区数字孪生大屏') + '&p=overview',
+  'http://192.168.1.158:53817/?projectId=%E6%B5%8B%E8%AF%95&p=shadcn-admin-dashboard&axhubAccessToken=' + 'e'.repeat(248),
 ];
 
 const jobs = [];
