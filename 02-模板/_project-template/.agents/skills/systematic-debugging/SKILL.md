@@ -1,6 +1,8 @@
 ---
 name: systematic-debugging
 description: 遇到任何 bug、测试失败或异常行为时，在提出修复方案之前使用。
+
+exclude: "排除场景：写测试代码（TDD）→ 用 test-driven-development；验证修复是否成功 → 用 verification-before-completion"
 ---
 
 # 系统化调试

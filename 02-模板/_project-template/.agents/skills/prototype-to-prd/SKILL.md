@@ -5,6 +5,8 @@ description: |
   触发词（任一命中即用本 skill）：Axure 转 PRD、原型转需求、原型生成 PRD、从原型写 PRD、逆向 PRD、网站转 PRD、线上产品写需求、分析原型写 PRD、HTML 原型转文档、/prototype-to-prd、导出 PRD、PRD 导出 Word、需求文档转 Word、PRD 转 Word。
   与 prd-writer 分工：本技能负责「读原型/站点 → 盘点 → 补缺口」；概念版与落地版模板、三视角诊断、MVP 闸门、自检仍复用 prd-writer 的 references/。
   用户仅说「写 PRD」且无原型/站点输入时，用 prd-writer，不用本技能。
+
+exclude: "排除场景：从零写 PRD（无原型/截图）→ 用 prd-writer；汇总多原型为 PRD → 用 write-prd；只是把截图还原为原型 → 用 screenshot-to-prototype"
 ---
 
 # Prototype to PRD · 原型/站点逆向写 PRD

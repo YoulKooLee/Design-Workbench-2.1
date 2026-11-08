@@ -1,6 +1,8 @@
 ---
 name: write-prd
 description: Use when the user explicitly asks to write, draft, create, update, or synthesize a PRD for an Axhub Make client project, especially when the PRD may aggregate multiple prototypes, resources, canvas notes, or existing product context.
+
+exclude: "排除场景：从零写 PRD → 用 prd-writer；需求探索/细化 → 用 brainstorming 或 requirements-exploration；已有 SRS 只需细化 → 用 req-doc"
 ---
 
 # Write PRD

@@ -10,6 +10,8 @@ metadata:
   trigger: 编辑或审阅中文文本，去除模板化表达
   source: 基于 blader/humanizer v3.0.0 和 Humanizer-zh PR 39 的结构修订；参考 hardikpandya/stop-slop
   revision: "2026-09-23"
+
+exclude: "排除场景：写 PRD/需求文档 → 用 prd-writer 或 req-doc；写设计说明 → 用 write-design-notes；写操作手册 → 用 pm-operation-manual"
 ---
 
 # Humanizer-zh

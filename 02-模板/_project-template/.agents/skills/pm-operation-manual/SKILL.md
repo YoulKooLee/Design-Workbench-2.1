@@ -8,6 +8,8 @@ description: >
   (4) 生成系统管理员操作手册，
   (5) 生成终端用户手册或快速入门指南。
   基于需求文档和现有前端页面生成操作手册。
+
+exclude: "排除场景：写 PRD/需求文档 → 用 prd-writer 或 req-doc；写测试用例 → 用 pm-test-cases；写设计说明 → 用 write-design-notes"
 ---
 
 # 操作手册生成器

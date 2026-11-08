@@ -8,6 +8,8 @@ description: >
   (4) 从需求生成功能/边界/异常/权限测试用例，
   (5) 生成 API 测试用例或测试报告模板。
   基于需求文档或功能描述自动生成完整测试用例集。
+
+exclude: "排除场景：写 PRD/需求文档 → 用 prd-writer 或 req-doc；写操作手册 → 用 pm-operation-manual；写测试代码（TDD）→ 用 test-driven-development"
 ---
 
 # 测试用例生成器

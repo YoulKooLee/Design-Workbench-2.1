@@ -5,6 +5,8 @@ description: |
   产出 Markdown 存 `docs/`；完整页面结构列表须为交付物第 2 章（按屏分段 + 五项要点列表，禁止用单张宽表罗列五项）；章首可选 **屏目录表**：2 列（序号｜页面）或 **4 列（+ 主要功能｜文件名称建议）**，须与各屏小节一致；本章末尾附 **关键页面 ASCII 线框图（至少 1 屏）**。
   含 **树状功能清单（🔴核心 / 🟡重要 / ⚪未来）**、主题化结构化功能列表、功能总表、分期；可读取 `docs/` 下或其它用户 `@` 路径的需求稿；默认简短访谈；弱化技术实现。
   English: feature checklist, tree priority summary, key-screen ASCII wireframe, prototype-oriented IA — same rules.
+
+exclude: "排除场景：标注替代 PRD（无 SRS）→ 用 prototype-annotation；从原型逆向生成 PRD → 用 prototype-to-prd"
 ---
 
 # 产品功能与信息结构清单（原型向）

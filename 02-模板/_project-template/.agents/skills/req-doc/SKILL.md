@@ -13,6 +13,8 @@ description: >
 (9) 用户需要将现有前端代码/页面同步回需求文档时，
 (10) "PRD转SRS" "PRD 转 SRS" "进开发" "转写需求" "按 PRD 写 SRS" "PRD 转需求说明书" 或仅有 *-PRD.md 却要 page-generator / 交付计划 / 概要设计时。
 支持完整生成、局部完善、审查修复、从代码反向同步、从 Word 生成模板、**PRD→SRS 转写（Step F）**。
+
+exclude: "排除场景：从零写 PRD（无 SRS 意图）→ 用 prd-writer；汇总多原型为 PRD → 用 write-prd；需求探索/细化（未显式要求写文档）→ 用 brainstorming"
 ---
 
 # SRS需求规格说明书生成器

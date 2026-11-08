@@ -8,6 +8,8 @@ description: >
   (4) "开发xx功能" "做xx功能" "完成xx功能",
   (5) "实现全部功能" "按计划实现所有功能" "连续实现" "一直实现" "自动实现",
   (6) 用户需要为后台管理/网站/移动端项目添加页面时。
+
+exclude: "排除场景：从零构建 Vue3 页面（无 SRS）→ 用 frontend-design；标准结构落地页/官网 → 用 vibepm-web-generator（在 05-技能库）；App 原型 → 用 vibepm-app-generator（在 05-技能库）"
 ---
 
 # 页面生成器工作流

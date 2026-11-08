@@ -6,6 +6,8 @@ description: >
 触发场景：(1) "标注页面" "生成标注" "添加标注" "原型标注",
 (2) "给xx页面加标注" "标注xx功能",
 (3) "注入标注组件" "初始化标注"
+
+exclude: "排除场景：标注替代 PRD（无 SRS）→ 用 prototype-annotation；只是查看/编辑原型批注 → 用 prototype-comments"
 ---
 
 # 原型标注工具

@@ -5,6 +5,8 @@ description: |
   触发词（任一命中即用本 skill）：写设计说明、写原型说明、设计说明、原型说明、标注设计说明、给原型加说明、补充原型描述、PrototypeLayout、DESIGN NOTES、Xbox 风格设计说明。
   当用户要求给某个原型页面的右侧说明区填充/改写模块化说明时使用本 skill。
   本 skill 只约束技术接入与内容结构，不决定业务文案；文案以 PRD / 需求资料 / 页面实际内容为准。
+
+exclude: "排除场景：标注替代 PRD（无 SRS）→ 用 prototype-annotation；已有 SRS 要往原型注入标注 → 用 annotation；只是查看/编辑原型批注 → 用 prototype-comments"
 ---
 
 # 设计说明编写（Xbox 风格）
