@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="axhub">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>状态点 · daisyUI</title>
+<link rel="stylesheet" href="../../_kit/theme.css">
+<style>
+  body{margin:0;padding:24px 28px;font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--color-base-100);color:var(--color-base-content)}
+  a.back{font-size:12px;opacity:.65;text-decoration:none;display:inline-block;margin-bottom:10px}
+  h1{font-size:16px;margin:0 0 4px;font-weight:600}
+  .meta{font-size:12px;opacity:.65;margin-bottom:6px;line-height:1.9}
+  .meta code{background:var(--color-base-200);padding:1px 5px;border-radius:4px;font-size:11px}
+  .demo{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:16px;border:1px solid var(--color-base-300);border-radius:10px;margin-bottom:14px;min-width:min-content}
+  .usage{background:var(--color-base-200);border-radius:8px;padding:10px 14px;font-size:11px;opacity:.8;margin-top:4px;white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body>
+<a class="back" href="../index.html">← 返回 daisyUI 目录</a>
+<h1>status · 状态点</h1>
+<div class="meta">主类 <code>status</code>　修饰 <code>status-success</code> <code>status-error</code> <code>status-xs~xl</code><br>场景：在线/离线/告警的小圆点</div>
+<div class="demo"><span class="inline-flex items-center gap-2 text-xs"><span class="status status-success"></span>在线</span><span class="inline-flex items-center gap-2 text-xs"><span class="status status-warning"></span>亚健康</span><span class="inline-flex items-center gap-2 text-xs"><span class="status status-error"></span>离线</span></div>
+<div class="usage">写类名即用，不 import：&lt;div class="status …"&gt;…&lt;/div&gt;
+对应 Codebuddy Design：业务组件/StatusTag(点状)</div>
+</body>
+</html>

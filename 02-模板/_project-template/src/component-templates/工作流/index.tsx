@@ -1,32 +1,21 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { PreviewGrid } from '../_kit/preview-grid';
+
+// 由 _meta/gen-category-previews.mjs 生成（勿手改清单，改清单请重跑生成器）
+const ITEMS = [
+  { name: "ApprovalNodeCard", label: undefined, href: "./ApprovalNodeCard/index.html" },
+  { name: "ExecutionLogTimeline", label: undefined, href: "./ExecutionLogTimeline/index.html" },
+  { name: "NodePalettePanel", label: undefined, href: "./NodePalettePanel/index.html" },
+  { name: "WorkflowCanvas", label: undefined, href: "./WorkflowCanvas/index.html" },
+  { name: "WorkflowList", label: undefined, href: "./WorkflowList/index.html" },
+];
 
 function CategoryView() {
   return (
-    <div style={{padding:24,maxWidth:900}}>
-      <h1 style={{fontSize:18,margin:'0 0 16px'}}>工作流</h1>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:12}}>
-    <a href="./ApprovalNodeCard/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>ApprovalNodeCard</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./ExecutionLogTimeline/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>ExecutionLogTimeline</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./NodePalettePanel/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>NodePalettePanel</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./WorkflowCanvas/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>WorkflowCanvas</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./WorkflowList/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>WorkflowList</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-      </div>
+    <div style={{ padding: 24 }}>
+      <h1 style={{ fontSize: 18, margin: '0 0 16px' }}>工作流</h1>
+      <PreviewGrid items={ITEMS} />
     </div>
   );
 }

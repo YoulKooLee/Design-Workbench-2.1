@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="axhub">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>列表行 · daisyUI</title>
+<link rel="stylesheet" href="../../_kit/theme.css">
+<style>
+  body{margin:0;padding:24px 28px;font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--color-base-100);color:var(--color-base-content)}
+  a.back{font-size:12px;opacity:.65;text-decoration:none;display:inline-block;margin-bottom:10px}
+  h1{font-size:16px;margin:0 0 4px;font-weight:600}
+  .meta{font-size:12px;opacity:.65;margin-bottom:6px;line-height:1.9}
+  .meta code{background:var(--color-base-200);padding:1px 5px;border-radius:4px;font-size:11px}
+  .demo{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:16px;border:1px solid var(--color-base-300);border-radius:10px;margin-bottom:14px;min-width:min-content}
+  .usage{background:var(--color-base-200);border-radius:8px;padding:10px 14px;font-size:11px;opacity:.8;margin-top:4px;white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body>
+<a class="back" href="../index.html">← 返回 daisyUI 目录</a>
+<h1>list · 列表行</h1>
+<div class="meta">主类 <code>list</code> <code>list-row</code>　修饰 <code>list-col-wrap</code> <code>list-col-grow</code><br>场景：人员/条目列表（比 table 轻）</div>
+<div class="demo"><ul class="list bg-base-200 rounded-box w-80"><li class="list-row"><div><div class="text-sm font-semibold">巡检任务 · A 栋 3F</div><div class="text-xs opacity-60">10 分钟前 · 待打卡</div></div><span class="badge badge-warning badge-soft badge-sm">待办</span></li><li class="list-row"><div><div class="text-sm font-semibold">采购审批 · 网络配件</div><div class="text-xs opacity-60">1 小时前 · 审批中</div></div><span class="badge badge-info badge-soft badge-sm">审批</span></li><li class="list-row"><div><div class="text-sm font-semibold">告警确认 · B 栋空调</div><div class="text-xs opacity-60">2 小时前 · 已确认</div></div><span class="badge badge-success badge-soft badge-sm">完成</span></li></ul></div>
+<div class="usage">写类名即用，不 import：&lt;div class="list list-row …"&gt;…&lt;/div&gt;
+对应 Codebuddy Design：数据展示/List</div>
+</body>
+</html>

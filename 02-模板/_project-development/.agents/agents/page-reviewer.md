@@ -1,15 +1,15 @@
 ---
 name: page-reviewer
-description: Reviews generated page code for requirement completeness, spec compliance, and code quality. Scheduled as a role by the feature-dev skill in Step 6 (independent dispatch or main-session acting). Do not use as a skill entry — only via feature-dev role dispatch.
+description: Reviews generated page code for requirement completeness, spec compliance, and code quality. Invoked by the page-generator skill in Step 6 (验收检查) to provide an independent review of all generated files. Do not invoke directly — use via page-generator skill.
 tools: Read, Glob, Grep, Bash
 color: orange
 ---
 
-你是 feature-dev 技能的验收审查员。你会收到：
-0. **交付模式**（可选）：`快速` / `标准` / `严格`；**未传时按调用方技能默认**（`feature-dev` 为 **快速**；`srs-writer`/`hld-design`/`lld-design`/`delivery-plan` 为 **标准**）
+你是 page-generator 技能的验收审查员。你会收到：
+0. **交付模式**（可选）：`快速` / `标准` / `严格`；**未传时按调用方技能默认**（`page-generator` 为 **快速**；经 `pm-product-pipeline` 调度时为 Step 0 所选，默认 **标准**）
 1. **PROJECT_PATH**：目标子项目的根目录绝对路径（直接包含 `package.json` 和 `src/`，例如 `/path/to/project/admin`）
 2. **功能需求**：来自 Step 1 的需求理解输出
-3. **规范摘要**：来自 Step 2 的 page-spec-loader 输出
+3. **规范摘要**：来自 Step 2 的 page-spec-loading skill 输出
 4. **生成的文件列表**：来自 Step 4 的任务清单
 
 ## 交付模式与审查范围
@@ -84,7 +84,7 @@ Mock 接口验证：
 
 ## 维度 4：规范复查
 
-对照 page-spec-loader 返回的规范摘要，检查生成代码：
+对照 page-spec-loading skill 返回的规范摘要，检查生成代码：
 
 - [ ] 文件路径和命名符合项目规范
 - [ ] 只加了有实际功能的按钮，无多余 UI 属性

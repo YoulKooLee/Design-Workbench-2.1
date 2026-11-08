@@ -1,48 +1,25 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { PreviewGrid } from '../_kit/preview-grid';
+
+// 由 _meta/gen-category-previews.mjs 生成（勿手改清单，改清单请重跑生成器）
+const ITEMS = [
+  { name: "Avatar", label: undefined, href: "./Avatar/index.html" },
+  { name: "Badge", label: undefined, href: "./Badge/index.html" },
+  { name: "Button", label: undefined, href: "./Button/index.html" },
+  { name: "Card", label: undefined, href: "./Card/index.html" },
+  { name: "Divider", label: undefined, href: "./Divider/index.html" },
+  { name: "Overlay", label: undefined, href: "./Overlay/index.html" },
+  { name: "Popconfirm", label: undefined, href: "./Popconfirm/index.html" },
+  { name: "Tag", label: undefined, href: "./Tag/index.html" },
+  { name: "Typography", label: undefined, href: "./Typography/index.html" },
+];
 
 function CategoryView() {
   return (
-    <div style={{padding:24,maxWidth:900}}>
-      <h1 style={{fontSize:18,margin:'0 0 16px'}}>基础</h1>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:12}}>
-    <a href="./Avatar/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Avatar</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./Badge/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Badge</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./Button/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Button</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./Card/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Card</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./Divider/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Divider</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./Overlay/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Overlay</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./Popconfirm/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Popconfirm</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./Tag/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Tag</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-    <a href="./Typography/index.html" style={{display:'block',padding:16,border:'1px solid #e5e7eb',borderRadius:8,textDecoration:'none',color:'inherit'}}>
-      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>Typography</div>
-      <div style={{fontSize:12,color:'#64748b'}}>点击预览</div>
-    </a>
-      </div>
+    <div style={{ padding: 24 }}>
+      <h1 style={{ fontSize: 18, margin: '0 0 16px' }}>基础</h1>
+      <PreviewGrid items={ITEMS} />
     </div>
   );
 }

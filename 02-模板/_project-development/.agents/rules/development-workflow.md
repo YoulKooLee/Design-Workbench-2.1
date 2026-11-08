@@ -4,7 +4,7 @@
 
 ```
 没有验证证据的完成声明 = 谎言
-没有 code-reviewer 的代码提交 = 违规
+没有审查的代码提交 = 违规（page-generator 走 page-reviewer 维5；其余走主 Agent 自查清单）
 没有技能检查的任务执行 = 违规
 ```
 
@@ -12,8 +12,8 @@
 
 1. **接收任务**
 2. **技能检查** — 扫描触发词，1% 可能性就调用 Skill 工具
-3. **实现** — 写前先 Read 对应规范（knowledge/conventions/，写页面必读 react-to-vue.md）；⚠️ 规范**不会**由 hook 自动注入（宿主不加载 hook），不要等注入
-4. **code-reviewer** — 写完代码立即调用，强制，无例外（涵盖代码质量+安全）
+3. **实现** — 写前先 Read 对应规范（`.agents/knowledge/conventions/`，写页面必读前端规范）；⚠️ 规范**不会**由 hook 自动注入（宿主不加载 hook），不要等注入
+4. **审查** — page-generator 走 page-reviewer（维1-5 含安全审查）；其余代码改动主 Agent 按 `.agents/rules/agent-orchestration.md` 自查清单执行
 5. **验证** — 运行构建/测试命令，看到输出后才能声明完成
 6. **报告结果** — 只有 step 4-5 全部通过后才能向用户报告
 
