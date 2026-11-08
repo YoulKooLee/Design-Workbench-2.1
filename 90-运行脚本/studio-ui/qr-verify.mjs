@@ -27,6 +27,8 @@ const py = `
 import json, sys, numpy as np, cv2
 jobs = json.loads(sys.stdin.read())
 det = cv2.QRCodeDetector()
+# 首次调用存在初始化抖动，先跑一张空白图预热
+det.detectAndDecode(np.full((120, 120), 255, dtype=np.uint8))
 bad = []
 for j in jobs:
     n = j['size']
@@ -48,6 +50,7 @@ for j in jobs:
 print(json.dumps({'total': len(jobs), 'bad': bad}, ensure_ascii=False))
 `;
 
+console.log('first job:', JSON.stringify(jobs[0].text), jobs[0].flat.length, jobs[0].size);
 const res = execFileSync('python', ['-c', py], {
   input: JSON.stringify(jobs),
   encoding: 'utf8',
