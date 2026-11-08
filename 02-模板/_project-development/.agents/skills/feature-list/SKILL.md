@@ -6,6 +6,8 @@ description: >
   (2) "整理功能清单" "汇总功能" "功能汇总表",
   (3) 用户需要将 SRS 或可研报告中的功能整理成独立的功能清单文档时触发。
   支持从已有文档自动提取，也支持用户手动补充后导出。
+
+exclude: "排除场景：规划交付路径/依赖关系 → 用 delivery-plan；需求探索/细化（功能点未确定）→ 用 brainstorming 或 requirements-exploration"
 ---
 
 # 功能清单生成器
@@ -23,7 +25,7 @@ Glob("docs/01-需求与规划/*可研*.md")
 
 找到文档后告知用户，说明将从哪些文档提取数据。若两类文档都找到，以 SRS 为主数据源（字段更完整），可研报告补充建设类型字段。
 
-**门禁**：若未找到 SRS 但存在 `docs/**/*-PRD.md` → Read `.agents/rules/prd-to-srs-gate.md`，输出 §3 话术，**中止**，路由 **`srs-writer` Step F**。
+**门禁**：若未找到 SRS 但存在 `docs/**/*-PRD.md` → Read `.agents/rules/prd-to-srs-gate.md`，输出 §3 话术，**中止**，路由 **`req-doc` Step F**。
 
 ## Step 2：提取功能清单数据
 
@@ -58,7 +60,7 @@ Glob("docs/01-需求与规划/*可研*.md")
 
 xlsx 走服务端专用接口，不经过 `export-word.sh`（该脚本只支持 Word）。
 
-1. 从 `.agents/skills/common/config.json` 读取 `apiBaseUrl`
+1. 从 `.agents/skills/config.json（本技能运行时自动创建，无需手动准备）` 读取 `apiBaseUrl`
 
 2. 将提取的数据组装为 JSON，调用服务端接口：
    ```bash
@@ -79,7 +81,7 @@ xlsx 走服务端专用接口，不经过 `export-word.sh`（该脚本只支持 
 
 ## Step 4B：生成 Word
 
-Word 走通用导出脚本，与 srs-writer、prd-writer 技能一致。
+Word 走通用导出脚本，与 req-doc、feasibility-report 技能一致。
 
 1. 将数据写入 Markdown 中间文件：
    `docs/01-需求与规划/{YYYY-MM-DD}-{项目名称}-功能清单-V1.0.md`

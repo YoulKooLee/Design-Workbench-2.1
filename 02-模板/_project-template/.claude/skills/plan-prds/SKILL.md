@@ -1,6 +1,8 @@
 ---
 name: plan-prds
 description: Use when the user asks to establish a traceable PRD planning workflow from product links, screenshots, files, spoken requirements, current-product reconstruction, feature additions, redesigns, future requirements, or phased reconstruction-then-expansion work before document scope or count is settled in an Axhub Make client project.
+
+exclude: "排除场景：从零写 PRD → 用 prd-writer；汇总多原型为 PRD → 用 write-prd；需求探索（未决定写 PRD）→ 用 brainstorming"
 ---
 
 # PRD 规划

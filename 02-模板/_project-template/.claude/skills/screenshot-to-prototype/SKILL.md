@@ -1,6 +1,8 @@
 ---
 name: screenshot-to-prototype
 description: Use only when 用户明确要求把本地截图、设计稿或高保真界面图还原成 Axhub Make client 可运行原型；或显式调用 $screenshot-to-prototype。仅提供图片作为素材、参考图、需求图或风格上下文时不要使用。
+
+exclude: "排除场景：用户没有图，要生成 UI 设计图/图标 → 用 ui-design-image（在 05-技能库）；只是提供图片作为参考图/需求图 → 都不触发"
 ---
 
 # Screenshot To Prototype

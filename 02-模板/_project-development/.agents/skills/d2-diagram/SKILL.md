@@ -9,6 +9,8 @@ description: >
   (3) 交互时序图,
   (4) 把 PRD / SRS / HLD 里的结构画成图,
   (5) 要求「好看一点」「以后能重画」「多张图风格统一」的图。
+
+exclude: "排除场景：画文档插图（嵌进 Markdown）→ 用 diagram-generator；画可编辑的 .drawio 源文件 → 用 drawio-generator；画 Excalidraw 草图/白板 → 用 canvas-workspace"
 ---
 
 # d2-diagram

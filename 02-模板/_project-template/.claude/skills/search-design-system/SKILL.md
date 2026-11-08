@@ -1,6 +1,8 @@
 ---
 name: search-design-system
 description: 当需要通过 Axhub Design Knowledge 索引，为产品、页面、原型或实现选择现有设计系统或主题时使用；不用于创建或更新主题。
+
+exclude: "排除场景：从零创建设计系统规范 → 用 build-design-system 或 system-architecture-design；画架构图/流程图 → 用 d2-diagram"
 ---
 
 # 搜索设计系统

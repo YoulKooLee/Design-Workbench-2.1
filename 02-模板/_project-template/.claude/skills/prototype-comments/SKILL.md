@@ -1,6 +1,8 @@
 ---
 name: prototype-comments
 description: 批注、微调、编辑原型时使用：读取本地原型批注并定位页面元素，修改文案、样式、布局或交互，完成后删除已处理批注任务。
+
+exclude: "排除场景：标注替代 PRD（无 SRS）→ 用 prototype-annotation；已有 SRS 要往原型注入字段/规则标注 → 用 annotation"
 ---
 
 # 原型批注处理

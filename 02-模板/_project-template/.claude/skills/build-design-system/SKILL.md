@@ -1,6 +1,8 @@
 ---
 name: build-design-system
 description: Use when an Axhub Make client task explicitly asks to create, update, import, extract, derive, or reconstruct a 主题/theme, 设计系统/design system, 视觉规范/visual specification, DESIGN.md, design tokens, or reusable theme assets from webpages, Axure resources, Figma designs, screenshots, prototypes, or existing theme files; not when selecting an existing design system or theme, which uses $search-design-system.
+
+exclude: "排除场景：只是搜索/查阅设计系统文档 → 用 search-design-system；从零创建设计系统规范文档 → 用 system-architecture-design"
 ---
 
 # 构建设计系统

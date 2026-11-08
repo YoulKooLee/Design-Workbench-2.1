@@ -434,3 +434,142 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ".\reset-acp-wedge.ps1" -Kil
 - [ ] `docs/reviews/` 目录会在 AI 首次写报告时自动创建，也可预建
 - [ ] HLD/LLD 设计文档（用户补在 `docs/` 下）
 - [ ] 端到端验证：硬刷新后点「页面代码审查」
+
+---
+
+# 十、第四轮：服务端扫目录不一致（关键）
+
+## 10.1 发现的硬伤
+
+三条路径改动只完成了一半。客户端让 AI 写到 `<原型>/docs/reviews/<file>.md`，
+但**服务端仍只扫 `<原型>/.spec/reviews`**：
+
+```js
+// dist/server/cli.mjs
+function getPrototypeReviewsDir(prototypeDir) {
+  return path44.join(prototypeDir, ".spec", "reviews");   // ← 没跟着改
+}
+
+function listReports(projectRoot, prototypeDir) {
+  const reviewsDir = getPrototypeReviewsDir(prototypeDir);
+  if (fs59.existsSync(reviewsDir)) {
+    for (const entry of fs59.readdirSync(reviewsDir, { withFileTypes: true })) { ... }
+  }
+}
+
+// 列表接口
+if (pathname === "/api/review-reports" && req.method === "GET") {
+  sendJson(res, { reports: listReports(context.project.root, prototypeDir) });
+}
+```
+
+后果：AI 就算把报告写进 `docs/reviews`，列表也永远是「暂无评审报告」。
+
+## 10.2 已做的复制（原计划那两步）
+
+| 操作 | 结果 |
+|---|---|
+| `rules/ui-review-guide.md` → `docs/rules/ui-review-guide.md` | 3998 B，哈希 `D4EA8E9075AC` 与源一致 |
+| `templates/ui-review.md` → `docs/templates/ui-review.md` | 1964 B，哈希 `14E9D02DA4F7` 与源一致 |
+
+复制（非移动），原文件仍在 `rules/`、`templates/`。
+
+## 10.3 服务端补丁
+
+`fix-server-reviews-dir.py` —— 只改 `getPrototypeReviewsDir` 函数体里的 `".spec"` → `"docs"`，
+其余 6 处 `".spec"`（产物历史、`.spec/acp` 会话、`spec.html`、`SOURCE_EXCLUDED_DIR_NAMES` 等）一律不动。
+
+```js
+function getPrototypeReviewsDir(prototypeDir) {
+  return path44.join(prototypeDir, "docs", "reviews");
+}
+```
+
+同时把各原型 `.spec/reviews/config.json` 复制到 `docs/reviews/config.json`，保住「局域网提交」开关。
+已迁移：`测试/sample-page`（53 B，内容一致）。
+
+### 关于硬链接（重要）
+
+pnpm 用硬链接，改动会通过同一 inode 传播：
+
+| 文件 | links | 说明 |
+|---|---|---|
+| `dist/server/cli.mjs` | **5** | 测试 + Shadcn 共享同一 inode（另 3 个在 `99-回收站`）。改一处两个项目同时生效，脚本对该情形做了幂等跳过 |
+| `dist/admin/assets/index.js` | 1 | 各项目独立文件，必须逐个改（已改 4 个） |
+
+`fsutil hardlink list` 实测 5 个位置：测试、Shadcn、以及 `99-回收站` 里的 3 份已删副本。**没有误伤其他在用的项目。**
+备份由 `shutil.copy2` 生成，是独立新文件，回滚可靠。
+
+## 10.4 验证结果
+
+`verify-server-patch.py`：
+
+1. **语法**：三个 `cli.mjs` 全部 `node --check` 通过（ESM）
+2. **运行时行为**（把补丁后的函数抽出来在 Node 里真跑）：
+
+```
+[OK] 测试                reviewsDir = D:/proj/src/prototypes/demo/docs/reviews
+[OK] Shadcn 后台管理仪表盘 reviewsDir = D:/proj/src/prototypes/demo/docs/reviews
+[OK] AI漫剧工作台         reviewsDir = D:/proj/src/prototypes/demo/docs/reviews
+     configPath = .../docs/reviews/config.json
+```
+
+3. 自检：新函数 1 处、旧函数 0 处、`".spec"` 正好由 7 处减到 6 处、`SOURCE_EXCLUDED_DIR_NAMES` 与 `.spec/acp` 路径零漂移
+
+## 10.5 服务端补丁的持久性风险
+
+瘦身版目录 `03-组件库\04-Make客户端瘦身版\` **只有 `admin/`，没有 `dist/server/`**。
+所以：
+- `make-slim-restore.py` 只恢复 admin，**恢复不了服务端补丁**
+- `pnpm install` / 重装依赖会还原 `dist/server/cli.mjs`，本补丁丢失
+
+需要时重跑：`python "06-运行脚本\make功能删减\fix-server-reviews-dir.py" --apply`
+
+若要让 restore 脚本也能带上服务端，得把 `dist/server/cli.mjs` 也纳入瘦身版并改 `make-slim-restore.py` 的复制范围（当前未做）。
+
+## 10.6 本轮结束时的实际环境状态
+
+排查末段发现**所有相关服务均已停止**，端口全部无监听：
+
+```
+53817  Make 客户端      （原 pid 1548，已退出）
+51720  项目预览 Vite    （原 pid 23492，已退出）
+32124  ACP WebUI        （原 pid 29324，已退出）
+```
+
+含义：
+- 客户端的 admin 补丁（第四轮前的三处）与服务端补丁**都会在下次启动时自然生效**，不需要额外「重启」
+- 但也意味着补丁在服务端层面的效果尚未在真实请求中验证过
+
+启动后请按 10.7 验证。
+
+## 10.7 启动后如何验证服务端补丁真的生效
+
+1. 启动 Make 客户端与 ACP
+2. 随便往 `<原型>/docs/reviews/` 放一个带 frontmatter 的 `.md`，例如：
+
+```markdown
+---
+title: 冒烟测试
+reviewer: probe
+createdAt: 2026-11-08T14:00:00.000Z
+source: probe
+---
+
+# 正文
+```
+
+3. 打开评审面板。**能看到「冒烟测试」这条 → 服务端补丁生效**；仍显示「暂无评审报告」→ 补丁没生效（可能服务端没重启或改错文件）
+4. 验证完删掉该文件
+
+脚本辅助：`python "06-运行脚本\make功能删减\verify-review-flow.py"` 会列出 `docs/reviews` 下的 `.md` 及时间。
+
+## 10.8 剩余待办
+
+- [x] 复制 `docs/rules/ui-review-guide.md`、`docs/templates/ui-review.md`
+- [x] 服务端扫目录改为 `docs/reviews`（含 config 迁移）
+- [x] 语法 + 运行时行为验证
+- [ ] **启动 Make 客户端与 ACP**，做 10.7 的冒烟验证
+- [ ] 豆包补另外 4 个规则/模板：`docs/rules/design-note-review-guide.md`、`docs/templates/design-note-review.md`、`docs/rules/design-doc-review-guide.md`、`docs/templates/design-doc-review.md`
+- [ ] `docs/` 下补 HLD/LLD 设计文档
+- [ ] 每次会话卡死时跑 `reset-acp-wedge.ps1 -Kill` 复位

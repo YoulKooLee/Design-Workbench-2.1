@@ -4,6 +4,8 @@ description: |
   帮助用户从零写出高质量 PRD，或评估/改进/增量更新已有需求文档。
   触发词（任一命中即用本 skill）：需求文档、PRD、产品需求、功能文档、写需求、整理需求、补充需求、审查需求、改进需求文档、需求评审、评估 PRD、从零写 PRD、我想做个产品/功能/App/工具、帮我整理需求、AI 写的需求有没有问题、导出 PRD、PRD 导出 Word、需求文档转 Word、PRD 转 Word。
   即使描述很简短也必须触发，不得跳过技能直接写文档。
+
+exclude: "排除场景：汇总多原型/资源为 PRD → 用 write-prd；从截图/原型逆向生成 PRD → 用 prototype-to-prd；已有 SRS 只需细化 → 用 req-doc"
 ---
 
 # PRD Writer Skill
@@ -26,7 +28,7 @@ description: |
 | **`references/example-prd.md`** | 格式与粒度示例 |
 | **`references/self-check.md`** | 写后自检 |
 
-**相关技能**：原型逆向盘点（Axure 导出 HTML / 线上站点）由 `prototype-to-prd` 承担，该技能已剥离至 `_project-template`，本包不含；本包 `prd-writer` 仅用于「上游只给 PRD 需转 SRS」或「研发期补一份轻量 PRD 对齐方向」两种情形。
+**相关技能**：用户输入为 **Axure 导出 HTML** 或 **线上站点逆向** 时，先用 `prototype-to-prd` 完成盘点，再按本技能模式 A 写概念版/落地版（模板复用本目录 `references/`）。
 
 **写文档前**：按模式 `Read` 对应 `references/` 文件，再落笔。  
 **交付模式**：读取 `AGENTS.md`「交付模式」；**本技能未声明时默认「标准」**（可说「快速模式」降档或「严格模式」升档）。
@@ -110,7 +112,7 @@ description: |
 | 落地版 | `docs/YYYY-MM-DD-<主题>-PRD.md`；文首 **一行链回** 概念版路径 |
 | 评审报告 | `docs/YYYY-MM-DD-<主题>-PRD-评审.md`（模式 B 默认落盘） |
 | 分版策略 | **默认分文件**；用户坚持单文件时用 `## 第一部分 · 概念对齐（已确认）` / `## 第二部分 · 落地需求` |
-| Word 导出 | **可选**；Markdown 落盘并完成自检后，用户要求时用 `formal` 等模板导出 `.docx`（见 §9） |
+| Word 导出 | **可选**；Markdown 落盘并完成自检后，用户要求时用 `req-doc` 模板导出 `.docx`（见 §9） |
 
 文首元数据、章节结构见 `concept-template.md`、`prd-template.md`。格式参考 `example-prd.md`。
 
@@ -178,26 +180,6 @@ description: |
 
 ---
 
-## 10. 进研发门禁（PRD → SRS）
-
-PRD 落盘并完成自检后，若用户要 **开发 / 实现 / 生成页面 / 交付计划 / 概要设计 / 走流水线阶段6**：
-
-1. **不得**直接调用 `feature-dev` 或暗示「可以按 PRD 开写代码」
-2. 输出简短交接并路由 **`srs-writer` Step F**（规则：`.agents/rules/prd-to-srs-gate.md`）
-3. 登记 `PRD_SOURCE=<本 PRD 路径>`；转写完成前 `SPEC_SOURCE` 仍指向 PRD（若已登记）
-
-**标准话术**：
-
-```text
-PRD 已保存：{路径}
-
-进研发须先转写 SRS（菜单 3.1、页面清单 3.3、详细设计 3.5）。
-请说「PRD 转 SRS」或「进开发」，我将执行 srs-writer Step F。
-若仅快速验证界面，可说「跳过 SRS，按 PRD 手动对齐」→ 单次 feature-dev 降级。
-```
-
----
-
 ## 9. 导出 Word（可选）
 
 Markdown 落盘并通过 `self-check.md` 后，若用户要求导出 Word（或消息命中「导出 PRD」「PRD 导出 Word」「需求文档转 Word」等），执行本步；**未明确要求时不主动导出**。
@@ -206,28 +188,30 @@ Markdown 落盘并通过 `self-check.md` 后，若用户要求导出 Word（或�
 
 | 文件 | 模板 | 说明 |
 | --- | --- | --- |
-| 落地版 `*-PRD.md` | **`formal`** | 默认导出对象 |
-| 概念版 `*-概念版.md` | `formal` 或 `simple` | 用户指定时 |
+| 落地版 `*-PRD.md` | **`req-doc`** | 默认导出对象 |
+| 概念版 `*-概念版.md` | `req-doc` 或 `simple` | 用户指定时 |
 | 评审报告 `*-PRD-评审.md` | `formal` 或 `simple` | 用户指定时 |
+
+> 模板名 **`req-doc`**（需求说明书），**不是** `prd`。
 
 ### 命令
 
-**Windows（PowerShell）：** `.agents/skills/common/export-word.ps1 <markdown文件路径> formal`
+**Windows（PowerShell）：** `.agents/skills/common/export-word.ps1 <markdown文件路径> req-doc`
 
-**跨平台：** `python .agents/skills/common/export-word.py <markdown文件路径> formal`
+**跨平台：** `python .agents/skills/common/export-word.py <markdown文件路径> req-doc`
 
-**Git Bash：** `bash .agents/skills/common/export-word.sh <markdown文件路径> formal`
+**Git Bash：** `bash .agents/skills/common/export-word.sh <markdown文件路径> req-doc`
 
 **示例**（文件名遵循 §4 落地版命名，`<主题>` 替换为实际项目名）：
 
 ```powershell
-.agents/skills/common/export-word.ps1 docs/YYYY-MM-DD-<主题>-PRD.md formal
+.agents/skills/common/export-word.ps1 docs/YYYY-MM-DD-<主题>-PRD.md req-doc
 ```
 
 ### 输出与依赖
 
 - **输出路径**：与源 Markdown 同目录，文件名相同、扩展名为 `.docx`
 - **本地图片**：脚本自动扫描 MD 内 `![](相对路径)` 并一并上传；远程 URL 图片不处理
-- **依赖**：Python 3；可访问 `.agents/skills/common/config.json` 中 `apiBaseUrl`
+- **依赖**：Python 3；可访问 `.agents/skills/config.json（本技能运行时自动创建，无需手动准备）` 中 `apiBaseUrl`
 
 导出完成后告知用户 `.docx` 路径；若 API 不可用，说明失败原因并保留 Markdown 为真源。

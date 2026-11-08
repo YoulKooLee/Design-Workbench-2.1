@@ -1,6 +1,8 @@
 ---
 name: handle-comments
 description: Use when handling Commentary comments in prototypes, Markdown, HTML, or prototype specification documents.
+
+exclude: "排除场景：原型批注/微调 → 用 prototype-comments；标注替代 PRD → 用 prototype-annotation；已有 SRS 要往原型注入标注 → 用 annotation"
 ---
 
 # Commentary 批注处理

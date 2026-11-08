@@ -1,6 +1,8 @@
 ---
 name: test-driven-development
 description: 在编写实现代码之前，实现任何功能或修复 bug 时使用。
+
+exclude: "排除场景：调试已有 bug → 用 systematic-debugging；验证修复是否成功 → 用 verification-before-completion"
 ---
 
 # 测试驱动开发（TDD）

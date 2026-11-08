@@ -1,6 +1,8 @@
 ---
 name: canvas-workspace
 description: 当任务明确涉及 Axhub 画布、原型草稿、Excalidraw 文件、画布节点/批注/截图/图片，需要把文档、原型页面、图片、流程图等产物呈现在画布上，或同时提供指定画布文件与用户当前看到的画布截图/视图信息时使用。
+
+exclude: "排除场景：画架构图/流程图/时序图 → 用 d2-diagram；画文档插图（嵌进 Markdown）→ 用 diagram-generator；画可编辑的 .drawio 源文件 → 用 drawio-generator"
 ---
 
 # Canvas Workspace — 画布工作区

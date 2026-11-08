@@ -6,6 +6,7 @@
   2. 把补丁后的 getPrototypeReviewsDir 抽出来，在 Node 里真跑一次，确认返回 docs/reviews
   3. 打印相关派生路径（config.json）
 """
+import json
 import os
 import re
 import subprocess
