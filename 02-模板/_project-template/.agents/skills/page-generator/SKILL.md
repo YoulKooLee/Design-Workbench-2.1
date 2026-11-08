@@ -164,7 +164,7 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 ```
 规范加载与组件规划
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[page-spec-loader agent 返回的规范摘要，原样展示]
+[page-spec-loading skill 返回的规范摘要，原样展示]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -267,9 +267,9 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 
 ## 步骤 6：验收检查
 
-**目标**：按交付模式调用 `page-reviewer` + `code-reviewer`，确保交付质量。
+**目标**：按交付模式调用 `page-reviewer`，确保交付质量。
 
-> **与 AGENTS.md 铁律的关系**：本步骤已调用 `code-reviewer`（范围见下表），**同一功能在本步骤 6 通过后，不得再重复调用 code-reviewer**。后续若改动 >30 行或涉及 auth/加密，须重新审查。
+> **与 AGENTS.md 铁律的关系**：本步骤已调用 `page-reviewer`（范围见下表），**同一功能在本步骤 6 通过后，不得再重复调用 page-reviewer**。后续若改动 >30 行或涉及 auth/加密，须重新审查。
 
 ### 6.0 三档审查范围
 
@@ -279,7 +279,7 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 | **page-reviewer 维2** 需求完整性 | ✅ 逐项 | ✅ 逐项 | ✅ **仅此维** |
 | **page-reviewer 维3** Mock curl | ✅ 服务器起则测 | 服务器起则测 | ⏭ 跳过 |
 | **page-reviewer 维4** 规范复查 | ✅ 全量 | ✅ 全量 | ⏭ 跳过（主流程 grep 见下） |
-| **code-reviewer** | 质量 + 安全 | 质量 + 安全 | **仅 CRITICAL + HIGH 安全类** |
+| **page-reviewer 维5** 安全审查 | ✅ 质量+安全 | ✅ 质量+安全 | **仅 CRITICAL + HIGH 安全类** |
 | page-reviewer 修复重试 | 最多 2 次 | 最多 2 次 | 最多 **1 次** |
 | 步骤 6 后加审 | 可按需再加 | 不重复 | 不重复 |
 
@@ -303,7 +303,7 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 {步骤 1 输出的完整需求理解内容}
 
 规范摘要：
-{步骤 2 page-spec-loader 返回的规范摘要}
+{步骤 2 page-spec-loading skill 返回的规范摘要}
 
 生成的文件列表：
 {步骤 4 任务清单中所有已完成的文件路径}
@@ -315,44 +315,28 @@ WORKSPACE_PATH：{工作区根目录绝对路径，含 .agents/}
 
 ---
 
-### 6.2 调用 code-reviewer
+### 6.2 安全审查（已合并到 page-reviewer 维5）
 
-使用 `Agent` 工具，`subagent_type: "code-reviewer"`，传入以下 prompt：
+> 安全审查职责已并入 page-reviewer 维度 5。调用 page-reviewer 时在 prompt 中追加安全审查指令：
+> - **标准/严格**：从代码质量和安全两个角度审查
+> - **快速**：仅报告 CRITICAL 与 HIGH 安全类问题（硬编码凭证、XSS/v-html、认证绕过、路径遍历、敏感数据日志等）
 
-```
-交付模式：{DELIVERY_MODE}
-
-审查以下新生成的文件：
-
-生成的文件列表：
-{步骤 4 任务清单中所有已完成的文件路径}
-
-这是 page-generator 生成的页面代码。
-只审查上述文件，不审查项目其他文件。
-```
-
-**按模式的审查指令追加**（写入 prompt 末尾）：
-
-| 模式 | 追加指令 |
-| --- | --- |
-| **标准 / 严格** | 从代码质量和安全两个角度审查。 |
-| **快速** | **仅安全审查**：只报告 CRITICAL 与 HIGH 中的**安全类**问题（硬编码凭证、XSS/v-html、认证绕过、路径遍历、敏感数据日志等）。**跳过**函数长度、文件行数、JSDoc、console.log（已由主流程 grep）、风格与可维护性类发现。 |
-
+---
 ---
 
 ### 6.3 处理审查结果
 
-**标准 / 严格** — 并行调用 6.1 + 6.2（与现行为一致）：
+**标准 / 严格**：
 
-- page-reviewer 有 ❌ → 立即修复 → 重新调用 page-reviewer（严格/标准最多 **2** 次）
-- code-reviewer 有 CRITICAL/HIGH → 必须修复（修复后不必重审，除非改动 >30 行或涉及 auth/加密）
-- code-reviewer 有 MEDIUM/LOW → 视情况修复
+- page-reviewer 维1-4 有 ❌ → 立即修复 → 重新调用 page-reviewer（严格/标准最多 **2** 次）
+- page-reviewer 维5（安全）有 CRITICAL/HIGH → 必须修复（修复后不必重审，除非改动 >30 行或涉及 auth/加密）
+- page-reviewer 维5（安全）有 MEDIUM/LOW → 视情况修复
 
 **快速**：
 
 - page-reviewer 维2 有 ❌ → 修复 → 重审维2（最多 **1** 次）
-- code-reviewer 有 CRITICAL 或 HIGH **安全类** → 必须修复
-- 其余发现 **记录但不阻断**，不为此重跑 code-reviewer
+- page-reviewer 维5（安全）有 CRITICAL 或 HIGH **安全类** → 必须修复
+- 其余发现 **记录但不阻断**，不为此重跑 page-reviewer
 
 全部必须修复项处理完，方可进入步骤 7。
 
@@ -431,7 +415,7 @@ Phase 1 进度：{已完成}/{总数}
 
 > **规范库位置**：`{WORKSPACE_PATH}/.agents/knowledge/`（多子项目时 WORKSPACE 为仓库根，非 admin/ 内）
 > **项目规范（优先）**：`{PROJECT_PATH}/README-DEV.md`
-> **加载方式**：Step 2 通过 `page-spec-loader` agent 按需加载，不会一次性读取所有文件。
+> **加载方式**：Step 2 通过 `page-spec-loading` skill 按需加载，不会一次性读取所有文件。
 > **查看目录**：调用 Read("{WORKSPACE_PATH}/.agents/knowledge/catalog.json") 获取所有可用 category。
 
 | category | 用途 | 加载时机 |
@@ -450,4 +434,4 @@ Phase 1 进度：{已完成}/{总数}
 | `ui-libs/vant/pages` | Vant 页面布局规范 | 仅 vant 项目 |
 | `phase3-development/delivery-plan` | 交付计划规范（Step 7 更新计划时使用） | 有 delivery-plan.md 时 |
 
-> 新增 UI 库只需在 `{WORKSPACE_PATH}/.agents/knowledge/ui-libs/` 下添加对应目录，`page-spec-loader` 会自动发现。
+> 新增 UI 库只需在 `{WORKSPACE_PATH}/.agents/knowledge/ui-libs/` 下添加对应目录，`page-spec-loading` 会自动发现。

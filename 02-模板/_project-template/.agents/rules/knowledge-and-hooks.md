@@ -17,8 +17,8 @@
 |config-protection|PreToolUse|阻止改 eslint / tsconfig / prettier 等配置来消除报错|**真阻断**|改配置前先自问「是在修问题还是在藏报错」|
 |GateGuard|PreToolUse|编辑已有文件前须先 Read，避免盲改|提醒|**先读后改**：改已有文件前必 Read，新建除外|
 |context-budget|PreToolUse（Read\|Glob\|Grep）|命中高危目录递归/通配读时提醒改精确路径|提醒|动手前过一遍 `context-budget.md` 禁读清单|
-|review-reminder|PostToolUse|代码改动后提醒调用 code-reviewer|提醒|写完/改完代码**必**跑一次审查|
-|review-tracker|PostToolUse|记录本次会话是否已执行 code-reviewer|提醒|同上，自查是否漏审|
+|review-reminder|PostToolUse|代码改动后提醒执行审查|提醒|page-generator 走 page-reviewer；其余按 agent-orchestration.md 自查清单|
+|review-tracker|PostToolUse|记录本次会话是否已执行审查|提醒|同上，自查是否漏审|
 |stop-quality-gate|Stop|回复结束前检查 console.log 残留与审查合规|提醒|收口前自查禁用词与审查勾选|
 |pre-compact|PreCompact|压缩前提醒先归档记忆|提醒|**检测到压缩就立即补模块快照**（见 `compaction-recovery.md`）|
 |session-start|SessionStart|注入强制执行清单 + 提示按需 Read INDEX|提醒|会话开始主动 Read `.agents/skills/INDEX.md` 与本文件|
