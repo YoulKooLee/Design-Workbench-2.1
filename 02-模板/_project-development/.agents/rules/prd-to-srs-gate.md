@@ -125,6 +125,6 @@ SPEC_SOURCE 已更新 → 可继续 page-generator / delivery-plan / hld-design
 
 | 文件 | 用途 |
 | --- | --- |
-| `.agents/skills/req-doc/SKILL.md` Step F | 转写执行流程 |
-| `.agents/skills/req-doc/references/prd-to-srs-handoff.md` | PRD 章节 → SRS 章节映射与展开规则 |
+| `.agents/skills/req-doc-writing/SKILL.md` Step F | 转写执行流程 |
+| `.agents/skills/req-doc-writing/references/prd-to-srs-handoff.md` | PRD 章节 → SRS 章节映射与展开规则 |
 | `AGENTS.md` § PRD→SRS 转写门禁 | 主 Agent 路由摘要 |

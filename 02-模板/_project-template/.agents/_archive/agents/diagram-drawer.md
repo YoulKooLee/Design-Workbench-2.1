@@ -175,10 +175,10 @@ SELF_CHECK: PASS / FAIL（附失败项）
 ## 主流程调用方式
 
 由 `diagram-generator` 技能通过 Task 工具派发，使用 `subagent_type: "generalPurpose"`，`readonly: true`。
-主流程在 prompt 中要求本 agent 先 Read 本文件（`.agents/agents/diagram-drawer.md`），再按 Step 1-5 执行。
+主流程在 prompt 中要求本 agent 先 Read 本文件（`.agents/_archive/agents/diagram-drawer.md`），再按 Step 1-5 执行。
 
 ```
-你是 diagram-drawer 子 Agent。开始前必须先 Read `.agents/agents/diagram-drawer.md` 并严格按其 Step 1-5 执行。
+你是 diagram-drawer 子 Agent。开始前必须先 Read `.agents/_archive/agents/diagram-drawer.md` 并严格按其 Step 1-5 执行。
 你只输出 XML，不触发其他技能，不派发子 Agent。
 
 PROJECT_PATH: ...

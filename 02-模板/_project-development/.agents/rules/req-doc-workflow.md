@@ -210,7 +210,7 @@
 
 ### PRD→SRS 转写门禁
 
-> 完整规则：Read `prd-to-srs-gate.md`；转写执行：`req-doc` **Step F** + `../skills/req-doc/references/prd-to-srs-handoff.md`。
+> 完整规则：Read `prd-to-srs-gate.md`；转写执行：`req-doc` **Step F** + `../skills/req-doc-writing/references/prd-to-srs-handoff.md`。
 
 **铁律**：`page-generator`、`delivery-plan`（生成）、`hld-design`、`lld-design`、`feature-list`、`annotation` **不得**以 `*-PRD.md` 为规格真源。
 

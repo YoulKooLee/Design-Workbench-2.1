@@ -329,7 +329,7 @@ docs/images/<模块>-<描述>.png
 
 1. **禁止 Mermaid / PlantUML**；D2 只在「独立出图」场景用（`d2-diagram` 技能），文档内插图必须是 draw.io XML
 2. **禁止跳过本地校验与渲染验证** — 须先 `validate-diagram` 通过，再 `render-diagram` 确认输出
-3. **禁止绕过 config.json** — 渲染时优先从 `.agents/skills/config.json` 读取 API 地址，仅在 config.json 不存在时使用默认值
+3. **禁止绕过 config.json** — 渲染时优先从 `.agents/skills/config.json（本技能运行时自动创建，无需手动准备）` 读取 API 地址，仅在 config.json 不存在时使用默认值
 4. **禁止省略 id="0" 和 id="1"** — 这两个根节点是 draw.io 必需的
 5. **禁止使用中文文件名** — 文件名用英文，节点内容可以用中文
 6. **禁止不验证就声称完成** — 渲染成功才算完成

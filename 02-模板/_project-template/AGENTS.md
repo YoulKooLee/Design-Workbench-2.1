@@ -105,7 +105,7 @@
 
 | 要用什么 | 读哪里 |
 |----------|--------|
-| 工作流程五步法 | `.agents/rules/core-workflow.md` |
+| 工作流程（3+3 编排） | `.agents/rules/subagent-orchestration.md` |
 | 上下文装配 / 禁读清单 | `.agents/rules/context-assembly.md`、`context-budget.md` |
 | 压缩恢复 / 模块快照模板 | `.agents/rules/compaction-recovery.md` |
 | 交付模式三档 | `.agents/rules/delivery-modes.md` |

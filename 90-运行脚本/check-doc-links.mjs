@@ -93,11 +93,15 @@ for (const rel of targets) {
     const s = fs.readFileSync(f, 'utf8');
     const where = path.relative(root, f);
     for (const m of s.matchAll(REF_RE)) {
+      // 路径内嵌全角括号标注（如 `path（运行时创建）` `path（已废弃）`）＝已声明，跳过检查
+      if (/（[^）]+）$/.test(m[1])) { continue; }
       const ref = m[1].replace(/[#?].*$/, '').replace(/\/$/, '');
       if (!ref || SKIP.test(ref)) continue;
       // 条件引用（如「若工程内有」）不算断线
-      const tail = s.slice(m.index + m[0].length, m.index + m[0].length + 12);
+      const tail = s.slice(m.index + m[0].length, m.index + m[0].length + 60);
       if (/^（若|^\(若|^（可选|是否/.test(tail)) continue;
+      // 标注式引用：路径后紧跟全角括号说明（如"（已废弃）""（运行时自动创建）"）不算断线
+      if (/^（[^）]+）/.test(tail)) continue;
       refsTotal++;
       // `../` 开头相对文件解析；其余相对工程根
       const base = ref.startsWith('..') ? path.dirname(f) : root;

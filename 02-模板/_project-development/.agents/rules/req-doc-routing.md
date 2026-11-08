@@ -20,7 +20,7 @@
 | 下游 | `feature-list`、`hld-design`、`lld-design`、`feature-dev`、`delivery-plan` | `diagram-generator`、`slides`（按需） |
 | 角色 | req-analyzer → **req-writer** → req-reviewer | 无独立角色调度；主会话按 `references/` 执行 |
 
-> **命名区分**：技能 `srs-writer`（目录 `.agents/skills/srs-writer/`）写整份 SRS；角色 `req-writer`（`.agents/agents/req-writer.md`）只写其中某一章。技能 `prd-writer` 写 PRD。三者不可互换。
+> **命名区分**：技能 `srs-writer`（目录 `.agents/skills/srs-writer/`）写整份 SRS；角色 `req-writer`（`.agents/_archive/agents/req-writer.md（已归档，功能合并入 req-doc-writing skill）`）只写其中某一章。技能 `prd-writer` 写 PRD。三者不可互换。
 >
 > **别名（旧名仍走新技能）**：`req-doc` → `srs-writer`；`page-generator` → `feature-dev`。正式文档与目录一律用新名。
 >

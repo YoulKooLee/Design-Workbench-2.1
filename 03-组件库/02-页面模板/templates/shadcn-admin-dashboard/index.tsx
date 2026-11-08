@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import "./styles/index.css"
+import { PrototypeLayout, type PrototypeModule } from "../../common/PrototypeLayout"
 import {
   LayoutDashboard,
   CheckSquare,
@@ -49,7 +50,15 @@ export default function ShadcnAdminDashboardPrototype() {
     )
   }
 
+  // 设计说明模块
+  const modules: PrototypeModule[] = [
+    { id: 'overview', title: '页面概览', text: 'shadcn-admin 管理后台模板，深色主题，侧边栏 + 顶部栏布局。', list: ['侧边栏导航：Dashboard / Tasks / Apps / Chats / Users / Settings', '顶部栏：搜索框 + 通知铃铛', '内容区：统计卡片 + 图表 + 最近销售'] },
+    { id: 'tech', title: '技术栈', text: '基于 shadcn/ui 组件库，Tailwind CSS 样式。', list: ['React + TypeScript', 'Tailwind CSS v4', 'lucide-react 图标库', '深色主题（gray-950 背景）'] },
+    { id: 'structure', title: '目录结构', text: '完整的管理后台工程结构，可直接复用。', list: ['components/ — 组件目录', 'routes/ — 路由配置', 'stores/ — 状态管理', 'lib/ — 工具函数', 'hooks/ — 自定义 Hooks'] },
+  ]
+
   return (
+    <PrototypeLayout title="shadcn-admin 管理后台" modules={modules} hideHeader noPadding>
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <div className="flex h-screen">
         {/* Sidebar */}
@@ -201,5 +210,6 @@ export default function ShadcnAdminDashboardPrototype() {
         </div>
       </div>
     </div>
+    </PrototypeLayout>
   )
 }

@@ -51,6 +51,10 @@ interface PrototypeLayoutProps {
   modules?: PrototypeModule[];
   /** 全宽布局（隐藏右侧说明），默认 false */
   fullWidth?: boolean;
+  /** 隐藏顶部标题栏（适合完整管理后台等自带标题的页面），默认 false */
+  hideHeader?: boolean;
+  /** 去掉内容区内边距（让子页面占满容器），默认 false */
+  noPadding?: boolean;
   /** 落盘适配器：编辑后实时调用；不传则仅本地草稿（localStorage） */
   onSave?: DesignNotesSaveAdapter;
   /** 页面签名（落盘定位 + 本地草稿 key），默认按 title 生成 */
@@ -95,21 +99,26 @@ function parseDescription(text: string): ModuleDef[] {
 const slug = (s: string) => s.replace(/\s+/g, '-').replace(/[^\w一-龥-]/g, '') || 'page';
 
 export function PrototypeLayout({
-  title, breadcrumb, description, modules, fullWidth, onSave, pageKey, pageSub, children,
+  title, breadcrumb, description, modules, fullWidth, hideHeader, noPadding, onSave, pageKey, pageSub, children,
 }: PrototypeLayoutProps) {
   const leftRef = useRef<HTMLDivElement>(null);
   const isFull = fullWidth === true;
+  const showHeader = !hideHeader;
   const mods: ModuleDef[] = modules
     ? modules.map((m, i) => ({ id: String(m.id ?? `m${i + 1}`), title: m.title, text: m.text, list: m.list, bind: m.bind }))
     : (description ? parseDescription(description) : []);
 
+  const mainPadding = noPadding ? '0' : '24px 28px 40px';
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f5f7fa', fontFamily: '-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif', color: '#1f2937' }}>
-      <main ref={leftRef} style={{ flex: 1, minWidth: 0, padding: '24px 28px 40px', overflowY: 'auto', maxHeight: '100vh', position: 'relative' }}>
-        <header style={{ marginBottom: 16 }}>
-          <h1 style={{ fontSize: 20, margin: 0, fontWeight: 700 }}>{title}</h1>
-          {breadcrumb && <p style={{ color: '#5b6b82', fontSize: 12, margin: '4px 0 0' }}>{breadcrumb}</p>}
-        </header>
+      <main ref={leftRef} style={{ flex: 1, minWidth: 0, padding: mainPadding, overflowY: 'auto', maxHeight: '100vh', position: 'relative' }}>
+        {showHeader && (
+          <header style={{ marginBottom: 16 }}>
+            <h1 style={{ fontSize: 20, margin: 0, fontWeight: 700 }}>{title}</h1>
+            {breadcrumb && <p style={{ color: '#5b6b82', fontSize: 12, margin: '4px 0 0' }}>{breadcrumb}</p>}
+          </header>
+        )}
         {children}
       </main>
       {!isFull && (

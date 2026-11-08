@@ -38,7 +38,7 @@ memory: project
 |---|---|
 | 页面类型 | 列表 / 表单 / 详情 / 看板 / 仪表盘 / 自定义 |
 | 推荐组件 | 从 UI 库选 3-5 个核心组件（Table / Form / Modal / Charts 等） |
-| 业务组件 | 查 `src/component-templates/` 有无现成业务组件（按 `.agents/component-manifest.json` 反查） |
+| 业务组件 | 查 `src/component-templates/` 有无现成业务组件（按 `.agents/component-manifest.json（本技能运行时自动创建，无需手动准备）` 反查） |
 | 数据源 | 该页面依赖的 mock/API 路径 |
 | 路由 | 注册位置（`src/prototypes/<slug>/index.tsx` 的 `defineHashPageRoute`） |
 
