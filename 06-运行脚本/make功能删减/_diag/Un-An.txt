@@ -1,0 +1,66 @@
+
+
+########## Un  (3 assign hits)
+--- @57560 ---
+&&!T||ie&&!lt||!((Oe=pt.current)!=null&&Oe.contentWindow))return;const Ee=Xu(nn);!N.force&&X.current===Ee||(X.current=Ee,rn(nn))},[lt,pt,tn,nn,T,rn]),
+Un=o.useCallback(async(N={})=>{var Oe;const ie=N.requireLoaded!==!1,me=N.requireVisible!==!1;if(!tn||me&&!T||ie&&!lt||!((Oe=pt.current)!=null&&Oe.cont
+entWindow))return!1;const Ee=Xu(nn);return!N.force&&X.current===Ee||(await Dt(nn),X.current=Ee),!0},[lt,pt,tn,nn,T,Dt]),An=o.useCallback((N,ie,me)=>{i
+f(!N||!me)return;let Ee="*";try{Ee=new URL(ie,wind
+--- @456888 ---
+turn}await navigator.clipboard.writeText($),C.success("路径已复制")}catch{C.error("复制路径失败")}},[C]),Mt=o.useMemo(()=>ps(l,d.themes,D=>D.name),[d.themes,l]),
+Un=o.useMemo(()=>ps(f,d.data,D=>D.fileName),[f,d.data]),An=o.useMemo(()=>ps(x,d.templates,D=>D.name),[d.templates,x]);return{defaultThemeName:ae,setDe
+faultThemeName:Ge,selectedDoc:Xe,setSelectedDoc:be,selectedResourceFolder:H,setSelectedResourceFolder:Se,handleSelectResourceFolder:Y,handleOpenResour
+ceFolderInSystem:Te,selectedTemplate:Fe,setSelecte
+--- @660741 ---
+ctedDocOpenMode:(P=Z.selectedDoc)==null?void 0:P.openMode})},[ut,(br=Z.selectedDoc)==null?void 0:br.openMode,Ke,Pe]),Mt=wt.isOpen?"prototype-spec":mr,
+Un=o.useMemo(()=>Mt==="prototype-spec"?{item:wt.currentItem,kind:"doc"}:Mt==="doc"?{item:Z.selectedDoc,kind:"doc"}:Mt==="template"?{item:Z.selectedTem
+plate,kind:"template"}:{item:null,kind:"doc"},[Mt,wt.currentItem,Z.selectedDoc,Z.selectedTemplate]),An=Un.item;Un.kind;const $=Pe!=="canvas"&&!(Mt==="
+preview"&&rt&&!z)&&!(Mt==="doc"&&G&&!Z.selectedDoc
+
+
+########## An  (9 assign hits)
+--- @57830 ---
+(Oe=pt.current)!=null&&Oe.contentWindow))return!1;const Ee=Xu(nn);return!N.force&&X.current===Ee||(await Dt(nn),X.current=Ee),!0},[lt,pt,tn,nn,T,Dt]),
+An=o.useCallback((N,ie,me)=>{if(!N||!me)return;let Ee="*";try{Ee=new URL(ie,window.location.origin).origin}catch{}const Oe=()=>{try{N.postMessage(Xl(m
+e,"replace"),Ee)}catch(st){console.warn(`${k} child window context sync failed`,st)}};Oe(),window.setTimeout(Oe,160),window.setTimeout(Oe,520),window.
+setTimeout(Oe,1200)},[]),D=o.useMemo(()=>{const N=
+--- @254499 ---
+=null?void 0:te.name)===xt.name),Kt=Bt&&Er&&!!F&&((F==null?void 0:F.id)===Be.id||(F==null?void 0:F.path)===(Be.folderPath||Be.path)),Jn=ie(Be),tr=Bt&&
+An===Be.id,ua=!Bt&&ne===Be.id,rr=tr||ua,zt=`${8+K*8}px`,At=!Bt&&_e==="themes"&&(xt==null?void 0:xt.name)===kt?r.jsx("span",{"data-default-design-badge
+":!0,className:"rounded-sm border border-primary/20 bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium leading-none text-primary",children:"默认"}):nul
+l;let _a;Bt?_a=r.jsx(Le,{type:"button",variant:"gh
+--- @283010 ---
+jt=de==="prototype-spec"&&Mr,wt=X&&(!lr||Mr),ur=ut.enabled,an=ur&&ut.quickEditMode==="comment",mr=wt&&c.previewMode==="split",[Mt,Un]=pe.useState(!1),
+An="批注/编辑",D=r.jsx($u,{size:"small",value:ut.quickEditMode,options:$S,style:{fontSize:12},onChange:K=>te(K)}),$=lr?ed(Dn):!1,M=ut.enabled?r.jsxs(r.Fra
+gment,{children:[$?D:null,$&&ut.quickEditMode==="edit"?r.jsxs(Le,{variant:"ghost",size:"xs",className:pn,onClick:I,disabled:!ut.dirty||ut.saving,child
+ren:[r.jsx(Lp,{})," 保存"]}):null]}):null,ne=ut.enab
+--- @456944 ---
+径已复制")}catch{C.error("复制路径失败")}},[C]),Mt=o.useMemo(()=>ps(l,d.themes,D=>D.name),[d.themes,l]),Un=o.useMemo(()=>ps(f,d.data,D=>D.fileName),[f,d.data]),
+An=o.useMemo(()=>ps(x,d.templates,D=>D.name),[d.templates,x]);return{defaultThemeName:ae,setDefaultThemeName:Ge,selectedDoc:Xe,setSelectedDoc:be,selec
+tedResourceFolder:H,setSelectedResourceFolder:Se,handleSelectResourceFolder:Y,handleOpenResourceFolderInSystem:Te,selectedTemplate:Fe,setSelectedTempl
+ate:fe,selectedCanvas:se,handleSelectCanvas:z,sele
+--- @660991 ---
+oc,kind:"doc"}:Mt==="template"?{item:Z.selectedTemplate,kind:"template"}:{item:null,kind:"doc"},[Mt,wt.currentItem,Z.selectedDoc,Z.selectedTemplate]),
+An=Un.item;Un.kind;const $=Pe!=="canvas"&&!(Mt==="preview"&&rt&&!z)&&!(Mt==="doc"&&G&&!Z.selectedDoc)&&!(Mt==="theme"&&Ye&&!Z.selectedTheme),M=bj({set
+DefaultThemeName:Z.setDefaultThemeName,activeProjectId:d.activeProjectId,enabled:!d.loading,onProjectConfigSaved:d.loadProjectResources,onExcalidrawPr
+opertyPanelModeLoaded:a,onExcalidrawPropertyPanelP
+--- @670556 ---
+)=>sw({getProjectId:()=>d.activeProjectId||"",getMakeServerOrigin:()=>window.location.origin}),[d.activeProjectId]),_n=o.useMemo(()=>{const P=String((
+An==null?void 0:An.projectDocumentPath)||(An==null?void 0:An.filePath)||(An==null?void 0:An.resourceId)||(An==null?void 0:An.name)||"").trim().replace
+(/\\/gu,"/");return d.activeProjectId&&P?{projectId:d.activeProjectId,documentPath:P,makeServerOrigin:window.location.origin}:null},[An,d.activeProjec
+tId]),dt=o.useMemo(()=>xw(()=>_n),[_n]),ir=o.useCa
+--- @670598 ---
+|"",getMakeServerOrigin:()=>window.location.origin}),[d.activeProjectId]),_n=o.useMemo(()=>{const P=String((An==null?void 0:An.projectDocumentPath)||(
+An==null?void 0:An.filePath)||(An==null?void 0:An.resourceId)||(An==null?void 0:An.name)||"").trim().replace(/\\/gu,"/");return d.activeProjectId&&P?{
+projectId:d.activeProjectId,documentPath:P,makeServerOrigin:window.location.origin}:null},[An,d.activeProjectId]),dt=o.useMemo(()=>xw(()=>_n),[_n]),ir
+=o.useCallback(()=>{if(Mt!=="preview")return _n?{s
+--- @670629 ---
+dow.location.origin}),[d.activeProjectId]),_n=o.useMemo(()=>{const P=String((An==null?void 0:An.projectDocumentPath)||(An==null?void 0:An.filePath)||(
+An==null?void 0:An.resourceId)||(An==null?void 0:An.name)||"").trim().replace(/\\/gu,"/");return d.activeProjectId&&P?{projectId:d.activeProjectId,doc
+umentPath:P,makeServerOrigin:window.location.origin}:null},[An,d.activeProjectId]),dt=o.useMemo(()=>xw(()=>_n),[_n]),ir=o.useCallback(()=>{if(Mt!=="pr
+eview")return _n?{scope:yw(_n),adapter:dt}:null;if
+--- @670662 ---
+ojectId]),_n=o.useMemo(()=>{const P=String((An==null?void 0:An.projectDocumentPath)||(An==null?void 0:An.filePath)||(An==null?void 0:An.resourceId)||(
+An==null?void 0:An.name)||"").trim().replace(/\\/gu,"/");return d.activeProjectId&&P?{projectId:d.activeProjectId,documentPath:P,makeServerOrigin:wind
+ow.location.origin}:null},[An,d.activeProjectId]),dt=o.useMemo(()=>xw(()=>_n),[_n]),ir=o.useCallback(()=>{if(Mt!=="preview")return _n?{scope:yw(_n),ad
+apter:dt}:null;if(!z)return null;const P=String(z.

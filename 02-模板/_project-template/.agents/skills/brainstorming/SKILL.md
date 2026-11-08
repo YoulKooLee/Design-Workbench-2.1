@@ -1,6 +1,7 @@
 ---
 name: brainstorming
 description: "在任何创意工作（创建功能、构建组件、添加功能或修改行为）之前必须使用本技能。在实现前先探索用户意图、需求和设计方案。触发场景：用户描述想构建什么、分享功能想法或提供简要需求清单时。"
+exclude: "排除场景：用户显式说需求探索/需求细化→用requirements-exploration；目标已定且需比稿2-3个方案→用explore-options；已有SRS/PRD要直接开发→用page-generator"
 ---
 
 # 头脑风暴：从想法到设计方案

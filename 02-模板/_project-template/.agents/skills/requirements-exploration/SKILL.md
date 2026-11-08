@@ -1,6 +1,8 @@
 ---
 name: requirements-exploration
 description: Use only when the user explicitly asks to run demand exploration or requirements refinement, invokes $requirements-exploration, or asks to create/update confirmed requirement docs before prototype work. Do not trigger automatically for ordinary prototype generation, vague briefs, local edits, or bug fixes.
+
+exclude: "排除场景：用户只是分享想法或功能点子（未显式说需求探索）→用brainstorming；用户要写PRD→用prd-writer"
 ---
 
 # 需求探索

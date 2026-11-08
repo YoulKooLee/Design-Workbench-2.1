@@ -1,6 +1,8 @@
 ---
 name: prototype-annotation
 description: 原型标注替代 PRD 时使用：把页面目录、组件说明、状态说明和补充文档接入可运行原型，供评审、交付和后续需求说明使用。
+
+exclude: "排除场景：已有SRS要往原型注入字段/规则标注→用annotation；用户只是查看原型批注→用prototype-comments"
 ---
 
 # 原型标注

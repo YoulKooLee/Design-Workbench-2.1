@@ -1,0 +1,4 @@
+### C-ME-props  [393750:394500]  len=750
+
+}`,"安装到当前项目后，请用 $axhub-prototype-context 读取 Axhub 原型上下文，并按页面注入的评审提交地址把报告提交到当前原型的评审列表。"].join(`
+`);function ME({reports:e,selectedReport:t,activeReportId:n,reviewPrompt:a,reviewDocumentPath:s,reviewPrompts:i,reviewDocumentPaths:l,loading:c=!1,detailLoading:f=!1,uploadLoading:m=!1,error:x="",lanSubmitConfig:u,axhubSubmitConfig:d,onExecutePrompt:v,onSelectReport:y,onBackToList:w,onCopyReportPath:R,onDeleteReport:S,onStartReview:C,onRunReviewDirect:E,onUploadReport:k,onLanSubmitEnabledChange:_,onAxhubSubmitEnabledChange:I}){const[h,te]=o.useState(!1),[L,F]=o.useState(!1),oe=o.useRef(null),re=H=>(i==null?void 0:i[H])||a,Ie=H=>(l==null?void 0:l[H])||s||"",T=async H=>(await C(H),re(H)),ee=H=>{const Se=re(H.kind);return r.jsxs("div",{className:"fle

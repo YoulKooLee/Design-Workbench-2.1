@@ -1,0 +1,49 @@
+### rp  kw="reviewPrompts" hits=6 [393941, 412887, 412903, 575201, 583726, 583742]
+
+===== hit @393941 =====
+github.com/lintendo/Axhub-Skills/blob/main/skills/axhub-prototype-context/SKILL.md",DE=[`请把下面这个技能安装到当前项目：${RE}`,"安装到当前项目后，请用 $
+axhub-prototype-context 读取 Axhub 原型上下文，并按页面注入的评审提交地址把报告提交到当前原型的评审列表。"].join(`
+`);function ME({reports:e,selectedReport:t,activeReportId:n,reviewPrompt
+:a,reviewDocumentPath:s,reviewPrompts:i,reviewDocumentPaths:l,loading:c=!1,detailLoading:f=!1,uploadLoading:m=!1,error:x="",lanSubmitConfig:u,axhubSub
+mitConfig:d,onExecutePrompt:v,onSelectReport:y,onBackToList:w,onCopyReportPath:R,onDeleteReport:S,onStartReview:C,onRunReviewDirect:E,onUploadReport:k
+,onLanSubmitEnabledChange:_,onAxhubSubmitEnabledChange:I}){const[h,te]=o.useState(!1),[L,F]=o.useState(!1),oe=o.useRef(null)
+
+===== hit @412887 =====
+
+ntRunConcurrency:t.agentRunConcurrency,onSubmitCanvasAssistantPrompt:t.onSubmitCanvasAssistantPrompt})]}),m?r.jsx(ME,{reports:t.reviewReports||[],sele
+ctedReport:t.selectedReviewReport||null,activeReportId:t.activeReviewReportId,reviewPrompt:t.reviewPrompt||"",reviewDocumentPath:t.reviewDocumentPath,
+reviewPrompts:t.reviewPrompts,reviewDocumentPaths:t.reviewDocumentPaths,loading:t.reviewLoading,detailLoading:t.reviewDetailLoading,uploadLoading:t.re
+viewUploadLoading,error:t.reviewError,lanSubmitConfig:t.reviewLanSubmitConfig,axhubSubmitConfig:t.reviewAxhubSubmitConfig,onExecutePrompt:t.onExecuteP
+rompt,onSelectReport:x=>{var u;return(u=t.handleSelectReviewReport)==null?void 0:u.call(t,x)},onBack
+
+===== hit @412903 =====
+:t.agentRunConcurrency,o
+nSubmitCanvasAssistantPrompt:t.onSubmitCanvasAssistantPrompt})]}),m?r.jsx(ME,{reports:t.reviewReports||[],selectedReport:t.selectedReviewReport||null,
+activeReportId:t.activeReviewReportId,reviewPrompt:t.reviewPrompt||"",reviewDocumentPath:t.reviewDocumentPath,reviewPrompts:t.reviewPrompts,reviewDocu
+mentPaths:t.reviewDocumentPaths,loading:t.reviewLoading,detailLoading:t.reviewDetailLoading,uploadLoading:t.reviewUploadLoading,error:t.reviewError,la
+nSubmitConfig:t.reviewLanSubmitConfig,axhubSubmitConfig:t.reviewAxhubSubmitConfig,onExecutePrompt:t.onExecutePrompt,onSelectReport:x=>{var u;return(u=
+t.handleSelectReviewReport)==null?void 0:u.call(t,x)},onBackToList:()=>{var 
+
+===== hit @575201 =====
+wnPromptCopying:ur,drawioResourceEditAvailable:u
+a,reviewPanelOpen:mr,activeReviewReportId:D,reviewReports:M,selectedReviewReport:ge,reviewLoading:Ae,reviewDetailLoading:ht,reviewUploadLoading:Yt,rev
+iewError:Lt,reviewLanSubmitConfig:gn,reviewAxhubSubmitConfig:Qn,reviewPrompt:Ze,reviewDocumentPath:ue,reviewPrompts:q,reviewDocumentPaths:P,quickEditR
+untimeStatus:wr,hostToolbarState:Qt,prototypeDecisionDataAvailable:dr,containerRef:Vr,previewIframeRef:ya,secondaryPreviewIframeRef:Ma,handlePreviewIf
+rameLoad:lg,currentDevice:hn,displaySize:Yr,scale:Ln,elementIframeKey:qt,iframeUrl:Zh,primaryIframeUrl:Ga,secondaryIframeUrl:Wc,localShareUrl:Pi,eleme
+ntIframeSize:de,setElementIframeSize:en,isExportModa
+
+===== hit @583726 =====
+ewLoading:t.reviewLoading,reviewDetailLoading:t.reviewDetailLoading,revi
+ewUploadLoading:t.reviewUploadLoading,reviewError:t.reviewError,reviewLanSubmitConfig:t.reviewLanSubmitConfig,reviewAxhubSubmitConfig:t.reviewAxhubSub
+mitConfig,reviewPrompt:t.reviewPrompt,reviewDocumentPath:t.reviewDocumentPath,reviewPrompts:t.reviewPrompts,reviewDocumentPaths:t.reviewDocumentPaths,
+quickEditRuntimeStatus:t.quickEditRuntimeStatus,exportAvailability:t.exportAvailability,editorMode:t.editorStatus.mode,hostToolbarState:t.hostToolbarS
+tate,prototypeDecisionDataAvailable:t.prototypeDecisionDataAvailable,allowLAN:e.lanAccessAllowed!==!1,conversationUiEnabled:s,assistantVisible:s?e.ass
+istantVisible:!1,containerRe
+
+===== hit @583742 =====
+ewLoading,reviewDetailLoading:t.reviewDetailLoading,reviewUploadLoading:t.reviewUploadLoading,re
+viewError:t.reviewError,reviewLanSubmitConfig:t.reviewLanSubmitConfig,reviewAxhubSubmitConfig:t.reviewAxhubSubmitConfig,reviewPrompt:t.reviewPrompt,re
+viewDocumentPath:t.reviewDocumentPath,reviewPrompts:t.reviewPrompts,reviewDocumentPaths:t.reviewDocumentPaths,quickEditRuntimeStatus:t.quickEditRuntim
+eStatus,exportAvailability:t.exportAvailability,editorMode:t.editorStatus.mode,hostToolbarState:t.hostToolbarState,prototypeDecisionDataAvailable:t.pr
+ototypeDecisionDataAvailable,allowLAN:e.lanAccessAllowed!==!1,conversationUiEnabled:s,assistantVisible:s?e.assistantVisible:!1,containerRef:t.containe
+rRef

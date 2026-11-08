@@ -1,0 +1,15 @@
+### ME-full  [393860:395800] range
+
+{reports:e,selectedReport:t,activeReportId:n,reviewPrompt:a,reviewDocumentPath:s,reviewPrompts:i,reviewDocumentPaths:l,loading:c=!1,detailLoading:f=!1
+,uploadLoading:m=!1,error:x="",lanSubmitConfig:u,axhubSubmitConfig:d,onExecutePrompt:v,onSelectReport:y,onBackToList:w,onCopyReportPath:R,onDeleteRepo
+rt:S,onStartReview:C,onRunReviewDirect:E,onUploadReport:k,onLanSubmitEnabledChange:_,onAxhubSubmitEnabledChange:I}){const[h,te]=o.useState(!1),[L,F]=o
+.useState(!1),oe=o.useRef(null),re=H=>(i==null?void 0:i[H])||a,Ie=H=>(l==null?void 0:l[H])||s||"",T=async H=>(await C(H),re(H)),ee=H=>{const Se=re(H.k
+ind);return r.jsxs("div",{className:"flex h-8 items-center justify-between gap-2 px-2",children:[r.jsxs("div",{className:"flex min-w-0 items-center ga
+p-1.5 text-[12px] font-medium text-foreground",children:[r.jsx("span",{children:H.label}),r.jsx(En,{delayDuration:150,children:r.jsxs(In,{children:[r.
+jsx(jn,{asChild:!0,children:r.jsx("button",{type:"button",className:"inline-flex h-5 w-5 items-center justify-center rounded-full text-muted-foregroun
+d hover:bg-muted hover:text-foreground","aria-label":`${H.label}说明`,children:r.jsx(fo,{className:"h-3.5 w-3.5"})})}),r.jsx(Tn,{side:"top",className:"m
+ax-w-[280px]",children:r.jsx("div",{className:"text-[11px] leading-5",children:H.description})})]})})]}),r.jsx(xE,{scene:`prototype-review-${H.kind}`,
+buildPrompt:()=>T(H.kind),getTargetPath:()=>Ie(H.kind)||null,onDirectExecute:()=>E(H.kind),onExecutePrompt:v,directExecuteLabel:"AI 执行",webExecuteLabe
+l:"网页中 AI 执行",copyLabel:"复制提示词",disabled:!Se.trim(),className:"shrink-0"})]},H.kind)},le=H=>{const Se=H.filter(Pe=>{const Fe=Pe.name.toLowerCase();ret
+urn Fe.endsWith(".md")||Fe.endsWith(".markdown")||Pe.type==="text/markdown"});Se.length!==0&&k(Se.slice(0,1),{})},B=H=>{le(Array.from(H.target.files||
+[])),H.target.value=""},U=async H=>{te(!0);try{await _(H)}finally{te(!1)}},W=async H=>{F(!0);try{await I(H)}finally{F(!1)}},ae=async()=>{try

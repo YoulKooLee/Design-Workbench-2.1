@@ -1,0 +1,3 @@
+### G-requirement-old  [465400:465900]  len=500
+
+ing((t==null?void 0:t.displayName)||(t==null?void 0:t.name)||(t==null?void 0:t.resourceId)||"当前原型").trim(),s=Io((t==null?void 0:t.filePath)||(t==null?void 0:t.absoluteFilePath)),i=Io(e.reviewDocumentPath||gd(t,n.kind)),l=n.kind==="requirements"?n.requiredBasis.replaceAll("<prototype-spec-root>",yI(t)):n.requiredBasis;return[`请对${n.targetDescription}，并把结果写成 Markdown。`,"","【前置阅读】",`- 请先读取并严格遵循：${n.rulePath}`,`- 请先读取并套用报告模板：${n.templatePath}`,"","【评审目标】",`- 原型：${a}`,s?`- 源码路径：${s}`:null,`- 评审结果写入：$

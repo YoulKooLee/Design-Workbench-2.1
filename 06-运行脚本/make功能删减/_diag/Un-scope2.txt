@@ -1,0 +1,31 @@
+
+########## (?<![\w\$.])Un\s*= in 500k-560k: []
+
+########## (?<![\w\$.])An\s*= in 500k-560k: []
+
+########## \bUn\b in 500k-560k: [502859, 506460, 506465, 506491, 506496]
+--- @502859 ---
+(tl),[at,un]=o.useState($o),[Dt,rn]=o.useState({mode:"none"}),[Z,Ar]=o.useState(!1),[Rr,Dr]=o.useState(!1),[lr,Mr]=o.useState(!1),[jt,wt]=o.useState(m
+l),[ur,an]=o.useState(!1),[mr,Mt]=o.useState(!1),[Un,An]=o.useState("design"),[D,$]=o.useState(null),[M,ne]=o.useState([]),[ge,ce]=o.useState(null),[A
+e,Ve]=o.useState(!1),[ht,cn]=o.useState(!1),[Yt,Q]=o.useState(!1),[gn,Kn]=o.useState(null),[Qn,Sn]=o.useState(null),[Lt,Ft]=o.useState(""),Ht=o.useRef
+(new Map),Gt=o.useRef(""),_r=o.useRef(""),[hr,gr]=o.useState(!1),[Qt,$e]=o.useState(null),[dr,_n]=o.useState(!1),dt=o.useRef(Qt),ir=o.useRef(NI()),$r=
+--- @506460 ---
+useMemo(()=>({design:Xm({selectedItem:m,reviewDocumentPath:P.design,kind:"design"}),requirements:Xm({selectedItem:m,reviewDocumentPath:P.requirements,
+kind:"requirements"})}),[P,m]),ue=o.useMemo(()=>P[Un],[Un,P]),Ze=o.useMemo(()=>q[Un],[Un,q]),Nt=o.useCallback(g=>{const p=String(g||"").trim().replace
+(/\\/g,"/");if(!p)return ee;const b=p.replace(/\/[^/]+$/u,""),j=ee!=null&&ee.extensions&&typeof ee.extensions=="object"?ee.extensions:{},J=j.paths&&ty
+peof j.paths=="object"&&!Array.isArray(j.paths)?j.paths:{};return{...ee,currentFile:{path:p,displayName:p.split("/").filter(Boolean).pop()||p},extensi
+--- @506465 ---
+mo(()=>({design:Xm({selectedItem:m,reviewDocumentPath:P.design,kind:"design"}),requirements:Xm({selectedItem:m,reviewDocumentPath:P.requirements,kind:
+"requirements"})}),[P,m]),ue=o.useMemo(()=>P[Un],[Un,P]),Ze=o.useMemo(()=>q[Un],[Un,q]),Nt=o.useCallback(g=>{const p=String(g||"").trim().replace(/\\/
+g,"/");if(!p)return ee;const b=p.replace(/\/[^/]+$/u,""),j=ee!=null&&ee.extensions&&typeof ee.extensions=="object"?ee.extensions:{},J=j.paths&&typeof 
+j.paths=="object"&&!Array.isArray(j.paths)?j.paths:{};return{...ee,currentFile:{path:p,displayName:p.split("/").filter(Boolean).pop()||p},extensions:{
+--- @506491 ---
+edItem:m,reviewDocumentPath:P.design,kind:"design"}),requirements:Xm({selectedItem:m,reviewDocumentPath:P.requirements,kind:"requirements"})}),[P,m]),
+ue=o.useMemo(()=>P[Un],[Un,P]),Ze=o.useMemo(()=>q[Un],[Un,q]),Nt=o.useCallback(g=>{const p=String(g||"").trim().replace(/\\/g,"/");if(!p)return ee;con
+st b=p.replace(/\/[^/]+$/u,""),j=ee!=null&&ee.extensions&&typeof ee.extensions=="object"?ee.extensions:{},J=j.paths&&typeof j.paths=="object"&&!Array.
+isArray(j.paths)?j.paths:{};return{...ee,currentFile:{path:p,displayName:p.split("/").filter(Boolean).pop()||p},extensions:{...j,paths:{...J,currentFi
+--- @506496 ---
+m:m,reviewDocumentPath:P.design,kind:"design"}),requirements:Xm({selectedItem:m,reviewDocumentPath:P.requirements,kind:"requirements"})}),[P,m]),ue=o.
+useMemo(()=>P[Un],[Un,P]),Ze=o.useMemo(()=>q[Un],[Un,q]),Nt=o.useCallback(g=>{const p=String(g||"").trim().replace(/\\/g,"/");if(!p)return ee;const b=
+p.replace(/\/[^/]+$/u,""),j=ee!=null&&ee.extensions&&typeof ee.extensions=="object"?ee.extensions:{},J=j.paths&&typeof j.paths=="object"&&!Array.isArr
+ay(j.paths)?j.paths:{};return{...ee,currentFile:{path:p,displayName:p.split("/").filter(Boolean).pop()||p},extensions:{...j,paths:{...J,currentFilePat
