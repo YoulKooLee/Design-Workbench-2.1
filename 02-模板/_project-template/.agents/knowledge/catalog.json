@@ -13,7 +13,6 @@
     "diagram/operation-flow-rules",
     "diagram/system-architecture-rules",
     "diagram/uml-rules",
-    "phase1-requirements/language",
     "phase1-requirements/module-dependency",
     "phase1-requirements/prd-language",
     "phase1-requirements/section-format",

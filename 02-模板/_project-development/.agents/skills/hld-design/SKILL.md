@@ -153,7 +153,7 @@ hld-design skill（主流程：调度 + 文件写入 + 分析 + 撰写）
 
 **触发场景：** 代码已演进，需将 HLD 与代码现状对齐（架构级：模块增减、技术栈变更、模块依赖变化）。
 
-1. **分析代码现状**：以路由注册表为唯一真相源——只有在 `src/router/modules/index.ts`（或等效入口）中实际注册的路由才算"功能存在"，残留的 view/api/mock 文件不算（判定细则见 `.agents/skills/req-doc-writing/SKILL.md` 的 Step B）。提取实际模块清单、技术栈（package.json）、模块依赖
+1. **分析代码现状**：以路由注册表为唯一真相源——只有在 `src/router/modules/index.ts`（或等效入口）中实际注册的路由才算"功能存在"，残留的 view/api/mock 文件不算（判定细则见 `.agents/skills/srs-writer/SKILL.md` 的 Step B）。提取实际模块清单、技术栈（package.json）、模块依赖
 2. **分析现有 HLD**：提取文档声称的模块、架构、技术栈
 3. **生成差异清单**：模块增减、技术栈变更、依赖变化 → 展示给用户确认
 4. **执行更新**：主 Agent 分析代码（from_code）→ 更新对应章节 → 重新生成受影响图表

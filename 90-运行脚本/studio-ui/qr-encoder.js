@@ -354,12 +354,14 @@ export function drawQR(canvas, text, opts = {}) {
   const { size: n, modules } = qrMatrix(text);
   const dpr = Math.min(window.devicePixelRatio || 1, 3);
   const total = n + margin * 2;
-  const scale = Math.max(1, Math.floor((size * dpr) / total));
+  const scale = Math.max(1, Math.round((size * dpr) / total));
   const px = total * scale;
   canvas.width = px;
   canvas.height = px;
-  canvas.style.width = size + 'px';
-  canvas.style.height = size + 'px';
+  // CSS 尺寸取整数倍格宽，保证每个模块落在整像素上
+  const css = Math.round(px / dpr);
+  canvas.style.width = css + 'px';
+  canvas.style.height = css + 'px';
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = light;
   ctx.fillRect(0, 0, px, px);

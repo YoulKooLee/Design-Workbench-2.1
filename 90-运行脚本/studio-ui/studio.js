@@ -177,7 +177,7 @@ function renderReady(root) {
       ${cloud ? `<div class="std-note">${cloud}</div>` : ''}
     </div>`;
   root.querySelector('[data-region="foot"]').innerHTML = `
-    <span class="std-foot-hint">令牌过期后重新打开本面板即可刷新</span>
+    <span class="std-foot-hint">过期后重开本面板刷新</span>
     <button class="std-btn" data-act="download">${ICON.download}下载二维码</button>
     <button class="std-btn" data-act="open">${ICON.link}新窗口打开</button>
     <button class="std-btn is-primary" data-act="copy">复制链接</button>`;
@@ -233,16 +233,30 @@ async function requestShareLink() {
 
 async function loadCloudNote() {
   try {
-    const { ok, data } = await api('/api/cloud-publishing/config');
-    if (!ok || !data?.targets) return '';
-    const entries = Object.entries(data.targets);
-    const ready = entries.filter(([, v]) => v?.configured);
-    const names = { vercel: 'Vercel', cloudflarePages: 'Cloudflare Pages', s3: 'S3 / OSS', githubPages: 'GitHub Pages' };
-    if (ready.length) {
-      return `已配置公网部署目标：<b>${ready.map(([k]) => names[k] || k).join('、')}</b>，可在发布菜单里继续部署到公网。`;
+    const pid = new URLSearchParams(window.location.search).get('projectId') || '';
+    const [cfg, axhub] = await Promise.all([
+      api(`/api/cloud-publishing/config?projectId=${encodeURIComponent(pid)}`),
+      api('/api/axhub/status'),
+    ]);
+    const names = {
+      axhub: 'Axhub 云',
+      vercel: 'Vercel',
+      cloudflarePages: 'Cloudflare Pages',
+      s3: 'S3 / OSS',
+      githubPages: 'GitHub Pages',
+    };
+    const targets = cfg.ok ? Object.entries(cfg.data?.targets || {}) : [];
+    const ready = targets.filter(([k, v]) => k !== 'publishSettings' && v?.configured).map(([k]) => names[k] || k);
+    const connected = !!axhub.data?.connected;
+    const who = axhub.data?.me?.name || axhub.data?.me?.nickname || '';
+
+    if (connected) {
+      return `公网通道：<b>Axhub 云已登录${who ? '（' + who + '）' : ''}</b>，在「发布」里可以直接部署公网版本。`;
     }
-    const all = entries.map(([k]) => names[k] || k).join(' / ');
-    return `公网发布需要先配置部署目标（${all}），配置后这份原型可以一键部署成公网链接。`;
+    if (ready.length) {
+      return `公网通道：<b>${ready.join('、')}</b> 已就绪，但需要先登录 Axhub 云账号才能发布公网版本。`;
+    }
+    return '公网通道：尚未配置。局域网分享不受影响，同事连同一个 Wi-Fi 即可打开。';
   } catch {
     return '';
   }

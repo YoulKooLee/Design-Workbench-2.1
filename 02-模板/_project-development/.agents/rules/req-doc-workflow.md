@@ -154,9 +154,9 @@
 | 产出路径 | `docs/01-需求与规划/*-SRS需求规格说明书-V*.md` | `docs/YYYY-MM-DD-<主题>-概念版.md` + `*-PRD.md` |
 | 语言规范 | `.agents/knowledge/phase1-requirements/prd-language.md` | 技能内 `references/`，含交互/状态/ASCII 线框 |
 | 下游 | `feature-list`、`hld-design`、`page-generator`、`annotation` | `diagram-generator`、静态原型、测试/手册（按需） |
-| 子 Agent | 主 Agent 按 `req-doc-writing` skill（整合原 req-analyzer + req-writer）一气呵成；审查走 design-note-reviewer | 无；主 Agent 按 `references/` 执行 |
+| 子 Agent | 主 Agent 按 `req-doc` skill（整合原 req-analyzer + req-writer）一气呵成；审查走 design-note-reviewer | 无；主 Agent 按 `references/` 执行 |
 
-> **命名区分**（2026-11-08）：原 req-analyzer / req-writer 两个子 Agent 已合并为 `req-doc-writing` skill（主 Agent 一气呵成）；`prd-writer` 仍是独立技能目录，与 `req-doc` 不可混为同一真源。
+> **命名区分**（2026-11-08）：原 req-analyzer / req-writer 两个子 Agent 已合并为 `req-doc` skill（主 Agent 一气呵成）；`prd-writer` 仍是独立技能目录，与 `req-doc` 不可混为同一真源。
 
 ### 触发路由（按优先级）
 
@@ -210,7 +210,7 @@
 
 ### PRD→SRS 转写门禁
 
-> 完整规则：Read `prd-to-srs-gate.md`；转写执行：`req-doc` **Step F** + `../skills/req-doc-writing/references/prd-to-srs-handoff.md`。
+> 完整规则：Read `prd-to-srs-gate.md`；转写执行：`req-doc` **Step F** + `../skills/srs-writer/references/prd-to-srs-handoff.md`。
 
 **铁律**：`page-generator`、`delivery-plan`（生成）、`hld-design`、`lld-design`、`feature-list`、`annotation` **不得**以 `*-PRD.md` 为规格真源。
 
