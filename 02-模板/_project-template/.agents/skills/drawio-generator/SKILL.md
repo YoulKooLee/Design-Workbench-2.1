@@ -3,6 +3,7 @@ name: drawio-generator
 description: >
   AI draw.io 原生生成器：产物是 .drawio XML 可编辑源文件（业务方要在 draw.io/diagrams.net 里继续改图时用本技能）。触发场景：用户点名 draw.io、要求「可编辑的源文件」、或图要嵌入文档且后续会被他人修改。
   边界：只需文档里插一张图、不要求可编辑源文件 → 用 diagram-generator，不要用本技能；独立交付、以后要重画的架构/时序图 → 用 d2-diagram。
+  触发前提：用户**点名** draw.io / drawio / diagrams.net，或明确要求「可编辑源文件」。不满足此前提时 → diagram-generator。
   触发场景：
   (1) 流程图/活动图: "生成流程图" "画流程图" "重新生成流程图" "插入流程图" "生成活动图" "用户操作流程图",
   (2) 架构图: "生成架构图" "画架构图" "插入架构图" "系统架构图",

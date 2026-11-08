@@ -457,7 +457,7 @@ export function qrMatrix(text, opts = {}) {
     }
   }
   const built = make(bestMask);
-  return { size, version, ec, mask: bestMask, modules: built.modules, isFunction: built.isFunction, codewords };
+  return { size, version, ec, mask: bestMask, modules: built.modules, isFunction: built.isFunction, codewords, blockInfo: BLOCKS[ec][version] };
 }
 
 /**

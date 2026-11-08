@@ -58,6 +58,20 @@ function readCodewords(matrix, isFunction, maskFn) {
   return out;
 }
 
+/** 把交错的码字流还原成「数据块顺序拼接」的形式，便于逐字节比对 */
+function deinterleave(cws, groups, ecLen) {
+  const sizes = [];
+  for (const [n, d] of groups) for (let i = 0; i < n; i++) sizes.push(d);
+  const blocks = sizes.map(() => []);
+  let idx = 0;
+  const maxData = Math.max(...sizes);
+  for (let i = 0; i < maxData; i++) {
+    for (let b = 0; b < sizes.length; b++) if (i < sizes[b]) blocks[b].push(cws[idx++]);
+  }
+  for (let i = 0; i < ecLen; i++) idx += sizes.length; // 跳过纠错段
+  return blocks.flat();
+}
+
 const mask0 = (i, j) => (i + j) % 2 === 0;
 let failed = 0;
 
@@ -69,7 +83,10 @@ samples.forEach((text, idx) => {
   // 只比对完整落在有效数据内的码字，终止符之后的填充字节各家实现不同
   const payloadCw = Math.floor(payloadBits / 8);
 
-  const ok = mine.codewords.slice(0, payloadCw).every((v, i) => v === theirs[i]);
+  const [ecLen, groups] = mine.blockInfo;
+  const mineData = deinterleave(mine.codewords, groups, ecLen);
+  const theirData = deinterleave(theirs, groups, ecLen);
+  const ok = mineData.slice(0, payloadCw).every((v, i) => v === theirData[i]);
   if (!ok) failed++;
   console.log(
     `${ok ? '✓' : '✗'} "${text.slice(0, 26)}${text.length > 26 ? '…' : ''}" v${mine.version}/${mine.ec} 有效数据码字 ${payloadCw} 个${ok ? ' 一致' : ' 不一致'}`
