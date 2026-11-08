@@ -17,7 +17,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const ASSETS = ['studio.css', 'studio.js', 'qr-encoder.js'];
+/** 需要拷贝到 admin/assets 的文件（qr-encoder.js 只被 studio.js import，不单独挂标签） */
+const ASSETS = ['studio.css', 'studio-shell.css', 'studio.js', 'studio-shell.js', 'qr-encoder.js'];
+/** 实际注入 index.html 的顺序：v1 能力在前，外壳重构层在后（覆盖优先级更高） */
+const CSS_FILES = ['studio.css', 'studio-shell.css'];
+const JS_FILES = ['studio.js', 'studio-shell.js'];
 
 const argv = process.argv.slice(2);
 const getArg = (name) => {
@@ -38,8 +42,13 @@ if (!ADMIN || !fs.existsSync(ADMIN)) {
 const INDEX = path.join(ADMIN, 'index.html');
 const BACKUP_DIR = path.join(ADMIN, '.patch-backup');
 const BACKUP_INDEX = path.join(BACKUP_DIR, 'index.html');
-const CSS_TAG = '<link rel="stylesheet" href="/assets/studio.css" data-studio-ui="css">';
-const JS_TAG = '<script type="module" src="/assets/studio.js" data-studio-ui="js"></script>';
+const CSS_TAGS = CSS_FILES.map(
+  (f) => `<link rel="stylesheet" href="/assets/${f}" data-studio-ui="css" data-file="${f}">`
+);
+const JS_TAGS = JS_FILES.map(
+  (f) => `<script type="module" src="/assets/${f}" data-studio-ui="js" data-file="${f}"></script>`
+);
+const ALL_TAGS = [...CSS_TAGS, ...JS_TAGS];
 
 const log = (...a) => console.log(...a);
 
@@ -70,9 +79,11 @@ function stripTags(html) {
 function injectTags(html) {
   let out = stripTags(html);
   if (!out.includes('</head>')) throw new Error('index.html 缺少 </head>');
-  out = out.replace(/([ \t]*)<\/head>/, `$1  ${CSS_TAG}\n$1</head>`);
   if (!out.includes('</body>')) throw new Error('index.html 缺少 </body>');
-  out = out.replace(/([ \t]*)<\/body>/, `$1  ${JS_TAG}\n$1</body>`);
+  const cssBlock = CSS_TAGS.map((t) => `  ${t}`).join('\n');
+  const jsBlock = JS_TAGS.map((t) => `  ${t}`).join('\n');
+  out = out.replace(/([ \t]*)<\/head>/, `$1${cssBlock}\n$1</head>`);
+  out = out.replace(/([ \t]*)<\/body>/, `$1${jsBlock}\n$1</body>`);
   return out;
 }
 
@@ -88,7 +99,7 @@ if (REVERT) {
     process.exit(1);
   }
   const restored = fs.readFileSync(BACKUP_INDEX, 'utf8');
-  log('将从备份恢复 index.html，并删除 assets 中的 3 个文件');
+  log(`将从备份恢复 index.html，并删除 assets 中的 ${ASSETS.length} 个文件`);
   if (WRITE) {
     breakHardlink(INDEX);
     fs.writeFileSync(INDEX, restored, 'utf8');
@@ -132,7 +143,7 @@ if (next === current) {
   log('· index.html 已是最新，无需改动');
 } else {
   const added = next.split('\n').length - current.split('\n').length;
-  log(`· index.html 需注入 ${CSS_TAG.includes('css') ? 2 : 0} 处引用（行数变化 ${added > 0 ? '+' : ''}${added}）`);
+  log(`· index.html 需注入 ${ALL_TAGS.length} 处引用（行数变化 ${added > 0 ? '+' : ''}${added}）`);
   if (WRITE) {
     breakHardlink(INDEX);
     fs.writeFileSync(INDEX, next, 'utf8');

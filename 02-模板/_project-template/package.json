@@ -16,7 +16,8 @@
     "typecheck": "node scripts/sync-vendor-if-present.mjs && tsc --noEmit -p tsconfig.typecheck.json",
     "check-ready": "node scripts/check-app-ready.mjs",
     "capture:theme": "node scripts/capture-theme-homepage.mjs",
-    "capture:theme-source": "node scripts/capture-theme-source.mjs"
+    "capture:theme-source": "node scripts/capture-theme-source.mjs",
+    "postinstall": "python scripts/make-slim-restore.py"
   },
   "devDependencies": {
     "@axhub/make": "^0.6.21",

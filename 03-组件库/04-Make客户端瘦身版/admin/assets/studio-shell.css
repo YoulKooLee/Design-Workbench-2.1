@@ -1,0 +1,509 @@
+/* ============================================================================
+   Axhub Make 开发栈 · 外壳重构层（studio-shell.css）
+   ----------------------------------------------------------------------------
+   按 redesign/prototype-v1.html 的结构重排工作台外壳，只动布局与视觉：
+     · 顶栏 44px：左=项目/页面上下文，中=画布模式，右=画布控制 + 发布
+     · 底栏 26px：画布尺寸 / 缩放 / 页面 / 运行位置
+     · 左栏：分段 tab + 28px 页面行 + 主色浅底选中
+     · 画布：设备模式下的画板（圆角 + 细边 + 阴影）
+   不新增业务功能，不伪造数据；所有数值都从真实 DOM / iframe 实测得出。
+   ========================================================================== */
+
+:root {
+  --sh-panel: #ffffff;
+  --sh-sunken: #f6f8fa;
+  --sh-canvas: #eff3f6;
+  --sh-ink: #10151c;
+  --sh-ink-2: #5a6875;
+  --sh-ink-3: #8a96a3;
+  --sh-line: #e3e9ef;
+  --sh-line-soft: #eef2f6;
+  --sh-brand: #008f5d;
+  --sh-brand-soft: #e9f6f1;
+  --sh-brand-line: #b9e2d3;
+  --sh-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+  --sh-shadow-1: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --sh-shadow-2: 0 1px 3px rgba(16, 24, 40, 0.08), 0 10px 24px -18px rgba(16, 24, 40, 0.5);
+  --sh-shadow-board: 0 0 0 1px var(--sh-line), 0 18px 44px -28px rgba(16, 24, 40, 0.55);
+}
+
+.dark {
+  --sh-panel: #0b1117;
+  --sh-sunken: #0f171f;
+  --sh-canvas: #070b10;
+  --sh-ink: #e6ebf0;
+  --sh-ink-2: #93a1af;
+  --sh-ink-3: #6b7887;
+  --sh-line: #1e2731;
+  --sh-line-soft: #16202a;
+  --sh-brand-soft: rgba(0, 143, 93, 0.16);
+  --sh-brand-line: rgba(0, 143, 93, 0.34);
+  --sh-shadow-board: 0 0 0 1px var(--sh-line), 0 24px 54px -30px rgba(0, 0, 0, 0.9);
+}
+
+/* ---------- 1. 顶栏 ---------- */
+.ax-presentation-toolbar {
+  height: 44px !important;
+  padding: 0 10px !important;
+  background: var(--sh-panel) !important;
+  border-bottom: 1px solid var(--sh-line) !important;
+  gap: 8px;
+}
+
+/* 左右两端：左组吃掉剩余空间（面包屑才有位置展开），右组固定内容宽 */
+.ax-presentation-toolbar > div:first-child {
+  z-index: 12;
+  flex: 1 1 auto !important;
+  min-width: 0;
+}
+
+.ax-presentation-toolbar > div:last-child {
+  z-index: 12;
+  flex: 0 0 auto !important;
+}
+
+/* 顶栏里所有裸图标按钮：28px 方形（排除面包屑里的文字按钮） */
+.ax-presentation-toolbar > div:first-child > button:not(.sh-crumb-btn),
+.ax-presentation-toolbar > div:first-child > div > button:not(.sh-crumb-btn) {
+  height: 28px !important;
+  width: 28px !important;
+  min-width: 28px;
+  border-radius: 7px;
+  color: var(--sh-ink-2);
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.ax-presentation-toolbar > div:first-child > button:not(.sh-crumb-btn):hover,
+.ax-presentation-toolbar > div:first-child > div > button:not(.sh-crumb-btn):hover {
+  background: var(--sh-sunken);
+  color: var(--sh-ink);
+}
+
+/* ---------- 2. 项目 / 页面 面包屑 ---------- */
+.sh-crumb {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 2px;
+  min-width: 0;
+  max-width: 420px;
+  margin-left: 6px;
+  padding-left: 8px;
+  border-left: 1px solid var(--sh-line);
+  height: 24px;
+}
+
+.sh-crumb-btn {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 0;
+  background: transparent;
+  color: var(--sh-ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  max-width: 200px;
+  transition: background 0.14s ease;
+}
+
+.sh-crumb-btn:hover {
+  background: var(--sh-sunken);
+}
+
+.sh-crumb-btn:focus-visible {
+  outline: 2px solid var(--sh-brand);
+  outline-offset: 1px;
+}
+
+.sh-crumb-btn.is-page {
+  font-weight: 500;
+  color: var(--sh-ink-2);
+  font-family: var(--sh-mono);
+  font-size: 12px;
+}
+
+.sh-crumb-btn.is-page.is-active {
+  color: var(--sh-ink);
+  font-weight: 600;
+}
+
+.sh-crumb-btn > .sh-crumb-txt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 190px;
+}
+
+.sh-crumb-btn[data-sh-act="project"] > .sh-crumb-txt {
+  max-width: 130px;
+}
+
+.sh-crumb-btn > svg {
+  flex: none;
+  opacity: 0.42;
+}
+
+.sh-crumb-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--sh-brand);
+  color: #fff;
+}
+
+.sh-crumb-sep {
+  flex: none;
+  color: var(--sh-ink-3);
+  opacity: 0.6;
+  font-size: 11px;
+  padding: 0 1px;
+}
+
+/* ---------- 3. 画布控制（设备 / 缩放） ---------- */
+.sh-ctl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 6px;
+}
+
+.sh-ctl-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  height: 28px;
+  padding: 0 2px;
+  background: var(--sh-sunken);
+  border: 1px solid var(--sh-line);
+  border-radius: 8px;
+}
+
+.sh-ctl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--sh-ink-2);
+  font-size: 11.5px;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.sh-ctl-btn:hover {
+  background: var(--sh-panel);
+  color: var(--sh-ink);
+}
+
+.sh-ctl-btn.is-on {
+  background: var(--sh-panel);
+  color: var(--sh-ink);
+  box-shadow: var(--sh-shadow-1);
+  font-weight: 600;
+}
+
+.sh-ctl-btn > svg {
+  flex: none;
+  opacity: 0.7;
+}
+
+.sh-ctl-dim {
+  font-family: var(--sh-mono);
+  font-size: 10.5px;
+  color: var(--sh-ink-3);
+  padding-right: 3px;
+}
+
+.sh-zoom-val {
+  min-width: 40px;
+  height: 22px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: center;
+  font-family: var(--sh-mono);
+  font-size: 11px;
+  color: var(--sh-ink);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sh-zoom-val:hover {
+  background: var(--sh-panel);
+}
+
+/* 只读尺寸组 */
+.sh-ctl-group.sh-ctl-static {
+  gap: 5px;
+  padding: 0 8px;
+  cursor: default;
+}
+
+.sh-ctl-group.sh-ctl-static > svg {
+  opacity: 0.45;
+}
+
+/* ---------- 4. 发布按钮 ---------- */
+.ax-presentation-toolbar > div:last-child > button,
+.ax-presentation-toolbar > div:last-child > div > button {
+  height: 30px !important;
+  border-radius: 8px;
+}
+
+.ax-presentation-toolbar > div:last-child > button:not([data-sh-skip]) {
+  padding: 0 12px 0 10px !important;
+  background: var(--sh-brand) !important;
+  color: #fff !important;
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.ax-presentation-toolbar > div:last-child > button:not([data-sh-skip]):hover {
+  background: color-mix(in srgb, var(--sh-brand) 88%, #000) !important;
+}
+
+/* 中间模式组：规格 / 批注 / PRD 标注 / 评审 —— 显式居中，不依赖 tailwind translate
+   Tailwind v4 的 -translate-x-1/2 写的是独立 translate 属性，会和 transform 叠加，
+   必须一并清掉，否则整体左上各偏一半（顶部被裁、不再居中）。 */
+.ax-presentation-toolbar .ax-toolbar-adaptive-action.flex-1 {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  height: 28px;
+  margin: 0 !important;
+  translate: none !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 11;
+}
+
+.ax-presentation-toolbar .ax-toolbar-adaptive-action.flex-1 > div {
+  padding: 2px;
+  gap: 2px;
+  background: var(--sh-sunken);
+  border: 1px solid var(--sh-line);
+  border-radius: 8px;
+}
+
+.ax-presentation-toolbar .ax-toolbar-adaptive-action.flex-1 button {
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 6px;
+  color: var(--sh-ink-2);
+  font-size: 11.5px;
+}
+
+.ax-presentation-toolbar .ax-toolbar-adaptive-action.flex-1 button:hover {
+  background: var(--sh-panel);
+  color: var(--sh-ink);
+  box-shadow: var(--sh-shadow-1);
+}
+
+/* ---------- 5. 画布 ---------- */
+.sh-canvas-host {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 14px 18px 26px !important;
+  background: var(--sh-canvas) !important;
+  overflow: auto;
+}
+
+/* 画板：白底 + 发丝边 + 落影，与灰画布底区分开 */
+.sh-canvas-host > iframe {
+  flex: 1 1 auto;
+  border: 0;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--sh-line), 0 14px 34px -26px rgba(16, 24, 40, 0.55);
+  transition: box-shadow 0.16s ease;
+}
+
+/* ---------- 6. 底栏 ---------- */
+.sh-status {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 26px;
+  padding: 0 12px;
+  background: var(--sh-panel);
+  border-top: 1px solid var(--sh-line);
+  color: var(--sh-ink-3);
+  font-size: 10.5px;
+  font-family: var(--sh-mono);
+  user-select: none;
+}
+
+.sh-status-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.sh-status-item > b {
+  color: var(--sh-ink-2);
+  font-weight: 600;
+}
+
+.sh-status-item.is-blank {
+  display: none !important;
+}
+
+.sh-status-sep.is-blank {
+  display: none !important;
+}
+
+.sh-status-sep {
+  width: 1px;
+  height: 10px;
+  background: var(--sh-line);
+}
+
+.sh-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--sh-brand);
+  box-shadow: 0 0 0 2px var(--sh-brand-soft);
+}
+
+.sh-status-spacer {
+  flex: 1;
+}
+
+.sh-status-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sh-ink-3);
+}
+
+/* 底栏占位：主区留出 26px，避免盖住画布 */
+.sh-status-pad {
+  padding-bottom: 26px !important;
+}
+
+.ax-sidebar-shell.sh-status-pad {
+  padding-bottom: 26px !important;
+}
+
+/* ---------- 7. 左栏 ---------- */
+.ax-sidebar-shell {
+  border-right: 1px solid var(--sh-line);
+  background: var(--sh-panel);
+}
+
+/* tab 行：分段控件（role=radio 的父容器，不依赖 tailwind 类名） */
+.ax-sidebar-shell .sh-tabs {
+  display: flex !important;
+  align-items: center;
+  gap: 1px;
+  width: 100%;
+  padding: 2px !important;
+  height: 26px;
+  background: var(--sh-sunken);
+  border: 1px solid var(--sh-line);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.ax-sidebar-shell .sh-tabs > button {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 20px !important;
+  padding: 0 2px !important;
+  border-radius: 6px;
+  color: var(--sh-ink-2);
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.ax-sidebar-shell .sh-tabs > button:hover {
+  color: var(--sh-ink);
+}
+
+.ax-sidebar-shell .sh-tabs > button[data-state="checked"],
+.ax-sidebar-shell .sh-tabs > button[aria-checked="true"] {
+  background: var(--sh-panel);
+  color: var(--sh-ink);
+  font-weight: 600;
+  box-shadow: var(--sh-shadow-1);
+}
+
+/* 项目行：与顶栏面包屑重复，隐藏后列表多出 36px */
+.ax-sidebar-shell .sh-projrow {
+  display: none !important;
+}
+
+/* tab 行与搜索行之间收一点 */
+.ax-sidebar-shell .sh-tabs {
+  margin-bottom: 0;
+}
+
+/* 页面行：28px，选中主色浅底 */
+.ax-sidebar-shell .ax-sidebar-page-row,
+.ax-sidebar-shell [data-page-row] {
+  height: 28px !important;
+  border-radius: 6px;
+}
+
+/* 搜索框：拉齐高度 */
+.ax-sidebar-shell input[type="text"],
+.ax-sidebar-shell input:not([type]) {
+  height: 28px;
+  font-size: 11.5px;
+}
+
+/* ---------- 8. 打断点时的降级 ---------- */
+@media (max-width: 1280px) {
+  .sh-ctl-dim,
+  .sh-status-item.is-optional,
+  .sh-crumb-btn.is-page {
+    display: none;
+  }
+}
+
+/* ---------- 9. 引导页顶栏（资源 / 设计 / 组件） ---------- */
+/* 这三页没有 presentation-toolbar，补一条 44px 同高顶栏，保证面包屑在任何标签下都在 */
+.sh-guide-head {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 44px;
+  padding: 0 14px;
+  background: var(--sh-panel);
+  border-bottom: 1px solid var(--sh-line);
+  box-sizing: border-box;
+  z-index: 5;
+}
+
+.sh-guide-head .sh-crumb {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+  max-width: none;
+}
