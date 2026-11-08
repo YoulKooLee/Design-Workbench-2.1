@@ -1,6 +1,8 @@
 ---
 name: explore-options
 description: Use when a Make client批注 or user request asks for 多方案探索, 多方案生成, 多方案对比, 方案对比, 设计决策, 比稿, 先出方案, or choosing among 2-3 UI/code modification directions before executing one.
+
+exclude: "排除场景：目标/范围/验收标准尚未确定→用brainstorming；用户只是想看2-3个方案但不需要比稿决策→用brainstorming"
 ---
 
 # 多方案探索
