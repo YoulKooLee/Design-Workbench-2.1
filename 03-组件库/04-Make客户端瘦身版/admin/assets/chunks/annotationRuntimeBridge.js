@@ -1,0 +1,1 @@
+const o="AXHUB_ANNOTATION_RUNTIME_SOURCE_REPLACE";function n(e){return{type:o,source:e}}function c(e){if(!e||typeof e!="object"||Array.isArray(e))return!1;const t=e,r=t.source;return t.type===o&&!!(r&&typeof r=="object"&&!Array.isArray(r))}export{n as createAnnotationRuntimeSourceReplaceMessage,c as isAnnotationRuntimeSourceReplaceMessage};

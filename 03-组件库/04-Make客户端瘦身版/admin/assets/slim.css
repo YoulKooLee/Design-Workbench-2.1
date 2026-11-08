@@ -1,0 +1,18 @@
+/*
+ * 瘦身样式：隐藏而非删除 DOM。
+ *
+ * 背景：之前的瘦身直接删 JSX，导致 .ax-presentation-toolbar 结构变化，
+ * studio-shell.js 注入顶栏时的定位算错，压住了「批注」「评审」按钮。
+ * 现在改为：保留 JSX，给要隐藏的元素打 data-slim="..." 标记，这里统一 display:none。
+ *
+ * 新增瘦身项时，只需在对应 JSX 上加 data-slim="<key>"，再到这里补一条规则。
+ */
+
+[data-slim='spec'],
+[data-slim='prd-annotation'],
+[data-slim='axure-export'],
+[data-slim='cloud-publish'],
+[data-slim='more-links'],
+[data-slim='project-update-tab'] {
+  display: none !important;
+}
