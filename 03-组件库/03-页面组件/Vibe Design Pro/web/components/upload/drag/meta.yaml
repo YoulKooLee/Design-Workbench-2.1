@@ -1,0 +1,11 @@
+slug: upload-drag
+label: 拖拽上传
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input
+tags:
+  - input
+path: components/upload/drag

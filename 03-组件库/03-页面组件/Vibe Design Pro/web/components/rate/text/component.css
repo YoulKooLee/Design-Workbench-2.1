@@ -1,0 +1,13 @@
+.wa-rate-with-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.wa-rate-label {
+  color: var(--color-text-3, #86909c);
+  font-size: 14px;
+  line-height: 22px;
+  white-space: nowrap;
+}

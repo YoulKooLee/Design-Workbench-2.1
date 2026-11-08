@@ -41,7 +41,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
+  height: var(--pro-ctrl-h-medium, 36px);
   line-height: 1;
 }
 

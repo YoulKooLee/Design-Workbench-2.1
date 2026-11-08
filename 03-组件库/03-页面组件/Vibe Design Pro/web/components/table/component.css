@@ -1,0 +1,316 @@
+/* table family — shadcn-inspired：轻圆角外框、弱表头、行悬停、轻横线分隔 */
+.wa-atable.arco-table {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color-border-2);
+  border-radius: 8px;
+  background: var(--color-bg-popup, #fff);
+  font-size: 14px;
+}
+
+.wa-atable .arco-table-container {
+  border-radius: inherit;
+}
+
+.wa-atable .arco-table-header {
+  background-color: transparent;
+  border-radius: 0;
+}
+
+.wa-atable .arco-table-th {
+  background-color: transparent;
+  color: var(--color-text-2);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-bottom: 1px solid var(--color-border-2);
+}
+
+/* 固定列须不透明，否则横滚时中间列表头/单元格会透到固定列上方 */
+.wa-atable .arco-table-th.arco-table-col-fixed-left,
+.wa-atable .arco-table-th.arco-table-col-fixed-right {
+  background-color: var(--color-bg-popup, #fff);
+  z-index: 12;
+}
+
+.wa-atable .arco-table-td.arco-table-col-fixed-left,
+.wa-atable .arco-table-td.arco-table-col-fixed-right {
+  background-color: var(--color-bg-popup, #fff);
+}
+
+.wa-atable .arco-table-td {
+  color: var(--color-text-1);
+  font-size: 14px;
+  border-bottom: 1px solid var(--color-border-2);
+  transition: background-color 0.12s ease;
+}
+
+.wa-atable .arco-table-cell {
+  font-size: inherit;
+}
+
+/* 仅横向 scroll.x：禁止纵溢，隐藏纵轨，避免悬停冒出纵向滚动条 */
+.wa-atable .arco-table-content.arco-table-content-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden !important;
+}
+
+.wa-atable
+  .arco-table-container
+  > .arco-scrollbar:has(> .arco-scrollbar-container.arco-table-content-scroll-x)
+  > .arco-scrollbar-track-direction-vertical {
+  display: none !important;
+  width: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 末行不画底边，外框只由容器描边承担，避免叠成 2px */
+.wa-atable .arco-table-tr:last-child .arco-table-td,
+.wa-atable tbody .arco-table-tr:last-of-type .arco-table-td {
+  border-bottom: none;
+}
+
+.wa-atable .arco-table-hover:not(.arco-table-dragging) .arco-table-tr:not(.arco-table-tr-empty):not(.arco-table-tr-summary):hover .arco-table-td,
+.wa-atable .arco-table-tr:not(.arco-table-tr-empty):hover .arco-table-td {
+  background-color: var(--color-fill-1);
+}
+
+.wa-atable .arco-table-hover:not(.arco-table-dragging) .arco-table-tr:not(.arco-table-tr-empty):not(.arco-table-tr-summary):hover .arco-table-td.arco-table-col-fixed-left,
+.wa-atable .arco-table-hover:not(.arco-table-dragging) .arco-table-tr:not(.arco-table-tr-empty):not(.arco-table-tr-summary):hover .arco-table-td.arco-table-col-fixed-right,
+.wa-atable .arco-table-tr:not(.arco-table-tr-empty):hover .arco-table-td.arco-table-col-fixed-left,
+.wa-atable .arco-table-tr:not(.arco-table-tr-empty):hover .arco-table-td.arco-table-col-fixed-right {
+  background-color: var(--color-fill-1);
+}
+
+.wa-atable .arco-table-cell {
+  padding: 12px 16px;
+}
+
+.wa-atable .arco-table-th .arco-table-cell {
+  padding: 12px 16px;
+  min-height: 44px;
+}
+
+/* 首列略加重，便于扫读（对齐 shadcn font-medium；跳过复选/操作列） */
+.wa-atable .arco-table-body .arco-table-tr .arco-table-td:first-child:not(.arco-table-operation):not(.arco-table-checkbox) .arco-table-cell,
+.wa-atable .arco-table-body .arco-table-tr .arco-table-td.arco-table-col-fixed-left:first-child:not(.arco-table-operation):not(.arco-table-checkbox) .arco-table-cell {
+  font-weight: 500;
+}
+
+/* 状态：描边 Tag（跟 tag-bordered）；仅收尺寸，不改色/边 */
+.wa-atable .arco-tag {
+  margin: 0;
+  height: 22px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+/* 斑马纹：更轻的交替底（含固定列，避免横滚透底） */
+.wa-atable.arco-table-stripe .arco-table-tr:nth-child(even) .arco-table-td,
+.wa-atable.arco-table-stripe .arco-table-tr:nth-child(even) .arco-table-td.arco-table-col-fixed-left,
+.wa-atable.arco-table-stripe .arco-table-tr:nth-child(even) .arco-table-td.arco-table-col-fixed-right {
+  background-color: color-mix(in srgb, var(--color-fill-1) 70%, var(--color-bg-popup, #fff));
+}
+
+.wa-atable.arco-table-stripe .arco-table-tr:nth-child(even):hover .arco-table-td,
+.wa-atable.arco-table-stripe .arco-table-tr:nth-child(even):hover .arco-table-td.arco-table-col-fixed-left,
+.wa-atable.arco-table-stripe .arco-table-tr:nth-child(even):hover .arco-table-td.arco-table-col-fixed-right {
+  background-color: var(--color-fill-2);
+}
+
+/* 边框表：外框只画在 container 一圈；根节点不再描边，避免左右/底边叠成 2px */
+.wa-atable.arco-table-border {
+  border: none;
+  background: transparent;
+}
+
+.wa-atable.arco-table-border .arco-table-container {
+  overflow: hidden;
+  /* Arco 默认只描 top/left/right，底边靠末行；我们关掉末行底边后须补齐四边 */
+  border: 1px solid var(--color-border-2);
+  border-radius: 8px;
+  background: var(--color-bg-popup, #fff);
+}
+
+/* Arco 在 scroll-y 时会再给底边，去掉以免与 container 底边叠线 */
+.wa-atable.arco-table-border .arco-table-scroll-y {
+  border-bottom: none;
+}
+
+.wa-atable.arco-table-border .arco-table-th,
+.wa-atable.arco-table-border .arco-table-td {
+  border-color: var(--color-border-2);
+}
+
+.wa-atable.arco-table-border .arco-table-th {
+  background-color: var(--color-fill-1);
+  color: var(--color-text-2);
+  border-bottom: 1px solid var(--color-border-2);
+}
+
+.wa-atable.arco-table-border .arco-table-th.arco-table-col-fixed-left,
+.wa-atable.arco-table-border .arco-table-th.arco-table-col-fixed-right {
+  background-color: var(--color-fill-1);
+}
+
+/* cell:true 时 Arco 给每个格右侧描边；末列去掉，避免与 container 右边框叠成 2px */
+.wa-atable.arco-table-border-cell .arco-table-tr .arco-table-th:last-child,
+.wa-atable.arco-table-border-cell .arco-table-tr .arco-table-td:last-child {
+  border-right: none;
+}
+
+.wa-atable.arco-table-border tbody .arco-table-tr:last-of-type .arco-table-td {
+  border-bottom: none;
+}
+
+/* 选中行 */
+.wa-atable .arco-table-tr-checked .arco-table-td,
+.wa-atable .arco-table-tr-checked:hover .arco-table-td {
+  background-color: rgba(var(--primary-6), 0.06);
+}
+
+/* 行拖拽排序手柄 */
+.wa-table-drag-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 22px;
+}
+
+.wa-table-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  color: var(--color-text-3);
+  background: transparent;
+  cursor: grab;
+  line-height: 0;
+}
+
+.wa-table-drag-handle:hover {
+  color: var(--color-text-2);
+  background: var(--color-fill-2);
+}
+
+.wa-table-drag-handle:active,
+.wa-atable .arco-table-tr.wa-table-row-dragging .wa-table-drag-handle {
+  cursor: grabbing;
+}
+
+.wa-atable .arco-table-tr.wa-table-row-dragging .arco-table-td {
+  opacity: 0.55;
+  background-color: var(--color-fill-1);
+}
+
+.wa-atable .arco-table-tr.wa-table-row-drag-over .arco-table-td {
+  box-shadow: inset 0 2px 0 0 rgb(var(--primary-6));
+}
+
+.wa-atable .arco-table-tr.wa-table-row-drag-over .arco-table-td:first-child {
+  box-shadow: inset 0 2px 0 0 rgb(var(--primary-6));
+}
+
+/* 工具栏 / 外部分页外壳 */
+.wa-atable-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.wa-atable-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  /* 软环留在本盒内，父级 overflow:hidden 也不会裁 Input focus / secondary hover */
+  padding: var(--wa-ctrl-ring, 3px);
+  box-sizing: border-box;
+}
+
+.wa-atable-toolbar .arco-input-wrapper,
+.wa-atable-toolbar .arco-input-search {
+  flex: 1 1 220px;
+  max-width: 280px;
+  min-width: 180px;
+}
+
+.wa-atable-toolbar .arco-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 复选列：收窄并居中，避免表头/表体错位感 */
+.wa-atable .arco-table-th.arco-table-operation,
+.wa-atable .arco-table-td.arco-table-operation,
+.wa-atable .arco-table-th.arco-table-checkbox,
+.wa-atable .arco-table-td.arco-table-checkbox,
+.wa-atable .arco-table-selection-col,
+.wa-atable col.arco-table-selection-col {
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+}
+
+.wa-atable .arco-table-th.arco-table-operation .arco-table-cell,
+.wa-atable .arco-table-td.arco-table-operation .arco-table-cell,
+.wa-atable .arco-table-th.arco-table-checkbox .arco-table-cell,
+.wa-atable .arco-table-td.arco-table-checkbox .arco-table-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.wa-atable .arco-table-th.arco-table-operation .arco-table-cell-align-left,
+.wa-atable .arco-table-td.arco-table-operation .arco-table-cell-align-left,
+.wa-atable .arco-table-th.arco-table-checkbox .arco-table-cell-align-left,
+.wa-atable .arco-table-td.arco-table-checkbox .arco-table-cell-align-left {
+  justify-content: center;
+}
+
+/* 有复选列时，首列加粗改为第二数据列（名称） */
+.wa-atable .arco-table-body .arco-table-tr .arco-table-td.arco-table-operation + .arco-table-td .arco-table-cell,
+.wa-atable .arco-table-body .arco-table-tr .arco-table-td.arco-table-checkbox + .arco-table-td .arco-table-cell {
+  font-weight: 500;
+}
+
+/* 分页条放在表框外 */
+.wa-atable-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+}
+
+.wa-atable-footer .arco-pagination {
+  margin: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+body[arco-theme='dark'] .wa-atable.arco-table {
+  background: var(--color-bg-2);
+}
+
+body[arco-theme='dark'] .wa-atable .arco-table-th.arco-table-col-fixed-left,
+body[arco-theme='dark'] .wa-atable .arco-table-th.arco-table-col-fixed-right,
+body[arco-theme='dark'] .wa-atable .arco-table-td.arco-table-col-fixed-left,
+body[arco-theme='dark'] .wa-atable .arco-table-td.arco-table-col-fixed-right {
+  background-color: var(--color-bg-2);
+}
+
+body[arco-theme='dark'] .wa-atable .arco-table-hover:not(.arco-table-dragging) .arco-table-tr:not(.arco-table-tr-empty):hover .arco-table-td,
+body[arco-theme='dark'] .wa-atable .arco-table-tr:not(.arco-table-tr-empty):hover .arco-table-td {
+  background-color: var(--color-fill-2);
+}

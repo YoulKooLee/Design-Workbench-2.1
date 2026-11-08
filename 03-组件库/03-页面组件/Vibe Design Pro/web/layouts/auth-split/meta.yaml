@@ -1,0 +1,9 @@
+slug: auth-split
+label: 分栏登录
+type: layout
+surface: general
+status: preview
+tier: free
+framework: web
+category: shell
+notes: 从 login-shell 分叉；左品牌叙事区 + 右登录表单；居中单卡仍用 login-shell

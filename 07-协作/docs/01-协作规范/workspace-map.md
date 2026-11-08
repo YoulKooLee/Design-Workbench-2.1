@@ -51,6 +51,7 @@ D:\产品设计工作台\
 │   └── 漫剧工作台\
 ├── 02-模板\                ← _project-template（React 原型骨架）/ _project-development（研发工程模板）
 ├── 03-组件库\              ← 组件模板 / 页面模板 / ui-libs
+├── 04-维护台账\
 ├── 04-知识库\              ← 业务知识库
 ├── 05-技能库\
 ├── 06-智能体记忆\          ← 工作台层记忆（000~004 + rules/ + skills/ + router.md + agents/）

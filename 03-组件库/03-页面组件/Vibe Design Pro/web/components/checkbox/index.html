@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>多选 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./border/component.css" />
+  <link rel="stylesheet" href="./pill/component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="checkbox">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">checkbox</p>
+          <h1 class="wa-fam-title">多选</h1>
+          <p class="wa-fam-lead">表单多选勾选，含方框、描边块与胶囊等形态，用于内容类型或多渠道勾选。</p>
+          <p class="wa-fam-lead">组件类型：default / border / pill / disabled</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="checkbox-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">多选</span><span class="wa-comp-meta__slug">checkbox-default</span></div>
+              <a-tooltip :content="famCopyTip('checkbox-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('checkbox-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('checkbox-default')"
+                :aria-label="famCopyTip('checkbox-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('checkbox-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-checkbox-group v-model="checkboxDefault" :options="checkboxOptions" />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="checkbox-border">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">边框多选</span><span class="wa-comp-meta__slug">checkbox-border</span></div>
+              <a-tooltip :content="famCopyTip('checkbox-border')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('checkbox-border') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('checkbox-border')"
+                :aria-label="famCopyTip('checkbox-border')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('checkbox-border')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-checkbox-group class="wa-bordered" v-model="borderCheckbox" :options="borderCheckboxOptions" />
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="checkbox-pill">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">胶囊多选</span><span class="wa-comp-meta__slug">checkbox-pill</span></div>
+              <a-tooltip :content="famCopyTip('checkbox-pill')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('checkbox-pill') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('checkbox-pill')"
+                :aria-label="famCopyTip('checkbox-pill')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('checkbox-pill')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-pills">
+                  <button
+                    v-for="opt in pillCheckOptions"
+                    :key="'pc-' + opt.value"
+                    type="button"
+                    class="wa-pill"
+                    :class="{ 'is-active': isPillChecked(opt.value) }"
+                    @click="togglePillCheck(opt.value)"
+                  >{{ opt.label }}</button>
+                </div>
+            </div>
+          </div>
+
+          <div class="wa-fam-card" data-slug="checkbox-disabled">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">禁用多选</span><span class="wa-comp-meta__slug">checkbox-disabled</span></div>
+              <a-tooltip :content="famCopyTip('checkbox-disabled')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('checkbox-disabled') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('checkbox-disabled')"
+                :aria-label="famCopyTip('checkbox-disabled')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('checkbox-disabled')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-checkbox-group v-model="disabledCheckbox" :options="disabledCheckboxOptions" disabled />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'checkbox',
+      members: [
+        'checkbox-default',
+        'checkbox-border',
+        'checkbox-pill',
+        'checkbox-disabled',
+      ],
+      setup: function (api) {
+        var pillCheck = api.ref(['north'])
+        return {
+          checkboxDefault: api.ref(['post', 'video']),
+          borderCheckbox: api.ref(['email']),
+          pillCheck: pillCheck,
+          disabledCheckbox: api.ref(['goods', 'video']),
+          checkboxOptions: [
+            { label: '图文帖', value: 'post' },
+            { label: '短视频', value: 'video' },
+            { label: '直播间', value: 'live' },
+            { label: '互动页', value: 'h5' },
+          ],
+          borderCheckboxOptions: [
+            { label: '邮件通知', value: 'email' },
+            { label: '短信提醒', value: 'sms' },
+            { label: '站内消息', value: 'inbox' },
+            { label: '企微推送', value: 'wecom' },
+          ],
+          pillCheckOptions: [
+            { label: '华北大区', value: 'north' },
+            { label: '华东大区', value: 'east' },
+            { label: '华南大区', value: 'south' },
+            { label: '西南大区', value: 'west' },
+          ],
+          disabledCheckboxOptions: [
+            { label: '商品图文', value: 'goods' },
+            { label: '短视频号', value: 'video' },
+            { label: '直播专场', value: 'live' },
+            { label: '互动专题', value: 'h5' },
+          ],
+          isPillChecked: function (v) {
+            return pillCheck.value.indexOf(v) >= 0
+          },
+          togglePillCheck: function (v) {
+            var list = pillCheck.value
+            var i = list.indexOf(v)
+            if (i >= 0) list.splice(i, 1)
+            else list.push(v)
+          },
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

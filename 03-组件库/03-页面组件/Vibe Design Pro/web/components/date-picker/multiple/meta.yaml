@@ -1,0 +1,13 @@
+slug: date-picker-multiple
+label: 多选日期
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+  - datetime
+path: components/date-picker/multiple
+family: date-picker-default

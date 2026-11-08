@@ -1,0 +1,42 @@
+/* 一键复制：柔和底 + 后缀复制/已复制图标；悬停 a-tooltip */
+.wa-input-copy.arco-input-wrapper,
+.arco-input-wrapper.wa-input-copy {
+  background-color: var(--color-fill-2);
+  border-color: transparent;
+}
+
+.wa-input-copy.arco-input-wrapper:hover,
+.arco-input-wrapper.wa-input-copy:hover {
+  background-color: var(--color-fill-3);
+  border-color: transparent;
+}
+
+.wa-input-copy.arco-input-wrapper.arco-input-focus,
+.wa-input-copy.arco-input-wrapper:focus-within,
+.arco-input-wrapper.wa-input-copy.arco-input-focus,
+.arco-input-wrapper.wa-input-copy:focus-within {
+  background-color: var(--color-fill-2);
+  border-color: rgb(var(--primary-6));
+}
+
+.wa-input-copy__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-3);
+  line-height: 1;
+}
+
+.wa-input-copy__btn:hover {
+  color: var(--color-text-1);
+}
+
+.wa-input-copy__btn.is-copied {
+  color: var(--color-text-2);
+  cursor: default;
+}
+
+.wa-input-copy__btn .pro-fa-icon {
+  font-size: 14px;
+}

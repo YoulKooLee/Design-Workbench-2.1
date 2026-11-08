@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>文字提示 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="tooltip">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">tooltip</p>
+          <h1 class="wa-fam-title">文字提示</h1>
+          <p class="wa-fam-lead">悬停短说明，为按钮或图标补充一句话操作提示。</p>
+          <p class="wa-fam-lead">组件类型：default / bottom / left / right / no-icon / no-arrow / icon / with-title / stats / preview</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="tooltip-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">文字提示</span><span class="wa-comp-meta__slug">tooltip-default</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-default')"
+                :aria-label="famCopyTip('tooltip-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip>
+                <template #content>
+                  <span class="wa-tooltip-body">
+                    <icon-info-circle></icon-info-circle>
+                    <span>这是一段文字提示说明</span>
+                  </span>
+                </template>
+                <a-button type="secondary">文字提示</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-bottom">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">下方文字提示</span><span class="wa-comp-meta__slug">tooltip-bottom</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-bottom')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-bottom') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-bottom')"
+                :aria-label="famCopyTip('tooltip-bottom')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-bottom')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip position="bottom">
+                <template #content>
+                  <span class="wa-tooltip-body">
+                    <icon-info-circle></icon-info-circle>
+                    <span>提示显示在触发器下方</span>
+                  </span>
+                </template>
+                <a-button type="secondary">下方提示</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-left">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">左侧文字提示</span><span class="wa-comp-meta__slug">tooltip-left</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-left')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-left') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-left')"
+                :aria-label="famCopyTip('tooltip-left')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-left')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip position="left">
+                <template #content>
+                  <span class="wa-tooltip-body">
+                    <icon-info-circle></icon-info-circle>
+                    <span>提示显示在触发器左侧</span>
+                  </span>
+                </template>
+                <a-button type="secondary">左侧提示</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-right">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">右侧文字提示</span><span class="wa-comp-meta__slug">tooltip-right</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-right')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-right') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-right')"
+                :aria-label="famCopyTip('tooltip-right')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-right')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip position="right">
+                <template #content>
+                  <span class="wa-tooltip-body">
+                    <icon-info-circle></icon-info-circle>
+                    <span>提示显示在触发器右侧</span>
+                  </span>
+                </template>
+                <a-button type="secondary">右侧提示</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-no-icon">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">无图标文字提示</span><span class="wa-comp-meta__slug">tooltip-no-icon</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-no-icon')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-no-icon') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-no-icon')"
+                :aria-label="famCopyTip('tooltip-no-icon')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-no-icon')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip content="这是一段文字提示说明">
+                <a-button type="secondary">无图标提示</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-no-arrow">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">无箭头提示</span><span class="wa-comp-meta__slug">tooltip-no-arrow</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-no-arrow')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-no-arrow') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-no-arrow')"
+                :aria-label="famCopyTip('tooltip-no-arrow')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-no-arrow')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip content="这段提示没有箭头" arrow-class="wa-tooltip-arrow-hidden">
+                <a-button type="secondary">无箭头提示</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-icon">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">图标触发提示</span><span class="wa-comp-meta__slug">tooltip-icon</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-icon')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-icon') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-icon')"
+                :aria-label="famCopyTip('tooltip-icon')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-icon')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip>
+                <template #content>
+                  <span class="wa-tooltip-body">
+                    <icon-info-circle></icon-info-circle>
+                    <span>查看帮助说明</span>
+                  </span>
+                </template>
+                <button type="button" class="wa-tooltip-icon-trigger" aria-label="帮助">
+                  <icon-question-circle></icon-question-circle>
+                </button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-with-title">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">带标题提示</span><span class="wa-comp-meta__slug">tooltip-with-title</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-with-title')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-with-title') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-with-title')"
+                :aria-label="famCopyTip('tooltip-with-title')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-with-title')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip>
+                <template #content>
+                  <div class="wa-tooltip-title">
+                    <p class="wa-tooltip-title__heading">带标题的文字提示</p>
+                    <p class="wa-tooltip-title__desc">文字提示支持自定义布局与富内容，可用于展示简短说明或补充信息。</p>
+                  </div>
+                </template>
+                <a-button type="secondary">带标题</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-stats">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">统计提示</span><span class="wa-comp-meta__slug">tooltip-stats</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-stats')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-stats') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-stats')"
+                :aria-label="famCopyTip('tooltip-stats')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-stats')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip>
+                <template #content>
+                  <ul class="wa-tooltip-stats">
+                    <li class="wa-tooltip-stats__item">
+                      <span class="wa-tooltip-stats__label">状态</span>
+                      <span class="wa-tooltip-stats__value">已完成</span>
+                    </li>
+                    <li class="wa-tooltip-stats__item">
+                      <span class="wa-tooltip-stats__label">代码覆盖率</span>
+                      <span class="wa-tooltip-stats__value">94.3%</span>
+                    </li>
+                    <li class="wa-tooltip-stats__item">
+                      <span class="wa-tooltip-stats__label">最近部署</span>
+                      <span class="wa-tooltip-stats__value">今天 15:42</span>
+                    </li>
+                    <li class="wa-tooltip-stats__item">
+                      <span class="wa-tooltip-stats__label">性能得分</span>
+                      <span class="wa-tooltip-stats__value">98/100</span>
+                    </li>
+                  </ul>
+                </template>
+                <a-button type="secondary">统计</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="tooltip-preview">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">产品预览提示</span><span class="wa-comp-meta__slug">tooltip-preview</span></div>
+              <a-tooltip :content="famCopyTip('tooltip-preview')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('tooltip-preview') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('tooltip-preview')"
+                :aria-label="famCopyTip('tooltip-preview')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('tooltip-preview')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-tooltip content-class="wa-tooltip-preview-popup">
+                <template #content>
+                  <div class="wa-tooltip-preview">
+                    <img
+                      class="wa-tooltip-preview__img"
+                      src="../../assets/images/image_01.jpg"
+                      width="240"
+                      height="135"
+                      alt="产品预览"
+                    />
+                    <p class="wa-tooltip-preview__title">产品预览</p>
+                    <p class="wa-tooltip-preview__desc">查看完整产品详情与规格说明</p>
+                  </div>
+                </template>
+                <a-button type="secondary">产品预览</a-button>
+              </a-tooltip>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'tooltip',
+      members: [
+        'tooltip-default',
+        'tooltip-bottom',
+        'tooltip-left',
+        'tooltip-right',
+        'tooltip-no-icon',
+        'tooltip-no-arrow',
+        'tooltip-icon',
+        'tooltip-with-title',
+        'tooltip-stats',
+        'tooltip-preview',
+      ],
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+slug: app-sidebar
+label: 侧栏通顶框架
+type: layout
+surface: app
+status: preview
+tier: free
+framework: web
+category: sidebar
+notes: 默认基线 layoutDefault；新页面壳从此复制

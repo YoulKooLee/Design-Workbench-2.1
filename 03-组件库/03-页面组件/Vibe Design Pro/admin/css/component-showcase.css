@@ -183,14 +183,11 @@
 }
 
 /* 环形状态图标：加大加粗 */
-.component-basic-progress-circle .arco-progress-circle-text .arco-icon {
+.component-basic-progress-circle .arco-progress-circle-text .arco-icon,
+.component-basic-progress-circle .arco-progress-circle-text .pro-fa-icon {
   font-size: 22px;
   width: 22px;
   height: 22px;
-}
-
-.component-basic-progress-circle .arco-progress-circle-text .arco-icon svg {
-  stroke-width: 5;
 }
 
 /* 步骤条展示：铺满容器；布局交还 Arco 默认，避免点状错位 */
@@ -227,35 +224,6 @@
 /* 点状步骤条：连接线高度统一（不改定位） */
 .component-basic-steps-stack .arco-steps-mode-dot .arco-steps-item:not(:last-child) .arco-steps-item-tail {
   height: 2px;
-}
-
-/* 步骤圆环：图标垂直居中；数字 12px，圆环尺寸不变 */
-.component-basic-steps-stack .arco-steps-icon,
-.component-basic-steps-vertical-row .arco-steps-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  font-size: 12px;
-}
-
-.component-basic-steps-stack .arco-steps-icon .arco-icon,
-.component-basic-steps-stack .arco-steps-icon .pro-fa-icon,
-.component-basic-steps-vertical-row .arco-steps-icon .arco-icon,
-.component-basic-steps-vertical-row .arco-steps-icon .pro-fa-icon {
-  display: block;
-  line-height: 1;
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-}
-
-/* 已完成圆环：浅底 + 主色描边（对齐边框标签气质） */
-.component-basic-steps-stack .arco-steps-item-finish .arco-steps-icon,
-.component-basic-steps-vertical-row .arco-steps-item-finish .arco-steps-icon {
-  color: rgb(var(--primary-6));
-  background-color: var(--pro-theme-color-soft);
-  border: 1px solid rgb(var(--primary-6));
 }
 
 .component-basic-steps-vertical-row {
@@ -1353,7 +1321,7 @@ body[arco-theme='dark'] .component-editor-preview {
   font-size: 12px;
 }
 
-/* 标签页：对齐高级详情页分段式 Tabs（灰底轨道 + 白底选中） */
+/* 胶囊 Tabs：灰底轨道 + 弱描边；选中白底主色字；悬停不加底 */
 .component-basic-tabs .arco-tabs-nav {
   margin-bottom: 0;
 }
@@ -1371,7 +1339,12 @@ body[arco-theme='dark'] .component-editor-preview {
   gap: 4px;
   padding: 4px;
   background: var(--color-fill-2);
+  border: 1px solid var(--color-border-1);
   border-radius: 8px;
+}
+
+.component-basic-tabs .arco-tabs-nav-ink {
+  display: none !important;
 }
 
 .component-basic-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab {
@@ -1381,18 +1354,20 @@ body[arco-theme='dark'] .component-editor-preview {
   font-size: 14px;
   color: var(--color-text-2);
   border-radius: 6px;
+  background-color: transparent !important;
   transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .component-basic-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab:hover {
   color: rgb(var(--primary-6));
+  background-color: transparent !important;
 }
 
 .component-basic-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active,
 .component-basic-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active:hover {
-  color: rgb(var(--primary-6));
+  color: rgb(var(--primary-6)) !important;
   font-weight: 500;
-  background: var(--color-bg-2);
+  background-color: var(--color-bg-2) !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
@@ -1400,15 +1375,11 @@ body[arco-theme='dark'] .component-editor-preview {
   color: inherit;
 }
 
-.component-basic-tabs .arco-tabs-nav-ink {
-  display: none !important;
-}
-
 .component-basic-tabs .arco-tabs-content {
   padding-top: 16px;
 }
 
-/* 基础标签页：取消默认左内边距，与标签/正文左对齐；选中态用主色半透明底 */
+/* 基础 Tabs：取消默认左内边距；选中态主色半透明底+描边（pages-common） */
 .component-basic-tabs-plain .arco-tabs-nav {
   margin-bottom: 0;
 }
@@ -1422,24 +1393,31 @@ body[arco-theme='dark'] .component-editor-preview {
   padding-left: 0;
 }
 
+.component-basic-tabs-plain .arco-tabs-nav-type-rounded .arco-tabs-tab {
+  margin: 0 4px;
+  padding: 4px 16px;
+  line-height: 24px;
+  color: var(--color-text-2);
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+  border-radius: 999px;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
 .component-basic-tabs-plain .arco-tabs-nav-type-rounded .arco-tabs-tab:first-child {
   margin-left: 0;
 }
 
-.component-basic-tabs-plain .arco-tabs-nav-type-rounded .arco-tabs-tab {
-  border: 1px solid transparent;
-}
-
 .component-basic-tabs-plain .arco-tabs-nav-type-rounded .arco-tabs-tab:hover {
-  color: rgb(var(--primary-6));
-  background-color: transparent;
+  color: rgb(var(--primary-6)) !important;
+  background-color: transparent !important;
 }
 
 .component-basic-tabs-plain .arco-tabs-nav-type-rounded .arco-tabs-tab-active,
 .component-basic-tabs-plain .arco-tabs-nav-type-rounded .arco-tabs-tab-active:hover {
-  color: rgb(var(--primary-6));
-  background-color: var(--pro-theme-color-soft);
-  border-color: rgb(var(--primary-6));
+  color: rgb(var(--primary-6)) !important;
+  background-color: rgba(var(--primary-6), 0.12) !important;
+  border-color: rgb(var(--primary-6)) !important;
 }
 
 .component-basic-tabs-plain .arco-tabs-nav-type-rounded .arco-tabs-tab-active .arco-tabs-tab-title {
@@ -1449,6 +1427,79 @@ body[arco-theme='dark'] .component-editor-preview {
 .component-basic-tabs-plain .arco-tabs-content {
   padding-top: 16px;
   padding-left: 0;
+}
+
+/* 分段选择器：整块描边 + 选中实心主色；分割线用 ::after，避免改 border 闪动 */
+.component-basic-segment {
+  display: inline-flex;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--color-bg-2, #fff);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--pro-input-radius, 4px);
+}
+
+.component-basic-segment-item {
+  position: relative;
+  flex: 0 1 auto;
+  min-width: 0;
+  height: var(--pro-ctrl-h-small, 32px);
+  padding: 0 16px;
+  color: var(--color-text-2);
+  font-size: 13px;
+  line-height: calc(var(--pro-ctrl-h-small, 32px) - 2px);
+  text-align: center;
+  white-space: nowrap;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.component-basic-segment-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border-2);
+  pointer-events: none;
+}
+
+.component-basic-segment-item.is-active:not(:last-child)::after {
+  opacity: 0;
+}
+
+.component-basic-segment-item:focus-visible {
+  z-index: 1;
+  box-shadow: inset 0 0 0 1px rgb(var(--primary-6));
+}
+
+.component-basic-segment-item:hover:not(.is-active) {
+  color: rgb(var(--primary-6));
+  background: rgba(var(--primary-6), 0.06);
+}
+
+.component-basic-segment-item.is-active {
+  color: #fff;
+  background: rgb(var(--primary-6));
+}
+
+body[arco-theme='dark'] .component-basic-segment,
+body.theme-dark .component-basic-segment {
+  background: var(--color-fill-1, #2a2a2b);
+  border-color: var(--color-neutral-3, #484849);
+}
+
+body[arco-theme='dark'] .component-basic-segment-item:not(:last-child)::after,
+body.theme-dark .component-basic-segment-item:not(:last-child)::after {
+  background: var(--color-neutral-3, #484849);
 }
 
 /* 列表组件演示 */

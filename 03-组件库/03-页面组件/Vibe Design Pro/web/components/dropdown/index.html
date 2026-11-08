@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>下拉菜单 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="dropdown">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">dropdown</p>
+          <h1 class="wa-fam-title">下拉菜单</h1>
+          <p class="wa-fam-lead">按钮或图标触发次级操作菜单，覆盖账户、勾选、主题与富文本等形态。</p>
+          <p class="wa-fam-lead">组件类型：default / button / icons / group / checkbox / radio / more / user / theme / rich / submenu / help</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="dropdown-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">下拉菜单</span><span class="wa-comp-meta__slug">dropdown-default</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-default')"
+                :aria-label="famCopyTip('dropdown-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown>
+        <a-button type="secondary">打开菜单 <icon-down /></a-button>
+        <template #content>
+          <a-doption>
+            <template #icon><icon-user /></template>
+            个人资料
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-settings /></template>
+            账单设置
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-user-group /></template>
+            团队成员
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-poweroff /></template>
+            退出登录
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-button">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">按钮下拉</span><span class="wa-comp-meta__slug">dropdown-button</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-button')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-button') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-button')"
+                :aria-label="famCopyTip('dropdown-button')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-button')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <div class="wa-dropdown-split">
+        <a-dropdown-button type="secondary">
+          发布
+          <template #icon>
+            <icon-down />
+          </template>
+          <template #content>
+            <a-doption>存为草稿</a-doption>
+            <a-doption>定时发布</a-doption>
+            <a-doption>取消发布</a-doption>
+          </template>
+        </a-dropdown-button>
+      </div>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-icons">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">分组菜单</span><span class="wa-comp-meta__slug">dropdown-icons</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-icons')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-icons') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-icons')"
+                :aria-label="famCopyTip('dropdown-icons')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-icons')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown>
+        <a-button type="secondary">操作菜单 <icon-down /></a-button>
+        <template #content>
+          <a-doption>
+            <template #icon><icon-copy /></template>
+            复制
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-edit /></template>
+            编辑
+          </a-doption>
+          <div class="wa-dropdown-sep" role="separator"></div>
+          <a-doption>
+            <template #icon><icon-layer-group /></template>
+            分组
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-clone /></template>
+            克隆
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-delete /></template>
+            删除
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-group">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">标签分组</span><span class="wa-comp-meta__slug">dropdown-group</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-group')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-group') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-group')"
+                :aria-label="famCopyTip('dropdown-group')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-group')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown>
+        <a-button type="secondary">带标签分组 <icon-down /></a-button>
+        <template #content>
+          <a-dgroup title="标签">
+            <a-doption>
+              <template #icon><icon-copy /></template>
+              复制
+            </a-doption>
+            <a-doption>
+              <template #icon><icon-edit /></template>
+              编辑
+            </a-doption>
+          </a-dgroup>
+          <div class="wa-dropdown-sep" role="separator"></div>
+          <a-dgroup title="标签">
+            <a-doption>
+              <template #icon><icon-layer-group /></template>
+              分组
+            </a-doption>
+            <a-doption>
+              <template #icon><icon-clone /></template>
+              克隆
+            </a-doption>
+            <a-doption>
+              <template #icon><icon-delete /></template>
+              删除
+            </a-doption>
+          </a-dgroup>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-checkbox">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">勾选菜单</span><span class="wa-comp-meta__slug">dropdown-checkbox</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-checkbox')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-checkbox') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-checkbox')"
+                :aria-label="famCopyTip('dropdown-checkbox')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-checkbox')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown :hide-on-select="false">
+        <a-button type="secondary">框架选项 <icon-down></icon-down></a-button>
+        <template #content>
+          <a-doption
+            v-for="item in fwList"
+            :key="item.key"
+            class="wa-dropdown-check-option"
+            :disabled="item.disabled"
+          >
+            <a-checkbox
+              :model-value="fw[item.key]"
+              :disabled="item.disabled"
+              @change="toggleFw(item.key)"
+              @click.stop
+            >{{ item.label }}</a-checkbox>
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-radio">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">单选菜单</span><span class="wa-comp-meta__slug">dropdown-radio</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-radio')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-radio') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-radio')"
+                :aria-label="famCopyTip('dropdown-radio')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-radio')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown :hide-on-select="false">
+        <a-button type="secondary">支付方式 <icon-down /></a-button>
+        <template #content>
+          <a-doption
+            v-for="item in payList"
+            :key="item.key"
+            :class="{ 'wa-dropdown-checked': pay === item.key }"
+            :disabled="item.disabled"
+            @click="setPay(item.key)"
+          >
+            <template #icon>
+              <icon-check v-if="pay === item.key"></icon-check>
+              <span v-else class="wa-dropdown-check-slot"></span>
+            </template>
+            {{ item.label }}
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-more">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">更多操作</span><span class="wa-comp-meta__slug">dropdown-more</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-more')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-more') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-more')"
+                :aria-label="famCopyTip('dropdown-more')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-more')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown position="br">
+        <a-button type="text" aria-label="更多操作">
+          <template #icon><icon-ellipsis /></template>
+        </a-button>
+        <template #content>
+          <a-doption>
+            <template #icon><icon-eye /></template>
+            查看
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-edit /></template>
+            编辑
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-copy /></template>
+            复制
+          </a-doption>
+          <div class="wa-dropdown-sep" role="separator"></div>
+          <a-doption class="wa-dropdown-danger">
+            <template #icon><icon-delete /></template>
+            删除
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-user">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">用户菜单</span><span class="wa-comp-meta__slug">dropdown-user</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-user')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-user') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-user')"
+                :aria-label="famCopyTip('dropdown-user')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-user')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown>
+        <a-button type="text" class="wa-dropdown-user-trigger" aria-label="用户菜单">
+          <a-avatar :size="32"><icon-avatar /></a-avatar>
+          <icon-down />
+        </a-button>
+        <template #content>
+          <div class="wa-dropdown-user-meta">
+            <div class="wa-dropdown-user-meta__name">林晓</div>
+            <div class="wa-dropdown-user-meta__email">user@example.com</div>
+          </div>
+          <div class="wa-dropdown-sep" role="separator"></div>
+          <a-doption>
+            <template #icon><icon-user /></template>
+            个人资料
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-settings /></template>
+            账单设置
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-user-group /></template>
+            团队成员
+          </a-doption>
+          <div class="wa-dropdown-sep" role="separator"></div>
+          <a-doption>
+            <template #icon><icon-poweroff /></template>
+            退出登录
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-theme">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">主题切换</span><span class="wa-comp-meta__slug">dropdown-theme</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-theme')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-theme') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-theme')"
+                :aria-label="famCopyTip('dropdown-theme')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-theme')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown :hide-on-select="false">
+        <a-button type="secondary" class="wa-dropdown-icon-btn" aria-label="主题">
+          <template #icon><icon-sun /></template>
+        </a-button>
+        <template #content>
+          <a-doption
+            v-for="item in themeList"
+            :key="item.key"
+            :class="{ 'wa-dropdown-checked': themeMode === item.key }"
+            @click="setTheme(item.key)"
+          >
+            <template #icon>
+              <component :is="item.icon"></component>
+            </template>
+            {{ item.label }}
+            <template #suffix>
+              <icon-check v-if="themeMode === item.key"></icon-check>
+            </template>
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-rich">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">富文本菜单</span><span class="wa-comp-meta__slug">dropdown-rich</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-rich')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-rich') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-rich')"
+                :aria-label="famCopyTip('dropdown-rich')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-rich')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown>
+        <a-button type="secondary" class="wa-dropdown-icon-btn" aria-label="添加区块">
+          <template #icon><icon-plus /></template>
+        </a-button>
+        <template #content>
+          <a-doption class="wa-dropdown-rich">
+            <div class="wa-dropdown-rich__row">
+              <span class="wa-dropdown-rich__icon"><icon-heading /></span>
+              <span class="wa-dropdown-rich__body">
+                <span class="wa-dropdown-rich__title">标题</span>
+                <span class="wa-dropdown-rich__desc">插入分区标题与说明</span>
+              </span>
+            </div>
+          </a-doption>
+          <a-doption class="wa-dropdown-rich">
+            <div class="wa-dropdown-rich__row">
+              <span class="wa-dropdown-rich__icon"><icon-file /></span>
+              <span class="wa-dropdown-rich__body">
+                <span class="wa-dropdown-rich__title">段落</span>
+                <span class="wa-dropdown-rich__desc">添加正文段落内容</span>
+              </span>
+            </div>
+          </a-doption>
+          <a-doption class="wa-dropdown-rich">
+            <div class="wa-dropdown-rich__row">
+              <span class="wa-dropdown-rich__icon"><icon-image /></span>
+              <span class="wa-dropdown-rich__body">
+                <span class="wa-dropdown-rich__title">图片</span>
+                <span class="wa-dropdown-rich__desc">上传或嵌入媒体资源</span>
+              </span>
+            </div>
+          </a-doption>
+          <a-doption class="wa-dropdown-rich">
+            <div class="wa-dropdown-rich__row">
+              <span class="wa-dropdown-rich__icon"><icon-table /></span>
+              <span class="wa-dropdown-rich__body">
+                <span class="wa-dropdown-rich__title">表格</span>
+                <span class="wa-dropdown-rich__desc">插入结构化数据表</span>
+              </span>
+            </div>
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-submenu">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">子菜单</span><span class="wa-comp-meta__slug">dropdown-submenu</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-submenu')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-submenu') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-submenu')"
+                :aria-label="famCopyTip('dropdown-submenu')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-submenu')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown>
+        <a-button type="secondary" class="wa-dropdown-icon-btn" aria-label="更多">
+          <template #icon><icon-code /></template>
+        </a-button>
+        <template #content>
+          <a-doption>
+            <template #icon><icon-edit /></template>
+            编辑
+            <template #suffix><span class="wa-dropdown-shortcut">⌘+E</span></template>
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-copy /></template>
+            复制
+            <template #suffix><span class="wa-dropdown-shortcut">⌘+D</span></template>
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-folder /></template>
+            归档
+            <template #suffix><span class="wa-dropdown-shortcut">⌘+⇧+A</span></template>
+          </a-doption>
+          <a-dsubmenu>
+            <template #icon><icon-apps /></template>
+            <template #default>更多</template>
+            <template #content>
+              <a-doption>
+                <template #icon><icon-folder /></template>
+                移动到…
+              </a-doption>
+              <a-doption>
+                <template #icon><icon-link /></template>
+                复制链接
+              </a-doption>
+            </template>
+          </a-dsubmenu>
+          <div class="wa-dropdown-sep" role="separator"></div>
+          <a-doption class="wa-dropdown-danger">
+            <template #icon><icon-delete /></template>
+            删除
+            <template #suffix>
+              <span class="wa-dropdown-shortcut"><icon-delete-left /></span>
+            </template>
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="dropdown-help">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">帮助菜单</span><span class="wa-comp-meta__slug">dropdown-help</span></div>
+              <a-tooltip :content="famCopyTip('dropdown-help')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('dropdown-help') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('dropdown-help')"
+                :aria-label="famCopyTip('dropdown-help')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('dropdown-help')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+      <a-dropdown>
+        <a-button type="secondary" class="wa-dropdown-icon-btn" aria-label="帮助">
+          <template #icon><icon-info-circle /></template>
+        </a-button>
+        <template #content>
+          <a-doption>
+            <template #icon><icon-book /></template>
+            文档中心
+          </a-doption>
+          <a-doption>
+            <template #icon><icon-keyboard /></template>
+            快捷键
+          </a-doption>
+          <div class="wa-dropdown-sep" role="separator"></div>
+          <a-doption>
+            <template #icon><icon-question-circle /></template>
+            联系支持
+          </a-doption>
+        </template>
+      </a-dropdown>
+      
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'dropdown',
+      members: [
+        'dropdown-default',
+        'dropdown-button',
+        'dropdown-icons',
+        'dropdown-group',
+        'dropdown-checkbox',
+        'dropdown-radio',
+        'dropdown-more',
+        'dropdown-user',
+        'dropdown-theme',
+        'dropdown-rich',
+        'dropdown-submenu',
+        'dropdown-help'
+      ],
+      setup: function (api) {
+        var fw = Vue.reactive({ next: true, svelte: false, nuxt: false, remix: false })
+        var pay = api.ref('card')
+        var themeMode = api.ref('light')
+        return {
+          fw: fw,
+          fwList: [
+            { key: 'next', label: 'Next.js' },
+            { key: 'svelte', label: 'SvelteKit' },
+            { key: 'nuxt', label: 'Nuxt.js' },
+            { key: 'remix', label: 'Remix', disabled: true },
+          ],
+          toggleFw: function (key) {
+            if (key === 'remix') return
+            fw[key] = !fw[key]
+          },
+          pay: pay,
+          payList: [
+            { key: 'card', label: '银行卡' },
+            { key: 'alipay', label: '支付宝' },
+            { key: 'wechat', label: '微信支付' },
+            { key: 'cod', label: '货到付款', disabled: true },
+          ],
+          setPay: function (key) {
+            if (key === 'cod') return
+            pay.value = key
+          },
+          themeMode: themeMode,
+          themeList: [
+            { key: 'light', label: '浅色', icon: 'icon-sun' },
+            { key: 'dark', label: '深色', icon: 'icon-moon' },
+            { key: 'system', label: '跟随系统', icon: 'icon-desktop' },
+          ],
+          setTheme: function (key) {
+            themeMode.value = key
+          },
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

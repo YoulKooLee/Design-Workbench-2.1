@@ -1,4 +1,6 @@
-/* 分栏登录页：浅色全屏底 + 居中双栏卡片（基于 login.css） */
+@import "./login-shared.css";
+
+/* 分栏登录页：浅色全屏底 + 居中双栏卡片（@import login-shared.css） */
 
 .login-container--split {
   position: relative;

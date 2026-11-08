@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>图表配色 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="../../assets/common/charts/shadcn-chart.css" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="chart-palette">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">chart-palette</p>
+          <h1 class="wa-fam-title">图表配色</h1>
+          <p class="wa-fam-lead">切换主题单色或多色板，统一图表与图例色阶。点击方案即可应用（跨页保持）。</p>
+          <p class="wa-fam-lead">组件类型：theme / colorful / brand / muted</p>
+        </header>
+
+        <div class="chart-palette-page">
+          <article
+            v-for="scheme in schemes"
+            :key="scheme.id"
+            class="chart-palette-scheme"
+            :class="{ 'is-active': activeId === scheme.id }"
+            @click="selectScheme(scheme.id)"
+          >
+            <div class="chart-palette-scheme-head">
+              <h2 class="chart-palette-scheme-title">{{ scheme.title }}</h2>
+              <div class="chart-palette-scheme-actions">
+                <a-tag v-if="scheme.badge" color="arcoblue" size="small">{{ scheme.badge }}</a-tag>
+                <a-button size="mini" type="primary" @click.stop="selectScheme(scheme.id)">
+                  <template v-if="activeId === scheme.id" #icon>
+                    <icon-check-circle></icon-check-circle>
+                  </template>
+                  {{ activeId === scheme.id ? '当前方案' : '应用' }}
+                </a-button>
+                <a-tooltip :content="famCopyTip(slugOf(scheme.id))">
+                  <a-button
+                    type="secondary"
+                    size="mini"
+                    :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied(slugOf(scheme.id)) }]"
+                    @click.stop="copyPrompt(slugOf(scheme.id))"
+                    :aria-label="famCopyTip(slugOf(scheme.id))"
+                  >
+                    <span class="wa-fam-copy__inner" v-if="copyLocked">
+                      <icon-lock></icon-lock>
+                      <span class="wa-fam-copy__label">需要权限</span>
+                    </span>
+                    <span class="wa-fam-copy__inner" v-else>
+                      <icon-check v-if="famCopied(slugOf(scheme.id))"></icon-check>
+                      <icon-copy v-else></icon-copy>
+                      <span class="wa-fam-copy__label">提示词</span>
+                    </span>
+                  </a-button>
+                </a-tooltip>
+              </div>
+            </div>
+            <p class="chart-palette-why">{{ scheme.why }}</p>
+            <div :class="swatchClass(scheme.cols)">
+              <div v-for="c in scheme.colors" :key="scheme.id + '-sw-' + c.id">
+                <div class="chart-palette-chip" :style="{ background: c.hex || c.css }"></div>
+                <div
+                  v-if="!scheme.noSoft"
+                  class="chart-palette-soft"
+                  :style="{ background: softBg(c.hex || c.css, scheme.softAlpha || 0.14) }"
+                ></div>
+                <div class="chart-palette-meta">
+                  <b>{{ metaLabel(c) }}</b>{{ c.hex }}
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../assets/common/charts/chart-palette.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+  window.WA_FAMILY = {
+    id: 'chart-palette',
+    members: ['chart-palette-theme', 'chart-palette-colorful', 'chart-palette-brand', 'chart-palette-muted'],
+    setup: function (ctx) {
+      var ref = ctx.ref
+      var activeId = ref('theme')
+      var schemes = ref([])
+      var SCHEME_SLUG = {
+        theme: 'chart-palette-theme',
+        a: 'chart-palette-colorful',
+        b: 'chart-palette-brand',
+        c: 'chart-palette-muted',
+      }
+
+      function syncFromStore() {
+        var api = window.ArcoProChartPalette || window.WaChartPalette
+        if (!api) return
+        activeId.value = api.getCurrentId()
+        schemes.value = (api.schemes || []).map(function (s) {
+          return api.schemeForDisplay(s)
+        })
+      }
+
+      function softBg(hex, alpha) {
+        var api = window.ArcoProChartPalette || window.WaChartPalette
+        return api && api.soft ? api.soft(hex, alpha) : hex
+      }
+
+      function swatchClass(cols) {
+        if (cols === 10) return 'chart-palette-swatches cols-10'
+        if (cols === 8) return 'chart-palette-swatches cols-8'
+        if (cols === 6) return 'chart-palette-swatches cols-6'
+        return 'chart-palette-swatches'
+      }
+
+      function metaLabel(c) {
+        return c.name ? c.id + ' ' + c.name : c.id
+      }
+
+      function slugOf(id) {
+        return SCHEME_SLUG[id] || 'chart-palette-theme'
+      }
+
+      function selectScheme(id) {
+        var api = window.ArcoProChartPalette || window.WaChartPalette
+        if (!api) return
+        api.set(id)
+        syncFromStore()
+        if (window.ArcoVue && ArcoVue.Message) {
+          var scheme = api.getScheme(id)
+          ArcoVue.Message.success('已切换：' + ((scheme && scheme.title) || id))
+        }
+      }
+
+      Vue.onMounted(function () {
+        syncFromStore()
+        window.addEventListener('arco-pro-chart-palette-change', syncFromStore)
+        window.addEventListener('arco-pro-theme-change', syncFromStore)
+        window.addEventListener('wa-theme-change', syncFromStore)
+      })
+      Vue.onBeforeUnmount(function () {
+        window.removeEventListener('arco-pro-chart-palette-change', syncFromStore)
+        window.removeEventListener('arco-pro-theme-change', syncFromStore)
+        window.removeEventListener('wa-theme-change', syncFromStore)
+      })
+
+      return {
+        activeId: activeId,
+        schemes: schemes,
+        softBg: softBg,
+        swatchClass: swatchClass,
+        metaLabel: metaLabel,
+        slugOf: slugOf,
+        selectScheme: selectScheme,
+      }
+    },
+  }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

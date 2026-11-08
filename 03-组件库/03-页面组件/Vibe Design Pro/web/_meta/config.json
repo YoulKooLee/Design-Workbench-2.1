@@ -1,0 +1,34 @@
+{
+  "version": "1.1.0",
+  "description": "WEB 母版共用配置（非库存）。组件 / 区块 / 页面壳各有 catalog.json。",
+  "surfaceDefault": "marketing",
+  "layoutDefault": "app-sidebar",
+  "reuse": {
+    "default": "prompt-plus-preview",
+    "rules": [
+      "主交付为 prompt.md（含 §7 DOM 骨架，无独立 skeleton.html）；预览为同目录 index.html",
+      "新建页面壳按 layouts/list.md 复制结构最接近的已有壳再改差异；勿从空白起手；勿一律复制 app-sidebar。layoutDefault 仅表示交付未点名时的默认壳",
+      "配套本母版或同约定 Vue+Arco WEB 工程时还原度最高；其它栈只还原基本形态",
+      "从 admin 可迁控件语义与壳分区思路；WEB 用 wa-* / wa-layout-*，按 surface 选密度（comfortable / compact）",
+      "禁止拷 ProShell 运行时（shell.js / routes / 鉴权 / TabBar 业务）与 pro-* 类名；允许 layouts/ 自建侧栏/顶栏壳",
+      "禁止把 dashboard/list 等整页业务当作营销首页；业务页进交付站",
+      "路径 A：工程内已有同 slug 的 blocks|components|layouts 时优先复用预览并填槽位，禁止无故按 prompt §7 全量重写",
+      "带轻动效的 Hero：结构归本区块；重装饰动效挂页面自有目录或 website home/preview/animations（按 relatedAnimations），禁止拷进 blocks 子目录、禁止在 prompt 内嵌 WebGL",
+      "component-* 演示页（admin）仅作字典，不得改名当本库业务 slug"
+    ],
+    "fidelity": {
+      "withFramework": "high",
+      "otherStacks": "structure-only"
+    }
+  },
+  "tagVocabulary": [
+    "cta",
+    "conversion",
+    "trust",
+    "input",
+    "datetime",
+    "layout-split",
+    "decoration",
+    "hover"
+  ]
+}

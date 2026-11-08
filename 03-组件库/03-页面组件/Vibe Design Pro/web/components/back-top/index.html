@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>回到顶部 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="back-top">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">back-top</p>
+          <h1 class="wa-fam-title">回到顶部</h1>
+          <p class="wa-fam-lead">长页滚动后一键回顶，减轻长文档与列表浏览负担。</p>
+          <p class="wa-fam-lead">组件类型：default / custom</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="back-top-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">回到顶部</span><span class="wa-comp-meta__slug">back-top-default</span></div>
+              <a-tooltip :content="famCopyTip('back-top-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('back-top-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('back-top-default')"
+                :aria-label="famCopyTip('back-top-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('back-top-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-backtop-demo">
+                <div id="wa-backtop-box" class="wa-backtop-demo__scroll">
+                  <p v-for="n in 20" :key="n">长列表条目 {{ n }}</p>
+                </div>
+                <a-back-top target-container="#wa-backtop-box" :visible-height="40"></a-back-top>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="back-top-custom">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">自定义回顶</span><span class="wa-comp-meta__slug">back-top-custom</span></div>
+              <a-tooltip :content="famCopyTip('back-top-custom')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('back-top-custom') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('back-top-custom')"
+                :aria-label="famCopyTip('back-top-custom')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('back-top-custom')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-backtop-demo">
+                <div id="wa-backtop-custom-box" class="wa-backtop-demo__scroll">
+                  <p v-for="n in 20" :key="n">文档段落 {{ n }}</p>
+                </div>
+                <a-back-top target-container="#wa-backtop-custom-box" :visible-height="40">
+                  <a-button class="wa-backtop-demo__custom-btn" type="secondary" shape="circle">
+                    <icon-up></icon-up>
+                  </a-button>
+                </a-back-top>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'back-top',
+      members: ['back-top-default', 'back-top-custom'],
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

@@ -1,10 +1,12 @@
 {
   "id": "web",
   "end": "web",
-  "label": "WEB 静态站资源包",
-  "version": "1.0.0",
-  "capability": "vendor-and-conventions",
-  "runtimeDir": "..",
-  "status": "ready",
-  "includes": ["fonts", "vendor", "images"]
+  "label": "WEB · Arco HTML 母版（营销区块）",
+  "version": "0.2.0",
+  "capability": "blocks-and-components",
+  "theme": "arco",
+  "runtimeDir": ".",
+  "status": "preview",
+  "includes": ["assets", "components", "blocks", "layouts", "vendor"],
+  "notes": "WEB 默认母版。scaffold 复制 vendor/assets；整页示范 examples 暂缓。layouts=可复用页面壳；区块标杆 blocks/hero-section/split、components/date-picker；按需补货。旧 Element 见 web-element。"
 }

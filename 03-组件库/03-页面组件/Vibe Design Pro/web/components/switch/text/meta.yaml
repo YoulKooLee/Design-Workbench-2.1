@@ -1,0 +1,11 @@
+slug: switch-text
+label: 文字开关
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/switch/text

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>成员搜索 · command-people</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="command-people">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">成员搜索</span>
+        <span class="wa-comp-meta__slug">command-people</span>
+      </div>
+      <div class="wa-embed__stage">
+        <div class="wa-command">
+          <div class="wa-command__search">
+            <span class="wa-command__search-icon"><icon-search :size="15"></icon-search></span>
+            <input class="wa-command__input" v-model="qPeople" type="text" placeholder="搜索成员…" autocomplete="off" />
+            <button type="button" class="wa-command__clear" v-show="qPeople" @click="qPeople = ''" aria-label="清除"><icon-close :size="12"></icon-close></button>
+          </div>
+          <div class="wa-command__list">
+            <button type="button" class="wa-command__item" v-for="u in people" :key="u.email">
+              <div class="wa-command__person">
+                <a-avatar :size="28" :style="{ background: u.bg, color: '#fff', fontSize: '11px' }">{{ u.initials }}</a-avatar>
+                <div class="wa-command__person-text">
+                  <span class="wa-command__person-name">{{ u.name }}</span>
+                  <span class="wa-command__person-email">{{ u.email }}</span>
+                </div>
+              </div>
+              <span class="wa-command__item-meta">{{ u.role }}</span>
+            </button>
+            <div class="wa-command__sep"></div>
+            <button type="button" class="wa-command__item">
+              <span class="wa-command__item-icon"><icon-plus :size="14"></icon-plus></span>
+              <span class="wa-command__item-label">添加新成员</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

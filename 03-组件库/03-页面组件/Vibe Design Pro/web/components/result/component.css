@@ -1,0 +1,37 @@
+/* result 扩展态：大号 404 标题 / 搜索条 / 自定义图标色 */
+.wa-result-404 .arco-result-title {
+  font-size: 4.5rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.arco-result-icon .pro-fa-icon,
+.arco-result-icon [class*="fa-"] {
+  color: var(--color-text-2, #4e5969);
+}
+
+.wa-result-search {
+  width: min(100%, 22rem);
+  margin: 0 auto;
+}
+
+.wa-result-search .arco-input-wrapper {
+  border-radius: 999px;
+}
+
+.wa-result-hint {
+  margin-top: 8px;
+  font-size: 0.8125rem;
+  color: var(--color-text-3, #86909c);
+}
+
+.wa-result-hint a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.wa-result-hint a:hover {
+  color: rgb(var(--primary-6));
+}

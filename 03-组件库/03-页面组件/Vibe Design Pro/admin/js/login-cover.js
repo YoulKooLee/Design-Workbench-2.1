@@ -1,5 +1,6 @@
 ;(function () {
-  if (AdminAuth.isLoggedIn()) {
+  // Gallery 预览：即使已登录也停留在登录样板，避免跳到 dashboard
+  if (AdminAuth.isLoggedIn() && !AdminAuth.isGalleryPreview()) {
     window.location.href = 'dashboard.html'
     return
   }
@@ -299,7 +300,7 @@
               </div>
             </div>
           </div>
-          <footer class="login-footer pro-footer">© 2026 VibePM  产品经理智能协作平台</footer>
+          <footer class="login-footer pro-footer">© VibePM 产品协作与设计资产分享平台</footer>
         </div>
 
         <a-modal

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>离线结果页 · result-offline</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="result-offline">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">离线结果页</span>
+        <span class="wa-comp-meta__slug">result-offline</span>
+      </div>
+      <div class="wa-embed__stage">
+            <a-result title="无网络连接" subtitle="你似乎处于离线状态，请检查网络后重试。">
+              <template #icon>
+                <icon-wifi-slash :size="48"></icon-wifi-slash>
+              </template>
+              <template #extra>
+                <a-button type="primary" shape="round" size="small">
+                  <template #icon><icon-refresh></icon-refresh></template>
+                  重试
+                </a-button>
+              </template>
+            </a-result>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

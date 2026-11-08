@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="default" data-density="compact">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js?v=20261016f"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>图标岛顶栏 · Vibe Design</title>
+  <link rel="icon" href="../../assets/images/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <!-- FA7 Duotone：须在 all 之后加载，提供 Duotone 字族 + ::before 叠层（仅 all 会左右双份） -->
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/duotone.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../assets/effects/dashed-orbit/dashed-orbit.css" />
+  <link rel="stylesheet" href="./layout.css" />
+</head>
+<body data-density="compact">
+  <div id="app" class="wa-layout-app" v-cloak>
+    <div
+      class="wa-layout wa-layout--top wa-layout--top-island"
+      :class="{ 'is-sider-primary': siderPrimary }"
+      :data-density="density"
+    >
+      <header class="wa-layout__navbar wa-layout__navbar--top-island">
+        <div class="wa-layout__navbar-left">
+          <a-tooltip content="Vibe Design" position="bottom">
+            <a class="wa-layout__brand wa-layout__brand--island" href="./index.html" aria-label="Vibe Design">
+              <span class="wa-layout__brand-mark" aria-hidden="true">
+                <i class="fa-duotone fa-layer-group" aria-hidden="true"></i>
+              </span>
+            </a>
+          </a-tooltip>
+          <a-tooltip content="搜索页面" position="bottom">
+            <button
+              type="button"
+              class="wa-layout__search-chip"
+              aria-label="搜索页面"
+              @click="openCommand"
+            >
+              <i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>
+              <span>搜索页面…</span>
+            </button>
+          </a-tooltip>
+        </div>
+
+        <div class="wa-layout__island">
+          <nav class="wa-layout__island-nav" aria-label="主导航">
+            <button
+              v-for="item in islandItems"
+              :key="item.key"
+              type="button"
+              class="wa-layout__island-item"
+              :class="{ 'is-active': navKey === item.key, 'is-tail': item.tail }"
+              :aria-current="navKey === item.key ? 'page' : undefined"
+              @click="selectNav(item.key)"
+            >
+              <i class="wa-layout__nav-icon fa-duotone" :class="item.icon" aria-hidden="true"></i>
+              <span class="wa-layout__island-item-label">{{ item.label }}</span>
+            </button>
+          </nav>
+        </div>
+
+        <div class="wa-layout__navbar-right">
+          <a-tooltip content="切换框架页面" position="bottom">
+            <button
+              type="button"
+              class="wa-layout__icon-btn"
+              aria-label="切换框架页面"
+              @click="shellDrawer = true"
+            >
+              <i class="fa-duotone fa-table-layout" aria-hidden="true"></i>
+            </button>
+          </a-tooltip>
+          <a-tooltip :content="siderPrimary ? '切换为浅色导航' : '切换为主色导航'" position="bottom">
+            <button
+              type="button"
+              class="wa-layout__icon-btn wa-layout__icon-btn--narrow-hide"
+              :aria-label="siderPrimary ? '切换为浅色导航' : '切换为主色导航'"
+              @click="toggleSiderPrimary"
+            >
+              <i class="fa-duotone" :class="siderPrimary ? 'fa-swatchbook' : 'fa-fill-drip'" aria-hidden="true"></i>
+            </button>
+          </a-tooltip>
+          <a-tooltip :content="theme === 'dark' ? '切换为亮色' : '切换为暗色'" position="bottom">
+            <button
+              type="button"
+              class="wa-layout__icon-btn wa-layout__icon-btn--narrow-hide"
+              :aria-label="theme === 'dark' ? '切换为亮色' : '切换为暗色'"
+              @click="toggleTheme"
+            >
+              <i class="fa-duotone" :class="theme === 'dark' ? 'fa-sun-bright' : 'fa-moon'" aria-hidden="true"></i>
+            </button>
+          </a-tooltip>
+          <div class="wa-layout__user wa-layout__user--chip" :class="{ 'is-open': userOpen }">
+            <button
+              type="button"
+              class="wa-layout__user-chip"
+              aria-label="用户菜单"
+              aria-haspopup="menu"
+              :aria-expanded="userOpen ? 'true' : 'false'"
+              @click.stop="toggleUser"
+            >
+              <span class="wa-layout__avatar" aria-hidden="true">
+                <img :src="userInfo.avatar" alt="" />
+              </span>
+              <span class="wa-layout__user-chip-name">{{ userInfo.name }}</span>
+              <span class="wa-layout__user-caret" aria-hidden="true">
+                <i class="fa-regular fa-chevron-down"></i>
+              </span>
+            </button>
+            <div v-if="userOpen" class="wa-layout__user-panel" role="menu" @click.stop>
+              <div class="wa-layout__user-panel-head">
+                <span class="wa-layout__avatar wa-layout__avatar--lg" aria-hidden="true">
+                  <img :src="userInfo.avatar" alt="" />
+                </span>
+                <span class="wa-layout__user-meta">
+                  <span class="wa-layout__user-name">{{ userInfo.name }}</span>
+                  <span class="wa-layout__user-email">{{ userInfo.email }}</span>
+                </span>
+              </div>
+              <div class="wa-layout__user-panel-menu">
+                <button
+                  v-for="m in userMenus"
+                  :key="m.key"
+                  type="button"
+                  class="wa-layout__user-menu-item"
+                  :class="{ 'is-danger': m.danger }"
+                  role="menuitem"
+                  @click="goUser(m.key)"
+                >
+                  <i class="wa-layout__nav-icon fa-duotone" :class="m.icon" aria-hidden="true"></i>
+                  <span>{{ m.label }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="wa-layout__content">
+        <div class="wa-layout__slot">
+          <a-card class="wa-acard wa-layout__guide-card">
+            <div class="wa-layout__guide-split">
+              <div class="wa-layout__guide-copy">
+                <header class="wa-layout__page-head">
+                  <span class="wa-layout__slot-kicker"><i class="fa-duotone fa-circle-nodes" aria-hidden="true"></i>图标岛顶栏</span>
+                  <h1 class="wa-layout__page-title">将<span class="wa-mark">业务视图</span>接入主内容区</h1>
+                  <p class="wa-layout__page-lead">左为品牌圆与搜索、中为带文字胶囊图标岛、右为操作区；主列全宽无侧栏。窄屏时岛可横向滚动。需要左侧悬浮岛时请改选「图标岛侧栏」。</p>
+                </header>
+                <ol class="wa-layout__guide-steps">
+                  <li>
+                    <span class="wa-layout__guide-item-n" aria-hidden="true">1</span>
+                    <div class="wa-layout__guide-item-body">
+                      <h2>对齐信息结构</h2>
+                      <p>分组只做分区。父级展开/收起，子级才进页面。把当前选中项映射到本槽页头与正文。</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="wa-layout__guide-item-n" aria-hidden="true">2</span>
+                    <div class="wa-layout__guide-item-body">
+                      <h2>适合放的内容</h2>
+                      <p>功能说明、上手步骤、权限提示、空状态与下一步。需要数据时再换成表格或详情。</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="wa-layout__guide-item-n" aria-hidden="true">3</span>
+                    <div class="wa-layout__guide-item-body">
+                      <h2>窄屏怎么用</h2>
+                      <p>仍保持单行：品牌与搜索在左、带文字的图标岛居中（过长可横滑）、必要操作在右。用户名隐藏。</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="wa-layout__guide-item-n" aria-hidden="true">4</span>
+                    <div class="wa-layout__guide-item-body">
+                      <h2>落地时删掉说明</h2>
+                      <p>复制骨架后用产品页替换本区。顶栏布局图标只切页面框架，与业务导航无关。</p>
+                    </div>
+                  </li>
+                </ol>
+                <div class="wa-layout__guide-cta">
+                  <a-button type="primary" shape="round" size="large" href="../index.html">
+                    <i class="fa-regular fa-grid-2" aria-hidden="true"></i>
+                    查看全部框架
+                  </a-button>
+                </div>
+              </div>
+              <aside class="wa-layout__guide-decor" aria-hidden="true">
+                <span class="wa-layout__guide-orbit wa-layout__guide-orbit--lg"></span>
+                <span class="wa-layout__guide-orbit wa-layout__guide-orbit--md"></span>
+                <span class="wa-layout__guide-orbit wa-layout__guide-orbit--sm"></span>
+                <div class="wa-layout__guide-orbit-host" ref="guideOrbit" v-once></div>
+                <div class="wa-layout__guide-mock wa-layout__guide-mock--top">
+                  <span class="wa-layout__guide-mock-top">
+                    <span class="wa-layout__guide-mock-mark"></span>
+                    <span class="wa-layout__guide-mock-topbar"></span>
+                  </span>
+                  <div class="wa-layout__guide-mock-sider">
+                    <span class="wa-layout__guide-mock-bar is-on"></span>
+                    <span class="wa-layout__guide-mock-bar"></span>
+                    <span class="wa-layout__guide-mock-bar"></span>
+                    <span class="wa-layout__guide-mock-bar"></span>
+                  </div>
+                  <div class="wa-layout__guide-mock-main">
+                    <span class="wa-layout__guide-mock-slot">
+                      <span class="wa-layout__guide-mock-line is-title"></span>
+                      <span class="wa-layout__guide-mock-line"></span>
+                      <span class="wa-layout__guide-mock-line is-short"></span>
+                    </span>
+                  </div>
+                </div>
+                <p class="wa-layout__guide-decor-cap">顶栏框架 · 结构示意</p>
+              </aside>
+            </div>
+            <p class="wa-layout__guide-note"><i class="fa-regular fa-circle-info" aria-hidden="true"></i>落地时删除本引导，将当前路由的业务视图接入此内容区即可。</p>
+          </a-card>
+        </div>
+        <footer class="wa-layout__footer">© 2026 VibePM 产品协作与设计资产分享平台</footer>
+      </main>
+    </div>
+
+    <a-drawer
+      v-model:visible="shellDrawer"
+      placement="right"
+      :width="380"
+      :closable="false"
+      body-class="wa-drawer-float wa-drawer-float--right"
+      unmount-on-close
+      @cancel="shellDrawer = false"
+    >
+      <template #title>
+        <div>
+          <p class="wa-drawer-float__title">切换框架页面</p>
+          <p class="wa-drawer-float__desc">点选框架，再点「应用」切换预览。</p>
+        </div>
+      </template>
+      <div class="wa-drawer-float__paras">
+        <button
+          v-for="s in shellPresets"
+          :key="s.key"
+          type="button"
+          class="wa-layout__shell-pick"
+          :class="{ 'is-active': shellPick === s.key, 'is-placeholder': !s.href }"
+          @click="shellPick = s.key"
+        >
+          <i class="wa-layout__nav-icon fa-light fa-table-layout" aria-hidden="true"></i>
+          <span class="wa-layout__shell-pick-meta">
+            <span class="wa-layout__shell-pick-name">{{ s.label }}</span>
+            <span class="wa-layout__shell-pick-desc">{{ s.desc }}</span>
+          </span>
+          <span v-if="!s.href" class="wa-layout__shell-pick-tag">占位</span>
+        </button>
+      </div>
+      <template #footer>
+        <a-button type="primary" shape="round" @click="applyShell">应用</a-button>
+        <a-button type="secondary" shape="round" @click="shellDrawer = false">取消</a-button>
+      </template>
+    </a-drawer>
+
+    <div
+      class="wa-layout__cmd"
+      :class="{ 'is-open': commandOpen }"
+      role="dialog"
+      aria-modal="true"
+      aria-label="命令面板"
+      @keydown.esc.prevent="closeCommand"
+    >
+      <div class="wa-layout__cmd-backdrop" @click="closeCommand"></div>
+      <div class="wa-layout__cmd-panel" @click.stop>
+        <div class="wa-layout__cmd-search">
+          <i class="fa-duotone fa-magnifying-glass" aria-hidden="true"></i>
+          <input
+            ref="cmdInput"
+            type="search"
+            class="wa-layout__cmd-input"
+            placeholder="搜索导航或命令…"
+            v-model="commandQuery"
+            @keydown.down.prevent="moveCommand(1)"
+            @keydown.up.prevent="moveCommand(-1)"
+            @keydown.enter.prevent="runActiveCommand"
+          />
+          <kbd class="wa-layout__cmd-kbd">Esc</kbd>
+        </div>
+        <ul class="wa-layout__cmd-list" role="listbox">
+          <li
+            v-for="(item, idx) in filteredCommands"
+            :key="item.id"
+            class="wa-layout__cmd-item"
+            :class="{ 'is-active': idx === commandIndex }"
+            role="option"
+            :aria-selected="idx === commandIndex"
+            @mouseenter="commandIndex = idx"
+            @click="runCommand(item)"
+          >
+            <i class="fa-duotone" :class="item.icon" aria-hidden="true"></i>
+            <span>{{ item.label }}</span>
+            <small v-if="item.hint">{{ item.hint }}</small>
+          </li>
+          <li v-if="!filteredCommands.length" class="wa-layout__cmd-empty">无匹配命令</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../assets/effects/dashed-orbit/dashed-orbit.js"></script>
+  <script src="./layout.js"></script>
+</body>
+</html>

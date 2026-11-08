@@ -1,0 +1,241 @@
+/**
+ * 跟随鼠标主色光晕（卡片 / 区块共用）
+ * 宿主：.wa-spotlight ；光斑层由 assets/common/js/spotlight.js 注入 .wa-spotlight__glow
+ * 可与 Arco hoverable、.wa-acard--shadow 组合；勿写死品牌色，走 --wa-color-primary
+ */
+.wa-spotlight {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --wa-spotlight-size: 260px;
+  --wa-spotlight-alpha: 13%;
+  --wa-spotlight-mid: 4.5%;
+  position: relative;
+}
+
+/* 卡片面：允许外阴影；光晕仍靠 inherit 圆角贴合 */
+.wa-acard.wa-spotlight,
+.wa-spotlight.wa-section,
+.wa-spotlight[data-wa-spotlight-size="lg"] {
+  --wa-spotlight-size: 400px;
+  --wa-spotlight-alpha: 11%;
+  --wa-spotlight-mid: 4%;
+}
+
+.wa-spotlight[data-wa-spotlight-size="sm"] {
+  --wa-spotlight-size: 160px;
+  --wa-spotlight-alpha: 11%;
+  --wa-spotlight-mid: 4%;
+}
+
+.wa-spotlight__glow {
+  position: absolute !important;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 3 !important;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+  background: radial-gradient(
+    var(--wa-spotlight-size) circle at var(--mouse-x) var(--mouse-y),
+    color-mix(in srgb, var(--wa-color-primary) var(--wa-spotlight-alpha), transparent),
+    color-mix(in srgb, var(--wa-color-primary) var(--wa-spotlight-mid), transparent) 42%,
+    transparent 72%
+  );
+}
+
+.wa-spotlight:hover > .wa-spotlight__glow {
+  opacity: 1;
+}
+
+/* 悬停内嵌宿主时关掉父级光晕，避免双层叠加重 */
+.wa-spotlight:has(.wa-spotlight:hover) > .wa-spotlight__glow {
+  opacity: 0;
+}
+
+/* 内容压在光晕之下、仍可点击；光晕 pointer-events:none */
+.wa-spotlight > *:not(.wa-spotlight__glow) {
+  position: relative;
+  z-index: 1;
+}
+
+/**
+ * 表面装饰动效（卡片 / 区块共用，纯 CSS）
+ * - .wa-shine      悬停扫光
+ * - .wa-border-flow 悬停边框流光
+ * - .wa-lift       仅抬起（位移 + 阴影/描边，不跟鼠标）
+ * 可与 .wa-acard / .wa-spotlight / hoverable 组合；色走 --wa-color-primary
+ */
+
+/* ── 扫光 ── */
+.wa-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* 压过 .wa-acard.arco-card { overflow:visible }，否则扫光裁切失效 */
+.wa-acard.wa-shine.arco-card,
+.wa-shine.arco-card {
+  overflow: hidden;
+}
+
+.wa-shine::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 45%;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    color-mix(in srgb, #fff 28%, transparent) 42%,
+    color-mix(in srgb, var(--wa-color-primary) 14%, transparent) 50%,
+    color-mix(in srgb, #fff 20%, transparent) 58%,
+    transparent 100%
+  );
+  transform: translateX(-140%) skewX(-16deg);
+  opacity: 0;
+}
+
+.wa-shine:hover::after {
+  opacity: 1;
+  animation: wa-shine-sweep 0.85s ease;
+}
+
+@keyframes wa-shine-sweep {
+  from {
+    transform: translateX(-140%) skewX(-16deg);
+  }
+  to {
+    transform: translateX(280%) skewX(-16deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-shine:hover::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ── 边框流光（默认普通描边；悬停才出现浅→深→浅流光） ── */
+@property --wa-flow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/*
+ * 须压过 .wa-acard--shadow.arco-card { border:none }：
+ * conic 流光靠「透明描边 + background-clip:border-box」露出，border 宽度为 0 则不可见。
+ */
+.wa-border-flow,
+.wa-acard.wa-border-flow.arco-card,
+.wa-acard.wa-border-flow.arco-card-bordered,
+.wa-acard--shadow.wa-border-flow.arco-card,
+.wa-acard--shadow.wa-border-flow.arco-card-bordered {
+  --wa-flow-angle: 0deg;
+  --wa-border-flow-fill: var(--wa-color-surface, var(--color-bg-popup, #fff));
+  position: relative;
+  isolation: isolate;
+  /* 静止态与 .wa-acard 同款描边；悬停再切透明边露出 conic 流光 */
+  border: var(--wa-border-card);
+  background: var(--wa-border-flow-fill);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.wa-border-flow:hover,
+.wa-acard.wa-border-flow.arco-card:hover,
+.wa-acard.wa-border-flow.arco-card-bordered:hover,
+.wa-acard--shadow.wa-border-flow.arco-card:hover,
+.wa-acard--shadow.wa-border-flow.arco-card-bordered:hover,
+.wa-border-flow.arco-card:hover,
+.wa-border-flow.arco-card-bordered:hover,
+.wa-border-flow--auto {
+  /* 流光描边略宽于静止态卡边，便于 conic 高光可读 */
+  border: 1.8px solid transparent !important;
+  box-shadow: var(--wa-shadow-soft);
+  /* 高光用主色半透明，暗色下避免满饱和「闪白」 */
+  background:
+    linear-gradient(var(--wa-border-flow-fill), var(--wa-border-flow-fill))
+      padding-box,
+    conic-gradient(
+      from var(--wa-flow-angle),
+      transparent 0%,
+      transparent 78%,
+      color-mix(in srgb, var(--wa-color-primary) 28%, transparent) 86%,
+      color-mix(in srgb, var(--wa-color-primary) 62%, transparent) 92%,
+      color-mix(in srgb, var(--wa-color-primary) 28%, transparent) 96%,
+      transparent 100%
+    )
+      border-box;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  animation: wa-border-flow-spin 2s linear infinite;
+}
+
+@keyframes wa-border-flow-spin {
+  to {
+    --wa-flow-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-border-flow:hover,
+  .wa-border-flow.arco-card:hover,
+  .wa-border-flow.arco-card-bordered:hover,
+  .wa-acard--shadow.wa-border-flow.arco-card:hover,
+  .wa-acard--shadow.wa-border-flow.arco-card-bordered:hover,
+  .wa-border-flow--auto {
+    animation: none;
+    border: 1.8px solid
+      color-mix(in srgb, var(--wa-color-primary) 45%, var(--wa-color-border-2, var(--wa-color-border))) !important;
+    background: var(--wa-border-flow-fill);
+  }
+}
+
+/* ── 仅抬起（不跟鼠标） ── */
+.wa-lift {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  will-change: transform;
+}
+
+.wa-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--wa-shadow-soft-hover);
+  border-color: color-mix(in srgb, var(--wa-color-primary) 32%, var(--wa-color-border, var(--color-border-2)));
+}
+
+.wa-lift.wa-acard--shadow:hover,
+.wa-lift.arco-card-bordered:hover {
+  box-shadow: var(--wa-shadow-soft-hover);
+}
+
+/* 与 Arco hoverable 同用时：抬起优先于 hoverable 的 transform:none */
+.wa-lift.arco-card-hoverable:hover,
+.wa-lift.arco-card-bordered.arco-card-hoverable:hover {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-lift:hover {
+    transform: none;
+  }
+}
+
+/* surface-fx 家族 / 成员示范卡：统一宽高 */
+.sfx-demo.wa-acard {
+  width: 320px;
+  max-width: 100%;
+  min-height: 168px;
+  box-sizing: border-box;
+}
+.sfx-demo .wa-acard-desc {
+  min-height: 3.2em;
+}

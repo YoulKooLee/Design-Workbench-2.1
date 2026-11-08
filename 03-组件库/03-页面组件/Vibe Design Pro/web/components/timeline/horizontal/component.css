@@ -1,0 +1,113 @@
+/* timeline-horizontal：横向时间轴 · 等宽均分 + 圆点按 i/(n-1) 定位 */
+.wa-tl-horizontal.arco-timeline {
+  display: flex;
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  overflow: visible;
+  box-sizing: border-box;
+  /* 圆点行高 + 下方绝对定位文案（标题+阶段）所需空间 */
+  padding-bottom: 64px;
+}
+
+/* 贯穿轴线（首尾圆点中心之间） */
+.wa-tl-horizontal.arco-timeline::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  left: 3px;
+  z-index: 0;
+  height: 1px;
+  pointer-events: none;
+  background: var(--color-neutral-3);
+}
+
+.wa-tl-horizontal .arco-timeline-item,
+.wa-tl-horizontal .arco-timeline-item:last-child {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  height: 6px;
+  overflow: visible;
+  --tl-p: 0;
+}
+
+/* 节点定位：2 */
+.wa-tl-horizontal .arco-timeline-item:nth-child(1):nth-last-child(2) { --tl-p: 0; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(2):nth-last-child(1) { --tl-p: 1; }
+
+/* 节点定位：3 */
+.wa-tl-horizontal .arco-timeline-item:nth-child(1):nth-last-child(3) { --tl-p: 0; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(2):nth-last-child(2) { --tl-p: 0.5; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(3):nth-last-child(1) { --tl-p: 1; }
+
+/* 节点定位：4 → 0 / 1/3 / 2/3 / 1 */
+.wa-tl-horizontal .arco-timeline-item:nth-child(1):nth-last-child(4) { --tl-p: 0; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(2):nth-last-child(3) { --tl-p: 0.333333; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(3):nth-last-child(2) { --tl-p: 0.666667; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(4):nth-last-child(1) { --tl-p: 1; }
+
+/* 节点定位：5 */
+.wa-tl-horizontal .arco-timeline-item:nth-child(1):nth-last-child(5) { --tl-p: 0; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(2):nth-last-child(4) { --tl-p: 0.25; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(3):nth-last-child(3) { --tl-p: 0.5; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(4):nth-last-child(2) { --tl-p: 0.75; }
+.wa-tl-horizontal .arco-timeline-item:nth-child(5):nth-last-child(1) { --tl-p: 1; }
+
+.wa-tl-horizontal .arco-timeline-item-dot-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  overflow: visible;
+  z-index: 1;
+}
+
+.wa-tl-horizontal .arco-timeline-item-last .arco-timeline-item-dot-wrapper {
+  justify-content: flex-end;
+}
+
+/* 中间圆点：用 margin 推到 --tl-p（扣半宽 3px），避免用 transform 造成抖动 */
+.wa-tl-horizontal .arco-timeline-item:not(:first-child):not(.arco-timeline-item-last) .arco-timeline-item-dot-content {
+  margin-left: calc(var(--tl-p) * 100% - 3px);
+}
+
+.wa-tl-horizontal .arco-timeline-item-dot-line {
+  display: none;
+}
+
+/* 文案绝对定位锚定圆点下：首左 / 中居中 / 尾右（末项用 right:0，避免 relative+right） */
+.wa-tl-horizontal .arco-timeline-item-content-wrapper {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  width: max-content;
+  max-width: 100%;
+  margin-top: 0;
+  margin-left: 0;
+  text-align: left;
+}
+
+.wa-tl-horizontal .arco-timeline-item:not(:first-child):not(.arco-timeline-item-last) .arco-timeline-item-content-wrapper {
+  left: calc(var(--tl-p) * 100%);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.wa-tl-horizontal .arco-timeline-item-last .arco-timeline-item-content-wrapper {
+  right: 0;
+  left: auto;
+  text-align: right;
+  transform: none;
+}
+
+.wa-tl-horizontal .arco-timeline-item-label {
+  text-align: inherit;
+}
+
+body.wa-preview-embed .wa-embed__stage .wa-tl-horizontal {
+  width: 100%;
+}

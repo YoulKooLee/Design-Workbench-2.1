@@ -1,5 +1,11 @@
 # 焦糖暗艺 · 视觉规范
 
+## 交付
+- ZIP：{{zip_url}}
+- slug：焦糖暗艺
+- 包内：`焦糖暗艺-style.md`、`焦糖暗艺-preview.html`（站上复制「下载主题」时注入完整 ZIP 地址；规则见 docs/设计资源-上架-ZIP.md）
+
+
 ## 风格快照 / Style Snapshot
 - **整体风格 / Overall style**：焦糖暗艺——近黑暖棕画布 `#0d0a06` + 双层暖橙径向光晕 + 米白主字 `#f3ead8`；**Fraunces** 展示 / **JetBrains Mono** 标签 / **Inter** 正文；卡片内高光 + 重外影，轻拼贴杂志感。完整反馈：字段错误环、清空、提交行、Toast、橙浅底提示条，以及 **`18px` 圆角、不透明、柔影**弹窗（遮罩可 blur）。
 - **语气关键词 / Tone keywords**：焦糖、文艺、编辑感、轻拼贴、克制高光、暗场暖橙。

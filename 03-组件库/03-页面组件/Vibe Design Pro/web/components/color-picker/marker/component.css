@@ -1,0 +1,44 @@
+.wa-markers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--wa-input-h, 40px);
+}
+
+.wa-marker {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: #fff;
+  background: #ccc;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.wa-marker:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.wa-marker.is-active {
+  border-color: #fff;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--color-text-1, #1d2129) 18%, transparent),
+    0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.wa-marker .pro-fa-icon {
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+}

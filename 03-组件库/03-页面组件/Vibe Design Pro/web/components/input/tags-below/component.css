@@ -1,0 +1,17 @@
+/* 标签外置：输入在上，标签行在下 */
+.wa-input-tags-below {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.wa-input-tags-below__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wa-input-tags-below__list .arco-tag {
+  margin: 0;
+}

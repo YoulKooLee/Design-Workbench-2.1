@@ -1,3 +1,5 @@
+@import "./dashboard-shared.css";
+
 /* 效率仪表盘（对齐 shadcn /dashboard/productivity） */
 
 .prod-page {
@@ -149,39 +151,8 @@
   gap: 8px;
 }
 
-.prod-section-head {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 @media (min-width: 576px) {
-  .prod-section-head {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
   }
-}
-
-.prod-section-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  color: var(--color-text-1);
-}
-
-.prod-section-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
-}
 
 .prod-section-actions {
   display: flex;
@@ -706,26 +677,6 @@ body[arco-theme='dark'] .prod-tag--status-planning {
   margin-bottom: 12px;
 }
 
-.prod-schedule-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  color: var(--color-text-1);
-}
-
-.prod-schedule-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
-}
-
 .prod-mini-cal-nav {
   display: flex;
   align-items: center;
@@ -753,13 +704,34 @@ body[arco-theme='dark'] .prod-tag--status-planning {
   background: var(--color-bg-2);
   color: var(--color-text-3);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.prod-mini-cal-btn i,
+.prod-mini-cal-btn .pro-fa-icon,
+.prod-mini-cal-btn .arco-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  font-size: 11px;
+  line-height: 1;
 }
 
 .prod-mini-cal-btn:hover {
   background: var(--color-fill-2);
   color: var(--color-text-1);
   border-color: var(--color-border-3);
+}
+
+.prod-mini-cal-btn:focus,
+.prod-mini-cal-btn:focus-visible {
+  outline: none;
+  background: var(--color-bg-2);
+  color: var(--color-text-3);
+  border-color: var(--color-border-2);
 }
 
 .prod-mini-cal-label {
@@ -803,6 +775,7 @@ body[arco-theme='dark'] .prod-tag--status-planning {
 }
 
 .prod-mini-cal-day {
+  position: relative;
   display: grid;
   place-items: center;
   width: 28px;
@@ -827,19 +800,17 @@ body[arco-theme='dark'] .prod-tag--status-planning {
   background: var(--color-fill-2);
 }
 
-.prod-mini-cal-cell.has-event::after {
+.prod-mini-cal-cell.has-event .prod-mini-cal-day::after {
   content: '';
   position: absolute;
-  top: 2px;
-  right: calc(50% - 12px);
+  left: 50%;
+  bottom: -6px;
   width: 5px;
   height: 5px;
+  margin-left: -2.5px;
   border-radius: 50%;
   background: rgb(var(--primary-6));
-}
-
-.prod-mini-cal-cell.is-selected.has-event::after {
-  background: #fff;
+  pointer-events: none;
 }
 
 .prod-schedule-list-head {
@@ -961,7 +932,20 @@ body[arco-theme='dark'] .prod-tag--status-planning {
   border-radius: 50%;
   background: var(--color-fill-2);
   color: var(--color-text-3);
-  font-size: 10px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.prod-schedule-item-chevron i,
+.prod-schedule-item-chevron .pro-fa-icon,
+.prod-schedule-item-chevron .arco-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  font-size: 11px;
+  line-height: 1;
 }
 
 .prod-schedule-empty {
@@ -1049,26 +1033,6 @@ body[arco-theme='dark'] .prod-tag--status-planning {
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 16px;
-}
-
-.prod-card-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  color: var(--color-text-1);
-}
-
-.prod-card-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
 }
 
 .prod-notes {

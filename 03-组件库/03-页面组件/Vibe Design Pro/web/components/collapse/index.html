@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>折叠面板 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="collapse">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">collapse</p>
+          <h1 class="wa-fam-title">折叠面板</h1>
+          <p class="wa-fam-lead">可展开收起的内容分组，适合 FAQ、产品说明与分区配置。</p>
+          <p class="wa-fam-lead">组件类型：default / accordion / bordered / plus / icon / subtext / stacked / active</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="collapse-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">折叠面板</span><span class="wa-comp-meta__slug">collapse-default</span></div>
+              <a-tooltip :content="famCopyTip('collapse-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('collapse-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('collapse-default')"
+                :aria-label="famCopyTip('collapse-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('collapse-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-collapse v-model:active-key="activeDefault" :bordered="false" class="wa-collapse-chevron">
+                <template #expand-icon="{ active }">
+                  <icon-up v-if="active" :size="10" style="color: var(--color-text-3)"></icon-up>
+                  <icon-down v-else :size="10" style="color: var(--color-text-3)"></icon-down>
+                </template>
+                <a-collapse-item header="有哪些定价方案可选？" key="1">提供免费版、专业版与企业版，可按席位升级；核心能力各档通用，高级协作与专属支持随档位解锁。</a-collapse-item>
+                <a-collapse-item header="可以随时取消订阅吗？" key="2">可随时在账户设置中取消。当期已付权益保留至账期结束，不会按天自动退款。</a-collapse-item>
+                <a-collapse-item header="支持哪些支付方式？" key="3">支持支付宝、微信支付与主流信用卡；企业版可申请对公转账与发票。</a-collapse-item>
+                <a-collapse-item header="提供什么类型的支持服务？" key="4">工作日在线客服；专业版含工单优先，企业版配备专属客户成功经理。</a-collapse-item>
+              </a-collapse>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="collapse-accordion">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">手风琴折叠面板</span><span class="wa-comp-meta__slug">collapse-accordion</span></div>
+              <a-tooltip :content="famCopyTip('collapse-accordion')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('collapse-accordion') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('collapse-accordion')"
+                :aria-label="famCopyTip('collapse-accordion')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('collapse-accordion')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-collapse v-model:active-key="activeAccordion" accordion :bordered="false" class="wa-collapse-chevron">
+                <template #expand-icon="{ active }">
+                  <icon-up v-if="active" :size="10" style="color: var(--color-text-3)"></icon-up>
+                  <icon-down v-else :size="10" style="color: var(--color-text-3)"></icon-down>
+                </template>
+                <a-collapse-item header="有哪些定价方案可选？" key="1">提供免费版、专业版与企业版，可按席位升级；核心能力各档通用，高级协作与专属支持随档位解锁。</a-collapse-item>
+                <a-collapse-item header="可以随时取消订阅吗？" key="2">可随时在账户设置中取消。当期已付权益保留至账期结束，不会按天自动退款。</a-collapse-item>
+                <a-collapse-item header="支持哪些支付方式？" key="3">支持支付宝、微信支付与主流信用卡；企业版可申请对公转账与发票。</a-collapse-item>
+                <a-collapse-item header="提供什么类型的支持服务？" key="4">工作日在线客服；专业版含工单优先，企业版配备专属客户成功经理。</a-collapse-item>
+              </a-collapse>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="collapse-bordered">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">边框折叠面板</span><span class="wa-comp-meta__slug">collapse-bordered</span></div>
+              <a-tooltip :content="famCopyTip('collapse-bordered')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('collapse-bordered') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('collapse-bordered')"
+                :aria-label="famCopyTip('collapse-bordered')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('collapse-bordered')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-collapse v-model:active-key="activeBordered" class="wa-collapse-chevron wa-collapse-bordered">
+                <template #expand-icon="{ active }">
+                  <icon-up v-if="active" :size="10" style="color: var(--color-text-3)"></icon-up>
+                  <icon-down v-else :size="10" style="color: var(--color-text-3)"></icon-down>
+                </template>
+                <a-collapse-item header="有哪些定价方案可选？" key="1">提供免费版、专业版与企业版，可按席位升级；核心能力各档通用，高级协作与专属支持随档位解锁。</a-collapse-item>
+                <a-collapse-item header="可以随时取消订阅吗？" key="2">可随时在账户设置中取消。当期已付权益保留至账期结束，不会按天自动退款。</a-collapse-item>
+                <a-collapse-item header="支持哪些支付方式？" key="3">支持支付宝、微信支付与主流信用卡；企业版可申请对公转账与发票。</a-collapse-item>
+                <a-collapse-item header="提供什么类型的支持服务？" key="4">工作日在线客服；专业版含工单优先，企业版配备专属客户成功经理。</a-collapse-item>
+              </a-collapse>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="collapse-plus">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">加减号折叠面板</span><span class="wa-comp-meta__slug">collapse-plus</span></div>
+              <a-tooltip :content="famCopyTip('collapse-plus')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('collapse-plus') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('collapse-plus')"
+                :aria-label="famCopyTip('collapse-plus')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('collapse-plus')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-collapse v-model:active-key="activePlus" :bordered="false" expand-icon-position="right" class="wa-collapse-plus">
+                <template #expand-icon="{ active }">
+                  <icon-minus v-if="active" :size="10" style="color: var(--color-text-3)"></icon-minus>
+                  <icon-plus v-else :size="10" style="color: var(--color-text-3)"></icon-plus>
+                </template>
+                <a-collapse-item header="有哪些定价方案可选？" key="1">提供免费版、专业版与企业版，可按席位升级；核心能力各档通用，高级协作与专属支持随档位解锁。</a-collapse-item>
+                <a-collapse-item header="可以随时取消订阅吗？" key="2">可随时在账户设置中取消。当期已付权益保留至账期结束，不会按天自动退款。</a-collapse-item>
+                <a-collapse-item header="支持哪些支付方式？" key="3">支持支付宝、微信支付与主流信用卡；企业版可申请对公转账与发票。</a-collapse-item>
+                <a-collapse-item header="提供什么类型的支持服务？" key="4">工作日在线客服；专业版含工单优先，企业版配备专属客户成功经理。</a-collapse-item>
+              </a-collapse>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="collapse-icon">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">图标折叠面板</span><span class="wa-comp-meta__slug">collapse-icon</span></div>
+              <a-tooltip :content="famCopyTip('collapse-icon')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('collapse-icon') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('collapse-icon')"
+                :aria-label="famCopyTip('collapse-icon')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('collapse-icon')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-collapse v-model:active-key="activeIcon" :bordered="false" expand-icon-position="right" class="wa-collapse-chevron wa-collapse-icon">
+                <template #expand-icon="{ active }">
+                  <icon-up v-if="active" :size="10" style="color: var(--color-text-3)"></icon-up>
+                  <icon-down v-else :size="10" style="color: var(--color-text-3)"></icon-down>
+                </template>
+                <a-collapse-item key="1">
+                  <template #header>
+                    <div class="wa-collapse-head">
+                      <span class="wa-collapse-head__icon"><icon-tag></icon-tag></span>
+                      <span class="wa-collapse-head__title">有哪些定价方案可选？</span>
+                    </div>
+                  </template>
+                  提供免费版、专业版与企业版，可按席位升级；核心能力各档通用，高级协作与专属支持随档位解锁。
+                </a-collapse-item>
+                <a-collapse-item key="2">
+                  <template #header>
+                    <div class="wa-collapse-head">
+                      <span class="wa-collapse-head__icon"><icon-check-circle></icon-check-circle></span>
+                      <span class="wa-collapse-head__title">可以随时取消订阅吗？</span>
+                    </div>
+                  </template>
+                  可随时在账户设置中取消。当期已付权益保留至账期结束，不会按天自动退款。
+                </a-collapse-item>
+                <a-collapse-item key="3">
+                  <template #header>
+                    <div class="wa-collapse-head">
+                      <span class="wa-collapse-head__icon"><icon-credit-card></icon-credit-card></span>
+                      <span class="wa-collapse-head__title">支持哪些支付方式？</span>
+                    </div>
+                  </template>
+                  支持支付宝、微信支付与主流信用卡；企业版可申请对公转账与发票。
+                </a-collapse-item>
+                <a-collapse-item key="4">
+                  <template #header>
+                    <div class="wa-collapse-head">
+                      <span class="wa-collapse-head__icon"><icon-message></icon-message></span>
+                      <span class="wa-collapse-head__title">提供什么类型的支持服务？</span>
+                    </div>
+                  </template>
+                  工作日在线客服；专业版含工单优先，企业版配备专属客户成功经理。
+                </a-collapse-item>
+              </a-collapse>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="collapse-subtext">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">副文案折叠面板</span><span class="wa-comp-meta__slug">collapse-subtext</span></div>
+              <a-tooltip :content="famCopyTip('collapse-subtext')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('collapse-subtext') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('collapse-subtext')"
+                :aria-label="famCopyTip('collapse-subtext')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('collapse-subtext')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-collapse v-model:active-key="activeSubtext" :bordered="false" expand-icon-position="right" class="wa-collapse-chevron wa-collapse-subtext">
+                <template #expand-icon="{ active }">
+                  <icon-up v-if="active" :size="10" style="color: var(--color-text-3)"></icon-up>
+                  <icon-down v-else :size="10" style="color: var(--color-text-3)"></icon-down>
+                </template>
+                <a-collapse-item key="1">
+                  <template #header>
+                    <div class="wa-collapse-head">
+                      <div class="wa-collapse-head__body">
+                        <span class="wa-collapse-head__title">有哪些定价方案可选？</span>
+                        <span class="wa-collapse-head__sub">按团队规模选择合适订阅</span>
+                      </div>
+                    </div>
+                  </template>
+                  提供免费版、专业版与企业版，可按席位升级；核心能力各档通用，高级协作与专属支持随档位解锁。
+                </a-collapse-item>
+                <a-collapse-item key="2">
+                  <template #header>
+                    <div class="wa-collapse-head">
+                      <div class="wa-collapse-head__body">
+                        <span class="wa-collapse-head__title">可以随时取消订阅吗？</span>
+                        <span class="wa-collapse-head__sub">账期与续费完全由你掌控</span>
+                      </div>
+                    </div>
+                  </template>
+                  可随时在账户设置中取消。当期已付权益保留至账期结束，不会按天自动退款。
+                </a-collapse-item>
+                <a-collapse-item key="3">
+                  <template #header>
+                    <div class="wa-collapse-head">
+                      <div class="wa-collapse-head__body">
+                        <span class="wa-collapse-head__title">支持哪些支付方式？</span>
+                        <span class="wa-collapse-head__sub">安全灵活的收款方式</span>
+                      </div>
+                    </div>
+                  </template>
+                  支持支付宝、微信支付与主流信用卡；企业版可申请对公转账与发票。
+                </a-collapse-item>
+                <a-collapse-item key="4">
+                  <template #header>
+                    <div class="wa-collapse-head">
+                      <div class="wa-collapse-head__body">
+                        <span class="wa-collapse-head__title">提供什么类型的支持服务？</span>
+                        <span class="wa-collapse-head__sub">需要时获得优先协助</span>
+                      </div>
+                    </div>
+                  </template>
+                  工作日在线客服；专业版含工单优先，企业版配备专属客户成功经理。
+                </a-collapse-item>
+              </a-collapse>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="collapse-stacked">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">卡片式折叠面板</span><span class="wa-comp-meta__slug">collapse-stacked</span></div>
+              <a-tooltip :content="famCopyTip('collapse-stacked')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('collapse-stacked') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('collapse-stacked')"
+                :aria-label="famCopyTip('collapse-stacked')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('collapse-stacked')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-collapse v-model:active-key="activeStacked" :bordered="false" expand-icon-position="right" class="wa-collapse-chevron wa-collapse-stacked">
+                <template #expand-icon="{ active }">
+                  <icon-up v-if="active" :size="10" style="color: var(--color-text-3)"></icon-up>
+                  <icon-down v-else :size="10" style="color: var(--color-text-3)"></icon-down>
+                </template>
+                <a-collapse-item header="有哪些定价方案可选？" key="1">提供免费版、专业版与企业版，可按席位升级；核心能力各档通用，高级协作与专属支持随档位解锁。</a-collapse-item>
+                <a-collapse-item header="可以随时取消订阅吗？" key="2">可随时在账户设置中取消。当期已付权益保留至账期结束，不会按天自动退款。</a-collapse-item>
+                <a-collapse-item header="支持哪些支付方式？" key="3">支持支付宝、微信支付与主流信用卡；企业版可申请对公转账与发票。</a-collapse-item>
+                <a-collapse-item header="提供什么类型的支持服务？" key="4">工作日在线客服；专业版含工单优先，企业版配备专属客户成功经理。</a-collapse-item>
+              </a-collapse>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="collapse-active">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">高亮折叠面板</span><span class="wa-comp-meta__slug">collapse-active</span></div>
+              <a-tooltip :content="famCopyTip('collapse-active')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('collapse-active') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('collapse-active')"
+                :aria-label="famCopyTip('collapse-active')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('collapse-active')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-collapse v-model:active-key="activeHighlight" accordion :bordered="false" expand-icon-position="right" class="wa-collapse-chevron wa-collapse-stacked wa-collapse-active">
+                <template #expand-icon="{ active }">
+                  <icon-up v-if="active" :size="10" style="color: var(--color-text-3)"></icon-up>
+                  <icon-down v-else :size="10" style="color: var(--color-text-3)"></icon-down>
+                </template>
+                <a-collapse-item header="有哪些定价方案可选？" key="1">提供免费版、专业版与企业版，可按席位升级；核心能力各档通用，高级协作与专属支持随档位解锁。</a-collapse-item>
+                <a-collapse-item header="可以随时取消订阅吗？" key="2">可随时在账户设置中取消。当期已付权益保留至账期结束，不会按天自动退款。</a-collapse-item>
+                <a-collapse-item header="支持哪些支付方式？" key="3">支持支付宝、微信支付与主流信用卡；企业版可申请对公转账与发票。</a-collapse-item>
+                <a-collapse-item header="提供什么类型的支持服务？" key="4">工作日在线客服；专业版含工单优先，企业版配备专属客户成功经理。</a-collapse-item>
+              </a-collapse>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'collapse',
+      members: ['collapse-default', 'collapse-accordion', 'collapse-bordered', 'collapse-plus', 'collapse-icon', 'collapse-subtext', 'collapse-stacked', 'collapse-active'],
+      setup: function (api) {
+        return {
+          activeDefault: api.ref(['1']),
+          activeAccordion: api.ref(['1']),
+          activeBordered: api.ref(['1']),
+          activePlus: api.ref(['1']),
+          activeIcon: api.ref(['1']),
+          activeSubtext: api.ref(['1']),
+          activeStacked: api.ref(['1']),
+          activeHighlight: api.ref(['1']),
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

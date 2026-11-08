@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>上传 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./button/component.css" />
+  <link rel="stylesheet" href="./drag/component.css" />
+  <link rel="stylesheet" href="./picture/component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="upload">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">upload</p>
+          <h1 class="wa-fam-title">上传</h1>
+          <p class="wa-fam-lead">表单上传文件或图片，含按钮点选、拖拽放置与图片卡片。</p>
+          <p class="wa-fam-lead">组件类型：button / drag / picture</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="upload-button">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">按钮上传</span><span class="wa-comp-meta__slug">upload-button</span></div>
+              <a-tooltip :content="famCopyTip('upload-button')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('upload-button') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('upload-button')"
+                :aria-label="famCopyTip('upload-button')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('upload-button')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-upload
+                  class="wa-upload-btn"
+                  data-wa-upload="button"
+                  list-type="text"
+                  accept=".jpg,.jpeg,.png,.pdf,.xlsx,.docx"
+                  :auto-upload="false"
+                  :limit="5"
+                  :file-list="buttonList"
+                  @change="onButtonChange"
+                >
+                  <template #cancel-icon>
+                    <i class="pro-fa-icon fa-solid fa-pause" aria-hidden="true"></i>
+                  </template>
+                  <template #start-icon>
+                    <i class="pro-fa-icon fa-solid fa-play" aria-hidden="true"></i>
+                  </template>
+                  <template #retry-icon>
+                    <a-tooltip content="重新上传">
+                      <i class="pro-fa-icon fa-light fa-arrows-rotate" aria-hidden="true"></i>
+                    </a-tooltip>
+                  </template>
+                  <template #error-icon>
+                    <i class="pro-fa-icon fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                  </template>
+                  <template #remove-icon>
+                    <a-tooltip content="删除">
+                      <i class="pro-fa-icon fa-light fa-trash" aria-hidden="true"></i>
+                    </a-tooltip>
+                  </template>
+                  <template #upload-button>
+                    <div class="wa-upload-btn-trigger">
+                      <a-button type="secondary">上传文件</a-button>
+                      <div class="wa-upload-tip" @click.stop.prevent>
+                        <icon-info-circle :size="14"></icon-info-circle>
+                        <span>支持 jpg、png、pdf、xlsx、docx，单文件不超过 10MB</span>
+                      </div>
+                    </div>
+                  </template>
+                </a-upload>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="upload-drag">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">拖拽上传</span><span class="wa-comp-meta__slug">upload-drag</span></div>
+              <a-tooltip :content="famCopyTip('upload-drag')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('upload-drag') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('upload-drag')"
+                :aria-label="famCopyTip('upload-drag')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('upload-drag')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-upload
+                  class="wa-upload-io"
+                  data-wa-upload="drag"
+                  draggable
+                  accept=".xlsx,.xls,.csv"
+                  :auto-upload="false"
+                  :limit="3"
+                  :show-upload-button="{ showOnExceedLimit: true }"
+                  :file-list="dragList"
+                  @change="onDragChange"
+                >
+                  <template #cancel-icon>
+                    <i class="pro-fa-icon fa-solid fa-pause" aria-hidden="true"></i>
+                  </template>
+                  <template #start-icon>
+                    <i class="pro-fa-icon fa-solid fa-play" aria-hidden="true"></i>
+                  </template>
+                  <template #retry-icon>
+                    <a-tooltip content="重新上传">
+                      <i class="pro-fa-icon fa-light fa-arrows-rotate" aria-hidden="true"></i>
+                    </a-tooltip>
+                  </template>
+                  <template #error-icon>
+                    <i class="pro-fa-icon fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                  </template>
+                  <template #remove-icon>
+                    <a-tooltip content="删除">
+                      <i class="pro-fa-icon fa-light fa-trash" aria-hidden="true"></i>
+                    </a-tooltip>
+                  </template>
+                  <template #upload-button>
+                    <div class="wa-upload-drag">
+                      <div class="wa-upload-drag-icon"><icon-upload /></div>
+                      <div class="wa-upload-drag-text">点击或拖拽文件到此处</div>
+                      <div class="wa-upload-drag-hint">仅支持 Excel / CSV 文件，单文件不超过 10MB</div>
+                    </div>
+                  </template>
+                </a-upload>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="upload">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">图片上传</span><span class="wa-comp-meta__slug">upload</span></div>
+              <a-tooltip :content="famCopyTip('upload')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('upload') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('upload')"
+                :aria-label="famCopyTip('upload')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('upload')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-upload
+                  data-wa-upload="picture"
+                  list-type="picture-card"
+                  accept="image/*"
+                  :limit="4"
+                  :auto-upload="false"
+                  :file-list="pictureList"
+                  @change="onPictureChange"
+                >
+                  <template #upload-item="{ fileItem }">
+                    <div class="wa-upload-pic-item" :class="'is-' + fileItem.status">
+                      <img v-if="fileItem.url" :src="fileItem.url" :alt="fileItem.name" />
+                      <div v-if="fileItem.status === 'uploading'" class="wa-upload-pic-item__progress">
+                        <a-progress
+                          type="circle"
+                          size="mini"
+                          :width="18"
+                          :percent="fileItem.percent || 0"
+                          :show-text="false"
+                        />
+                      </div>
+                      <div v-else-if="fileItem.status === 'error'" class="wa-upload-pic-item__error">
+                        <span
+                          class="wa-upload-pic-item__action"
+                          title="重新上传"
+                          @click.stop="retryPicture(fileItem)"
+                          ><icon-refresh
+                        /></span>
+                        <span
+                          class="wa-upload-pic-item__action"
+                          title="删除"
+                          @click.stop="removePicture(fileItem)"
+                          ><icon-delete
+                        /></span>
+                      </div>
+                      <div
+                        v-else-if="fileItem.status === 'done' || fileItem.status === 'init'"
+                        class="wa-upload-pic-item__mask"
+                      >
+                        <span
+                          class="wa-upload-pic-item__action"
+                          title="查看"
+                          @click.stop="previewPicture(fileItem)"
+                          ><icon-eye
+                        /></span>
+                        <span
+                          class="wa-upload-pic-item__action"
+                          title="删除"
+                          @click.stop="removePicture(fileItem)"
+                          ><icon-delete
+                        /></span>
+                      </div>
+                    </div>
+                  </template>
+                </a-upload>
+                <a-image-preview
+                  v-model:visible="picturePreviewVisible"
+                  :src="picturePreviewSrc"
+                />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script src="./upload-demo.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'upload',
+      members: ['upload-button', 'upload-drag', 'upload'],
+      slugDir: { upload: 'picture', 'upload-button': 'button', 'upload-drag': 'drag' },
+      setup: function (api) {
+        var picture = window.WA_UPLOAD_DEMO.create(api, {
+          id: 'picture',
+          initialList: window.WA_UPLOAD_DEMO.seeds.picture(),
+        })
+        var button = window.WA_UPLOAD_DEMO.create(api, {
+          id: 'button',
+          initialList: window.WA_UPLOAD_DEMO.seeds.button,
+        })
+        var drag = window.WA_UPLOAD_DEMO.create(api, {
+          id: 'drag',
+          initialList: window.WA_UPLOAD_DEMO.seeds.drag,
+        })
+        return {
+          pictureList: picture.fileList,
+          buttonList: button.fileList,
+          dragList: drag.fileList,
+          onPictureChange: picture.onChange,
+          onButtonChange: button.onChange,
+          onDragChange: drag.onChange,
+          removePicture: picture.removeFile,
+          retryPicture: picture.retryFile,
+          previewPicture: picture.previewFile,
+          picturePreviewVisible: picture.previewVisible,
+          picturePreviewSrc: picture.previewSrc,
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

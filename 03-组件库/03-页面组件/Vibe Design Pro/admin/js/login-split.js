@@ -1,5 +1,6 @@
 ;(function () {
-  if (AdminAuth.isLoggedIn()) {
+  // Gallery 预览：即使已登录也停留在登录样板，避免跳到 dashboard
+  if (AdminAuth.isLoggedIn() && !AdminAuth.isGalleryPreview()) {
     window.location.href = 'dashboard.html'
     return
   }
@@ -42,7 +43,7 @@
         userNameError: '',
         passwordError: '',
         loading: false,
-        artSrc: './images/login-illustration-01.svg',
+        artSrc: './assets/images/login-illustration-01.svg',
         t,
         forgetVisible: false,
         registerVisible: false,
@@ -311,7 +312,7 @@
             </div>
           </section>
         </div>
-        <div class="login-split-footer">© 2026 VibePM  产品经理智能协作平台</div>
+        <div class="login-split-footer">© VibePM 产品协作与设计资产分享平台</div>
 
         <a-modal
           :visible="forgetVisible"
@@ -502,7 +503,7 @@
     .mount('#app')
 
   /** 按主题主色替换插图品牌色（保留肤色/深色/白色），避免 hue-rotate 偏色 */
-  const ART_SRC = './images/login-illustration-01.svg'
+  const ART_SRC = './assets/images/login-illustration-01.svg'
   let artSvgCache = ''
   let artBlobUrl = ''
 

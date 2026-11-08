@@ -1,5 +1,11 @@
 # SemiDesign · 视觉规范
 
+## 交付
+- ZIP：{{zip_url}}
+- slug：SemiDesign
+- 包内：`SemiDesign-style.md`、`SemiDesign-preview.html`（站上复制「下载主题」时注入完整 ZIP 地址；规则见 docs/设计资源-上架-ZIP.md）
+
+
 ## 风格快照 / Style Snapshot
 - **整体风格 / Overall style**：Semi Design 官方亮色默认主题落地页。画布 `#F9F9F9` / 白卡 `#FFFFFF`，品牌蓝 **`#0064FA`**（悬停 `#0062D6`、按下 `#004FB3`），选中浅蓝底 **`#EAF5FF`**。Inter 全栈；圆角克制——按钮 **`3px`**、输入/面板 **`6px`**、卡片/弹窗 **`12px`**。层次靠 `8%` 墨色描边 + 浅填充，轻投影抬升而非重阴影。完整反馈：字段 `.is-error` 红环 + `.field-error`、清空钮、提交行、顶部 Toast、浅蓝提示条，以及 **`12px` 圆角、不透明、柔影**弹窗。
 - **语气关键词 / Tone keywords**：专业、清晰、中性、工程感、字节系 B 端、克制圆角。

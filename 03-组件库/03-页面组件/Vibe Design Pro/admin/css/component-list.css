@@ -114,36 +114,6 @@
   color: #fff;
 }
 
-/* 卡片标题区 */
-.component-list-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-
-.component-list-card-title {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 8px;
-  margin: 0 !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  line-height: 24px !important;
-  color: var(--color-text-1) !important;
-}
-
-.component-list-card-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
-}
-
 .component-list-card-link {
   display: inline-flex;
   align-items: center;
@@ -657,26 +627,6 @@
   margin-bottom: 12px;
 }
 
-.component-list-agenda-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  color: var(--color-text-1);
-}
-
-.component-list-agenda-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
-}
-
 .component-list-agenda-nav {
   display: flex;
   align-items: center;
@@ -704,13 +654,39 @@
   background: var(--color-bg-2);
   color: var(--color-text-3);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.component-list-agenda-nav-btn .pro-fa-icon,
+.component-list-agenda-nav-btn .arco-icon,
+.component-list-agenda-nav-btn i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  font-size: 11px;
+  line-height: 1;
 }
 
 .component-list-agenda-nav-btn:hover {
   background: var(--color-fill-2);
   color: var(--color-text-1);
   border-color: var(--color-border-3);
+}
+
+.component-list-agenda-nav-btn:focus,
+.component-list-agenda-nav-btn:focus-visible {
+  outline: none;
+  background: var(--color-bg-2);
+  color: var(--color-text-3);
+  border-color: var(--color-border-2);
+}
+
+.component-list-agenda-nav-btn:active {
+  background: var(--color-fill-2);
+  color: var(--color-text-1);
 }
 
 .component-list-agenda-label {
@@ -754,6 +730,7 @@
 }
 
 .component-list-agenda-day {
+  position: relative;
   display: grid;
   place-items: center;
   width: 28px;
@@ -778,19 +755,17 @@
   background: var(--color-fill-2);
 }
 
-.component-list-agenda-cell.has-event::after {
+.component-list-agenda-cell.has-event .component-list-agenda-day::after {
   content: '';
   position: absolute;
-  top: 2px;
-  right: calc(50% - 12px);
+  left: 50%;
+  bottom: -6px;
   width: 5px;
   height: 5px;
+  margin-left: -2.5px;
   border-radius: 50%;
   background: rgb(var(--primary-6));
-}
-
-.component-list-agenda-cell.is-selected.has-event::after {
-  background: #fff;
+  pointer-events: none;
 }
 
 .component-list-agenda-list-head {
@@ -941,7 +916,20 @@
   border-radius: 50%;
   background: var(--color-fill-2);
   color: var(--color-text-3);
-  font-size: 10px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.component-list-agenda-item-chevron .pro-fa-icon,
+.component-list-agenda-item-chevron .arco-icon,
+.component-list-agenda-item-chevron i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  font-size: 11px;
+  line-height: 1;
 }
 
 .component-list-agenda-empty {
@@ -986,26 +974,6 @@ body.theme-dark .component-list-agenda-tag.is-plan {
   justify-content: space-between;
   gap: 8px 12px;
   margin-bottom: 12px;
-}
-
-.component-list-day-tasks-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  color: var(--color-text-1);
-}
-
-.component-list-day-tasks-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
 }
 
 .component-list-day-tasks-actions {
@@ -1230,26 +1198,6 @@ body.theme-dark .component-list-check-task-tag.is-plan {
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 12px;
-}
-
-.component-list-strip-agenda-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  color: var(--color-text-1);
-}
-
-.component-list-strip-agenda-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
 }
 
 .component-list-strip-bar {

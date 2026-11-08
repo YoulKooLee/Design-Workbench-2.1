@@ -1,0 +1,11 @@
+slug: validate-email
+label: 邮箱校验
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input
+tags:
+  - input
+path: components/validate/email

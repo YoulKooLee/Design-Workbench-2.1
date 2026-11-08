@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>描述列表 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="descriptions">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">descriptions</p>
+          <h1 class="wa-fam-title">描述列表</h1>
+          <p class="wa-fam-lead">键值对信息展示，适合详情页基本信息与只读字段排版。</p>
+          <p class="wa-fam-lead">组件类型：default / bordered</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="descriptions-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">描述列表</span><span class="wa-comp-meta__slug">descriptions-default</span></div>
+              <a-tooltip :content="famCopyTip('descriptions-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('descriptions-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('descriptions-default')"
+                :aria-label="famCopyTip('descriptions-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('descriptions-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-descriptions :column="2" title="基本信息">
+                <a-descriptions-item label="名称">演示项目</a-descriptions-item>
+                <a-descriptions-item label="负责人">李明</a-descriptions-item>
+                <a-descriptions-item label="所属团队">增长产品组</a-descriptions-item>
+                <a-descriptions-item label="状态">进行中</a-descriptions-item>
+                <a-descriptions-item label="优先级">P1</a-descriptions-item>
+                <a-descriptions-item label="创建时间">2026-03-12</a-descriptions-item>
+                <a-descriptions-item label="关联产品">VibePM Web</a-descriptions-item>
+                <a-descriptions-item label="迭代版本">v1.4.0</a-descriptions-item>
+                <a-descriptions-item label="备注" :span="2">用于官网组件库预览与提示词复制验收。</a-descriptions-item>
+              </a-descriptions>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="descriptions-bordered">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">表格型描述列表</span><span class="wa-comp-meta__slug">descriptions-bordered</span></div>
+              <a-tooltip :content="famCopyTip('descriptions-bordered')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('descriptions-bordered') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('descriptions-bordered')"
+                :aria-label="famCopyTip('descriptions-bordered')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('descriptions-bordered')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-descriptions :column="2" bordered table-layout="fixed" title="订单信息">
+                <a-descriptions-item label="订单号">VP-20260322</a-descriptions-item>
+                <a-descriptions-item label="金额">¥128.00</a-descriptions-item>
+                <a-descriptions-item label="支付方式">支付宝</a-descriptions-item>
+                <a-descriptions-item label="状态">已支付</a-descriptions-item>
+                <a-descriptions-item label="下单时间">2026-03-22 14:20</a-descriptions-item>
+                <a-descriptions-item label="收货人">王芳</a-descriptions-item>
+                <a-descriptions-item label="联系电话">138****5620</a-descriptions-item>
+                <a-descriptions-item label="配送方式">顺丰快递</a-descriptions-item>
+                <a-descriptions-item label="收货地址" :span="2">上海市浦东新区张江路 88 号 12 楼</a-descriptions-item>
+              </a-descriptions>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'descriptions',
+      members: ['descriptions-default', 'descriptions-bordered'],
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

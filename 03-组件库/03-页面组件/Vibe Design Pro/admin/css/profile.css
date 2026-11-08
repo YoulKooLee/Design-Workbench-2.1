@@ -168,30 +168,6 @@
   margin: 8px auto 0;
 }
 
-/* 步骤条视觉：与扩展组件 component-extended 同步 */
-.profile-steps .arco-steps-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  font-size: 12px;
-}
-
-.profile-steps .arco-steps-icon .arco-icon,
-.profile-steps .arco-steps-icon .pro-fa-icon {
-  display: block;
-  line-height: 1;
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-}
-
-.profile-steps .arco-steps-item-finish .arco-steps-icon {
-  color: rgb(var(--primary-6));
-  background-color: var(--pro-theme-color-soft);
-  border: 1px solid rgb(var(--primary-6));
-}
-
 .profile-steps .arco-steps-item-title {
   font-size: 14px;
   font-weight: 500;

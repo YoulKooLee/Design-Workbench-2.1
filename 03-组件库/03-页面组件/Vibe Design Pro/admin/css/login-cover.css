@@ -1,4 +1,6 @@
-/* 封面登录页：全屏背景图 + 主题色调色 + 居中登录卡片（基于 login.css） */
+@import "./login-shared.css";
+
+/* 封面登录页：全屏背景图 + 主题色调色 + 居中登录卡片（@import login-shared.css） */
 
 .login-container--cover {
   --login-bg-hue: 0deg;
@@ -15,7 +17,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-image: url('../images/login-bg-01.png');
+  background-image: url('../assets/images/login-bg-01.png');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;

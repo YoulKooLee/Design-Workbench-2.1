@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "registryUpdatedAt": "2026-09-19",
+  "registryUpdatedAt": "2026-11-08",
   "maintainer": "豆包",
   "note": "组件库登记与版本真源（H2/H3）。03-组件库 已按用途重组：01-补丁源（新建项目自动应用）/ 02-页面模板（原型框架·页面模板，工作台可维护）/ 03-页面组件（原型框架·组件库：Vibe Design Pro + Codebuddy Design，工作台可维护）/ 03-UI风格（提示词 UI 风格知识库）。Vue编码工程（原标准产品框架，历史目录 02-标品框架 已移除）承接原型项目进入开发。新增组件必须走标准流程：放样板三件套 → 登记 pages.catalog.json → 若新库更新 index.json → 补 03-UI风格 知识 → 本文件登记 → smoke-test 校验。",
   "ends": [
@@ -9,7 +9,7 @@
       "label": "管理后台 · Vibe Design Pro",
       "framework": "arco",
       "source": "03-页面组件/Vibe Design Pro/admin",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "ready",
       "catalog": "_meta/pages.catalog.json",
       "pageTypeCount": 50,
@@ -30,14 +30,14 @@
     },
     {
       "id": "web",
-      "label": "WEB 静态站资源包",
+      "label": "WEB · Arco HTML 母版（壳 / 区块 / 组件）",
       "framework": null,
       "source": "03-页面组件/Vibe Design Pro/web",
-      "version": "1.0.0",
+      "version": "0.2.0",
       "status": "ready",
       "catalog": null,
       "pageTypeCount": 0,
-      "note": "2026-09-13 由 vibepm-demo-agent-v1.4 互补导入（fonts/vendor/css/js）；无 pages.catalog（资源包非页面样板）"
+      "note": "2026-09-13 由 vibepm-demo-agent-v1.4 互补导入（fonts/vendor）；2026-11-08 由 vibepm-dev-agent v1.8 升级补齐 layouts(18 壳)/blocks(区块)/components(98 组件) 三件套 + assets/theme/scripts；无 pages.catalog（母版非页面样板），选型读 web/components/catalog.json 与 web/blocks/catalog.json"
     },
     {
       "id": "app",
@@ -174,6 +174,30 @@
         "integratedAt": "2026-11-05",
         "backup": "92-维护台账/archive/2026-11-05-daisyui-接入/"
       }
+    },
+    {
+      "id": "icons",
+      "label": "Font Awesome Pro 7.3 图标库（开发栈面板）",
+      "source": "02-模板/_project-template/src/component-templates/icons",
+      "framework": "纯 CSS 字体图标（FA7 家族×风格类名）",
+      "status": "ready",
+      "version": "7.3.0",
+      "license": "Commercial（随 Vibe Design Pro 包维护）",
+      "updatedAt": "2026-11-08",
+      "owner": "WorkBuddy",
+      "catalog": "catalog.ts",
+      "panel": "index.tsx",
+      "panelEntry": "index.html",
+      "assetDir": "vendor/fontawesome",
+      "iconCount": 4344,
+      "families": [
+        "classic(solid/regular/light/thin)",
+        "sharp(solid/regular/light/thin)",
+        "duotone(solid/light/regular/thin)",
+        "brands(572)"
+      ],
+      "upstream": "03-页面组件/Vibe Design Pro admin/vendor/fontawesome",
+      "note": "开发栈组件面板独立页签（与 daisyUI 同机制：component-templates/icons/index.tsx 准入）。品牌标 572 个单列；sharp/duotone 未覆盖全部图形名，以面板预览为准。资产与组件库 Vibe Design Pro 同版本，升级两处同步。"
     }
   ]
 }

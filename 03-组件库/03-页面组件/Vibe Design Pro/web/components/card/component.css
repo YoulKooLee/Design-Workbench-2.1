@@ -1,0 +1,584 @@
+/* card family — 默认平面描边；阴影用 --shadow；tokens only */
+.wa-acard.arco-card {
+  max-width: 100%;
+  border: var(--wa-border-card);
+  border-radius: var(--wa-radius);
+  box-shadow: none;
+  background: var(--wa-color-surface, var(--color-bg-popup, #fff));
+  /* 阴影变体四周不被裁；封面裁切交给 .arco-card-cover */
+  overflow: visible;
+}
+
+/* Arco 默认 bordered=true 也会带此类；默认与平面同构：描边、无投影 */
+.wa-acard.arco-card-bordered {
+  border: var(--wa-border-card);
+  box-shadow: none;
+}
+
+/* hoverable：勿 overflow 裁切阴影 */
+.wa-acard.arco-card-hoverable {
+  cursor: pointer;
+  overflow: visible;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.wa-acard.arco-card-hoverable:hover,
+.wa-acard.arco-card-bordered.arco-card-hoverable:hover {
+  box-shadow: var(--wa-shadow-soft-hover);
+  /* 阴影略增强即可，不做位移动效 */
+  transform: none;
+}
+
+.wa-acard .arco-card-header {
+  border-bottom-color: var(--color-border-1, var(--color-border-2));
+  padding: 14px 18px;
+}
+
+.wa-acard .arco-card-header-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-text-1);
+}
+
+.wa-acard .arco-card-body {
+  padding: 16px 18px 18px;
+}
+
+.wa-acard-title {
+  margin: 0 -18px 14px;
+  padding: 0 18px 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-text-1);
+  letter-spacing: 0.01em;
+  border-bottom: 1px solid var(--color-border-2, var(--wa-color-border));
+}
+
+.wa-acard-desc {
+  margin: 0;
+  color: var(--color-text-3);
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+}
+
+.wa-acard .arco-card-meta-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: var(--color-text-1);
+}
+
+.wa-acard .arco-card-meta-description {
+  margin-top: 6px;
+  color: var(--color-text-2);
+  font-size: 14px;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+.wa-acard--cta .arco-card-body {
+  display: flex;
+  flex-direction: column;
+  /* 与 card-dark 内容区同高，便于家族对照并排对齐 */
+  min-height: 174px;
+  padding-top: 16px;
+  padding-bottom: 18px;
+}
+
+.wa-acard--cta .arco-card-meta-title {
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.wa-acard--cta .arco-card-meta-description {
+  margin-top: 8px;
+  line-height: 1.7;
+}
+
+.wa-acard--cta .arco-btn {
+  margin-top: 20px !important;
+}
+
+.wa-acard--cta .arco-card-body > .arco-btn:last-child {
+  margin-top: auto !important;
+}
+
+.wa-acard--form.arco-card .arco-card-body {
+  padding: 24px 22px 20px;
+}
+
+.wa-acard-form__head {
+  margin-bottom: 20px;
+}
+
+.wa-acard-form__title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-text-1);
+  letter-spacing: 0.01em;
+}
+
+.wa-acard-form__sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-3);
+}
+
+.wa-acard-form.arco-form-vertical .arco-form-item {
+  margin-bottom: 16px;
+}
+
+.wa-acard-form.arco-form-vertical .arco-form-item:last-child {
+  margin-bottom: 4px;
+}
+
+.wa-acard-form.arco-form-vertical .arco-form-item-label-col {
+  margin-bottom: 6px;
+}
+
+.wa-acard-form.arco-form-vertical .arco-form-item-label-col > .arco-form-item-label {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  line-height: 1.4;
+  color: var(--color-text-1);
+  font-weight: 500;
+}
+
+.wa-acard-form__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.wa-acard-form__link {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-2);
+  text-decoration: none;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.wa-acard-form__link:hover {
+  color: rgb(var(--primary-6));
+}
+
+.wa-acard-form__link--em {
+  color: var(--color-text-1);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  margin-left: 2px;
+}
+
+.wa-acard-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.wa-acard-form__foot {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-3);
+}
+
+.wa-acard-cover {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 168px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.wa-acard-cover--blog {
+  background:
+    repeating-linear-gradient(
+      -28deg,
+      transparent 0,
+      transparent 10px,
+      rgba(255, 255, 255, 0.08) 10px,
+      rgba(255, 255, 255, 0.08) 11px
+    ),
+    linear-gradient(135deg, rgb(var(--primary-6)) 0%, rgb(var(--primary-3)) 100%);
+}
+
+.wa-acard-cover__badge {
+  position: absolute;
+  z-index: 1;
+  left: 14px;
+  top: 14px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgb(var(--primary-6));
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.wa-acard--cover.arco-card {
+  overflow: hidden;
+}
+
+.wa-acard--cover .arco-card-cover {
+  overflow: hidden;
+  margin: -1px -1px 0;
+  border-radius: calc(var(--wa-radius) - 1px) calc(var(--wa-radius) - 1px) 0 0;
+}
+
+.wa-acard--cover .arco-card-body {
+  padding: 16px 18px 18px;
+}
+
+.wa-acard-cover__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--color-text-1);
+}
+
+.wa-acard-cover__desc {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: var(--color-text-3);
+}
+
+.wa-acard-cover__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.wa-acard-cover__stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.wa-acard-cover__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-text-3);
+}
+
+.wa-acard-cover__stat .pro-fa-icon,
+.wa-acard-cover__stat .arco-icon {
+  font-size: 12px;
+  color: var(--color-text-3);
+}
+
+.wa-acard-cover__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgb(var(--primary-6));
+  text-decoration: none;
+}
+
+.wa-acard-cover__link:hover {
+  color: rgb(var(--primary-5));
+}
+
+.wa-acard-cover__link .pro-fa-icon,
+.wa-acard-cover__link .arco-icon {
+  font-size: 12px;
+}
+
+.wa-acard--tabs .arco-tabs-content {
+  padding-top: 12px;
+}
+
+.wa-acard--tabs .arco-tabs-content-item {
+  padding-bottom: 4px;
+}
+
+.wa-acard--tabs .wa-acard-desc {
+  line-height: 1.8;
+  padding: 2px 0 6px;
+}
+
+.wa-acard--footer .arco-card-actions {
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  /* 软环留在本盒内；勿用负 margin，否则在 overflow:hidden 祖先上会把环顶出裁切边 */
+  padding: var(--wa-ctrl-ring, 3px);
+  box-sizing: border-box;
+}
+
+/* Arco 默认 .arco-card-actions-item { overflow:hidden }（给文本省略），会裁 secondary 悬停软环 */
+.wa-acard--footer .arco-card-actions-item,
+.wa-acard--form .arco-card-actions-item {
+  overflow: visible;
+}
+
+/* 底栏有可悬停按钮：放开 overflow，软环与卡片外阴影完整显示 */
+.wa-acard--footer.arco-card,
+.wa-acard--form.arco-card {
+  overflow: visible;
+}
+
+.wa-acard--footer .wa-acard-desc {
+  line-height: 1.55;
+}
+
+.wa-acard--soft.arco-card {
+  border: none;
+  box-shadow: none;
+  background: var(--color-fill-1);
+}
+
+/* 细描边 + soft：功能卡；悬停只加阴影 */
+.wa-acard--outline.arco-card,
+.wa-acard--outline.arco-card-bordered {
+  border: var(--wa-border-card);
+  box-shadow: var(--wa-shadow-soft);
+}
+
+.wa-acard--outline.arco-card-hoverable:hover,
+.wa-acard--outline.arco-card-bordered.arco-card-hoverable:hover {
+  box-shadow: var(--wa-shadow-soft-hover);
+  transform: none;
+}
+
+/* 平面卡：与默认同构（显式修饰，供对照页 / 旧 markup） */
+.wa-acard--flat.arco-card,
+.wa-acard--flat.arco-card-bordered {
+  border: var(--wa-border-card);
+  box-shadow: none;
+}
+
+.wa-acard--flat.arco-card-hoverable:hover,
+.wa-acard--flat.arco-card-bordered.arco-card-hoverable:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+/* 阴影卡：无描边 + soft 投影（原默认抬升面） */
+.wa-acard--shadow.arco-card,
+.wa-acard--shadow.arco-card-bordered {
+  border: none;
+  box-shadow: var(--wa-shadow-soft);
+}
+
+.wa-acard--shadow.arco-card-hoverable:hover,
+.wa-acard--shadow.arco-card-bordered.arco-card-hoverable:hover {
+  box-shadow: var(--wa-shadow-soft-hover);
+  transform: none;
+}
+
+/* 分割内容卡：取消标题底部分割，改用正文内 hr */
+.wa-acard--split .arco-card-header {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+.wa-acard-split {
+  display: block;
+  margin: 14px 0;
+  border: none;
+  border-top: 1px solid var(--wa-color-border);
+  height: 0;
+}
+
+/* 主色锚点卡：对齐 theme-style「亮色科技蓝」.price.featured（渐变 + 角上装饰圆）
+ * 字色走 --wa-color-on-primary：主色近白时主题须给深色 on-primary，避免白底白字 */
+.wa-acard--dark.arco-card,
+.wa-acard--dark.arco-card-bordered {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    var(--wa-color-primary) 0%,
+    color-mix(in srgb, var(--wa-color-primary) 78%, #0b1220) 100%
+  );
+  border: none;
+  box-shadow: var(--wa-shadow-soft);
+  color: var(--wa-color-on-primary, #fff);
+}
+
+.wa-acard--dark.arco-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -40px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--wa-color-on-primary, #fff) 12%, transparent);
+  pointer-events: none;
+}
+
+.wa-acard--dark .arco-card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.wa-acard--dark .arco-card-meta-title,
+.wa-acard--dark .wa-acard-kicker,
+.wa-acard--dark .wa-acard-price {
+  color: var(--wa-color-on-primary, #fff);
+}
+
+.wa-acard--dark .arco-card-meta-description,
+.wa-acard--dark .wa-acard-desc {
+  color: color-mix(in srgb, var(--wa-color-on-primary, #fff) 78%, transparent);
+}
+
+/* 反色 CTA：底用 on-primary、字用 primary（浅主色时 = 黑底白字） */
+.wa-acard--dark .arco-btn-primary:not(.arco-btn-disabled):not(.wa-btn--flat) {
+  background: var(--wa-color-on-primary, #fff);
+  border-color: var(--wa-color-on-primary, #fff);
+  color: var(--wa-color-primary);
+  font-weight: 700;
+  box-shadow: var(--wa-shadow-lift);
+}
+
+.wa-acard--dark .arco-btn-primary:not(.arco-btn-disabled):not(.wa-btn--flat):hover,
+.wa-acard--dark .arco-btn-primary:not(.arco-btn-disabled):not(.wa-btn--flat):active {
+  background: color-mix(in srgb, var(--wa-color-on-primary, #fff) 90%, var(--wa-color-primary));
+  border-color: color-mix(in srgb, var(--wa-color-on-primary, #fff) 90%, var(--wa-color-primary));
+  color: var(--wa-color-primary);
+  font-weight: 700;
+  box-shadow: var(--wa-shadow-lift-hover);
+}
+
+.wa-acard--dark .arco-card-body > .arco-btn:last-child {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.wa-acard-kicker {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--wa-color-muted);
+}
+
+.wa-acard-price {
+  margin: 0 0 10px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: inherit;
+}
+
+.wa-acard-price__currency {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-right: 2px;
+}
+
+.wa-acard-price__unit {
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.85;
+  margin-left: 1px;
+}
+
+.wa-acard-avatars {
+  display: flex;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.wa-acard-avatars .arco-avatar {
+  margin-left: -10px;
+  border: 2px solid var(--wa-color-surface);
+  box-sizing: content-box;
+  background: var(--wa-color-primary);
+  color: var(--wa-color-on-primary, #fff);
+}
+
+.wa-acard-avatars .arco-avatar:first-child {
+  margin-left: 0;
+}
+
+.wa-acard-avatars .arco-avatar.wa-acard-avatar--strong {
+  background: color-mix(in srgb, var(--wa-color-primary) 72%, #0b1220);
+}
+
+.wa-acard-avatars .arco-avatar.wa-acard-avatar--muted {
+  background: var(--wa-color-muted);
+  color: #fff;
+}
+
+.wa-acard-meter + .wa-acard-meter {
+  margin-top: 14px;
+}
+
+.wa-acard-meter__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--color-text-2);
+}
+
+.wa-acard-meter__head strong {
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+/* 进度条：6px 胶囊轨 + 实色主色（对齐亮色科技蓝预览） */
+.wa-acard-meter .arco-progress-line {
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.wa-acard-meter .arco-progress-line-bar {
+  border-radius: 999px;
+  background: var(--wa-color-primary);
+}
+
+.wa-acard-meter .arco-progress-line-buffer {
+  background: transparent;
+}
+
+/* family / embed width for wider demos */
+.wa-fam-section[data-family="card"] .wa-fam-card[data-slug="card-tabs"] .wa-fam-card__stage {
+  min-width: 0;
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug^="card-"].wa-embed {
+  width: min(420px, calc(100% - 32px));
+}

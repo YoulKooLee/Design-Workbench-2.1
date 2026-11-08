@@ -1,3 +1,5 @@
+@import "./dashboard-shared.css";
+
 /* CRM 仪表盘（对齐 shadcn /dashboard/crm） */
 
 .crm-page {
@@ -21,89 +23,11 @@
   min-width: 0;
 }
 
-.crm-title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: var(--color-text-1);
-}
-
 .crm-desc {
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
   color: var(--color-text-3);
-}
-
-.crm-filters {
-  --crm-filter-h: 32px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.crm-filters .arco-select,
-.crm-filters .arco-picker,
-.crm-filters .arco-btn {
-  height: var(--crm-filter-h) !important;
-  min-height: var(--crm-filter-h) !important;
-  max-height: var(--crm-filter-h) !important;
-  box-sizing: border-box !important;
-}
-
-.crm-filters .arco-select-view-single,
-.crm-filters .arco-picker {
-  height: 100% !important;
-  min-height: var(--crm-filter-h) !important;
-  max-height: var(--crm-filter-h) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  box-sizing: border-box !important;
-}
-
-.crm-filters .arco-select-view-size-medium .arco-select-view-value,
-.crm-filters .arco-select-view-size-medium .arco-select-view-input {
-  min-height: 0 !important;
-  height: 100% !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  line-height: 1.5715 !important;
-}
-
-.crm-filters .arco-btn {
-  padding: 0 15px !important;
-  line-height: 1 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: var(--border-radius-small) !important;
-}
-
-.crm-filters .arco-btn .arco-btn-icon {
-  display: inline-flex !important;
-  align-items: center !important;
-  margin-right: 6px !important;
-  line-height: 1 !important;
-}
-
-.crm-filters .arco-btn .arco-btn-icon .arco-icon,
-.crm-filters .arco-btn .arco-icon {
-  width: 14px !important;
-  height: 14px !important;
-  font-size: 14px !important;
-}
-
-.crm-filters .crm-refresh-btn {
-  width: var(--crm-filter-h) !important;
-  padding: 0 !important;
-}
-
-.crm-filters .crm-refresh-btn .arco-btn-icon {
-  margin-right: 0 !important;
 }
 
 .crm-card {
@@ -288,21 +212,6 @@
   border-color: rgba(var(--danger-6), 0.22);
 }
 
-.crm-section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.crm-section-head--stack {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 4px;
-  margin-bottom: 12px;
-}
-
 .crm-section-title-row {
   display: flex;
   align-items: center;
@@ -316,26 +225,6 @@
   font-size: 14px;
   color: var(--color-text-3);
   flex-shrink: 0;
-}
-
-.crm-section-title {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 8px;
-  margin: 0 !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  line-height: 24px !important;
-  color: var(--color-text-1) !important;
-}
-
-.crm-section-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
 }
 
 .crm-section-desc {
@@ -1024,20 +913,8 @@
 /* 勾选列锁宽见 pages-common.css；列宽由 JS width / minWidth 控制 */
 
 @media (max-width: 768px) {
-  .crm-title {
-    font-size: 20px;
-  }
-
   .crm-header {
     align-items: stretch;
-  }
-
-  .crm-filters {
-    width: 100%;
-  }
-
-  .crm-filters .arco-picker {
-    flex: 1;
   }
 
   .crm-opp-search {

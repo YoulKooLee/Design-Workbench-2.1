@@ -1,0 +1,11 @@
+slug: slider-equalizer
+label: 均衡器滑块
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: form
+tags:
+  - input
+path: components/slider/equalizer

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>中性按钮 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="btn-secondary">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">btn-secondary</p>
+          <h1 class="wa-fam-title">中性按钮</h1>
+          <p class="wa-fam-lead">产品侧中性操作，默认中号高度；用于取消、重置、关闭等，不抢主色焦点。</p>
+          <p class="wa-fam-lead">组件类型：default / icon / round / round-icon / loading / disabled</p>
+        </header>
+        <div class="wa-fam-grid">
+
+          <div class="wa-fam-card" data-slug="btn-secondary-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">中性按钮</span><span class="wa-comp-meta__slug">btn-secondary-default</span></div>
+              <a-tooltip :content="famCopyTip('btn-secondary-default')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('btn-secondary-default') }]" type="secondary" size="small" @click="copyPrompt('btn-secondary-default')" :aria-label="famCopyTip('btn-secondary-default')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('btn-secondary-default')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage"><a-button size="medium" type="secondary">恢复默认</a-button></div>
+          </div>
+          <div class="wa-fam-card" data-slug="btn-secondary-icon">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">带图标中性按钮</span><span class="wa-comp-meta__slug">btn-secondary-icon</span></div>
+              <a-tooltip :content="famCopyTip('btn-secondary-icon')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('btn-secondary-icon') }]" type="secondary" size="small" @click="copyPrompt('btn-secondary-icon')" :aria-label="famCopyTip('btn-secondary-icon')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('btn-secondary-icon')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage"><a-button size="medium" type="secondary"><template #icon><icon-settings /></template>恢复默认</a-button></div>
+          </div>
+          <div class="wa-fam-card" data-slug="btn-secondary-round">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">胶囊中性按钮</span><span class="wa-comp-meta__slug">btn-secondary-round</span></div>
+              <a-tooltip :content="famCopyTip('btn-secondary-round')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('btn-secondary-round') }]" type="secondary" size="small" @click="copyPrompt('btn-secondary-round')" :aria-label="famCopyTip('btn-secondary-round')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('btn-secondary-round')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage"><a-button size="medium" type="secondary" shape="round">恢复默认</a-button></div>
+          </div>
+          <div class="wa-fam-card" data-slug="btn-secondary-round-icon">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">带图标胶囊中性按钮</span><span class="wa-comp-meta__slug">btn-secondary-round-icon</span></div>
+              <a-tooltip :content="famCopyTip('btn-secondary-round-icon')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('btn-secondary-round-icon') }]" type="secondary" size="small" @click="copyPrompt('btn-secondary-round-icon')" :aria-label="famCopyTip('btn-secondary-round-icon')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('btn-secondary-round-icon')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage"><a-button size="medium" type="secondary" shape="round"><template #icon><icon-refresh /></template>恢复默认</a-button></div>
+          </div>
+          <div class="wa-fam-card" data-slug="btn-secondary-loading">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">加载中中性按钮</span><span class="wa-comp-meta__slug">btn-secondary-loading</span></div>
+              <a-tooltip :content="famCopyTip('btn-secondary-loading')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('btn-secondary-loading') }]" type="secondary" size="small" @click="copyPrompt('btn-secondary-loading')" :aria-label="famCopyTip('btn-secondary-loading')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('btn-secondary-loading')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage"><a-button size="medium" type="secondary" loading>正在加载</a-button></div>
+          </div>
+          <div class="wa-fam-card" data-slug="btn-secondary-disabled">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">禁用中性按钮</span><span class="wa-comp-meta__slug">btn-secondary-disabled</span></div>
+              <a-tooltip :content="famCopyTip('btn-secondary-disabled')">
+              <a-button :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('btn-secondary-disabled') }]" type="secondary" size="small" @click="copyPrompt('btn-secondary-disabled')" :aria-label="famCopyTip('btn-secondary-disabled')">
+                <span class="wa-fam-copy__inner" v-if="copyLocked"><icon-lock></icon-lock><span class="wa-fam-copy__label">需要权限</span></span>
+                <span class="wa-fam-copy__inner" v-else><icon-check v-if="famCopied('btn-secondary-disabled')"></icon-check><icon-copy v-else></icon-copy><span class="wa-fam-copy__label">提示词</span></span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage"><a-button size="medium" type="secondary" disabled>禁用按钮</a-button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'btn-secondary',
+      members: ['btn-secondary-default', 'btn-secondary-icon', 'btn-secondary-round', 'btn-secondary-round-icon', 'btn-secondary-loading', 'btn-secondary-disabled'],
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

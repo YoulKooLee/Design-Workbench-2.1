@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>分割器 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="splitter">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">splitter</p>
+          <h1 class="wa-fam-title">分割器</h1>
+          <p class="wa-fam-lead">可拖分割与可调宽面板，用于对照预览、双栏工作区与工具边栏。</p>
+          <p class="wa-fam-lead">组件类型：default / vertical / resize-box</p>
+        </header>
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="splitter-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">分割面板</span><span class="wa-comp-meta__slug">splitter-default</span></div>
+              <a-tooltip :content="famCopyTip('splitter-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('splitter-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('splitter-default')"
+                :aria-label="famCopyTip('splitter-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('splitter-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage wa-layout-demo">
+              <a-split v-model:size="size" style="height:180px;width:100%;border:1px solid var(--color-border-2);border-radius:4px;overflow:hidden">
+                  <template #first>
+                    <div class="wa-split-pane">
+                      <strong>左侧面板</strong>
+                      <p>拖中间分隔线调整比例</p>
+                    </div>
+                  </template>
+                  <template #second>
+                    <div class="wa-split-pane">
+                      <strong>右侧面板</strong>
+                      <p>适合对照预览</p>
+                    </div>
+                  </template>
+                </a-split>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="splitter-vertical">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">上下分割</span><span class="wa-comp-meta__slug">splitter-vertical</span></div>
+              <a-tooltip :content="famCopyTip('splitter-vertical')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('splitter-vertical') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('splitter-vertical')"
+                :aria-label="famCopyTip('splitter-vertical')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('splitter-vertical')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage wa-layout-demo">
+              <a-split v-model:size="sizeV" direction="vertical" style="height:240px;width:100%;border:1px solid var(--color-border-2);border-radius:4px;overflow:hidden">
+                  <template #first>
+                    <div class="wa-split-pane">
+                      <strong>上方面板</strong>
+                      <p>拖中间分隔线调整比例</p>
+                    </div>
+                  </template>
+                  <template #second>
+                    <div class="wa-split-pane">
+                      <strong>下方面板</strong>
+                      <p>适合上下对照</p>
+                    </div>
+                  </template>
+                </a-split>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="splitter-resize-box">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">可调宽面板</span><span class="wa-comp-meta__slug">splitter-resize-box</span></div>
+              <a-tooltip :content="famCopyTip('splitter-resize-box')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('splitter-resize-box') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('splitter-resize-box')"
+                :aria-label="famCopyTip('splitter-resize-box')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('splitter-resize-box')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage wa-layout-demo">
+              <div class="wa-resize-host" ref="resizeHost">
+                  <a-resize-box
+                    :width="width"
+                    :directions="['right']"
+                    style="min-height:140px;padding:12px;border:1px solid var(--color-border-2)"
+                    @update:width="onResizeWidth"
+                  >
+                    <p style="margin:0 0 8px;font-weight:600">可拖右缘调宽</p>
+                    <p style="margin:0;color:var(--color-text-3)">当前宽度约 {{ Math.round(width) }}px</p>
+                  </a-resize-box>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'splitter',
+      members: ['splitter-default', 'splitter-vertical', 'splitter-resize-box'],
+      setup: function (api) {
+        const size = api.ref(0.48)
+        const sizeV = api.ref(0.42)
+        const width = api.ref(220)
+        const resizeHost = api.ref(null)
+        const MIN_W = 160
+        function onResizeWidth(w) {
+          const host = resizeHost.value
+          const max = host && host.clientWidth ? host.clientWidth : w
+          width.value = Math.min(Math.max(Math.round(w), MIN_W), max)
+        }
+        return { size, sizeV, width, resizeHost, onResizeWidth }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

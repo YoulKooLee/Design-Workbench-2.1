@@ -1,0 +1,12 @@
+slug: time-picker-hour12
+label: 12 小时时间选择
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+  - datetime
+path: components/time-picker/hour12

@@ -1,3 +1,5 @@
+@import "./dashboard-shared.css";
+
 /* 电商仪表盘（对齐 shadcn /dashboard/ecommerce） */
 
 .ecom-page {
@@ -27,15 +29,6 @@
   gap: 4px;
 }
 
-.ecom-title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: var(--color-text-1);
-}
-
 .ecom-desc {
   margin: 0;
   font-size: 14px;
@@ -50,13 +43,31 @@
   gap: 8px;
 }
 
+/* 工具栏：按钮 / 下拉统一 small 高度（覆盖全局 Select 默认 medium） */
+.ecom-header-actions .arco-btn-size-small {
+  height: var(--pro-ctrl-h-small, 32px);
+}
+
+.ecom-header-actions .arco-btn-size-small.arco-btn-only-icon,
 .ecom-header-actions .ecom-refresh-btn {
-  width: 28px;
+  width: var(--pro-ctrl-h-small, 32px);
+  height: var(--pro-ctrl-h-small, 32px);
   padding: 0;
 }
 
 .ecom-header-actions .ecom-refresh-btn .arco-btn-icon {
   margin-right: 0;
+}
+
+.ecom-header-actions .arco-select-view-single.arco-select-view-size-small {
+  height: var(--pro-ctrl-h-small, 32px);
+  min-height: var(--pro-ctrl-h-small, 32px);
+  line-height: calc(var(--pro-ctrl-h-small, 32px) - 2px);
+}
+
+.ecom-header-actions .arco-select-view-single.arco-select-view-size-small .arco-select-view-value,
+.ecom-header-actions .arco-select-view-single.arco-select-view-size-small .arco-select-view-input {
+  line-height: calc(var(--pro-ctrl-h-small, 32px) - 2px);
 }
 
 .ecom-chart-motion {
@@ -899,16 +910,6 @@
   background: var(--color-fill-2);
   color: var(--color-text-2);
   border: 2px solid var(--color-bg-2);
-}
-
-/* Orders */
-.ecom-orders-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
 }
 
 .ecom-orders-actions {

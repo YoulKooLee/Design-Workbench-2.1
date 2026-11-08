@@ -1,0 +1,11 @@
+slug: btn-primary-disabled
+label: 禁用主按钮
+type: component
+surface: marketing
+status: preview
+tier: free
+framework: web
+category: action
+tags:
+  - cta
+path: components/btn-primary/disabled

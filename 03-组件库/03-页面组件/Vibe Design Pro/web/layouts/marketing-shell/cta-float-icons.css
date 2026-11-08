@@ -1,0 +1,51 @@
+/* CTA dashed float icons (Cloudflare-style); host panel stays page-level */
+.wa-cta__floats {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.wa-cta__float {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.wa-cta__float i {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+@media (max-width: 720px) {
+  .wa-cta__float {
+    width: 42px;
+    height: 42px;
+    margin: -21px 0 0 -21px;
+  }
+
+  .wa-cta__float i {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-cta__float {
+    transition: none !important;
+  }
+}

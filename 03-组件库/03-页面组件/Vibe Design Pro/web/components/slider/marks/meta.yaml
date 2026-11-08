@@ -1,0 +1,11 @@
+slug: slider-marks
+label: 刻度滑块
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input-default
+tags:
+  - input-default
+path: components/slider/marks

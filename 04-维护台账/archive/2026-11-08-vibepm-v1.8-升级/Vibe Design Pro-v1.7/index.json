@@ -1,0 +1,43 @@
+{
+  "version": "1.1.0",
+  "description": "共享原型母版登记表。模板目录直接挂在 frame/ 根下（admin / web / app）；端别与默认库由 ends 映射。供 Agent / 维护者选型；feature-dev 对照母版在交付子项目（如 admin/）用 Vue SFC 重写，不复制 HTML runtime。web/app 资源于 2026-09-13 由 vibepm-demo-agent-v1.4 互补导入。",
+  "ends": {
+    "admin": {
+      "outputDir": "admin",
+      "defaultFramework": "admin",
+      "frameworks": {
+        "admin": {
+          "path": "admin",
+          "theme": "arco",
+          "capability": "full-runtime",
+          "label": "管理后台 · Vibe Design Pro",
+          "status": "ready"
+        }
+      }
+    },
+    "web": {
+      "outputDir": "web",
+      "defaultFramework": "web",
+      "frameworks": {
+        "web": {
+          "path": "web",
+          "capability": "vendor-and-conventions",
+          "label": "WEB 静态站资源包",
+          "status": "ready"
+        }
+      }
+    },
+    "app": {
+      "outputDir": "app",
+      "defaultFramework": "app",
+      "frameworks": {
+        "app": {
+          "path": "app",
+          "capability": "shells-and-vendor",
+          "label": "APP 设备壳资源包",
+          "status": "ready"
+        }
+      }
+    }
+  }
+}

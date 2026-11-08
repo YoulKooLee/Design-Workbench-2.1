@@ -1,4 +1,6 @@
-/* 侧栏 Banner 登录页（基于 login.css） */
+@import "./login-shared.css";
+
+/* 侧栏 Banner 登录页（@import login-shared.css） */
 
 .login-banner {
   position: relative;

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>附加说明统计数值 · statistic-extra</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="statistic-extra">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">附加说明统计数值</span>
+        <span class="wa-comp-meta__slug">statistic-extra</span>
+      </div>
+      <div class="wa-embed__stage">
+        <div class="wa-stat-row">
+          <a-statistic :value="1284">
+            <template #title>
+              <span class="wa-stat-title"><icon-ordered-list :size="12"></icon-ordered-list>本周订单</span>
+            </template>
+            <template #extra>
+              <span class="wa-stat-extra wa-stat-extra--up"><icon-trending-up :size="11"></icon-trending-up>较上周 +8.2%</span>
+            </template>
+          </a-statistic>
+          <a-statistic :value="92" :precision="0">
+            <template #title>
+              <span class="wa-stat-title"><icon-check-circle :size="12"></icon-check-circle>完成率</span>
+            </template>
+            <template #extra>
+              <span class="wa-stat-extra"><icon-tag :size="11"></icon-tag>目标 100%</span>
+            </template>
+          </a-statistic>
+          <a-statistic :value="36">
+            <template #title>
+              <span class="wa-stat-title"><icon-clock-circle :size="12"></icon-clock-circle>待处理</span>
+            </template>
+            <template #extra>
+              <span class="wa-stat-extra wa-stat-extra--warn"><icon-exclamation-circle :size="11"></icon-exclamation-circle>需今日跟进</span>
+            </template>
+          </a-statistic>
+        </div>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

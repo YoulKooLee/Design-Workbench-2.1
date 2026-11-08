@@ -1,3 +1,5 @@
+@import "./dashboard-shared.css";
+
 /* 数据仪表盘 / 概览（对齐 shadcn dashboard overview 布局） */
 
 .workplace-page {
@@ -21,90 +23,11 @@
   min-width: 0;
 }
 
-.workplace-title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: var(--color-text-1);
-}
-
 .workplace-desc {
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
   color: var(--color-text-3);
-}
-
-.workplace-filters {
-  --workplace-filter-h: 32px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-/* 下拉 / 日期 / 按钮外框统一为同一高度 */
-.workplace-filters .arco-select,
-.workplace-filters .arco-picker,
-.workplace-filters .arco-btn {
-  height: var(--workplace-filter-h) !important;
-  min-height: var(--workplace-filter-h) !important;
-  max-height: var(--workplace-filter-h) !important;
-  box-sizing: border-box !important;
-}
-
-.workplace-filters .arco-select-view-single,
-.workplace-filters .arco-picker {
-  height: 100% !important;
-  min-height: var(--workplace-filter-h) !important;
-  max-height: var(--workplace-filter-h) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  box-sizing: border-box !important;
-}
-
-.workplace-filters .arco-select-view-size-medium .arco-select-view-value,
-.workplace-filters .arco-select-view-size-medium .arco-select-view-input {
-  min-height: 0 !important;
-  height: 100% !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  line-height: 1.5715 !important;
-}
-
-.workplace-filters .arco-btn {
-  padding: 0 15px !important;
-  line-height: 1 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: var(--border-radius-small) !important;
-}
-
-.workplace-filters .arco-btn .arco-btn-icon {
-  display: inline-flex !important;
-  align-items: center !important;
-  margin-right: 6px !important;
-  line-height: 1 !important;
-}
-
-.workplace-filters .arco-btn .arco-btn-icon .arco-icon,
-.workplace-filters .arco-btn .arco-icon {
-  width: 14px !important;
-  height: 14px !important;
-  font-size: 14px !important;
-}
-
-.workplace-filters .workplace-refresh-btn {
-  width: var(--workplace-filter-h) !important;
-  padding: 0 !important;
-}
-
-.workplace-filters .workplace-refresh-btn .arco-btn-icon {
-  margin-right: 0 !important;
 }
 
 .workplace-card {
@@ -253,40 +176,6 @@
 .workplace-section-card--fill .workplace-bar-list,
 .workplace-section-card--fill .workplace-chart-host {
   flex: 1 1 auto;
-}
-
-.workplace-section-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.workplace-section-head--stack {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 4px;
-}
-
-.workplace-section-title {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 8px;
-  margin: 0 !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  line-height: 24px !important;
-  color: var(--color-text-1) !important;
-}
-
-.workplace-section-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: var(--pro-theme-color, rgb(var(--primary-6)));
 }
 
 .workplace-section-desc {
@@ -523,10 +412,6 @@
   margin-bottom: 12px;
 }
 
-.workplace-aside-head-row .workplace-section-title {
-  margin: 0 !important;
-}
-
 .workplace-shortcuts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -758,19 +643,8 @@
 }
 
 @media (max-width: 768px) {
-  .workplace-title {
-    font-size: 20px;
-  }
-
   .workplace-header {
     align-items: stretch;
   }
 
-  .workplace-filters {
-    width: 100%;
   }
-
-  .workplace-filters .arco-picker {
-    flex: 1;
-  }
-}

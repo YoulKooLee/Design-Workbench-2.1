@@ -1,0 +1,205 @@
+/* 分页家族：轻量翻页组合（前后 / 计数 / 文字 / 连体） */
+
+.wa-pg-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.wa-pg-bar--ends {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.wa-pg-bar--text {
+  justify-content: center;
+  gap: 16px;
+}
+
+.wa-pg-status {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text-2);
+  white-space: nowrap;
+}
+
+.wa-pg-status strong {
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+.wa-pg-bar--ends .arco-btn-shape-round {
+  border-radius: 999px !important;
+  height: 32px;
+  min-width: 0 !important;
+  width: auto !important;
+  padding: 0 14px !important;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.wa-pg-bar--ends .arco-btn-shape-round .arco-btn-icon {
+  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.wa-pg-bar--ends .arco-btn-shape-round.arco-btn-only-icon {
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 0 14px !important;
+}
+
+.wa-pg-bar--ends .arco-btn-shape-circle {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.wa-pg-bar--text .arco-btn-text {
+  color: var(--color-text-1);
+  padding: 0 4px;
+}
+
+.wa-pg-bar--text .arco-btn-text.arco-btn-disabled,
+.wa-pg-bar--ends .arco-btn-disabled {
+  color: var(--color-text-4);
+}
+
+/* 与 Arco 分页前后箭头一致：FA chevron 12px */
+.wa-pg-bar .arco-btn .pro-fa-icon,
+.wa-pg-joined .arco-btn .pro-fa-icon {
+  font-size: 12px !important;
+  width: 12px;
+  height: 12px;
+  line-height: 1;
+}
+
+.wa-pg-bar .arco-btn,
+.wa-pg-joined .arco-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* 分页内中性按钮：悬停保留 fill-1 / border-3，去掉软环阴影 */
+.wa-pg-bar .arco-btn-secondary:hover,
+.wa-pg-bar .arco-btn-secondary:active {
+  box-shadow: none !important;
+}
+
+/* 连体分页：字色/悬停对齐全局 a-pagination（中性 fill-1，箭头不加主色）；内分格用 inset shadow */
+.wa-pg-joined {
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 100%;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--wa-input-radius, 8px);
+  overflow: hidden;
+  background: transparent;
+}
+
+.wa-pg-joined .arco-btn {
+  margin: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--color-text-2);
+  min-width: 32px;
+  width: auto;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 30px;
+  box-shadow: inset -1px 0 0 var(--color-border-2);
+}
+
+.wa-pg-joined .arco-btn .pro-fa-icon {
+  color: inherit;
+}
+
+/* 首末箭头：同 .arco-pagination-item-previous/next → text-2 */
+.wa-pg-joined > .arco-btn:first-child,
+.wa-pg-joined > .arco-btn:last-child {
+  width: 32px;
+  min-width: 32px;
+  padding: 0;
+  gap: 0;
+  color: var(--color-text-2);
+  font-size: 12px;
+}
+
+.wa-pg-joined .arco-btn:last-child {
+  box-shadow: none;
+}
+
+.wa-pg-joined .arco-btn:hover,
+.wa-pg-joined .arco-btn:focus-visible {
+  color: var(--color-text-1) !important;
+  background: var(--color-fill-1) !important;
+  border: 0 !important;
+  box-shadow: inset -1px 0 0 var(--color-border-2);
+}
+
+.wa-pg-joined .arco-btn:last-child:hover,
+.wa-pg-joined .arco-btn:last-child:focus-visible {
+  box-shadow: none;
+}
+
+.wa-pg-joined .arco-btn.arco-btn-disabled,
+.wa-pg-joined .arco-btn.arco-btn-disabled:hover {
+  color: var(--color-text-4) !important;
+  background: transparent !important;
+  border: 0 !important;
+  cursor: not-allowed;
+  box-shadow: inset -1px 0 0 var(--color-border-2);
+}
+
+.wa-pg-joined .arco-btn:last-child.arco-btn-disabled,
+.wa-pg-joined .arco-btn:last-child.arco-btn-disabled:hover {
+  box-shadow: none;
+}
+
+.wa-pg-joined .arco-btn.wa-pg-joined__active,
+.wa-pg-joined .arco-btn.wa-pg-joined__active:hover {
+  color: rgb(var(--primary-6)) !important;
+  background-color: rgba(var(--primary-6), 0.12) !important;
+  font-weight: 400;
+  border: 0 !important;
+  box-shadow: inset -1px 0 0 var(--color-border-2);
+}
+
+.wa-pg-joined__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--color-text-3);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 30px;
+  user-select: none;
+  background: transparent;
+  box-shadow: inset -1px 0 0 var(--color-border-2);
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug^="pagination-"] .wa-embed__stage {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug^="pagination-"] .wa-embed__stage > .arco-pagination {
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 8px;
+}

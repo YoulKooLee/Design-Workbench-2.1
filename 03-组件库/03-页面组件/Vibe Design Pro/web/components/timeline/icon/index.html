@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>图标时间轴 · timeline-icon</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="timeline-icon">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">图标时间轴</span>
+        <span class="wa-comp-meta__slug">timeline-icon</span>
+      </div>
+      <div class="wa-embed__stage">
+        <a-timeline class="wa-tl-icon">
+          <a-timeline-item>
+            <template #dot>
+              <span class="wa-tl-dot">
+                <icon-location></icon-location>
+              </span>
+            </template>
+            <div class="wa-tl-body">
+              <div class="wa-tl-main">
+                <div class="wa-tl-title">发布 1.0 版本</div>
+                <div class="wa-tl-desc">完成核心功能上线，开放首批内测</div>
+              </div>
+              <div class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2015-09-09
+              </div>
+            </div>
+          </a-timeline-item>
+          <a-timeline-item>
+            <template #dot>
+              <span class="wa-tl-dot">
+                <icon-location></icon-location>
+              </span>
+            </template>
+            <div class="wa-tl-body">
+              <div class="wa-tl-main">
+                <div class="wa-tl-title">发布 2.0 版本</div>
+                <div class="wa-tl-desc">支持批量导入与权限分组管理</div>
+              </div>
+              <div class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2015-09-20
+              </div>
+            </div>
+          </a-timeline-item>
+          <a-timeline-item>
+            <template #dot>
+              <span class="wa-tl-dot wa-tl-dot--danger">
+                <icon-bug></icon-bug>
+              </span>
+            </template>
+            <div class="wa-tl-body">
+              <div class="wa-tl-main">
+                <div class="wa-tl-title">严重故障</div>
+                <div class="wa-tl-desc">服务异常中断约 2 小时，已完成恢复</div>
+              </div>
+              <div class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2016-09-10
+              </div>
+            </div>
+          </a-timeline-item>
+          <a-timeline-item>
+            <template #dot>
+              <span class="wa-tl-dot">
+                <icon-location></icon-location>
+              </span>
+            </template>
+            <div class="wa-tl-body">
+              <div class="wa-tl-main">
+                <div class="wa-tl-title">发布 3.0 版本</div>
+                <div class="wa-tl-desc">重构消息中心，提升推送稳定性</div>
+              </div>
+              <div class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2016-09-19
+              </div>
+            </div>
+          </a-timeline-item>
+          <a-timeline-item>
+            <template #dot>
+              <span class="wa-tl-dot">
+                <icon-location></icon-location>
+              </span>
+            </template>
+            <div class="wa-tl-body">
+              <div class="wa-tl-main">
+                <div class="wa-tl-title">发布 4.0 版本</div>
+                <div class="wa-tl-desc">新增数据看板与自定义报表</div>
+              </div>
+              <div class="wa-tl-date">
+                <icon-clock-circle></icon-clock-circle>
+                2016-11-15
+              </div>
+            </div>
+          </a-timeline-item>
+        </a-timeline>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

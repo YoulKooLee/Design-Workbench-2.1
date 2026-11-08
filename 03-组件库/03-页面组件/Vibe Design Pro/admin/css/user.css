@@ -5,12 +5,12 @@
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  background: var(--color-bg-2) url('../images/user-home-banner.svg?v=2') no-repeat center / cover;
+  background: var(--color-bg-2) url('../assets/images/user-home-banner.svg?v=2') no-repeat center / cover;
   overflow: hidden;
 }
 
 body[arco-theme='dark'] .user-home-header {
-  background: var(--color-bg-2) url('../images/user-home-banner-dark.svg?v=1') no-repeat center / cover;
+  background: var(--color-bg-2) url('../assets/images/user-home-banner-dark.svg?v=1') no-repeat center / cover;
 }
 
 .user-home-name {
@@ -502,32 +502,6 @@ body[arco-theme='dark'] .user-home-header {
 
 .user-setting-tabs .arco-tabs-nav-tab-list {
   padding-left: 0;
-}
-
-.user-setting-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab:first-child {
-  margin-left: 0;
-}
-
-.user-setting-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab {
-  border: 1px solid transparent;
-  background-color: transparent;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.user-setting-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab:hover {
-  color: rgb(var(--primary-6));
-  background-color: transparent;
-}
-
-.user-setting-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active,
-.user-setting-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active:hover {
-  color: rgb(var(--primary-6));
-  background-color: var(--pro-theme-color-soft);
-  border-color: rgb(var(--primary-6));
-}
-
-.user-setting-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active .arco-tabs-tab-title {
-  color: inherit;
 }
 
 .user-setting-tabs .arco-tabs-nav-ink {

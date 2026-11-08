@@ -4,10 +4,6 @@
   overflow: visible;
 }
 
-.form-group-page .pro-page-card {
-  margin-bottom: 16px;
-}
-
 .form-group-page .pro-page-card .arco-card-body {
   padding: 20px 28px;
 }
@@ -212,34 +208,6 @@
 
 .form-step-success .form-step-actions {
   margin-top: 28px;
-}
-
-/* 步骤条视觉：与 component-extended 步骤条同步 */
-.form-step-steps .arco-steps-icon,
-.form-step-vertical-steps .arco-steps-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  font-size: 12px;
-}
-
-.form-step-steps .arco-steps-icon .arco-icon,
-.form-step-steps .arco-steps-icon .pro-fa-icon,
-.form-step-vertical-steps .arco-steps-icon .arco-icon,
-.form-step-vertical-steps .arco-steps-icon .pro-fa-icon {
-  display: block;
-  line-height: 1;
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-}
-
-.form-step-steps .arco-steps-item-finish .arco-steps-icon,
-.form-step-vertical-steps .arco-steps-item-finish .arco-steps-icon {
-  color: rgb(var(--primary-6));
-  background-color: var(--pro-theme-color-soft);
-  border: 1px solid rgb(var(--primary-6));
 }
 
 .form-step-steps .arco-steps-item-title {

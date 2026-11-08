@@ -21,28 +21,6 @@
   height: 100%;
 }
 
-.component-form-group-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--pro-divider);
-  color: var(--color-text-1);
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-}
-
-.component-form-group-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
-}
-
 .component-form-card {
   margin-bottom: 0;
 }
@@ -111,7 +89,7 @@
   flex-shrink: 0;
   padding: 0 8px;
   color: var(--color-text-3);
-  line-height: 32px;
+  line-height: var(--pro-input-h, 36px);
 }
 
 .component-form-phone {
@@ -122,7 +100,7 @@
 
 .component-form-phone .arco-input-wrapper {
   flex: none;
-  border-radius: var(--border-radius-small, 2px) !important;
+  border-radius: var(--pro-input-radius, 4px) !important;
 }
 
 .component-form-phone-code {
@@ -143,15 +121,15 @@
 .component-form-pill {
   box-sizing: border-box;
   flex: 0 0 auto;
-  height: 28px;
+  height: var(--pro-ctrl-h-small, 32px);
   padding: 0 12px;
   color: var(--color-text-2);
   font-size: 13px;
-  line-height: 26px;
+  line-height: calc(var(--pro-ctrl-h-small, 32px) - 2px);
   text-align: center;
   white-space: nowrap;
   background: var(--color-bg-2, #fff);
-  border: 1px solid #eaebef;
+  border: 1px solid var(--color-border-2);
   border-radius: 999px;
   cursor: pointer;
   transition: color 0.15s, background-color 0.15s, border-color 0.15s;
@@ -174,25 +152,25 @@
   width: 100%;
   overflow: hidden;
   background: var(--color-bg-2, #fff);
-  border: 1px solid #eaebef;
-  border-radius: 4px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--pro-input-radius, 4px);
 }
 
 .component-form-segment-item {
   flex: 1 1 0;
   min-width: 0;
-  height: 28px;
+  height: var(--pro-ctrl-h-small, 32px);
   padding: 0 8px;
   color: var(--color-text-2);
   font-size: 13px;
-  line-height: 26px;
+  line-height: calc(var(--pro-ctrl-h-small, 32px) - 2px);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   background: transparent;
   border: none;
-  border-right: 1px solid #eaebef;
+  border-right: 1px solid var(--color-border-2);
   cursor: pointer;
   transition: color 0.15s, background-color 0.15s;
 }
@@ -235,31 +213,37 @@ body[arco-theme='dark'] .component-form-segment-item {
   border-right-color: var(--color-neutral-3, #484849);
 }
 
-/* 自定义选择触发器 */
+/* 自定义选择触发器（跟全局 --pro-input-h / 圆角，勿写死 32） */
 .component-form-picker {
   box-sizing: border-box;
   display: flex;
   align-items: center;
   width: 100%;
-  min-height: 32px;
+  height: var(--pro-input-h, 36px);
+  min-height: var(--pro-input-h, 36px);
   padding: 0 12px;
   color: var(--color-text-1);
   font-size: 14px;
-  line-height: 30px;
-  background: var(--color-fill-1, #f7f8fa);
-  border: 1px solid #eaebef;
-  border-radius: var(--border-radius-small, 2px);
+  line-height: calc(var(--pro-input-h, 36px) - 2px);
+  background: var(--color-fill-1);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--pro-input-radius, 4px);
   cursor: pointer;
-  transition: border-color 0.15s, background-color 0.15s;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .component-form-picker:hover {
-  border-color: var(--color-neutral-4, #c9cdd4);
+  border-color: var(--color-border-3);
+  background-color: var(--color-bg-2, #fff);
 }
 
 .component-form-picker.is-open {
   background: var(--color-bg-2, #fff);
   border-color: rgb(var(--primary-6));
+  box-shadow: 0 0 0 var(--pro-ctrl-ring, 3px) rgba(var(--primary-6), 0.18);
 }
 
 .component-form-picker-value {
@@ -423,7 +407,7 @@ body[arco-theme='dark'] .component-form-segment-item {
   flex: 0 0 108px;
   padding: 8px 0;
   overflow: auto;
-  background: var(--color-fill-1, #f7f8fa);
+  background: var(--color-fill-1);
   border-right: 1px solid var(--color-neutral-3, #e5e6eb);
 }
 
@@ -540,13 +524,13 @@ body[arco-theme='dark'] .component-form-brand-letters {
   border-bottom-color: var(--color-neutral-3, #484849);
 }
 
-/* 标记选择器 */
+/* 标记选择器（对照 WEB .wa-marker） */
 .component-form-markers {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  min-height: 32px;
+  gap: 12px;
+  min-height: var(--pro-input-h, 36px);
 }
 
 .component-form-marker {
@@ -554,28 +538,34 @@ body[arco-theme='dark'] .component-form-brand-letters {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   color: #fff;
   background: #ccc;
   border: 2px solid transparent;
   border-radius: 50%;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .component-form-marker:hover {
   transform: scale(1.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent);
 }
 
 .component-form-marker.is-active {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  border-color: #fff;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--color-text-1, #1d2129) 18%, transparent),
+    0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
 }
 
-.component-form-marker-check {
+.component-form-marker .arco-icon {
   font-size: 12px;
-  font-weight: 700;
   line-height: 1;
   pointer-events: none;
 }
@@ -598,13 +588,19 @@ body[arco-theme='dark'] .component-form-brand-letters {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 32px;
+  min-height: var(--pro-input-h, 36px);
 }
 
 .component-form-rate-label {
   color: var(--color-text-3, #86909c);
   font-size: 14px;
   line-height: 22px;
+}
+
+/* 图片卡片：方格固定尺寸，按原比例铺满，避免横图被拉扁 */
+.component-form-page .arco-upload-list-picture img {
+  object-fit: cover;
+  object-position: center;
 }
 
 /* 按钮上传：文本列表，无缩略图 */
@@ -628,7 +624,7 @@ body[arco-theme='dark'] .component-form-brand-letters {
   position: relative;
   margin-top: 8px;
   padding: 0 36px 0 0;
-  background: var(--color-fill-1, #f7f8fa);
+  background: var(--color-fill-1);
   border: none !important;
   border-radius: 4px;
   box-shadow: none !important;

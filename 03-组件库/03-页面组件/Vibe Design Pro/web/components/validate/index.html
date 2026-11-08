@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>校验反馈 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="validate">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">validate</p>
+          <h1 class="wa-fam-title">校验反馈</h1>
+          <p class="wa-fam-lead">表单校验反馈，失焦或提交时出现红描边、浅红底与下方提示。</p>
+          <p class="wa-fam-lead">组件类型：account / email / channel / period / submit</p>
+        </header>
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="validate">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">账号校验</span><span class="wa-comp-meta__slug">validate</span></div>
+              <a-tooltip :content="famCopyTip('validate')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('validate') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('validate')"
+                :aria-label="famCopyTip('validate')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('validate')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-form-item label="账号名称" required asterisk-position="end" :validate-status="accountError ? 'error' : undefined" :help="accountError || undefined">
+                  <a-input v-model="account" :error="!!accountError" placeholder="请输入账号名称" allow-clear @blur="validateAccount" @clear="validateAccount"></a-input>
+                </a-form-item>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="validate-email">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">邮箱校验</span><span class="wa-comp-meta__slug">validate-email</span></div>
+              <a-tooltip :content="famCopyTip('validate-email')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('validate-email') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('validate-email')"
+                :aria-label="famCopyTip('validate-email')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('validate-email')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-form-item label="邮箱地址" required asterisk-position="end" :validate-status="emailError ? 'error' : undefined" :help="emailError || undefined">
+                  <a-input v-model="email" :error="!!emailError" placeholder="name@example.com" allow-clear @blur="validateEmail" @clear="validateEmail"></a-input>
+                </a-form-item>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="validate-channel">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">渠道校验</span><span class="wa-comp-meta__slug">validate-channel</span></div>
+              <a-tooltip :content="famCopyTip('validate-channel')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('validate-channel') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('validate-channel')"
+                :aria-label="famCopyTip('validate-channel')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('validate-channel')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-form-item label="投放渠道" required asterisk-position="end" :validate-status="channelError ? 'error' : undefined" :help="channelError || undefined">
+                  <a-select v-model="channel" :options="channelOptions" :error="!!channelError" placeholder="请选择投放渠道" allow-clear @change="validateChannel" @clear="validateChannel"></a-select>
+                </a-form-item>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="validate-period">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">有效期校验</span><span class="wa-comp-meta__slug">validate-period</span></div>
+              <a-tooltip :content="famCopyTip('validate-period')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('validate-period') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('validate-period')"
+                :aria-label="famCopyTip('validate-period')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('validate-period')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-form-item label="有效期" required asterisk-position="end" :validate-status="periodError ? 'error' : undefined" :help="periodError || undefined">
+                  <a-range-picker v-model="period" :error="!!periodError" format="YYYY-MM-DD" :placeholder="['开始日期', '结束日期']" allow-clear @change="validatePeriod" @clear="validatePeriod"></a-range-picker>
+                </a-form-item>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="validate-submit">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">提交校验</span><span class="wa-comp-meta__slug">validate-submit</span></div>
+              <a-tooltip :content="famCopyTip('validate-submit')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('validate-submit') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('validate-submit')"
+                :aria-label="famCopyTip('validate-submit')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('validate-submit')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-form class="wa-form" :model="submitForm" layout="vertical">
+                  <a-row :gutter="16">
+                    <a-col :xs="24" :sm="12" :md="12">
+                      <a-form-item label="账号名称" required asterisk-position="end" :validate-status="submitErrors.account ? 'error' : undefined" :help="submitErrors.account || undefined">
+                        <a-input v-model="submitForm.account" :error="!!submitErrors.account" placeholder="请输入账号名称" allow-clear @blur="validateSubmitField('account')" @clear="validateSubmitField('account')"></a-input>
+                      </a-form-item>
+                    </a-col>
+                    <a-col :xs="24" :sm="12" :md="12">
+                      <a-form-item label="邮箱地址" required asterisk-position="end" :validate-status="submitErrors.email ? 'error' : undefined" :help="submitErrors.email || undefined">
+                        <a-input v-model="submitForm.email" :error="!!submitErrors.email" placeholder="name@example.com" allow-clear @blur="validateSubmitField('email')" @clear="validateSubmitField('email')"></a-input>
+                      </a-form-item>
+                    </a-col>
+                    <a-col :xs="24" :sm="12" :md="12">
+                      <a-form-item label="投放渠道" required asterisk-position="end" :validate-status="submitErrors.channel ? 'error' : undefined" :help="submitErrors.channel || undefined">
+                        <a-select v-model="submitForm.channel" :options="channelOptions" :error="!!submitErrors.channel" placeholder="请选择投放渠道" allow-clear @change="validateSubmitField('channel')" @clear="validateSubmitField('channel')"></a-select>
+                      </a-form-item>
+                    </a-col>
+                    <a-col :xs="24" :sm="12" :md="12">
+                      <a-form-item label="有效期" required asterisk-position="end" :validate-status="submitErrors.period ? 'error' : undefined" :help="submitErrors.period || undefined">
+                        <a-range-picker v-model="submitForm.period" :error="!!submitErrors.period" format="YYYY-MM-DD" :placeholder="['开始日期', '结束日期']" allow-clear @change="validateSubmitField('period')" @clear="validateSubmitField('period')"></a-range-picker>
+                      </a-form-item>
+                    </a-col>
+                  </a-row>
+                  <a-space>
+                    <a-button type="primary" status="danger" @click="validateSubmitAll">校验</a-button>
+                    <a-button type="secondary" @click="clearSubmit">清空校验</a-button>
+                  </a-space>
+                </a-form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'validate',
+      members: ['validate', 'validate-email', 'validate-channel', 'validate-period', 'validate-submit'],
+      slugDir: {
+        validate: 'account',
+        'validate-email': 'email',
+        'validate-channel': 'channel',
+        'validate-period': 'period',
+        'validate-submit': 'submit',
+      },
+      setup: function (api) {
+        var account = api.ref('')
+        var accountError = api.ref('请输入账号名称')
+        var email = api.ref('name@')
+        var emailError = api.ref('邮箱格式不正确')
+        var channel = api.ref(undefined)
+        var channelError = api.ref('请选择投放渠道')
+        var period = api.ref([])
+        var periodError = api.ref('请选择有效期')
+        var submitForm = Vue.reactive({ account: '', email: '', channel: undefined, period: [] })
+        var submitErrors = Vue.reactive({ account: '', email: '', channel: '', period: '' })
+        function validateSubmitField(key) {
+          if (key === 'account') submitErrors.account = String(submitForm.account || '').trim() ? '' : '请输入账号名称'
+          else if (key === 'email') {
+            var text = String(submitForm.email || '').trim()
+            if (!text) submitErrors.email = '请输入邮箱地址'
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) submitErrors.email = '邮箱格式不正确'
+            else submitErrors.email = ''
+          } else if (key === 'channel') submitErrors.channel = submitForm.channel ? '' : '请选择投放渠道'
+          else if (key === 'period') submitErrors.period = submitForm.period && submitForm.period.length === 2 ? '' : '请选择有效期'
+          return !submitErrors[key]
+        }
+        return {
+          account: account,
+          accountError: accountError,
+          email: email,
+          emailError: emailError,
+          channel: channel,
+          channelError: channelError,
+          period: period,
+          periodError: periodError,
+          channelOptions: [
+            { label: '线上', value: 'online' },
+            { label: '线下', value: 'offline' },
+            { label: '混合', value: 'hybrid' },
+          ],
+          validateAccount: function () {
+            accountError.value = String(account.value || '').trim() ? '' : '请输入账号名称'
+          },
+          validateEmail: function () {
+            var text = String(email.value || '').trim()
+            if (!text) emailError.value = '请输入邮箱地址'
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) emailError.value = '邮箱格式不正确'
+            else emailError.value = ''
+          },
+          validateChannel: function () {
+            channelError.value = channel.value ? '' : '请选择投放渠道'
+          },
+          validatePeriod: function () {
+            periodError.value = period.value && period.value.length === 2 ? '' : '请选择有效期'
+          },
+          submitForm: submitForm,
+          submitErrors: submitErrors,
+          validateSubmitField: validateSubmitField,
+          validateSubmitAll: function () {
+            var ok = ['account', 'email', 'channel', 'period'].map(validateSubmitField).every(Boolean)
+            if (typeof ArcoVue !== 'undefined' && ArcoVue.Message) {
+              if (ok) ArcoVue.Message.success('校验通过')
+              else ArcoVue.Message.error('请完善标红字段')
+            }
+          },
+          clearSubmit: function () {
+            submitForm.account = ''
+            submitForm.email = ''
+            submitForm.channel = undefined
+            submitForm.period = []
+            submitErrors.account = ''
+            submitErrors.email = ''
+            submitErrors.channel = ''
+            submitErrors.period = ''
+          },
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

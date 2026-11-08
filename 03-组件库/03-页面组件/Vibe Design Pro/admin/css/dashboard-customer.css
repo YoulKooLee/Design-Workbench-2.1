@@ -1,3 +1,5 @@
+@import "./dashboard-shared.css";
+
 /* 客户仪表盘（对齐 shadcn /dashboard/customer） */
 
 .cust-page {
@@ -21,89 +23,11 @@
   min-width: 0;
 }
 
-.cust-title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: var(--color-text-1);
-}
-
 .cust-desc {
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
   color: var(--color-text-3);
-}
-
-.cust-filters {
-  --cust-filter-h: 32px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.cust-filters .arco-select,
-.cust-filters .arco-picker,
-.cust-filters .arco-btn {
-  height: var(--cust-filter-h) !important;
-  min-height: var(--cust-filter-h) !important;
-  max-height: var(--cust-filter-h) !important;
-  box-sizing: border-box !important;
-}
-
-.cust-filters .arco-select-view-single,
-.cust-filters .arco-picker {
-  height: 100% !important;
-  min-height: var(--cust-filter-h) !important;
-  max-height: var(--cust-filter-h) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  box-sizing: border-box !important;
-}
-
-.cust-filters .arco-select-view-size-medium .arco-select-view-value,
-.cust-filters .arco-select-view-size-medium .arco-select-view-input {
-  min-height: 0 !important;
-  height: 100% !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  line-height: 1.5715 !important;
-}
-
-.cust-filters .arco-btn {
-  padding: 0 15px !important;
-  line-height: 1 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: var(--border-radius-small) !important;
-}
-
-.cust-filters .arco-btn .arco-btn-icon {
-  display: inline-flex !important;
-  align-items: center !important;
-  margin-right: 6px !important;
-  line-height: 1 !important;
-}
-
-.cust-filters .arco-btn .arco-btn-icon .arco-icon,
-.cust-filters .arco-btn .arco-icon {
-  width: 14px !important;
-  height: 14px !important;
-  font-size: 14px !important;
-}
-
-.cust-filters .cust-refresh-btn {
-  width: var(--cust-filter-h) !important;
-  padding: 0 !important;
-}
-
-.cust-filters .cust-refresh-btn .arco-btn-icon {
-  margin-right: 0 !important;
 }
 
 .cust-card {
@@ -201,35 +125,6 @@
   color: rgb(var(--danger-6));
   background: rgba(var(--danger-6), 0.1);
   border-color: rgba(var(--danger-6), 0.22);
-}
-
-.cust-section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-
-.cust-section-title {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 8px;
-  margin: 0 !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  line-height: 24px !important;
-  color: var(--color-text-1) !important;
-}
-
-.cust-section-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
 }
 
 .cust-section-desc {
@@ -359,20 +254,8 @@
 }
 
 @media (max-width: 768px) {
-  .cust-title {
-    font-size: 20px;
-  }
-
   .cust-header {
     align-items: stretch;
-  }
-
-  .cust-filters {
-    width: 100%;
-  }
-
-  .cust-filters .arco-picker {
-    flex: 1;
   }
 
   .cust-search {

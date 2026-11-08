@@ -1,0 +1,11 @@
+slug: upload-button
+label: 按钮上传
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input
+tags:
+  - input
+path: components/upload/button

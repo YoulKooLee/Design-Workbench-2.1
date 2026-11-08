@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>输入框 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./range/component.css" />
+  <link rel="stylesheet" href="./group/component.css" />
+  <link rel="stylesheet" href="./tags-below/component.css" />
+  <link rel="stylesheet" href="./copy/component.css" />
+  <link rel="stylesheet" href="./success/component.css" />
+  <link rel="stylesheet" href="./char-limit/component.css" />
+  <link rel="stylesheet" href="./timestamp/component.css" />
+  <link rel="stylesheet" href="./verification-code/component.css" />
+  <link rel="stylesheet" href="./overlapping-label/component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="input">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">input</p>
+          <h1 class="wa-fam-title">输入框</h1>
+          <p class="wa-fam-lead">表单文本录入，含密码、数字、标签、复制、校验成功、字数限制、时间格式与重叠标签等。</p>
+          <p class="wa-fam-lead">组件类型：default / password / number / tag / tags-below / append / search / prefix / copy / success / char-limit / timestamp / range / group / mention / autocomplete / verification-code / textarea / overlapping-label / disabled</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="input-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">文本输入</span><span class="wa-comp-meta__slug">input-default</span></div>
+              <a-tooltip :content="famCopyTip('input-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-default')"
+                :aria-label="famCopyTip('input-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input v-model="text" placeholder="请输入" allow-clear></a-input>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-password">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">密码输入</span><span class="wa-comp-meta__slug">input-password</span></div>
+              <a-tooltip :content="famCopyTip('input-password')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-password') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-password')"
+                :aria-label="famCopyTip('input-password')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-password')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input-password v-model="password" placeholder="请输入密码" allow-clear />
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-number">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">数字输入</span><span class="wa-comp-meta__slug">input-number</span></div>
+              <a-tooltip :content="famCopyTip('input-number')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-number') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-number')"
+                :aria-label="famCopyTip('input-number')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-number')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input-number v-model="number" :min="0" :max="999999" :step="10" style="width: 100%" />
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-tag">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">标签输入</span><span class="wa-comp-meta__slug">input-tag</span></div>
+              <a-tooltip :content="famCopyTip('input-tag')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-tag') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-tag')"
+                :aria-label="famCopyTip('input-tag')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-tag')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input-tag v-model="tags" placeholder="回车添加标签" allow-clear />
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-tags-below">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">标签外置</span><span class="wa-comp-meta__slug">input-tags-below</span></div>
+              <a-tooltip :content="famCopyTip('input-tags-below')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-tags-below') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-tags-below')"
+                :aria-label="famCopyTip('input-tags-below')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-tags-below')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-input-tags-below">
+                <a-input
+                  v-model="tagDraft"
+                  placeholder="添加标签，回车确认"
+                  allow-clear
+                  @press-enter="addOuterTag"
+                  @keydown="onOuterTagKeydown"
+                ></a-input>
+                <div class="wa-input-tags-below__list">
+                  <a-tag v-for="tag in outerTags" :key="tag" closable @close="removeOuterTag(tag)">{{ tag }}</a-tag>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-append">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">单位后缀</span><span class="wa-comp-meta__slug">input-append</span></div>
+              <a-tooltip :content="famCopyTip('input-append')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-append') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-append')"
+                :aria-label="famCopyTip('input-append')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-append')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input v-model="frameRate" placeholder="请输入金额" allow-clear append="元" />
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-search">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">搜索输入</span><span class="wa-comp-meta__slug">input-search</span></div>
+              <a-tooltip :content="famCopyTip('input-search')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-search') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-search')"
+                :aria-label="famCopyTip('input-search')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-search')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input v-model="keyword" placeholder="输入搜索关键词" allow-clear>
+                <template #suffix><icon-search /></template>
+              </a-input>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-prefix">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">前缀图标</span><span class="wa-comp-meta__slug">input-prefix</span></div>
+              <a-tooltip :content="famCopyTip('input-prefix')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-prefix') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-prefix')"
+                :aria-label="famCopyTip('input-prefix')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-prefix')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input v-model="username" placeholder="输入用户名称" allow-clear>
+                <template #prefix><icon-avatar-user /></template>
+              </a-input>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-copy">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">一键复制</span><span class="wa-comp-meta__slug">input-copy</span></div>
+              <a-tooltip :content="famCopyTip('input-copy')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-copy') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-copy')"
+                :aria-label="famCopyTip('input-copy')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-copy')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input class="wa-input-copy" v-model="copyUrl" readonly>
+                <template #suffix>
+                  <a-tooltip :content="copyDone ? '已复制' : '复制'">
+                    <span
+                      class="wa-input-copy__btn"
+                      :class="{ 'is-copied': copyDone }"
+                      role="button"
+                      tabindex="0"
+                      :aria-label="copyDone ? '已复制' : '复制'"
+                      @click="copyInputValue"
+                      @keydown.enter.prevent="copyInputValue"
+                    >
+                      <icon-check v-if="copyDone"></icon-check>
+                      <icon-copy v-else></icon-copy>
+                    </span>
+                  </a-tooltip>
+                </template>
+              </a-input>
+            </div>
+          </div>          <div class="wa-fam-card" data-slug="input-char-limit">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">字数限制</span><span class="wa-comp-meta__slug">input-char-limit</span></div>
+              <a-tooltip :content="famCopyTip('input-char-limit')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-char-limit') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-char-limit')"
+                :aria-label="famCopyTip('input-char-limit')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-char-limit')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input
+                class="wa-input-char-limit"
+                v-model="charLimit"
+                placeholder="请输入"
+                :max-length="50"
+                show-word-limit
+                allow-clear
+              ></a-input>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-timestamp">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">时间格式</span><span class="wa-comp-meta__slug">input-timestamp</span></div>
+              <a-tooltip :content="famCopyTip('input-timestamp')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-timestamp') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-timestamp')"
+                :aria-label="famCopyTip('input-timestamp')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-timestamp')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input
+                class="wa-input-timestamp"
+                v-model="timeValue"
+                placeholder="00:00:00"
+                allow-clear
+                :max-length="8"
+                @blur="onTimeBlur"
+              ></a-input>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-range">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">数值范围</span><span class="wa-comp-meta__slug">input-range</span></div>
+              <a-tooltip :content="famCopyTip('input-range')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-range') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-range')"
+                :aria-label="famCopyTip('input-range')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-range')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input-group class="wa-input-range">
+                <a-input v-model="rangeStart" placeholder="开始数值" allow-clear></a-input>
+                <span class="wa-input-range__sep">~</span>
+                <a-input v-model="rangeEnd" placeholder="结束数值" allow-clear></a-input>
+              </a-input-group>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-group">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">电话组合</span><span class="wa-comp-meta__slug">input-group</span></div>
+              <a-tooltip :content="famCopyTip('input-group')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-group') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-group')"
+                :aria-label="famCopyTip('input-group')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-group')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input-group class="wa-input-phone">
+                <a-input v-model="areaCode" class="wa-input-phone__code" placeholder="区号" allow-clear></a-input>
+                <a-input v-model="phone" class="wa-input-phone__number" placeholder="电话号码" allow-clear></a-input>
+              </a-input-group>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-mention">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">提及</span><span class="wa-comp-meta__slug">input-mention</span></div>
+              <a-tooltip :content="famCopyTip('input-mention')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-mention') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-mention')"
+                :aria-label="famCopyTip('input-mention')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-mention')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-mention v-model="mention" :data="mentionData" placeholder="输入 @ 选择协作人" allow-clear />
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-autocomplete">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">自动完成</span><span class="wa-comp-meta__slug">input-autocomplete</span></div>
+              <a-tooltip :content="famCopyTip('input-autocomplete')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-autocomplete') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-autocomplete')"
+                :aria-label="famCopyTip('input-autocomplete')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-autocomplete')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-auto-complete v-model="autocomplete" :data="autocompleteData" placeholder="输入计划关键词" allow-clear />
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-verification-code">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">验证码</span><span class="wa-comp-meta__slug">input-verification-code</span></div>
+              <a-tooltip :content="famCopyTip('input-verification-code')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-verification-code') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-verification-code')"
+                :aria-label="famCopyTip('input-verification-code')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-verification-code')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-verification-code class="wa-input-otp" v-model="verifyCode" :length="6"></a-verification-code>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-textarea">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">多行文本</span><span class="wa-comp-meta__slug">input-textarea</span></div>
+              <a-tooltip :content="famCopyTip('input-textarea')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-textarea') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-textarea')"
+                :aria-label="famCopyTip('input-textarea')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-textarea')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-textarea
+                v-model="remark"
+                placeholder="请输入备注"
+                :auto-size="{ minRows: 3, maxRows: 6 }"
+                :max-length="200"
+                show-word-limit
+              />
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-overlapping-label">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">重叠标签</span><span class="wa-comp-meta__slug">input-overlapping-label</span></div>
+              <a-tooltip :content="famCopyTip('input-overlapping-label')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-overlapping-label') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-overlapping-label')"
+                :aria-label="famCopyTip('input-overlapping-label')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-overlapping-label')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-input-overlap">
+                <label class="wa-input-overlap__label" for="wa-fam-overlap-ta">重叠标签多行文本</label>
+                <a-textarea
+                  id="wa-fam-overlap-ta"
+                  v-model="overlapRemark"
+                  placeholder=" "
+                  :auto-size="{ minRows: 3, maxRows: 6 }"
+                ></a-textarea>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-success">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">校验成功</span><span class="wa-comp-meta__slug">input-success</span></div>
+              <a-tooltip :content="famCopyTip('input-success')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-success') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-success')"
+                :aria-label="famCopyTip('input-success')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-success')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-input-success">
+                <label class="wa-input-success__label" for="wa-fam-success-user">用户名</label>
+                <a-input
+                  id="wa-fam-success-user"
+                  class="wa-input-success__control"
+                  v-model="successName"
+                  placeholder="请输入用户名"
+                  allow-clear
+                ></a-input>
+                <p class="wa-input-success-help" role="status">
+                  <icon-check-circle></icon-check-circle>
+                  <span>用户名可用</span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="input-disabled">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">禁用输入</span><span class="wa-comp-meta__slug">input-disabled</span></div>
+              <a-tooltip :content="famCopyTip('input-disabled')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('input-disabled') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('input-disabled')"
+                :aria-label="famCopyTip('input-disabled')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('input-disabled')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-input v-model="disabledName" placeholder="请输入" disabled></a-input>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'input',
+      members: [
+        'input-default',
+        'input-password',
+        'input-number',
+        'input-tag',
+        'input-tags-below',
+        'input-append',
+        'input-search',
+        'input-prefix',
+        'input-copy',
+        'input-char-limit',
+        'input-timestamp',
+        'input-range',
+        'input-group',
+        'input-mention',
+        'input-autocomplete',
+        'input-verification-code',
+        'input-textarea',
+        'input-overlapping-label',
+        'input-success',
+        'input-disabled',
+      ],
+      setup: function (api) {
+        var tagDraft = api.ref('')
+        var outerTags = api.ref(['运动', '编程', '旅行'])
+        var copyUrl = api.ref('https://x.com/shadcn')
+        var copyDone = api.ref(false)
+        var copyTimer = null
+        function addOuterTag() {
+          var t = (tagDraft.value || '').trim()
+          if (!t) return
+          if (outerTags.value.indexOf(t) === -1) outerTags.value = outerTags.value.concat(t)
+          tagDraft.value = ''
+        }
+        function removeOuterTag(name) {
+          outerTags.value = outerTags.value.filter(function (x) { return x !== name })
+        }
+        function copyInputValue() {
+          if (copyDone.value) return
+          var text = copyUrl.value || ''
+          function writeClipboard(value) {
+            if (navigator.clipboard && window.isSecureContext) {
+              return navigator.clipboard.writeText(value)
+            }
+            return new Promise(function (resolve, reject) {
+              var ta = document.createElement('textarea')
+              ta.value = value
+              ta.setAttribute('readonly', '')
+              ta.style.position = 'fixed'
+              ta.style.left = '-9999px'
+              document.body.appendChild(ta)
+              ta.select()
+              var ok = document.execCommand('copy')
+              document.body.removeChild(ta)
+              if (ok) resolve()
+              else reject(new Error('clipboard failed'))
+            })
+          }
+          writeClipboard(text).then(function () {
+            copyDone.value = true
+            if (copyTimer) clearTimeout(copyTimer)
+            copyTimer = setTimeout(function () {
+              copyDone.value = false
+            }, 1600)
+          }).catch(function (err) {
+            console.error(err)
+          })
+        }
+        function onOuterTagKeydown(e) {
+          if (!e) return
+          if (e.key === 'Enter' || e.keyCode === 13) {
+            e.preventDefault()
+            e.stopPropagation()
+            addOuterTag()
+          }
+        }
+        function formatTimeMask(raw) {
+          var digits = String(raw || '').replace(/\D/g, '').slice(0, 6)
+          var parts = []
+          if (digits.length > 0) parts.push(digits.slice(0, 2))
+          if (digits.length > 2) parts.push(digits.slice(2, 4))
+          if (digits.length > 4) parts.push(digits.slice(4, 6))
+          return parts.join(':')
+        }
+        function clampSeg(seg, max) {
+          if (seg === '') return seg
+          var n = Number(seg)
+          if (!isFinite(n)) return '00'
+          var v = Math.max(0, Math.min(max, n))
+          return String(v).padStart(seg.length === 1 ? 1 : 2, '0').slice(0, 2)
+        }
+        function normalizeTime(raw) {
+          var formatted = formatTimeMask(raw)
+          var bits = formatted.split(':')
+          if (!bits[0]) return ''
+          var hh = clampSeg(bits[0] || '', 23)
+          if (bits.length < 2) return hh
+          var mm = clampSeg(bits[1] || '', 59)
+          if (bits.length < 3) return hh + ':' + mm
+          var ss = clampSeg(bits[2] || '', 59)
+          return hh + ':' + mm + ':' + ss
+        }
+        var timeValue = api.ref('00:00:00')
+        Vue.watch(timeValue, function (v) {
+          var next = formatTimeMask(v)
+          if (next !== v) timeValue.value = next
+        })
+        function onTimeBlur() {
+          timeValue.value = normalizeTime(timeValue.value) || '00:00:00'
+        }
+        return {
+          text: api.ref('www.VibePM.net'),
+          password: api.ref('******'),
+          number: api.ref(1280),
+          tags: api.ref(['运营', '投放']),
+          tagDraft: tagDraft,
+          outerTags: outerTags,
+          addOuterTag: addOuterTag,
+          removeOuterTag: removeOuterTag,
+          onOuterTagKeydown: onOuterTagKeydown,
+          frameRate: api.ref(''),
+          keyword: api.ref(''),
+          username: api.ref(''),
+          copyUrl: copyUrl,
+          copyDone: copyDone,
+          copyInputValue: copyInputValue,
+          successName: api.ref('haydenbleasel'),
+          charLimit: api.ref('2424242'),
+          timeValue: timeValue,
+          onTimeBlur: onTimeBlur,
+          rangeStart: api.ref(''),
+          rangeEnd: api.ref(''),
+          areaCode: api.ref(''),
+          phone: api.ref(''),
+          mention: api.ref(''),
+          mentionData: ['运营', '投放', '设计', '研发', '产品'],
+          autocomplete: api.ref(''),
+          autocompleteData: [
+            '华东投放计划',
+            '华南品牌活动',
+            '华北拉新专项',
+            '全国大促预热',
+            '私域转化实验',
+          ],
+          verifyCode: api.ref(''),
+          remark: api.ref(''),
+          overlapRemark: api.ref(''),
+          disabledName: api.ref('已禁用内容'),
+        }
+      },
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

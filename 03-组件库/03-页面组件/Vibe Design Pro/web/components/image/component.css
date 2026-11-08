@@ -1,0 +1,108 @@
+/* 图片家族：适配容器；落地时并入宿主页 CSS，勿单独 link 本文件名 */
+
+/* 对照页舞台：缩略图铺满卡片宽 */
+.wa-fam-section[data-family="image"] .wa-fam-card__stage {
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+.wa-fam-section[data-family="image"] .wa-fam-card__stage > .wa-image-fit,
+.wa-fam-section[data-family="image"] .wa-fam-card__stage > .arco-image-preview-group,
+body.wa-preview-embed .wa-preview-stage[data-slug^="image-"] .wa-embed__stage > .wa-image-fit,
+body.wa-preview-embed .wa-preview-stage[data-slug^="image-"] .wa-embed__stage > .arco-image-preview-group {
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
+body.wa-preview-embed .wa-preview-stage[data-slug^="image-"].wa-embed {
+  width: min(544px, calc(100% - 32px));
+}
+
+.wa-image-fit {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--border-radius-medium, 4px);
+  background: var(--color-fill-2);
+  box-sizing: border-box;
+}
+
+.wa-image-fit .arco-image {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+}
+
+.wa-image-fit .arco-image-img,
+.wa-image-fit .arco-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wa-image-fit .arco-image-error,
+.wa-image-error {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  background: var(--color-fill-2);
+  color: var(--color-text-3);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.wa-image-error__icon {
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+/* 可预览 / 多图：悬停遮罩 + 链接手势图标（不拦截点击） */
+.wa-image-fit--preview,
+.wa-image-fit--preview .arco-image,
+.wa-image-fit--preview .arco-image-img,
+.wa-image-fit--preview img {
+  cursor: pointer;
+}
+
+.wa-image-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.wa-image-fit--preview:hover .wa-image-hint {
+  opacity: 1;
+}
+
+.wa-image-hint .pro-fa-icon,
+.wa-image-hint i[class*="fa-"] {
+  color: inherit;
+  font-size: inherit;
+  line-height: 1;
+}

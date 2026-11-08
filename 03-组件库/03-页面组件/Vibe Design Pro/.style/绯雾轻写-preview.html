@@ -3,16 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
   <title>VibePM · 绯雾轻写主题风格</title>
   <meta name="description" content="VibePM「绯雾轻写」主题预览：亮白暖灰纸面与单一绯雾强调，Inter 超黑标题与柔绯光晕 CTA，干净可信的写作生产力风格。">
   <meta name="keywords" content="VibePM,绯雾轻写,绯雾强调,写作工具风格,轻纸亮面,视觉主题预览,设计令牌">
-  <link rel="icon" href="https://www.vibepm.net/assets/image/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="https://www.vibepm.net/assets/images/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"></noscript>
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"></noscript>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"></noscript>
   <style>
     :root {
       --brand-primary: #e74c3c;
@@ -60,18 +61,26 @@
       --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
     
       --scrollbar-size: 8px;
-      --scrollbar-track: transparent;
+      --scrollbar-track: var(--bg, var(--bg-page, var(--background, var(--surface-page, var(--surface-base, var(--c-bg, Canvas))))));
       --scrollbar-thumb: rgba(0, 0, 0, 0.18);
       --scrollbar-thumb-hover: rgba(0, 0, 0, 0.28);
       --scrollbar-thumb-active: rgba(0, 0, 0, 0.36);
 
 }
-    [data-theme="dark"],
-    [data-color-mode="dark"],
+    html[data-theme="light"],
+    html[data-color-mode="light"] {
+      color-scheme: light;
+      --scrollbar-size: 8px;
+      --scrollbar-track: var(--bg, var(--bg-page, var(--background, var(--surface-page, var(--surface-base, var(--c-bg, Canvas))))));
+      --scrollbar-thumb: rgba(0, 0, 0, 0.18);
+      --scrollbar-thumb-hover: rgba(0, 0, 0, 0.28);
+      --scrollbar-thumb-active: rgba(0, 0, 0, 0.36);
+    }
     html[data-theme="dark"],
     html[data-color-mode="dark"] {
+      color-scheme: dark;
       --scrollbar-size: 8px;
-      --scrollbar-track: transparent;
+      --scrollbar-track: var(--bg, var(--bg-page, var(--background, var(--surface-page, var(--surface-base, var(--c-bg, Canvas))))));
       --scrollbar-thumb: rgba(255, 255, 255, 0.14);
       --scrollbar-thumb-hover: rgba(255, 255, 255, 0.26);
       --scrollbar-thumb-active: rgba(255, 255, 255, 0.34);
@@ -710,6 +719,10 @@
     }
     .btn-primary:active { transform: scale(0.95); }
     .btn-secondary {
+      /* data-wa-btn-secondary-fill: iframe 嵌入时防 UA 按壳页 scheme 刷深色字 */
+      color: var(--text1, var(--text-primary, inherit)) !important;
+      -webkit-text-fill-color: var(--text1, var(--text-primary, currentColor));
+
       background: var(--brand-primary-muted);
       border-color: transparent;
       color: var(--brand-primary);
@@ -4602,6 +4615,18 @@
       function applyTheme(theme) {
         var isDark = theme === "dark";
         root.setAttribute("data-theme", isDark ? "dark" : "light");
+        try { root.style.colorScheme = isDark ? "dark" : "light"; } catch (e) {}
+        try {
+          var __csMeta = document.querySelector('meta[name="color-scheme"]');
+          if (__csMeta) __csMeta.setAttribute("content", isDark ? "dark" : "light");
+        } catch (e) {}
+
+        try {
+          var __ov = root.style.overflowY;
+          root.style.overflowY = 'hidden';
+          void root.offsetHeight;
+          root.style.overflowY = __ov;
+        } catch (e) {}
         toggle.setAttribute("aria-pressed", isDark ? "true" : "false");
         if (label) label.textContent = isDark ? "浅色" : "深色";
         if (icon) {
@@ -5462,5 +5487,6 @@ var ageValueEl = document.getElementById("age-stepper-value");
       });
     })();
   </script>
+<script data-wa-color-scheme-init>(function(){try{var r=document.documentElement;var t=r.getAttribute("data-theme")||r.getAttribute("data-color-mode")||"light";var s=t==="dark"?"dark":"light";r.style.colorScheme=s;var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute("content",s);}catch(e){}})();</script>
 </body>
 </html>

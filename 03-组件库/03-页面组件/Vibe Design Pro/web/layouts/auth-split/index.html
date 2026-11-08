@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js?v=20261016f"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>分栏登录 · auth-split</title>
+  <link rel="icon" href="../../assets/images/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="./layout.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <div class="wa-layout wa-layout--site-auth-split">
+      <aside class="wa-layout__auth-panel" aria-label="品牌区">
+        <div class="wa-layout__auth-panel-glow" aria-hidden="true"></div>
+        <a class="wa-layout__auth-panel-brand" href="../index.html">
+          <span class="wa-layout__brand-mark" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span>
+          <span>Vibe Design</span>
+        </a>
+        <div class="wa-layout__auth-panel-body">
+          <p class="wa-layout__auth-panel-kicker">产品协作工作台</p>
+          <h1 class="wa-layout__auth-panel-title">需求到原型，一条链路走完</h1>
+          <p class="wa-layout__auth-panel-lead">登录后接上团队空间里的文档、原型与评审，少切工具、少丢上下文。</p>
+          <ul class="wa-layout__auth-panel-points">
+            <li>
+              <i class="fa-light fa-layer-group" aria-hidden="true"></i>
+              <span>需求、原型与评审同屏推进</span>
+            </li>
+            <li>
+              <i class="fa-light fa-clock-rotate-left" aria-hidden="true"></i>
+              <span>关键决策与评论可回溯</span>
+            </li>
+            <li>
+              <i class="fa-light fa-users" aria-hidden="true"></i>
+              <span>多团队空间一键切换</span>
+            </li>
+          </ul>
+        </div>
+        <p class="wa-layout__auth-panel-foot">© 2026 Vibe Design · 产品协作与设计资产分享平台</p>
+      </aside>
+
+      <div class="wa-layout__auth-form-col">
+        <div class="wa-layout__login-tools">
+          <a class="wa-layout__icon-btn" href="../login-shell/index.html" aria-label="居中登录">
+            <i class="fa-light fa-arrow-left" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <main class="wa-layout__login-main">
+          <div class="wa-layout__login-form-wrap">
+            <h1 class="wa-layout__login-title">账号登录</h1>
+            <p class="wa-layout__login-lead">登录后即可进入工作台继续协作</p>
+            <div class="wa-layout__login-fields">
+              <div class="wa-layout__login-field" :class="{ 'is-error': !!userNameError }" @focusin="clearUserError">
+                <label class="wa-layout__login-label" for="auth-login-user">登录账号</label>
+                <a-input
+                  id="auth-login-user"
+                  v-model="userName"
+                  placeholder="请输入登录账号"
+                  :error="!!userNameError"
+                  allow-clear
+                  @input="clearUserError"
+                  @clear="clearUserError"
+                  @press-enter="onSubmit"
+                >
+                  <template #prefix><i class="fa-light fa-user" aria-hidden="true"></i></template>
+                </a-input>
+                <p v-if="userNameError" class="wa-layout__login-error">{{ userNameError }}</p>
+              </div>
+              <div class="wa-layout__login-field wa-layout__login-field--pwd" :class="{ 'is-error': !!passwordError }" @focusin="clearPwdError">
+                <label class="wa-layout__login-label" for="auth-login-password">登录密码</label>
+                <a-input-password
+                  id="auth-login-password"
+                  v-model="password"
+                  placeholder="请输入登录密码"
+                  :error="!!passwordError"
+                  allow-clear
+                  @input="clearPwdError"
+                  @clear="clearPwdError"
+                  @press-enter="onSubmit"
+                >
+                  <template #prefix><i class="fa-light fa-lock-keyhole" aria-hidden="true"></i></template>
+                </a-input-password>
+                <p v-if="passwordError" class="wa-layout__login-error">{{ passwordError }}</p>
+              </div>
+              <div class="wa-layout__login-actions">
+                <a-checkbox v-model="remember">记住密码</a-checkbox>
+                <button type="button" class="wa-layout__login-forget" @click="openForget">忘记密码</button>
+              </div>
+              <a-button type="primary" long class="wa-layout__login-submit" :loading="loading" @click="onSubmit">
+                <i class="fa-regular fa-arrow-right-to-bracket" aria-hidden="true"></i>
+                <span>登录</span>
+              </a-button>
+              <a-button type="text" long class="wa-layout__login-register" @click="openRegister">注册账号</a-button>
+              <div class="wa-layout__login-social">
+                <p class="wa-layout__login-social-label">其它登录方式</p>
+                <div class="wa-layout__login-social-list" role="group" aria-label="其它登录方式">
+                  <button
+                    v-for="item in socialLogins"
+                    :key="item.key"
+                    type="button"
+                    class="wa-layout__login-social-btn"
+                    :class="'is-' + item.key"
+                    :aria-label="item.label"
+                    @click="onSocial(item.label)"
+                  >
+                    <i :class="['fa-brands', item.icon]" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <a-modal
+        v-model:visible="forgetVisible"
+        title="重置密码"
+        title-align="start"
+        :width="420"
+        unmount-on-close
+        modal-class="pro-content-modal"
+        @cancel="forgetVisible = false"
+      >
+        <a-form :model="forgetForm" layout="vertical" class="mc-form">
+          <a-form-item label="邮箱" required :validate-status="forgetErrors.email ? 'error' : undefined" :help="forgetErrors.email || undefined">
+            <a-input
+              class="wa-layout__login-email"
+              v-model="forgetForm.email"
+              placeholder="请输入邮箱"
+              allow-clear
+              @input="forgetErrors.email = ''"
+            >
+              <template #suffix>
+                <a-button type="text" size="mini" class="wa-layout__login-send" :disabled="forgetCountdown > 0" @click="sendForgetCode">{{ forgetCodeBtn }}</a-button>
+              </template>
+            </a-input>
+          </a-form-item>
+          <a-form-item label="验证码" required :validate-status="forgetErrors.code ? 'error' : undefined" :help="forgetErrors.code || undefined">
+            <a-verification-code
+              class="wa-input-otp"
+              v-model="forgetForm.code"
+              :length="6"
+              @change="forgetErrors.code = ''"
+            ></a-verification-code>
+          </a-form-item>
+          <a-form-item label="新密码" required :validate-status="forgetErrors.password ? 'error' : undefined" :help="forgetErrors.password || undefined">
+            <a-input-password v-model="forgetForm.password" placeholder="至少 6 位" allow-clear @input="forgetErrors.password = ''" />
+          </a-form-item>
+          <a-form-item label="确认密码" required :validate-status="forgetErrors.confirm ? 'error' : undefined" :help="forgetErrors.confirm || undefined">
+            <a-input-password v-model="forgetForm.confirm" placeholder="请再次输入密码" allow-clear @input="forgetErrors.confirm = ''" />
+          </a-form-item>
+        </a-form>
+        <template #footer>
+          <a-button type="primary" shape="round" :loading="forgetSubmitting" @click="submitForget">确认重置</a-button>
+          <a-button type="secondary" shape="round" @click="forgetVisible = false">取消</a-button>
+        </template>
+      </a-modal>
+
+      <a-modal
+        v-model:visible="registerVisible"
+        title="注册账号"
+        title-align="start"
+        :width="420"
+        unmount-on-close
+        modal-class="pro-content-modal"
+        @cancel="registerVisible = false"
+      >
+        <a-form :model="registerForm" layout="vertical" class="mc-form">
+          <a-form-item label="用户名" required :validate-status="registerErrors.userName ? 'error' : undefined" :help="registerErrors.userName || undefined">
+            <a-input v-model="registerForm.userName" placeholder="请输入用户名" allow-clear @input="registerErrors.userName = ''" />
+          </a-form-item>
+          <a-form-item label="邮箱" required :validate-status="registerErrors.email ? 'error' : undefined" :help="registerErrors.email || undefined">
+            <a-input
+              class="wa-layout__login-email"
+              v-model="registerForm.email"
+              placeholder="请输入邮箱"
+              allow-clear
+              @input="registerErrors.email = ''"
+            >
+              <template #suffix>
+                <a-button type="text" size="mini" class="wa-layout__login-send" :disabled="registerCountdown > 0" @click="sendRegisterCode">{{ registerCodeBtn }}</a-button>
+              </template>
+            </a-input>
+          </a-form-item>
+          <a-form-item label="验证码" required :validate-status="registerErrors.code ? 'error' : undefined" :help="registerErrors.code || undefined">
+            <a-verification-code
+              class="wa-input-otp"
+              v-model="registerForm.code"
+              :length="6"
+              @change="registerErrors.code = ''"
+            ></a-verification-code>
+          </a-form-item>
+          <a-form-item label="密码" required :validate-status="registerErrors.password ? 'error' : undefined" :help="registerErrors.password || undefined">
+            <a-input-password v-model="registerForm.password" placeholder="至少 6 位" allow-clear @input="registerErrors.password = ''" />
+          </a-form-item>
+          <a-form-item label="确认密码" required :validate-status="registerErrors.confirm ? 'error' : undefined" :help="registerErrors.confirm || undefined">
+            <a-input-password v-model="registerForm.confirm" placeholder="请再次输入密码" allow-clear @input="registerErrors.confirm = ''" />
+          </a-form-item>
+        </a-form>
+        <template #footer>
+          <a-button type="primary" shape="round" :loading="registerSubmitting" @click="submitRegister">立即注册</a-button>
+          <a-button type="secondary" shape="round" @click="registerVisible = false">取消</a-button>
+        </template>
+      </a-modal>
+    </div>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="./layout.js"></script>
+</body>
+</html>

@@ -3,16 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
   <title>VibePM · 焦糖暗艺编排主题 · 完整预览页</title>
   <meta name="description" content="VibePM「焦糖暗艺」主题预览：近黑焦糖画布与暖橙强调，Fraunces 衬线标题与内高光描边，编辑型暗色产品编排风格。">
   <meta name="keywords" content="VibePM,焦糖暗艺,暗色编辑,暖橙强调,衬线标题,视觉主题预览,设计令牌">
-  <link rel="icon" href="https://www.vibepm.net/assets/image/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="https://www.vibepm.net/assets/images/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,500;1,9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,500;1,9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap"></noscript>
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"></noscript>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"></noscript>
   <style>
     :root {
       --bg: #0d0a06;
@@ -57,7 +58,7 @@
       --ink-on-accent: #2a1408;
     
       --scrollbar-size: 8px;
-      --scrollbar-track: transparent;
+      --scrollbar-track: var(--bg, var(--bg-page, var(--background, var(--surface-page, var(--surface-base, var(--c-bg, Canvas))))));
       --scrollbar-thumb: rgba(255, 255, 255, 0.14);
       --scrollbar-thumb-hover: rgba(255, 255, 255, 0.26);
       --scrollbar-thumb-active: rgba(255, 255, 255, 0.34);
@@ -728,6 +729,10 @@
     }
     .btn-primary:active { transform: scale(0.97) translateY(0); }
     .btn-secondary {
+      /* data-wa-btn-secondary-fill: iframe 嵌入时防 UA 按壳页 scheme 刷深色字 */
+      color: var(--text1, var(--text-primary, inherit)) !important;
+      -webkit-text-fill-color: var(--text1, var(--text-primary, currentColor));
+
       background: var(--surface1);
       border-color: var(--n-200);
       color: var(--text1);

@@ -1,5 +1,11 @@
 # 绯雾轻写 · 视觉规范
 
+## 交付
+- ZIP：{{zip_url}}
+- slug：绯雾轻写
+- 包内：`绯雾轻写-style.md`、`绯雾轻写-preview.html`（站上复制「下载主题」时注入完整 ZIP 地址；规则见 docs/设计资源-上架-ZIP.md）
+
+
 ﻿## 风格快照 / Style Snapshot
 - **整体风格 / Overall style**：**绯雾轻写** — 亮白 / 暖浅灰纸面 + 单一绯雾红 `#e74c3c`；Inter 超黑英雄标题（关键词点绯）+ Plus Jakarta Sans 辅助；中圆角卡与胶囊筛选；主 CTA 柔绯光晕。完整反馈层：`.is-error` 红环 + `.field-error`、清空钮、提交行、顶部 Toast、绯雾浅底提示条，以及约 `16px` 圆角不透明弹窗（遮罩可 `blur`）。
 - **语气关键词 / Tone keywords**：绯雾、轻纸、超黑 Inter、柔绯光晕、胶囊筛选、写作工具、克制反馈、不透明弹层。

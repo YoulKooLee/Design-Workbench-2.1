@@ -1,3 +1,5 @@
+@import "./dashboard-shared.css";
+
 /* 金融仪表盘（对齐 shadcn /dashboard/banking） */
 
 .bank-page {
@@ -43,107 +45,12 @@
   padding-left: 0;
 }
 
-.bank-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab:first-child {
-  margin-left: 0;
-}
-
-.bank-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab {
-  border: 1px solid transparent;
-  background-color: transparent;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.bank-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab:hover {
-  color: rgb(var(--primary-6));
-  background-color: transparent;
-}
-
-.bank-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active,
-.bank-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active:hover {
-  color: rgb(var(--primary-6));
-  background-color: var(--pro-theme-color-soft);
-  border-color: rgb(var(--primary-6));
-}
-
-.bank-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active .arco-tabs-tab-title {
-  color: inherit;
-}
-
 .bank-tabs .arco-tabs-nav-ink {
   display: none;
 }
 
 .bank-tabs .arco-tabs-content {
   display: none;
-}
-
-.bank-filters {
-  --bank-filter-h: 32px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.bank-filters .arco-select,
-.bank-filters .arco-picker,
-.bank-filters .arco-btn {
-  height: var(--bank-filter-h) !important;
-  min-height: var(--bank-filter-h) !important;
-  max-height: var(--bank-filter-h) !important;
-  box-sizing: border-box !important;
-}
-
-.bank-filters .arco-select-view-single,
-.bank-filters .arco-picker {
-  height: 100% !important;
-  min-height: var(--bank-filter-h) !important;
-  max-height: var(--bank-filter-h) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  box-sizing: border-box !important;
-}
-
-.bank-filters .arco-select-view-size-medium .arco-select-view-value,
-.bank-filters .arco-select-view-size-medium .arco-select-view-input {
-  min-height: 0 !important;
-  height: 100% !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  line-height: 1.5715 !important;
-}
-
-.bank-filters .arco-btn {
-  padding: 0 15px !important;
-  line-height: 1 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: var(--border-radius-small) !important;
-}
-
-.bank-filters .arco-btn .arco-btn-icon {
-  display: inline-flex !important;
-  align-items: center !important;
-  margin-right: 6px !important;
-  line-height: 1 !important;
-}
-
-.bank-filters .arco-btn .arco-btn-icon .arco-icon,
-.bank-filters .arco-btn .arco-icon {
-  width: 14px !important;
-  height: 14px !important;
-  font-size: 14px !important;
-}
-
-.bank-filters .bank-refresh-btn {
-  width: var(--bank-filter-h) !important;
-  padding: 0 !important;
-}
-
-.bank-filters .bank-refresh-btn .arco-btn-icon {
-  margin-right: 0 !important;
 }
 
 .bank-placeholder {
@@ -334,34 +241,6 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-}
-
-.bank-section-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.bank-section-title {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 8px;
-  margin: 0 !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  line-height: 24px !important;
-  color: var(--color-text-1) !important;
-}
-
-.bank-section-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
 }
 
 .bank-section-desc {
@@ -578,10 +457,7 @@
   margin-bottom: 16px;
 }
 
-.bank-cards-head .bank-section-title {
-  text-align: left;
-}
-
+.bank-cards-head .bank-section-title,
 .bank-cards-head .bank-section-desc {
   text-align: left;
 }

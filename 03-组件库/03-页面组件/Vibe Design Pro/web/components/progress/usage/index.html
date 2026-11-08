@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>用量进度 · progress-usage</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="progress-usage">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">用量进度</span>
+        <span class="wa-comp-meta__slug">progress-usage</span>
+      </div>
+      <div class="wa-embed__stage">
+        <div class="wa-progress-usage">
+          <div class="wa-progress-usage__head">
+            <span class="wa-progress-usage__title">存储用量</span>
+            <a-tag size="small" color="gray">中等</a-tag>
+          </div>
+          <a-progress
+            class="wa-progress-demo"
+            :percent="0.75"
+            :show-text="false"
+            color="rgb(var(--primary-6))"
+            track-color="var(--color-fill-3)"
+            :stroke-width="10"
+          ></a-progress>
+          <div class="wa-progress-usage__foot">
+            <span>已用 7.5 GB / 共 10 GB</span>
+            <span class="wa-progress-usage__pct">75%</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>提示 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="alert">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">alert</p>
+          <h1 class="wa-fam-title">提示</h1>
+          <p class="wa-fam-lead">页内静态提示条，传达信息成功警告错误与可关闭说明。</p>
+          <p class="wa-fam-lead">组件类型：default / success / warning / error / title-default / title-success / title-warning / title-error</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="alert-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">默认提示</span><span class="wa-comp-meta__slug">alert-default</span></div>
+              <a-tooltip :content="famCopyTip('alert-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('alert-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('alert-default')"
+                :aria-label="famCopyTip('alert-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('alert-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-alert type="info" show-icon>
+                  内容已自动保存为草稿，可随时继续编辑。
+                </a-alert>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="alert-success">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">成功提示</span><span class="wa-comp-meta__slug">alert-success</span></div>
+              <a-tooltip :content="famCopyTip('alert-success')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('alert-success') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('alert-success')"
+                :aria-label="famCopyTip('alert-success')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('alert-success')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-alert type="success" show-icon>
+                  数据同步完成，共更新 128 条记录。
+                </a-alert>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="alert-warning">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">警告提示</span><span class="wa-comp-meta__slug">alert-warning</span></div>
+              <a-tooltip :content="famCopyTip('alert-warning')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('alert-warning') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('alert-warning')"
+                :aria-label="famCopyTip('alert-warning')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('alert-warning')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-alert type="warning" show-icon>
+                  当前为演示环境，提交不会写入真实数据。
+                </a-alert>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="alert-error">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">错误提示</span><span class="wa-comp-meta__slug">alert-error</span></div>
+              <a-tooltip :content="famCopyTip('alert-error')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('alert-error') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('alert-error')"
+                :aria-label="famCopyTip('alert-error')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('alert-error')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-alert type="error" show-icon closable>
+                  部分字段校验未通过，请检查后重新提交。
+                </a-alert>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="alert-title-default">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">带标题默认提示</span><span class="wa-comp-meta__slug">alert-title-default</span></div>
+              <a-tooltip :content="famCopyTip('alert-title-default')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('alert-title-default') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('alert-title-default')"
+                :aria-label="famCopyTip('alert-title-default')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('alert-title-default')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-alert type="info" show-icon title="信息提示">
+                  内容已自动保存为草稿，可随时继续编辑。
+                </a-alert>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="alert-title-success">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">带标题成功提示</span><span class="wa-comp-meta__slug">alert-title-success</span></div>
+              <a-tooltip :content="famCopyTip('alert-title-success')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('alert-title-success') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('alert-title-success')"
+                :aria-label="famCopyTip('alert-title-success')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('alert-title-success')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-alert type="success" show-icon title="成功提示">
+                  数据同步完成，共更新 128 条记录。
+                </a-alert>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="alert-title-warning">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">带标题警告提示</span><span class="wa-comp-meta__slug">alert-title-warning</span></div>
+              <a-tooltip :content="famCopyTip('alert-title-warning')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('alert-title-warning') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('alert-title-warning')"
+                :aria-label="famCopyTip('alert-title-warning')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('alert-title-warning')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-alert type="warning" show-icon title="风险提示">
+                  当前为演示环境，提交不会写入真实数据。
+                </a-alert>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="alert-title-error">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">带标题错误提示</span><span class="wa-comp-meta__slug">alert-title-error</span></div>
+              <a-tooltip :content="famCopyTip('alert-title-error')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('alert-title-error') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('alert-title-error')"
+                :aria-label="famCopyTip('alert-title-error')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('alert-title-error')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <a-alert type="error" show-icon closable title="错误提示">
+                  部分字段校验未通过，请检查后重新提交。
+                </a-alert>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'alert',
+      members: [
+        'alert-default',
+        'alert-success',
+        'alert-warning',
+        'alert-error',
+        'alert-title-default',
+        'alert-title-success',
+        'alert-title-warning',
+        'alert-title-error',
+      ],
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

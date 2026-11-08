@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <script src="../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VibePM · 主题风格 · 设计系统验收页</title>
+  <meta name="description" content="VibePM「主题风格」验收页：在同一页核对色彩 token、按钮与控件家族、卡片表面、字阶、标签反馈与图表配色，支持品牌皮与明暗切换，对齐 global.css 与 components.css。">
+  <meta name="keywords" content="VibePM,主题风格,theme,设计令牌,换肤验收,紫雾轻写,亮色科技蓝,白场凝缩秀,鼠尾草暖纸,Vibe Design">
+  <link rel="icon" href="https://www.vibepm.net/assets/images/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../assets/common/charts/shadcn-chart.css" />
+  <link rel="stylesheet" href="../components/type-scale/component.css" />
+  <link rel="stylesheet" href="../components/card/component.css" />
+  <link rel="stylesheet" href="../components/surface-fx/component.css" />
+  <link rel="stylesheet" href="../components/statistic/component.css" />
+  <link rel="stylesheet" href="../components/table/component.css" />
+  <link rel="stylesheet" href="../components/result/component.css" />
+  <link rel="stylesheet" href="../components/empty/component.css" />
+  <link rel="stylesheet" href="../components/slider/component.css" />
+  <link rel="stylesheet" href="../assets/effects/dashed-orbit/dashed-orbit.css" />
+  <link rel="stylesheet" href="./page.css?v=20261103c" />
+     <!--百度统计代码开始-->
+     <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?c8286c119d7b1a411699d3c750aee9fd";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+      </script>
+     <!--百度统计代码结束-->
+</head>
+<body>
+  <div
+    class="sc-orbit-host"
+    data-animation="dashed-orbit"
+    id="sc-orbit"
+    aria-hidden="true"
+  ></div>
+  <div id="app" v-cloak>
+    <main class="sc-container">
+      <div class="sc-top-nav-shell">
+      <header class="sc-card sc-top-nav">
+        <div class="sc-brand">
+          <span class="sc-brand__dot" aria-hidden="true"></span>
+          Vibe Design
+        </div>
+        <nav class="sc-menu" aria-label="预览分区">
+          <a href="#sec-colors">色彩系统</a>
+          <a href="#sec-buttons">按钮与图标</a>
+          <a href="#sec-surfaces">卡片容器</a>
+          <a href="#sec-controls">表单控件</a>
+          <a href="#sec-typescale">字号层级</a>
+          <a href="#sec-feedback">标签与反馈</a>
+          <a href="#sec-charts">图表预览</a>
+          <a href="#sec-data">数据表格</a>
+          <a href="#sec-progress">进度组件</a>
+          <a href="#sec-states">结果与空态</a>
+        </nav>
+        <div class="sc-nav-actions">
+          <a-dropdown position="br" trigger="click">
+            <a-button
+              size="small"
+              type="secondary"
+              class="sc-brand-dropdown-trigger"
+              :style="{ '--sc-brand-icon': brandColor }"
+            >
+              <template #icon>
+                <i class="fa-solid fa-palette sc-brand-trigger-icon" aria-hidden="true"></i>
+              </template>
+              {{ brandLabel }}
+              <icon-down class="sc-brand-trigger-caret"></icon-down>
+            </a-button>
+            <template #content>
+              <a-doption
+                v-for="item in brandList"
+                :key="item.id"
+                :class="{ 'wa-dropdown-checked': brand === item.id }"
+                @click="applyBrand(item.id)"
+              >
+                <template #icon>
+                  <span
+                    class="sc-brand-dot"
+                    :style="{ background: item.color }"
+                    aria-hidden="true"
+                  ></span>
+                </template>
+                {{ item.label }}
+              </a-doption>
+            </template>
+          </a-dropdown>
+          <a-button
+            type="secondary"
+            size="small"
+            class="sc-theme-toggle"
+            data-wa-theme-toggle
+            aria-label="切换明暗主题"
+          >
+            <template #icon>
+              <icon-sun v-if="theme === 'dark'"></icon-sun>
+              <icon-moon v-else></icon-moon>
+            </template>
+          </a-button>
+          <a-button
+            type="primary"
+            size="small"
+            @click="goHome"
+          >
+            <template #icon><icon-home></icon-home></template>
+            网站首页
+          </a-button>
+        </div>
+      </header>
+      </div>
+
+      <section class="sc-card sc-hero wa-spotlight" data-wa-spotlight-size="lg" id="sec-hero">
+        <div class="sc-hero__inner">
+          <div class="sc-hero__copy">
+            <p class="wa-kicker">Examples · theme</p>
+            <h1 class="wa-title wa-type-scale--display-3">Vibe Design<br />设计系统风格预览</h1>
+            <p class="wa-lead">
+              面向产品与设计团队的可视化设计系统预览：在同一页核对色彩、组件、卡片与反馈状态，
+              快速对齐品牌观感与交互规范，支撑官网、后台与 App 原型高效交付。
+            </p>
+            <div class="sc-actions">
+              <a-button size="large" type="primary" @click="goComponents">
+                <template #icon><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></template>
+                查看组件
+              </a-button>
+              <a-button size="large" class="wa-btn-soft" type="outline" @click="goLayouts">
+                <template #icon><i class="fa-solid fa-table-layout" aria-hidden="true"></i></template>
+                查看框架
+              </a-button>
+              <a-button size="large" class="wa-btn-soft" type="outline" @click="goBlocks">
+                <template #icon><i class="fa-solid fa-layer-group" aria-hidden="true"></i></template>
+                查看区块
+              </a-button>
+            </div>
+          </div>
+          <aside
+            class="sc-hero__aside wa-border-flow"
+            aria-label="设计令牌摘要"
+          >
+            <div class="sc-hero__aside-head">Tokens</div>
+            <div class="sc-token-stack">
+              <div class="sc-token">
+                <span class="sc-token__swatch" style="background: var(--wa-color-primary)"></span>
+                <div>
+                  <div class="sc-token__label">Primary</div>
+                  <div class="sc-token__title">--wa-color-primary</div>
+                </div>
+              </div>
+              <div class="sc-token">
+                <span class="sc-token__swatch" style="background: var(--wa-color-primary-soft)"></span>
+                <div>
+                  <div class="sc-token__label">Soft</div>
+                  <div class="sc-token__title">--wa-color-primary-soft</div>
+                </div>
+              </div>
+              <div class="sc-token">
+                <span class="sc-token__swatch" style="background: var(--wa-color-bg); border: var(--wa-border-w) solid var(--wa-color-border-1)"></span>
+                <div>
+                  <div class="sc-token__label">Bg</div>
+                  <div class="sc-token__title">--wa-color-bg</div>
+                </div>
+              </div>
+              <div class="sc-token">
+                <span class="sc-token__swatch" style="background: var(--wa-color-surface); border: var(--wa-border-w) solid var(--wa-color-border-1)"></span>
+                <div>
+                  <div class="sc-token__label">Surface</div>
+                  <div class="sc-token__title">--wa-color-surface</div>
+                </div>
+              </div>
+            </div>
+          </aside>
+          <div class="sc-kpi" aria-label="库存概览">
+            <div class="sc-kpi-item">
+              <div class="sc-kpi-value">{{ inventory.families }}</div>
+              <div class="sc-kpi-label">组件类型</div>
+            </div>
+            <div class="sc-kpi-item">
+              <div class="sc-kpi-value">{{ inventory.components }}</div>
+              <div class="sc-kpi-label">组件数量</div>
+            </div>
+            <div class="sc-kpi-item">
+              <div class="sc-kpi-value">{{ inventory.layouts }}</div>
+              <div class="sc-kpi-label">布局框架</div>
+            </div>
+            <div class="sc-kpi-item">
+              <div class="sc-kpi-value">{{ inventory.blocks }}</div>
+              <div class="sc-kpi-label">区块数量</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-colors">
+        <p class="wa-kicker">Colors · tokens</p>
+        <h2 class="sc-h2">色板与令牌</h2>
+        <div class="sc-grid-4" id="sc-color-swatches">
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-primary">
+            <div class="sc-swatch__color" style="background: var(--wa-color-primary)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">主色</span>
+              <code class="sc-swatch__value">--wa-color-primary</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-primary-soft">
+            <div class="sc-swatch__color" style="background: var(--wa-color-primary-soft)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">主色浅底</span>
+              <code class="sc-swatch__value">--wa-color-primary-soft</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="on-primary" data-token="--wa-color-on-primary">
+            <div class="sc-swatch__color sc-swatch__color--on-primary" aria-hidden="true">
+              <span class="sc-swatch__on-primary-mark">Aa</span>
+            </div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">主色上字</span>
+              <code class="sc-swatch__value">--wa-color-on-primary</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-text">
+            <div class="sc-swatch__color" style="background: var(--wa-color-text)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">正文</span>
+              <code class="sc-swatch__value">--wa-color-text</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-muted">
+            <div class="sc-swatch__color" style="background: var(--wa-color-muted)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">次要文案</span>
+              <code class="sc-swatch__value">--wa-color-muted</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-bg">
+            <div class="sc-swatch__color sc-swatch__color--lined" style="background: var(--wa-color-bg)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">页面底</span>
+              <code class="sc-swatch__value">--wa-color-bg</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-surface">
+            <div class="sc-swatch__color sc-swatch__color--lined" style="background: var(--wa-color-surface)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">卡片表面</span>
+              <code class="sc-swatch__value">--wa-color-surface</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-border-1">
+            <div class="sc-swatch__color" style="background: var(--wa-color-border-1)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">描边 · 弱</span>
+              <code class="sc-swatch__value">--wa-color-border-1</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-border-2">
+            <div class="sc-swatch__color" style="background: var(--wa-color-border-2)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">描边 · 默认</span>
+              <code class="sc-swatch__value">--wa-color-border-2</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-border-3">
+            <div class="sc-swatch__color" style="background: var(--wa-color-border-3)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">描边 · 强</span>
+              <code class="sc-swatch__value">--wa-color-border-3</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-color-accent">
+            <div class="sc-swatch__color" style="background: var(--wa-color-accent)"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">强调色</span>
+              <code class="sc-swatch__value">--wa-color-accent</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--success-6">
+            <div class="sc-swatch__color" style="background: rgb(var(--success-6))"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">成功</span>
+              <code class="sc-swatch__value">--success-6</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--warning-6">
+            <div class="sc-swatch__color" style="background: rgb(var(--warning-6))"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">警告</span>
+              <code class="sc-swatch__value">--warning-6</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--danger-6">
+            <div class="sc-swatch__color" style="background: rgb(var(--danger-6))"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">危险</span>
+              <code class="sc-swatch__value">--danger-6</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="shadow" data-token="--wa-shadow-soft">
+            <div class="sc-swatch__color sc-swatch__color--shadow"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">卡片阴影</span>
+              <code class="sc-swatch__value">--wa-shadow-soft</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="shadow" data-token="--wa-shadow-section">
+            <div class="sc-swatch__color sc-swatch__color--shadow-section"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">区块阴影</span>
+              <code class="sc-swatch__value">--wa-shadow-section</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="shadow" data-token="--wa-shadow-lift">
+            <div class="sc-swatch__color sc-swatch__color--shadow-lift"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">控件抬升</span>
+              <code class="sc-swatch__value">--wa-shadow-lift</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="shadow" data-token="--wa-shadow-button">
+            <div class="sc-swatch__color sc-swatch__color--shadow-button"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">主按钮光晕</span>
+              <code class="sc-swatch__value">--wa-shadow-button</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="bg" data-token="--wa-mask-bg">
+            <div class="sc-swatch__color sc-swatch__color--mask"></div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">弹层遮罩</span>
+              <code class="sc-swatch__value">--wa-mask-bg</code>
+            </div>
+          </div>
+          <div class="sc-swatch" data-sc-swatch data-kind="token" data-token="--wa-mask-blur">
+            <div class="sc-swatch__color sc-swatch__color--mask-blur">
+              <span class="sc-swatch__mask-frost" aria-hidden="true"></span>
+            </div>
+            <div class="sc-swatch__meta">
+              <span class="sc-swatch__name">遮罩磨砂</span>
+              <code class="sc-swatch__value">--wa-mask-blur</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-buttons">
+        <p class="wa-kicker">Buttons · families</p>
+        <h2 class="sc-h2">按钮家族</h2>
+
+        <div class="sc-fam-row">
+          <div class="sc-fam-label">
+            <span class="sc-fam-label__zh">主要按钮</span>
+            <span class="sc-fam-label__en">btn-primary</span>
+          </div>
+          <div class="sc-actions sc-actions--tight">
+            <a-button size="large" type="primary" @click="ping('主要按钮')">主要按钮</a-button>
+            <a-button size="large" type="primary" @click="ping('图标按钮')"><template #icon><icon-send /></template>图标按钮</a-button>
+            <a-button size="large" type="primary" shape="round" @click="ping('默认胶囊')">默认胶囊</a-button>
+            <a-button size="large" type="primary" shape="round" @click="ping('图标胶囊')"><template #icon><icon-notification /></template>图标胶囊</a-button>
+            <a-button size="large" type="primary" loading>正在加载</a-button>
+            <a-button size="large" type="primary" disabled>禁用按钮</a-button>
+          </div>
+        </div>
+
+        <div class="sc-fam-row">
+          <div class="sc-fam-label">
+            <span class="sc-fam-label__zh">柔和按钮</span>
+            <span class="sc-fam-label__en">btn-soft</span>
+          </div>
+          <div class="sc-actions sc-actions--tight">
+            <a-button size="large" class="wa-btn-soft" type="outline" @click="ping('柔和按钮')">柔和按钮</a-button>
+            <a-button size="large" class="wa-btn-soft" type="outline" @click="ping('图标按钮')"><template #icon><icon-calendar /></template>图标按钮</a-button>
+            <a-button size="large" class="wa-btn-soft" type="outline" shape="round" @click="ping('默认胶囊')">默认胶囊</a-button>
+            <a-button size="large" class="wa-btn-soft" type="outline" shape="round" @click="ping('图标胶囊')"><template #icon><icon-file /></template>图标胶囊</a-button>
+            <a-button size="large" class="wa-btn-soft" type="outline" loading>正在加载</a-button>
+            <a-button size="large" class="wa-btn-soft" type="outline" disabled>禁用按钮</a-button>
+          </div>
+        </div>
+
+        <div class="sc-fam-row">
+          <div class="sc-fam-label">
+            <span class="sc-fam-label__zh">中性按钮</span>
+            <span class="sc-fam-label__en">btn-secondary</span>
+          </div>
+          <div class="sc-actions sc-actions--tight">
+            <a-button size="medium" type="secondary" @click="ping('中性按钮')">中性按钮</a-button>
+            <a-button size="medium" type="secondary" @click="ping('图标按钮')"><template #icon><icon-settings /></template>图标按钮</a-button>
+            <a-button size="medium" type="secondary" shape="round" @click="ping('默认胶囊')">默认胶囊</a-button>
+            <a-button size="medium" type="secondary" shape="round" @click="ping('图标胶囊')"><template #icon><icon-refresh /></template>图标胶囊</a-button>
+            <a-button size="medium" type="secondary" loading>正在加载</a-button>
+            <a-button size="medium" type="secondary" disabled>禁用按钮</a-button>
+          </div>
+        </div>
+
+        <div class="sc-fam-row">
+          <div class="sc-fam-label">
+            <span class="sc-fam-label__zh">描边按钮</span>
+            <span class="sc-fam-label__en">btn-outline</span>
+          </div>
+          <div class="sc-actions sc-actions--tight">
+            <a-button type="outline" @click="ping('描边')">描边按钮</a-button>
+            <a-button type="outline" status="success" @click="ping('成功')">成功按钮</a-button>
+            <a-button type="outline" status="warning" @click="ping('警告')">警告按钮</a-button>
+            <a-button type="outline" status="danger" @click="ping('危险')">危险按钮</a-button>
+            <a-button type="outline" loading>正在加载</a-button>
+            <a-button type="outline" disabled>禁用按钮</a-button>
+          </div>
+        </div>
+
+        <div class="sc-fam-row">
+          <div class="sc-fam-label">
+            <span class="sc-fam-label__zh">图标按钮</span>
+            <span class="sc-fam-label__en">btn-icon</span>
+          </div>
+          <div class="sc-actions sc-actions--tight">
+            <a-button size="medium" type="secondary" shape="circle" aria-label="复制"><template #icon><icon-copy /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="提示"><template #icon><icon-exclamation-circle /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="删除"><template #icon><icon-delete /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="上传"><template #icon><icon-upload /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="更多"><template #icon><icon-ellipsis /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="刷新"><template #icon><icon-refresh /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="新增"><template #icon><icon-plus /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="减少"><template #icon><icon-minus /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="向左"><template #icon><icon-left /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="向右"><template #icon><icon-right /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="确认"><template #icon><icon-check /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="展开"><template #icon><icon-down /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="搜索"><template #icon><icon-search /></template></a-button>
+            <a-button size="medium" type="secondary" shape="circle" aria-label="设置"><template #icon><icon-settings /></template></a-button>
+          </div>
+        </div>
+
+        <div class="sc-fam-row sc-fam-row--sizes">
+          <div class="sc-fam-label">
+            <span class="sc-fam-label__zh">按钮尺寸</span>
+            <span class="sc-fam-label__en">btn-size</span>
+          </div>
+          <div class="sc-actions sc-actions--tight sc-actions--baseline">
+            <a-button size="large" class="wa-btn-cta" type="primary" @click="ping('营销 CTA')"><template #icon><icon-send></icon-send></template>营销 CTA</a-button>
+            <a-button type="primary" size="large" @click="ping('大号按钮')"><template #icon><icon-send></icon-send></template>大号按钮</a-button>
+            <a-button type="primary" size="medium" @click="ping('中号按钮')"><template #icon><icon-send></icon-send></template>中号按钮</a-button>
+            <a-button type="primary" size="small" @click="ping('小号按钮')"><template #icon><icon-send></icon-send></template>小号按钮</a-button>
+            <a-button type="primary" size="mini" @click="ping('迷你按钮')"><template #icon><icon-send></icon-send></template>迷你按钮</a-button>
+          </div>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-surfaces">
+        <p class="wa-kicker">Surfaces · cards</p>
+        <h2 class="sc-h2">卡片容器</h2>
+        <div class="sc-card-row">
+          <a-card class="wa-acard wa-acard--shadow wa-spotlight">
+            <h3 class="wa-acard-title">Card Shadow</h3>
+            <p class="wa-acard-desc">纯白卡面 + soft 投影，层级清晰不抢眼。</p>
+            <hr class="wa-acard-split" />
+            <p class="wa-acard-desc">适合内容展示与信息分组。</p>
+          </a-card>
+          <a-card class="wa-acard">
+            <h3 class="wa-acard-title">Card Flat</h3>
+            <p class="wa-acard-desc">无投影平面卡，适合弱层级说明。</p>
+            <hr class="wa-acard-split" />
+            <p class="wa-acard-desc">常用于次级说明区。</p>
+          </a-card>
+          <a-card class="wa-acard wa-acard--dark">
+            <p class="wa-acard-kicker">推荐方案</p>
+            <div class="wa-acard-price"><span class="wa-acard-price__currency">¥</span>199<span class="wa-acard-price__unit">/月</span></div>
+            <p class="wa-acard-desc">会员头图式蓝渐变锚点卡，角上半透明装饰圆。</p>
+            <a-button type="primary" shape="round" style="margin-top:16px" @click="ping('立即开通')">立即开通</a-button>
+          </a-card>
+        </div>
+        <div class="sc-card-row" style="margin-top:14px">
+          <a-card class="wa-acard wa-acard--shadow wa-shine">
+            <h3 class="wa-acard-title">悬停扫光</h3>
+            <p class="wa-acard-desc">悬停时斜向高光扫过表面，适合强调可点击内容卡。</p>
+            <hr class="wa-acard-split" />
+            <p class="wa-acard-desc">surface-fx · shine</p>
+          </a-card>
+          <a-card class="wa-acard wa-acard--shadow wa-border-flow">
+            <h3 class="wa-acard-title">流光边框</h3>
+            <p class="wa-acard-desc">悬停时主色高光沿边框旋转，适合定价或重点方案卡。</p>
+            <hr class="wa-acard-split" />
+            <p class="wa-acard-desc">surface-fx · border-flow</p>
+          </a-card>
+          <a-card class="wa-acard wa-acard--shadow wa-lift">
+            <h3 class="wa-acard-title">悬停抬起</h3>
+            <p class="wa-acard-desc">悬停上移并加强阴影，不跟鼠标，适合功能入口卡。</p>
+            <hr class="wa-acard-split" />
+            <p class="wa-acard-desc">surface-fx · lift</p>
+          </a-card>
+        </div>
+        <div class="sc-card-row" style="margin-top:14px">
+          <a-card class="wa-acard wa-acard--shadow wa-spotlight">
+            <h3 class="wa-acard-title">使用进度</h3>
+            <div class="wa-acard-meter">
+              <div class="wa-acard-meter__head"><span>存储配额</span><strong>68%</strong></div>
+              <a-progress :percent="0.68" :show-text="false" :stroke-width="6" />
+            </div>
+            <div class="wa-acard-meter">
+              <div class="wa-acard-meter__head"><span>交付准时率</span><strong>91%</strong></div>
+              <a-progress :percent="0.91" :show-text="false" :stroke-width="6" />
+            </div>
+          </a-card>
+          <a-card class="wa-acard wa-acard--shadow wa-spotlight">
+            <h3 class="wa-acard-title">功能卡片</h3>
+            <p class="wa-acard-desc">纯白卡面 + soft 投影；适合内容展示，不做悬停位移。</p>
+            <div class="wa-acard-avatars" aria-label="协作者">
+              <a-avatar :size="28">LC</a-avatar>
+              <a-avatar :size="28" class="wa-acard-avatar--strong">HW</a-avatar>
+              <a-avatar :size="28">RK</a-avatar>
+              <a-avatar :size="28" class="wa-acard-avatar--muted">+8</a-avatar>
+            </div>
+          </a-card>
+          <a-card class="wa-acard wa-acard--shadow wa-acard--cta wa-spotlight">
+            <a-card-meta title="升级 Pro" description="解锁高级自动化与优先支持，帮助团队更快交付。"></a-card-meta>
+            <a-button type="primary" shape="round" long @click="ping('开始免费试用')">开始免费试用</a-button>
+          </a-card>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-controls">
+        <p class="wa-kicker">Forms · controls</p>
+        <h2 class="sc-h2">表单组件</h2>
+
+        <div class="sc-grid-2">
+          <div class="sc-form-col">
+            <div class="sc-field">
+              <span class="sc-label">搜索输入框</span>
+              <a-input v-model="search" placeholder="输入搜索关键词" allow-clear>
+                <template #suffix><icon-search /></template>
+              </a-input>
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">前缀输入框</span>
+              <a-input v-model="userName" placeholder="输入用户名称" allow-clear>
+                <template #prefix><icon-avatar-user /></template>
+              </a-input>
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">密码输入框</span>
+              <a-input-password v-model="password" placeholder="请输入密码" allow-clear />
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">数字输入框</span>
+              <a-input-number v-model="amount" :min="0" :max="9999" placeholder="请输入数量" style="width: 100%" />
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">下拉选择器</span>
+              <a-select v-model="region" placeholder="请选择所属区域" allow-clear>
+                <a-option value="east">华东</a-option>
+                <a-option value="south">华南</a-option>
+                <a-option value="north">华北</a-option>
+                <a-option value="west">西部</a-option>
+              </a-select>
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">端点标签滑块</span>
+              <div class="wa-slider-labels">
+                <div class="wa-slider-labels__ends" aria-hidden="true">
+                  <span>低</span>
+                  <span>高</span>
+                </div>
+                <a-slider class="wa-slider" v-model="intensity" :min="0" :max="100"></a-slider>
+              </div>
+            </div>
+          </div>
+          <div class="sc-form-col">
+            <div class="sc-field">
+              <span class="sc-label">日期选择器</span>
+              <a-date-picker
+                v-model="date"
+                format="YYYY-MM-DD"
+                placeholder="请选择日期"
+                allow-clear
+                style="width: 100%"
+              />
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">日期范围选择器</span>
+              <a-range-picker
+                v-model="dateRange"
+                format="YYYY-MM-DD"
+                :placeholder="['开始日期', '结束日期']"
+                allow-clear
+                style="width: 100%"
+              />
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">时间选择器</span>
+              <a-time-picker v-model="time" placeholder="请选择时间" allow-clear style="width: 100%" />
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">多选框</span>
+              <div class="sc-control-slot">
+                <a-checkbox-group v-model="channels">
+                  <a-checkbox value="email">邮件</a-checkbox>
+                  <a-checkbox value="sms">短信</a-checkbox>
+                  <a-checkbox value="push">推送</a-checkbox>
+                </a-checkbox-group>
+              </div>
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">单选框</span>
+              <div class="sc-control-slot">
+                <a-radio-group v-model="priority">
+                  <a-radio value="low">低</a-radio>
+                  <a-radio value="mid">中</a-radio>
+                  <a-radio value="high">高</a-radio>
+                </a-radio-group>
+              </div>
+            </div>
+            <div class="sc-field">
+              <span class="sc-label">开关</span>
+              <div class="sc-control-slot sc-control-slot--spread">
+                <span>公开资料</span>
+                <a-switch v-model="pubProfile" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-typescale">
+        <p class="wa-kicker">Type · scale</p>
+        <h2 class="sc-h2">字号层级</h2>
+        <div class="wa-type-scale">
+          <div class="wa-type-scale__row wa-type-scale__row--head" aria-hidden="true">
+            <span class="wa-type-scale__meta">场景 · 字号</span>
+            <span class="wa-type-scale__sample"></span>
+            <span class="wa-type-scale__face">字体 · 字重</span>
+          </div>
+          <div class="wa-type-scale__row">
+            <span class="wa-type-scale__meta">展示 · 48px</span>
+            <p class="wa-type-scale__sample wa-type-scale--display-2">把想法做成可交付原型</p>
+            <span class="wa-type-scale__face">Inter · 600</span>
+          </div>
+          <div class="wa-type-scale__row">
+            <span class="wa-type-scale__meta">展示 · 36px</span>
+            <p class="wa-type-scale__sample wa-type-scale--display-1">把想法做成可交付原型</p>
+            <span class="wa-type-scale__face">Inter · 600</span>
+          </div>
+          <div class="wa-type-scale__row">
+            <span class="wa-type-scale__meta">标题 · 24px</span>
+            <p class="wa-type-scale__sample wa-type-scale--title-3">区块小标题</p>
+            <span class="wa-type-scale__face">Inter · 600</span>
+          </div>
+          <div class="wa-type-scale__row">
+            <span class="wa-type-scale__meta">标题 · 16px</span>
+            <p class="wa-type-scale__sample wa-type-scale--title-1">卡片标题</p>
+            <span class="wa-type-scale__face">Inter · 600</span>
+          </div>
+          <div class="wa-type-scale__row">
+            <span class="wa-type-scale__meta">正文 · 14px</span>
+            <p class="wa-type-scale__sample wa-type-scale--body-3">正文说明：换肤后对比度仍应清晰可读。</p>
+            <span class="wa-type-scale__face">Inter · 400</span>
+          </div>
+          <div class="wa-type-scale__row">
+            <span class="wa-type-scale__meta">正文 · 12px</span>
+            <p class="wa-type-scale__sample wa-type-scale--body-1">辅助正文用于紧凑信息与次要文案。</p>
+            <span class="wa-type-scale__face">Inter · 400</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-feedback">
+        <p class="wa-kicker">Feedback · tags</p>
+        <h2 class="sc-h2">标签与反馈</h2>
+        <div class="sc-grid-2">
+          <a-card class="wa-acard wa-acard--shadow wa-spotlight" :bordered="false">
+            <h3 class="wa-acard-title">Tabs</h3>
+            <a-tabs class="wa-tabs-capsule sc-tabs-nav-only" v-model:active-key="activeTabCapsule" type="capsule">
+              <a-tab-pane key="overview">
+                <template #title><icon-apps></icon-apps>概览</template>
+              </a-tab-pane>
+              <a-tab-pane key="analytics">
+                <template #title><icon-activity></icon-activity>分析</template>
+              </a-tab-pane>
+              <a-tab-pane key="settings">
+                <template #title><icon-settings></icon-settings>设置</template>
+              </a-tab-pane>
+              <a-tab-pane key="billing">
+                <template #title><icon-credit-card></icon-credit-card>账单</template>
+              </a-tab-pane>
+            </a-tabs>
+            <div class="sc-spacer"></div>
+            <h3 class="wa-acard-title">消息提示</h3>
+            <div class="sc-actions sc-actions--tight">
+              <a-button type="secondary" size="small" @click="ping('操作成功')">成功</a-button>
+              <a-button type="secondary" size="small" @click="warn('请注意')">警告</a-button>
+              <a-button type="secondary" size="small" @click="fail('操作失败')">错误</a-button>
+              <a-button type="secondary" size="small" @click="info('已同步令牌')">信息</a-button>
+            </div>
+            <div class="sc-spacer"></div>
+            <h3 class="wa-acard-title">标签</h3>
+            <div class="sc-chip-row">
+              <a-tag bordered>中性</a-tag>
+              <a-tag color="arcoblue" bordered>主色</a-tag>
+              <a-tag color="green" bordered>成功</a-tag>
+              <a-tag color="orangered" bordered>警告</a-tag>
+              <a-tag color="red" bordered>危险</a-tag>
+              <a-tag bordered>v1.0</a-tag>
+            </div>
+          </a-card>
+          <a-card class="wa-acard wa-acard--shadow wa-spotlight" :bordered="false">
+            <h3 class="wa-acard-title">警告提示</h3>
+            <a-alert type="info" show-icon>设计令牌已与当前 global.css 同步。</a-alert>
+            <div class="sc-spacer"></div>
+            <a-alert type="success" show-icon>主色与按钮尺寸阶梯已对齐。</a-alert>
+            <div class="sc-spacer"></div>
+            <a-alert type="warning" show-icon>请 focus 上方日期选择，核对触发器描边。</a-alert>
+            <div class="sc-spacer"></div>
+            <a-alert type="error" show-icon>未选品牌皮时，默认走紫雾主色与暗色。</a-alert>
+          </a-card>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-charts">
+        <div class="sc-section-head">
+          <div class="sc-section-head__copy">
+            <p class="wa-kicker">Charts · preview</p>
+            <h2 class="sc-h2">图表预览</h2>
+          </div>
+          <a-dropdown :hide-on-select="false" position="br">
+            <a-button size="small" type="secondary" class="sc-chart-palette-trigger">
+              <template #icon><icon-palette /></template>
+              {{ chartPaletteLabel }}
+            </a-button>
+            <template #content>
+              <a-doption
+                v-for="item in chartPaletteList"
+                :key="item.key"
+                :class="{ 'wa-dropdown-checked': chartPalette === item.key }"
+                @click="applyChartPalette(item.key)"
+              >
+                {{ item.label }}
+              </a-doption>
+            </template>
+          </a-dropdown>
+        </div>
+        <div class="sc-chart-grid">
+          <a-card class="wa-acard wa-acard--flat sc-chart-card" v-for="c in chartDemos" :key="c.slug">
+            <header class="sc-chart-card__head">
+              <span class="sc-chart-card__title">{{ c.title }}</span>
+            </header>
+            <div class="sc-chart-demo">
+              <div v-if="c.slug.indexOf('chart-donut-') === 0" class="wa-chart-donut-slot">
+                <div :id="'sc-chart-host-' + c.slug" class="shadcn-chart-host shadcn-chart-host--donut"></div>
+              </div>
+              <div
+                v-else
+                :id="'sc-chart-host-' + c.slug"
+                class="shadcn-chart-host"
+                style="min-height:200px"
+              ></div>
+              <div :id="'sc-chart-legend-' + c.slug" class="shadcn-chart-legend"></div>
+            </div>
+          </a-card>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-data">
+        <p class="wa-kicker">Data · table</p>
+        <h2 class="sc-h2">表格与指标</h2>
+        <a-card class="wa-acard wa-acard--flat sc-stat-card">
+          <div class="wa-stat-row">
+            <a-statistic :value="1289604" show-group-separator>
+              <template #title>
+                <span class="wa-stat-title"><icon-eye :size="12"></icon-eye>页面浏览</span>
+              </template>
+            </a-statistic>
+            <a-statistic :value="12680.5" :precision="2" show-group-separator>
+              <template #title>
+                <span class="wa-stat-title"><icon-chart-column :size="12"></icon-chart-column>成交额</span>
+              </template>
+              <template #prefix>¥</template>
+            </a-statistic>
+            <a-statistic :value="12.6" :precision="1">
+              <template #title>
+                <span class="wa-stat-title"><icon-percent :size="12"></icon-percent>转化率</span>
+              </template>
+              <template #suffix>%</template>
+            </a-statistic>
+            <a-countdown :value="deadlineFlash" format="HH:mm:ss">
+              <template #title>
+                <span class="wa-stat-title"><icon-clock-circle :size="12"></icon-clock-circle>秒杀结束</span>
+              </template>
+            </a-countdown>
+          </div>
+        </a-card>
+        <div class="wa-atable-shell">
+          <div class="wa-atable-toolbar sc-table-toolbar">
+            <div class="sc-table-toolbar__head">
+              <div class="sc-table-toolbar__title">项目列表</div>
+              <div class="sc-table-toolbar__sub">2 分钟前更新</div>
+            </div>
+            <div class="sc-table-toolbar__actions">
+              <a-input-search
+                v-model="tableKeyword"
+                size="small"
+                allow-clear
+                placeholder="搜索名称 / 城市 / 负责人"
+              ></a-input-search>
+              <a-button type="secondary" size="small" @click="ping('导出')">
+                <template #icon><icon-download></icon-download></template>
+                导出
+              </a-button>
+            </div>
+          </div>
+          <a-table
+            class="wa-atable"
+            :columns="tableColumns"
+            :data="filteredTableData"
+            row-key="key"
+            :pagination="false"
+            :bordered="false"
+            :row-selection="{ type: 'checkbox', showCheckedAll: true }"
+            :selected-keys="selectedKeys"
+            @selection-change="onSelectionChange"
+          >
+            <template #status="{ record }">
+              <a-tag size="small" bordered :color="statusColor(record.status)">{{ record.status }}</a-tag>
+            </template>
+            <template #operations>
+              <a-dropdown position="br">
+                <a-button type="text" size="small" aria-label="更多操作">
+                  <template #icon><icon-ellipsis></icon-ellipsis></template>
+                </a-button>
+                <template #content>
+                  <a-doption @click="ping('查看')">
+                    <template #icon><icon-eye></icon-eye></template>
+                    查看
+                  </a-doption>
+                  <a-doption @click="ping('复制')">
+                    <template #icon><icon-copy></icon-copy></template>
+                    复制
+                  </a-doption>
+                  <div class="wa-dropdown-sep" role="separator"></div>
+                  <a-doption class="wa-dropdown-danger" @click="ping('删除')">
+                    <template #icon><icon-delete></icon-delete></template>
+                    删除
+                  </a-doption>
+                </template>
+              </a-dropdown>
+            </template>
+          </a-table>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-progress">
+        <p class="wa-kicker">进度条</p>
+        <h2 class="sc-h2">进度组件</h2>
+        <div class="sc-progress-grid">
+          <div class="sc-field">
+            <span class="sc-label">默认进度</span>
+            <a-progress :percent="0.62" :stroke-width="6"></a-progress>
+          </div>
+          <div class="sc-field">
+            <span class="sc-label">成功</span>
+            <a-progress :percent="0.72" status="success" :stroke-width="6"></a-progress>
+          </div>
+          <div class="sc-field">
+            <span class="sc-label">警告</span>
+            <a-progress :percent="0.36" status="warning" :stroke-width="6"></a-progress>
+          </div>
+          <div class="sc-field">
+            <span class="sc-label">危险</span>
+            <a-progress :percent="0.18" status="danger" :stroke-width="6"></a-progress>
+          </div>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section wa-spotlight" data-wa-spotlight-size="lg" id="sec-states">
+        <p class="wa-kicker">States · result</p>
+        <h2 class="sc-h2">结果与空态</h2>
+        <div class="sc-grid-3">
+          <a-card class="wa-acard wa-acard--flat sc-state-panel">
+            <a-result status="success" title="提交成功" subtitle="我们已收到你的申请，将尽快处理。">
+              <template #icon>
+                <icon-check-circle :size="48"></icon-check-circle>
+              </template>
+              <template #extra>
+                <a-space :size="12">
+                  <a-button type="primary" class="wa-btn--flat" shape="round" size="small" @click="ping('返回列表')">返回列表</a-button>
+                  <a-button type="secondary" shape="round" size="small">查看详情</a-button>
+                </a-space>
+              </template>
+            </a-result>
+          </a-card>
+          <a-card class="wa-acard wa-acard--flat sc-state-panel">
+            <a-result status="error" title="提交失败" subtitle="请检查网络后重试。">
+              <template #icon>
+                <icon-close-circle :size="48"></icon-close-circle>
+              </template>
+              <template #extra>
+                <a-space :size="12">
+                  <a-button type="primary" class="wa-btn--flat" shape="round" size="small" @click="ping('重试')">重试</a-button>
+                  <a-button type="secondary" shape="round" size="small">返回</a-button>
+                </a-space>
+              </template>
+            </a-result>
+          </a-card>
+          <a-card class="wa-acard wa-acard--flat sc-state-panel">
+            <div class="wa-empty">
+              <a-empty>
+                <template #image>
+                  <span class="wa-empty__media wa-empty__media--icon"><icon-folder :size="28"></icon-folder></span>
+                </template>
+                <div class="wa-empty__body">
+                  <div class="wa-empty__title">还没有任何项目</div>
+                  <p class="wa-empty__desc">创建你的第一个项目开始吧。</p>
+                  <a-space class="wa-empty__actions" :size="8">
+                    <a-button type="primary" class="wa-btn--flat" size="small" @click="ping('新建项目')">新建项目</a-button>
+                    <a-button type="secondary" size="small">导入项目</a-button>
+                  </a-space>
+                </div>
+              </a-empty>
+            </div>
+          </a-card>
+        </div>
+      </section>
+
+      <section class="sc-card sc-section sc-follow wa-spotlight" data-wa-spotlight-size="lg" id="sec-follow" aria-label="关注入口">
+        <p class="wa-kicker">Social CTA</p>
+        <h2 class="sc-h2">关注我们</h2>
+        <p class="wa-lead sc-follow__lead">获取最新设计规范与组件更新，访问官网或联系团队。</p>
+        <div class="sc-follow-bar" role="group" aria-label="访问 Vibe Design">
+          <div class="sc-follow-bar__text">
+            <div class="sc-follow-bar__label">Visit us</div>
+            <div class="sc-follow-bar__title">Vibe Design · 产品协作</div>
+          </div>
+          <div class="sc-follow-bar__divider" aria-hidden="true"></div>
+          <div class="sc-follow-bar__icons">
+            <span class="wa-bg-mp">
+              <a class="sc-follow-icon" href="javascript:void(0)" role="button" aria-label="微信公众号" aria-describedby="wa-theme-mp-card">
+                <i class="fa-brands fa-weixin" aria-hidden="true"></i>
+              </a>
+              <span class="wa-bg-mp__card" id="wa-theme-mp-card" role="tooltip">
+                <span class="wa-bg-mp__title">VibePM</span>
+                <span class="wa-bg-mp__hint">微信扫码关注公众号</span>
+                <img class="wa-bg-mp__qr" src="https://www.vibepm.net/assets/images/qrcode_gzh.png" width="136" height="136" alt="VibePM 公众号二维码" />
+              </span>
+            </span>
+            <a
+              class="sc-follow-icon"
+              href="https://work.weixin.qq.com/kfid/kfc30961678e9017618"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="咨询客服"
+              title="咨询客服"
+            >
+              <i class="fa-solid fa-comments" aria-hidden="true"></i>
+            </a>
+            <a
+              class="sc-follow-icon"
+              href="https://www.vibepm.net/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="官网主页"
+              title="官网主页"
+            >
+              <i class="fa-solid fa-house" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <footer class="sc-footer">
+        Copyright © 2026
+        <a href="https://www.vibepm.net" target="_blank" rel="noopener noreferrer">www.vibepm.net</a>
+        Vibe Design — All rights reserved
+      </footer>
+    </main>
+  </div>
+  <script src="../vendor/vue/vue.global.prod.js"></script>
+  <script src="../vendor/arco/arco-vue.min.js"></script>
+  <script src="../assets/common/js/fa-icons.js"></script>
+  <script src="../assets/common/js/boot.js"></script>
+  <script src="../vendor/unovis/unovis.min.js"></script>
+  <script src="../assets/common/charts/chart-palette.js"></script>
+  <script src="../assets/common/charts/shadcn-charts.js"></script>
+  <script src="../assets/common/charts/wa-chart-demos.js"></script>
+  <script src="../components/surface-fx/spotlight.js"></script>
+  <script src="../assets/effects/dashed-orbit/dashed-orbit.js"></script>
+  <script src="./page.js"></script>
+</body>
+</html>

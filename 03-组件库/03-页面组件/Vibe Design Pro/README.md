@@ -1,8 +1,8 @@
 # frame/ — 共享原型母版（产品设计工作台 03-组件库）
 
-本目录是 **vibepm-dev-agent v1.7 组件库迁入**后的共享母版根（HTML 母版、`_meta` catalog），**不是交付工程**，也不是可 `import` 的运行时。
+本目录是 **vibepm-dev-agent v1.7 组件库迁入、v1.8 升级**后的共享母版根（HTML 母版、`_meta` catalog），**不是交付工程**，也不是可 `import` 的运行时。
 
-> **当前交付状态（2026-09-13）**：`frame/` 下**三端齐全**——`admin/`（Vibe Design Pro 管理后台母版）、`web/`（WEB 静态资源包）、`app/`（iOS/微信设备壳）均为 `ready`；另有 `.style/` 视觉风格库（12 套，由 vibepm-demo-agent-v1.4 互补导入）。端状态以 `frame/index.json` 与 `component-registry.json` 为准，**不一致即视为缺陷**（smoke-test 有语义校验把关）。
+> **当前交付状态（2026-11-08）**：`frame/` 下**三端齐全**——`admin/`（Vibe Design Pro 管理后台母版 v1.2.0，50 页全量升级）、`web/`（Arco HTML 母版 v0.2.0：**layouts 18 壳 / blocks 区块 / components 98 组件 三件套齐备**）、`app/`（iOS/微信设备壳）均为 `ready`；另有 `.style/` 视觉风格库（12 套，已同步 v1.8）。升级来源：`新版本/工程资源包/开发包（下游）/vibepm-dev-agent`（v1.8）。端状态以 `frame/index.json` 与 `component-registry.json` 为准，**不一致即视为缺陷**（smoke-test 有语义校验把关）。
 
 ## 消费方式
 
@@ -35,13 +35,15 @@
 │   ├── README.md               ← 本文
 │   ├── index.json              ← 端 → 框架登记（选型用；三端 ready）
 │   ├── gallery.html            ← 母版画廊（预览墙，手写清单，不读 index.json）
-│   ├── .style/                 ← 视觉风格库（12 套：style.md + preview.html，v1.4 导入）
-│   ├── admin/                  ← 后台 HTML 母版（Vibe Design Pro，status=ready）
+│   ├── .style/                 ← 视觉风格库（12 套：style.md + preview.html，2026-11-08 同步 v1.8）
+│   ├── admin/                  ← 后台 HTML 母版（Vibe Design Pro v1.2.0，status=ready）
 │   │   └── _meta/
 │   │       ├── template.manifest.json   ← 模板元数据 / pageTypes
 │   │       └── pages.catalog.json       ← page-type → 样板路径（50 页）
-│   ├── web/                    ← WEB 静态资源包（fonts/vendor/css/js，v1.4 导入，ready）
-│   │   └── _meta/template.manifest.json
+│   ├── web/                    ← WEB Arco HTML 母版 v0.2.0（layouts/blocks/components 三件套 + assets/theme/vendor，v1.8 补齐，ready）
+│   │   ├── _meta/template.manifest.json
+│   │   ├── components/catalog.json      ← 98 组件登记（family / category / tier）
+│   │   └── blocks/catalog.json          ← 区块登记（shadcnuikit 来源）
 │   └── app/                    ← APP 设备壳（iOS/微信壳 + css/js/fonts/images/vendor，v1.4 导入，ready）
 │       └── _meta/template.manifest.json
 └── ui-libs/                    ← 组件库规范（ant-design-pro / arco-design-vue / element-plus / shadcn / vant）
@@ -74,16 +76,16 @@ SRS（v1.7 srs-writer）→ feature-dev → 对照 frame/<end> 在各项目 {PRO
 
 | 路径 | 端 | capability | 当前用法 |
 | --- | --- | --- | --- |
-| `admin/` | admin | `full-runtime` | **主路径（已交付）**：Vibe Design Pro HTML 样板；`feature-dev` 对照写入项目 Vue `admin/` |
-| `web/` | web | `vendor-and-conventions` | **已交付（v1.4 导入）**：静态站 fonts/vendor；按需拷资源到交付目录 |
+| `admin/` | admin | `full-runtime` | **主路径（已交付）**：Vibe Design Pro HTML 样板 v1.2.0；`feature-dev` 对照写入项目 Vue `admin/` |
+| `web/` | web | `layouts-blocks-components` | **已升级（v1.8）**：18 页面壳 + 区块 + 98 组件 HTML 母版；整壳参考或按需拷资源到交付目录 |
 | `app/` | app | `shells-and-vendor` | **已交付（v1.4 导入）**：iOS/微信壳 HTML + vendor；按需选用壳模板 |
 
-能力可以不对称：admin 是完整后台样板（50 页 catalog）；web/app 为基座资源包（fonts/vendor/壳），已随包交付。
+能力可以不对称：admin 是完整后台样板（50 页 catalog）；web 已补齐三件套（壳/区块/组件）；app 为设备壳资源包。
 
 | 框架目录 | 交付目录 | 说明 |
 | --- | --- | --- |
 | `frame/admin` | 项目 `admin/` | **对照重写**，不是整包复制 HTML runtime |
-| `frame/web` | 项目 `web/`（若存在） | 首次建站可拷 `fonts` / `vendor` / `images`（v1.4 已导入） |
+| `frame/web` | 项目 `web/`（若存在） | 参考壳（layouts）/ 区块（blocks）/ 组件（components），或按需拷 `assets` / `vendor`（v1.8 已补齐三件套） |
 | `frame/app` | 项目 `app/`（若存在） | 选壳模板生成页面，并拷运行时资源（iOS/微信壳，v1.4 已导入） |
 
 用户自建前端（不在工作台项目内）时：以该项目 `README-DEV.md` 为准，**禁止**静默用本目录覆盖已有工程。
@@ -170,15 +172,12 @@ web / app 扩展同理：根下新目录 + 挂到对应 `ends.web` / `ends.app`�
 | `../ui-libs/arco-design-vue/charts.md` | Admin 图表规范 |
 | `../ui-libs/`（ant-design-pro / element-plus / shadcn / vant） | 其余组件库规范 |
 
-## vendor 双副本同步维护声明（2026-09-19）
+## vendor 双副本同步维护声明（2026-09-19，2026-11-08 修订）
 
-本目录 `web/vendor/` 与 `app/vendor/`（预览页运行时依赖，304 处 `./vendor/...` 相对引用）
-与 `02-模板/vendor/{vibepm-web,vibepm-app}/`（新建项目装配到
-`.agents/skills/{vibepm-web,app}-generator/assets/vendor` 的素材）内容 MD5 一致。
+> **2026-11-08 修订**：原双副本对端 `02-模板/vendor/{vibepm-web,vibepm-app}/` 已随工作台模板区重构移除（`02-模板/` 现仅存 `_project-template` / `_project-development`），双副本同步规则**失效**。当前 `web/vendor`、`app/vendor` 为唯一副本，直接维护本目录即可；若未来重建模板侧 vendor 装配，再恢复本规则。
+
+本目录 `web/vendor/` 与 `app/vendor/` 为预览页运行时依赖（304 处 `./vendor/...` 相对引用）。
 
 - **组件库侧 vendor**：预览页 gallery.html / frame 运行时必需，**不可删**（删即预览 404）。
-- **模板侧 vendor**：新建 make 项目时 server.mjs 按需装配到项目 .agents，**不可删**（删即技能生成器找不到运行时）。
-- **更新规则**：改任一侧 vendor 后，必须把改动同步到另一侧，保持两边 MD5 一致。
-  验证命令：分别对两侧同子目录算 MD5 清单，diff 应为空。
-- admin/vendor（5.00MB）为 admin 框架独有，不在双副本范围内。
+- admin/vendor（5.00MB）为 admin 框架独有，随 v1.8 升级已更新（fontawesome 7.3.0 / arco-theme-pro 1.0.79）。
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>筛选标签 · command-filter-tabs</title>
+  <link rel="stylesheet" href="../../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../../index.css" />
+  <link rel="stylesheet" href="../component.css" />
+</head>
+<body class="wa-preview-embed">
+  <div id="app" v-cloak>
+    <article class="wa-card wa-embed wa-preview-stage" data-slug="command-filter-tabs">
+      <div class="wa-comp-meta wa-preview-chrome">
+        <span class="wa-comp-meta__name">筛选标签</span>
+        <span class="wa-comp-meta__slug">command-filter-tabs</span>
+      </div>
+      <div class="wa-embed__stage">
+        <div class="wa-command">
+          <div class="wa-command__search">
+            <span class="wa-command__search-icon"><icon-search :size="15"></icon-search></span>
+            <input class="wa-command__input" v-model="qTabs" type="text" placeholder="搜索…" autocomplete="off" />
+            <button type="button" class="wa-command__clear" v-show="qTabs" @click="qTabs = ''" aria-label="清除"><icon-close :size="12"></icon-close></button>
+          </div>
+          <div class="wa-command__tabs">
+            <button type="button" class="wa-command__tab" :class="{ 'is-active': tab === 'all' }" @click="tab = 'all'">全部</button>
+            <button type="button" class="wa-command__tab" :class="{ 'is-active': tab === 'files' }" @click="tab = 'files'">文件</button>
+            <button type="button" class="wa-command__tab" :class="{ 'is-active': tab === 'people' }" @click="tab = 'people'">成员</button>
+            <button type="button" class="wa-command__tab" :class="{ 'is-active': tab === 'commands' }" @click="tab = 'commands'">命令</button>
+          </div>
+          <div class="wa-command__list">
+            <template v-if="tab === 'all' || tab === 'commands'">
+              <div class="wa-command__group">
+                <div class="wa-command__heading">AI 提示词</div>
+                <button type="button" class="wa-command__item"><span class="wa-command__item-label">生成本日销售摘要</span></button>
+                <button type="button" class="wa-command__item"><span class="wa-command__item-label">根据今日预测创建待办</span></button>
+              </div>
+            </template>
+            <template v-if="tab === 'all'">
+              <div class="wa-command__group">
+                <div class="wa-command__heading">最近搜索</div>
+                <button type="button" class="wa-command__item"><span class="wa-command__item-icon"><icon-email :size="14"></icon-email></span><span class="wa-command__item-label">我的收件箱</span><span class="wa-command__item-meta">邮件</span></button>
+                <button type="button" class="wa-command__item"><span class="wa-command__item-icon"><icon-plus :size="14"></icon-plus></span><span class="wa-command__item-label">添加新任务</span><span class="wa-command__item-meta">个人草稿</span></button>
+                <button type="button" class="wa-command__item"><span class="wa-command__item-icon"><icon-user-group :size="14"></icon-user-group></span><span class="wa-command__item-label">数据分析团队</span><span class="wa-command__item-meta">群聊</span></button>
+              </div>
+            </template>
+            <template v-if="tab === 'files'">
+              <button type="button" class="wa-command__item"><span class="wa-command__item-icon"><icon-file :size="14"></icon-file></span><span class="wa-command__item-label">季度报告.pdf</span></button>
+              <button type="button" class="wa-command__item"><span class="wa-command__item-icon"><icon-file :size="14"></icon-file></span><span class="wa-command__item-label">路线图.xlsx</span></button>
+            </template>
+            <template v-if="tab === 'people'">
+              <button type="button" class="wa-command__item"><span class="wa-command__item-icon"><icon-user :size="14"></icon-user></span><span class="wa-command__item-label">张伟</span><span class="wa-command__item-meta">开发</span></button>
+              <button type="button" class="wa-command__item"><span class="wa-command__item-icon"><icon-user :size="14"></icon-user></span><span class="wa-command__item-label">李娜</span><span class="wa-command__item-meta">设计</span></button>
+            </template>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <script src="../../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../../assets/common/js/fa-icons.js"></script>
+  <script src="../../../assets/common/js/boot.js"></script>
+  <script src="../../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="../prompts.inline.js"></script>
+  <script src="../../copy-prompt.js?v=20261015q"></script>
+  <script src="../../member.js?v=20261103a"></script>
+  <script src="./component.js"></script>
+</body>
+</html>

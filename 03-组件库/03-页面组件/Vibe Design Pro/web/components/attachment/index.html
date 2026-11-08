@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+<script src="../../assets/common/js/theme.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>附件卡片 · 家族对照</title>
+  <link rel="stylesheet" href="../../vendor/arco/css/arco.css" />
+  <link rel="stylesheet" href="../../assets/common/css/chrome.css" />
+  <link rel="stylesheet" href="../../assets/common/css/global.css" />
+  <link rel="stylesheet" href="../../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/common/css/fa-icons.css" />
+  <link rel="stylesheet" href="../../assets/common/css/components.css" />
+  <link rel="stylesheet" href="../index.css?v=20261014pro" />
+  <link rel="stylesheet" href="./component.css" />
+</head>
+<body>
+  <div id="app" v-cloak>
+    <section class="wa-fam-section wa-fam-fade-in" data-family="attachment">
+      <div class="wa-fam-section__inner">
+        <header class="wa-fam-head">
+          <p class="wa-fam-kicker">attachment</p>
+          <h1 class="wa-fam-title">附件卡片</h1>
+          <p class="wa-fam-lead">文件附件展示：图组预览、上传进度、五态与多尺寸编组。</p>
+          <p class="wa-fam-lead">组件类型：gallery / uploading / states / sizes / group</p>
+        </header>
+
+        <div class="wa-fam-grid">
+          <div class="wa-fam-card" data-slug="attachment-gallery">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">图片附件组</span><span class="wa-comp-meta__slug">attachment-gallery</span></div>
+              <a-tooltip :content="famCopyTip('attachment-gallery')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('attachment-gallery') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('attachment-gallery')"
+                :aria-label="famCopyTip('attachment-gallery')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('attachment-gallery')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-attach-gallery">
+                <div class="wa-attach-tile">
+                  <div class="wa-attach-tile__media">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23d6cfc4'/%3E%3Cstop offset='1' stop-color='%239aab9c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='240' height='240' fill='url(%23g)'/%3E%3Crect x='28' y='48' width='120' height='80' rx='4' fill='%23f5f1ea' opacity='.55'/%3E%3Crect x='100' y='110' width='90' height='70' rx='4' fill='%23c9b8a0' opacity='.45'/%3E%3C/svg%3E" alt="工作区" />
+                    <button type="button" class="wa-attach-tile__x" aria-label="移除"><icon-close :size="11"></icon-close></button>
+                  </div>
+                  <div class="wa-attach-tile__name">工作区.png</div>
+                  <div class="wa-attach-tile__meta">PNG · 820 KB</div>
+                </div>
+                <div class="wa-attach-tile">
+                  <div class="wa-attach-tile__media">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop stop-color='%23e8e2d8'/%3E%3Cstop offset='1' stop-color='%23b7a994'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='240' height='240' fill='url(%23g)'/%3E%3Crect x='40' y='70' width='160' height='10' rx='2' fill='%23fff' opacity='.5'/%3E%3Crect x='40' y='95' width='120' height='8' rx='2' fill='%23fff' opacity='.35'/%3E%3Crect x='40' y='130' width='160' height='60' rx='6' fill='%23a89880' opacity='.35'/%3E%3C/svg%3E" alt="桌面参考" />
+                    <button type="button" class="wa-attach-tile__x" aria-label="移除"><icon-close :size="11"></icon-close></button>
+                  </div>
+                  <div class="wa-attach-tile__name">桌面参考.jpg</div>
+                  <div class="wa-attach-tile__meta">JPG · 1.1 MB</div>
+                </div>
+                <div class="wa-attach-tile">
+                  <div class="wa-attach-tile__media">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop stop-color='%23cfd5d0'/%3E%3Cstop offset='1' stop-color='%238f9e96'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='240' height='240' fill='url(%23g)'/%3E%3Ccircle cx='180' cy='50' r='28' fill='%23fff' opacity='.25'/%3E%3Crect x='30' y='100' width='100' height='90' rx='4' fill='%23eef1ef' opacity='.4'/%3E%3C/svg%3E" alt="办公参考" />
+                    <button type="button" class="wa-attach-tile__x" aria-label="移除"><icon-close :size="11"></icon-close></button>
+                  </div>
+                  <div class="wa-attach-tile__name">办公参考.jpg</div>
+                  <div class="wa-attach-tile__meta">JPG · 940 KB</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="attachment-uploading">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">上传中与完成卡</span><span class="wa-comp-meta__slug">attachment-uploading</span></div>
+              <a-tooltip :content="famCopyTip('attachment-uploading')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('attachment-uploading') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('attachment-uploading')"
+                :aria-label="famCopyTip('attachment-uploading')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('attachment-uploading')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-attach-stack">
+                <div class="wa-attach wa-attach--uploading">
+                  <div class="wa-attach__media"><a-spin :size="16"></a-spin></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">销售看板.pdf</div>
+                    <div class="wa-attach__desc">上传中 · 64%</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="取消"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+                <div class="wa-attach">
+                  <div class="wa-attach__media"><icon-code :size="16"></icon-code></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">消息渲染器.tsx</div>
+                    <div class="wa-attach__desc">TypeScript · 12 KB</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="移除"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="attachment-group">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">混合附件组</span><span class="wa-comp-meta__slug">attachment-group</span></div>
+              <a-tooltip :content="famCopyTip('attachment-group')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('attachment-group') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('attachment-group')"
+                :aria-label="famCopyTip('attachment-group')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('attachment-group')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-attach-group">
+                <div class="wa-attach wa-attach--sm">
+                  <div class="wa-attach__media"><icon-file :size="16"></icon-file></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">会议纪要.pdf</div>
+                    <div class="wa-attach__desc">PDF · 1.4 MB</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="移除"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--sm">
+                  <div class="wa-attach__media wa-attach__media--image"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23d6cfc4'/%3E%3Cstop offset='1' stop-color='%239aab9c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='240' height='240' fill='url(%23g)'/%3E%3Crect x='28' y='48' width='120' height='80' rx='4' fill='%23f5f1ea' opacity='.55'/%3E%3Crect x='100' y='110' width='90' height='70' rx='4' fill='%23c9b8a0' opacity='.45'/%3E%3C/svg%3E" alt="" /></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">工作区.png</div>
+                    <div class="wa-attach__desc">PNG · 820 KB</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="移除"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--sm">
+                  <div class="wa-attach__media"><icon-file :size="16"></icon-file></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">客户列表.csv</div>
+                    <div class="wa-attach__desc">CSV · 18 KB</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="移除"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--sm">
+                  <div class="wa-attach__media"><icon-code :size="16"></icon-code></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">渲染器.tsx</div>
+                    <div class="wa-attach__desc">TSX · 12 KB</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="移除"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="attachment-sizes">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">附件尺寸</span><span class="wa-comp-meta__slug">attachment-sizes</span></div>
+              <a-tooltip :content="famCopyTip('attachment-sizes')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('attachment-sizes') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('attachment-sizes')"
+                :aria-label="famCopyTip('attachment-sizes')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('attachment-sizes')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-attach-stack">
+                <div class="wa-attach">
+                  <div class="wa-attach__media"><icon-file :size="16"></icon-file></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">默认附件</div>
+                    <div class="wa-attach__desc">PDF · 2.4 MB</div>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--sm">
+                  <div class="wa-attach__media"><icon-file :size="16"></icon-file></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">小号附件</div>
+                    <div class="wa-attach__desc">PDF · 2.4 MB</div>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--xs">
+                  <div class="wa-attach__media"><icon-file :size="16"></icon-file></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">超小附件</div>
+                    <div class="wa-attach__desc">PDF · 2.4 MB</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-fam-card" data-slug="attachment-states">
+            <div class="wa-fam-card__top">
+              <div class="wa-comp-meta"><span class="wa-comp-meta__name">上传五态</span><span class="wa-comp-meta__slug">attachment-states</span></div>
+              <a-tooltip :content="famCopyTip('attachment-states')">
+              <a-button
+                :class="['wa-fam-copy', { 'wa-fam-copy--locked': copyLocked, 'is-copied': famCopied('attachment-states') }]"
+                type="secondary"
+                size="small"
+                @click="copyPrompt('attachment-states')"
+                :aria-label="famCopyTip('attachment-states')"
+              >
+                <span class="wa-fam-copy__inner" v-if="copyLocked">
+                  <icon-lock></icon-lock>
+                  <span class="wa-fam-copy__label">需要权限</span>
+                </span>
+                <span class="wa-fam-copy__inner" v-else>
+                  <icon-check v-if="famCopied('attachment-states')"></icon-check>
+                  <icon-copy v-else></icon-copy>
+                  <span class="wa-fam-copy__label">提示词</span>
+                </span>
+              </a-button>
+              </a-tooltip>
+            </div>
+            <div class="wa-fam-card__stage">
+              <div class="wa-attach-stack">
+                <div class="wa-attach wa-attach--idle">
+                  <div class="wa-attach__media"><icon-file :size="16"></icon-file></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">已选文件.pdf</div>
+                    <div class="wa-attach__desc">准备上传</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="移除"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--uploading">
+                  <div class="wa-attach__media"><a-spin :size="16"></a-spin></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">设计系统.zip</div>
+                    <div class="wa-attach__desc">上传中 · 64%</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="取消"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--processing">
+                  <div class="wa-attach__media"><icon-clock-circle :size="16"></icon-clock-circle></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">市场调研.pdf</div>
+                    <div class="wa-attach__desc">正在处理文档</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="取消"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--error">
+                  <div class="wa-attach__media"><icon-exclamation-circle :size="16"></icon-exclamation-circle></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">财务模型.xlsx</div>
+                    <div class="wa-attach__desc">上传失败，请重试</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="重试"><icon-refresh :size="12"></icon-refresh></a-button>
+                    <a-button type="text" size="mini" aria-label="移除"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+                <div class="wa-attach wa-attach--done">
+                  <div class="wa-attach__media"><icon-check-circle :size="16"></icon-check-circle></div>
+                  <div class="wa-attach__body">
+                    <div class="wa-attach__title">季度报告.pdf</div>
+                    <div class="wa-attach__desc">已上传 · 1.8 MB</div>
+                  </div>
+                  <div class="wa-attach__actions">
+                    <a-button type="text" size="mini" aria-label="移除"><icon-close :size="12"></icon-close></a-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+                  </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../vendor/vue/vue.global.prod.js"></script>
+  <script src="../../vendor/arco/arco-vue.min.js"></script>
+  <script src="../../assets/common/js/fa-icons.js"></script>
+  <script src="../../assets/common/js/boot.js"></script>
+  <script src="../../../../assets/common/js/wa-prefs.js"></script>
+  <script src="./prompts.inline.js"></script>
+  <script>
+    window.WA_FAMILY = {
+      id: 'attachment',
+      members: ['attachment-gallery', 'attachment-uploading', 'attachment-group', 'attachment-sizes', 'attachment-states'],
+    }
+  </script>
+  <script src="../copy-prompt.js?v=20261015q"></script>
+  <script src="../family.js?v=20261103a"></script>
+</body>
+</html>

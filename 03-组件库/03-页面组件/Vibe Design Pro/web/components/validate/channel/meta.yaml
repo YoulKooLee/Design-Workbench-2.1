@@ -1,0 +1,11 @@
+slug: validate-channel
+label: 渠道校验
+type: component
+surface: general
+status: preview
+tier: free
+framework: web
+category: input
+tags:
+  - input
+path: components/validate/channel

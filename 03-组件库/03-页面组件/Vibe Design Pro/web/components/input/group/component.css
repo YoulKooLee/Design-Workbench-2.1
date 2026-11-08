@@ -1,0 +1,36 @@
+/* 电话组合：对照 Admin component-form-phone + a-input-group（间距布局，非紧凑拼边） */
+.wa-input-phone.arco-input-group,
+.arco-input-group.wa-input-phone {
+  display: flex !important;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+
+.wa-input-phone.arco-input-group > .arco-input-wrapper,
+.arco-input-group.wa-input-phone > .arco-input-wrapper {
+  flex: none;
+  margin-right: 0 !important;
+  border-radius: var(--wa-input-radius, 8px) !important;
+  border-right: 1px solid var(--color-border-2) !important;
+}
+
+.wa-input-phone.arco-input-group > .arco-input-wrapper:hover,
+.arco-input-group.wa-input-phone > .arco-input-wrapper:hover {
+  border-right-color: var(--color-border-3) !important;
+}
+
+.wa-input-phone.arco-input-group > .arco-input-wrapper:focus-within,
+.arco-input-group.wa-input-phone > .arco-input-wrapper:focus-within,
+.wa-input-phone.arco-input-group > .arco-input-wrapper.arco-input-focus,
+.arco-input-group.wa-input-phone > .arco-input-wrapper.arco-input-focus {
+  border-right-color: rgb(var(--primary-6)) !important;
+}
+
+.wa-input-phone__code {
+  width: calc(30% - 6px) !important;
+}
+
+.wa-input-phone__number {
+  width: calc(70% - 6px) !important;
+}

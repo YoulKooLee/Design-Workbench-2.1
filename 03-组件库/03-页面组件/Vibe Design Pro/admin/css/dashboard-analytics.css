@@ -1,3 +1,5 @@
+@import "./dashboard-shared.css";
+
 /* 分析仪表盘（对齐 shadcn /dashboard/analytics） */
 
 .anl-page {
@@ -44,32 +46,6 @@
   padding-left: 0;
 }
 
-.anl-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab:first-child {
-  margin-left: 0;
-}
-
-.anl-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab {
-  border: 1px solid transparent;
-  background-color: transparent;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.anl-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab:hover {
-  color: rgb(var(--primary-6));
-  background-color: transparent;
-}
-
-.anl-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active,
-.anl-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active:hover {
-  color: rgb(var(--primary-6));
-  background-color: var(--pro-theme-color-soft);
-  border-color: rgb(var(--primary-6));
-}
-
-.anl-tabs .arco-tabs-nav-type-rounded .arco-tabs-tab-active .arco-tabs-tab-title {
-  color: inherit;
-}
-
 .anl-tabs .arco-tabs-nav-ink {
   display: none;
 }
@@ -86,13 +62,31 @@
   flex-shrink: 0;
 }
 
+/* 工具栏：按钮 / 下拉统一 small 高度（覆盖全局 Select 默认 medium） */
+.anl-toolbar .arco-btn-size-small {
+  height: var(--pro-ctrl-h-small, 32px);
+}
+
+.anl-toolbar .arco-btn-size-small.arco-btn-only-icon,
 .anl-toolbar .anl-refresh-btn {
-  width: 28px;
+  width: var(--pro-ctrl-h-small, 32px);
+  height: var(--pro-ctrl-h-small, 32px);
   padding: 0;
 }
 
 .anl-toolbar .anl-refresh-btn .arco-btn-icon {
   margin-right: 0;
+}
+
+.anl-toolbar .arco-select-view-single.arco-select-view-size-small {
+  height: var(--pro-ctrl-h-small, 32px);
+  min-height: var(--pro-ctrl-h-small, 32px);
+  line-height: calc(var(--pro-ctrl-h-small, 32px) - 2px);
+}
+
+.anl-toolbar .arco-select-view-single.arco-select-view-size-small .arco-select-view-value,
+.anl-toolbar .arco-select-view-single.arco-select-view-size-small .arco-select-view-input {
+  line-height: calc(var(--pro-ctrl-h-small, 32px) - 2px);
 }
 
 .anl-dropdown-item {
@@ -126,26 +120,6 @@
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 12px;
-}
-
-.anl-card-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  color: var(--color-text-1);
-}
-
-.anl-card-title::before {
-  content: '';
-  flex-shrink: 0;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: rgb(var(--primary-6));
 }
 
 .anl-card-action {

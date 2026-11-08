@@ -1,0 +1,45 @@
+/* 列表项加载：下载 / 支付等进行中行 */
+.wa-spin-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  margin-inline: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--border-radius-medium, 6px);
+  background: var(--color-bg-2);
+  box-sizing: border-box;
+  text-align: start;
+}
+
+.wa-spin-item__spin {
+  flex: 0 0 auto;
+  display: inline-flex;
+  line-height: 0;
+}
+
+.wa-spin-item__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.wa-spin-item__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-1);
+  line-height: 1.4;
+}
+
+.wa-spin-item__meta {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--color-text-3);
+  line-height: 1.4;
+}
+
+.wa-spin-item__actions {
+  flex: 0 0 auto;
+}
