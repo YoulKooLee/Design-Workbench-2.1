@@ -1,9 +1,0 @@
-slug: app-icon-rail
-label: 文字双轨
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: sidebar
-notes: 轨上八个模块入口带文字（看板/日历/项目/笔记/成员/通知/表单/设置）；点入口切换第二列面板；从 app-dual-rail 分叉

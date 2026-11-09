@@ -1,9 +1,0 @@
-slug: marketing-float
-label: 悬浮导航条
-type: layout
-surface: marketing
-status: preview
-tier: free
-framework: web
-category: shell
-notes: 从 marketing-shell 分叉；整条悬浮胶囊导航 + 主列 + 页脚；comfortable

@@ -1,7 +1,0 @@
-/* 文字头像：字号固定 14px（关闭 Arco 按尺寸自动缩放） */
-.wa-embed__stage .arco-avatar,
-.wa-fam-card .arco-avatar {
-  flex-shrink: 0;
-  font-size: 14px !important;
-  line-height: 1;
-}

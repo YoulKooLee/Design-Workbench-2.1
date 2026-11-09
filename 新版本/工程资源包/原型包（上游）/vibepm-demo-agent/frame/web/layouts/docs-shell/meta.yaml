@@ -1,9 +1,0 @@
-slug: docs-shell
-label: 文档内容壳
-type: layout
-surface: general
-status: preview
-tier: free
-framework: web
-category: shell
-notes: 限宽三栏 + 悬浮胶囊顶栏（品牌/搜索/站点导航）；surface general；非 App 侧栏密度

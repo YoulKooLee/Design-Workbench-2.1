@@ -1,9 +1,0 @@
-slug: app-topnav
-label: 通栏顶栏框架
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: topnav
-notes: 对齐 Admin layoutMode=top；导航与内容槽同源 app-sidebar

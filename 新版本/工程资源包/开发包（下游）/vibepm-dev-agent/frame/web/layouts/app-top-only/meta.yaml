@@ -1,9 +1,0 @@
-slug: app-top-only
-label: 无侧栏通栏
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: topnav
-notes: 从 app-topnav 去侧栏；顶栏水平主导航，主列全宽

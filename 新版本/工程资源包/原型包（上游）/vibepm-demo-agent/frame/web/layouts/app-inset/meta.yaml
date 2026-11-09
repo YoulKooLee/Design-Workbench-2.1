@@ -1,9 +1,0 @@
-slug: app-inset
-label: 侧栏留白框架
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: sidebar
-notes: 侧栏贴页面底；内容整块留边

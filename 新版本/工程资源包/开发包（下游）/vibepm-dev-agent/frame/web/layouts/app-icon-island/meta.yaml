@@ -1,9 +1,0 @@
-slug: app-icon-island
-label: 图标岛侧栏
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: sidebar
-notes: 悬浮圆形品牌 + 胶囊图标岛；无第二列面板；从 app-icon-rail 分叉

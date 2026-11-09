@@ -1,9 +1,0 @@
-slug: app-top-island
-label: 图标岛顶栏
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: topnav
-notes: 从 app-icon-island 分叉；顶栏左品牌、居中带文字胶囊岛、右操作；无侧栏

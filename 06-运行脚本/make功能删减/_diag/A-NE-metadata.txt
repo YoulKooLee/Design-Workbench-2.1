@@ -1,3 +1,0 @@
-### A-NE-metadata  [393300:393750]  len=450
-
-,children:e}),AE={h1:vE,h2:PE,h3:CE,h4:SE,p:EE,ul:IE,ol:jE,li:TE,blockquote:kE,code:bE},NE=[{kind:"design-note",label:"设计说明审查",description:"审查页面设计说明卡片：有没有遗漏功能点、有没有技术黑话、文案规不规范。"},{kind:"design",label:"设计文档审查",description:"审查 HLD/LLD 设计文档：结构完整性、分层边界、技术规范符合。"},{kind:"page",label:"页面代码审查",description:"审查生成的页面代码：需求覆盖、组件用法、响应式适配。"}],RE="https://github.com/lintendo/Axhub-Skills/blob/main/skills/axhub-prototype-context/SKILL.md",DE=[`请把下面这个技能安装到当前项目：${RE

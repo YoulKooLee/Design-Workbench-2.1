@@ -1,9 +1,0 @@
-slug: app-inset-stage
-label: 窄轨二级
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: sidebar
-notes: 从 app-inset 分叉；默认主色底；窄轨一级（图标下两字）+ 顶栏二级；无折叠；底栏仅搜索图标与头像；内容区滚动；主色底内容岛顶部内阴影

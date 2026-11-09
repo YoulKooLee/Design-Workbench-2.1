@@ -1,9 +1,0 @@
-slug: app-module-nav
-label: 顶栏模块导航
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: topnav
-notes: 顶栏一级模块切换；左侧仅显示当前模块菜单且默认全部展开；支持 ?preset=tabs 多页签、?preset=category 分类标签

@@ -278,18 +278,26 @@
   background: color-mix(in srgb, var(--sh-brand) 88%, #000) !important;
 }
 
+/* 【遮挡修复 2026-11-10】实测根因：面包屑注入进左容器（flex items-center gap-1 z-10）后，
+   左容器被拉到 1276px 宽，其 z 层级盖住中间 absolute 容器（z:auto），
+   批注/评审按钮 elementFromPoint 全部命中左容器 → 点击无效。
+   修法：中间工具容器抬到左/右容器（z:12）之上。 */
+.ax-presentation-toolbar > .absolute {
+  z-index: 30 !important;
+}
+
 /* 中间模式组：规格 / 批注 / PRD 标注 / 评审 —— 显式居中，不依赖 tailwind translate
    Tailwind v4 的 -translate-x-1/2 写的是独立 translate 属性，会和 transform 叠加，
    必须一并清掉，否则整体左上各偏一半（顶部被裁、不再居中）。 */
 .ax-presentation-toolbar .ax-toolbar-adaptive-action.flex-1 {
-  position: absolute !important;
-  left: 50% !important;
-  top: 50% !important;
+  position: static !important;
   height: 28px;
   margin: 0 !important;
   translate: none !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: 11;
+  transform: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ax-presentation-toolbar .ax-toolbar-adaptive-action.flex-1 > div {

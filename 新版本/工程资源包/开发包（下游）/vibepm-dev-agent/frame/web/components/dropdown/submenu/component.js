@@ -1,3 +1,0 @@
-;(function () {
-  WebArco.mount('#app', {})
-})()

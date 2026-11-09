@@ -1,9 +1,0 @@
-slug: app-stacked-nav
-label: 双层顶栏框架
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: topnav
-notes: 顶栏含品牌+一级+操作；第二层为二级菜单；无侧栏

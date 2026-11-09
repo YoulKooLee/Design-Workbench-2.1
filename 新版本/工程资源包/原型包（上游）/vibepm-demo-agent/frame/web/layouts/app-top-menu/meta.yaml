@@ -1,9 +1,0 @@
-slug: app-top-menu
-label: 顶栏全局菜单
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: topnav
-notes: LOGO 左侧菜单图标展开产品与服务面板；无固定侧栏；同源 app-top-only

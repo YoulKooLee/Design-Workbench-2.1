@@ -1,9 +1,0 @@
-slug: app-sidebar-stage
-label: 灰栏工作台
-type: layout
-surface: app
-status: preview
-tier: free
-framework: web
-category: sidebar
-notes: 从 app-sidebar 分叉；左侧灰底 + 右侧白台；搜索在 LOGO 右；展开收起在主列顶左
